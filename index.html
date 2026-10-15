@@ -148,7 +148,7 @@ footer{padding:28px 0 90px;color:var(--tm);font-size:13.5px}footer .w{display:fl
 </div></section>
 
 <section class="mp" id="onde"><div class="w">
- <div class="sh"><div><span class="eb">FC no Brasil</span><h2>Onde a FC está atendendo</h2></div><p>Consultoria on-line para todo o Brasil e presencial onde a obra pede. O mapa é atualizado pela própria FC.</p></div>
+ <div class="sh"><div><span class="eb">FC no Brasil</span><h2>Orientativo FC 3D pelo Brasil</h2></div><p>As empresas que já usam o Orientativo FC 3D aparecem no mapa, com a cidade e quantas pessoas usam o aplicativo. A consultoria FC atende on-line em todo o Brasil e presencial onde a obra pede.</p></div>
  <div id="mapaFC"></div>
 </div></section>
 
@@ -174,8 +174,8 @@ document.getElementById('mb').onclick=()=>document.getElementById('mn').classLis
 document.querySelectorAll('#mn a').forEach(a=>a.onclick=()=>document.getElementById('mn').classList.remove('on'));
 const MAPA_FALLBACK=[{"c": "Sinop", "n": 3, "s": "and", "t": "on", "u": "MT"}, {"c": "Cuiabá", "n": 1, "s": "and", "t": "pr", "u": "MT"}, {"c": "Cuiabá", "n": 6, "s": "and", "t": "on", "u": "MT"}, {"c": "Manaus", "n": 1, "s": "and", "t": "pr", "u": "AM"}, {"c": "Recife", "n": 1, "s": "and", "t": "pr", "u": "PE"}];
 function emAtual(){document.getElementById('mapaFC').innerHTML='<div style="border:1px dashed #3a5866;border-radius:14px;padding:40px 20px;text-align:center;color:#c9d6dd"><div style="font-size:34px">🛠</div><b style="font-size:20px;color:#fff">Mapa em atualização</b><p style="margin:8px 0 0">Estamos organizando as cidades atendidas. Volte em breve.</p></div>';['nE','nU'].forEach(k=>{const b=document.getElementById(k);if(b&&b.parentNode)b.parentNode.style.display='none';});}
-function mostrar(it){if(window.FCM)FCM.render(document.getElementById('mapaFC'),it);const n=it.reduce((a,x)=>a+Math.max(1,+x.n||1),0);document.getElementById('nE').textContent=n||'–';document.getElementById('nU').textContent=new Set(it.map(x=>x.u)).size||'–';}
-(async()=>{let it=MAPA_FALLBACK;try{const r=await fetch('https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/trein_eventos?select=detalhe&tipo=eq.mapa&order=criado_em.desc&limit=1',{headers:{apikey:'sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg'}});const j=await r.json();if(Array.isArray(j)&&j[0]&&j[0].detalhe){if(j[0].detalhe.pub===false)return emAtual();if(Array.isArray(j[0].detalhe.itens))it=j[0].detalhe.itens;}}catch(e){}mostrar(it);})();
+function mostrar(it,orr,cons){if(window.FCM){if(FCM.render2)FCM.render2(document.getElementById('mapaFC'),{orient:orr||[],cons:it,showCons:cons!==false&&it.length>0});else FCM.render(document.getElementById('mapaFC'),it);}const n=(orr||[]).length+(cons===false?0:it.reduce((a,x)=>a+Math.max(1,+x.n||1),0));document.getElementById('nE').textContent=n||'–';document.getElementById('nU').textContent=new Set(it.map(x=>x.u)).size||'–';}
+(async()=>{let it=MAPA_FALLBACK;try{const r=await fetch('https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/trein_eventos?select=detalhe&tipo=eq.mapa&order=criado_em.desc&limit=1',{headers:{apikey:'sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg'}});const j=await r.json();if(Array.isArray(j)&&j[0]&&j[0].detalhe){const dd=j[0].detalhe,orr=dd.orient||[];if(dd.pub===false&&!orr.length)return emAtual();return mostrar(Array.isArray(dd.itens)?dd.itens:[],orr,dd.pub!==false);}}catch(e){}mostrar(it,[],true);})();
 </script>
 <script>(function(){try{if(!localStorage.getItem('trein-fc-auth'))return;}catch(e){return;}
  let u='https://fc-consultoria.github.io/treinamento/';try{const x=localStorage.getItem('fcTreinUrl');if(x&&x.indexOf('https://fc-consultoria.github.io/treinamento/')===0)u=x;}catch(e){}
