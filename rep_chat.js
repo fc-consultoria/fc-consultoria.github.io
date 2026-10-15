@@ -15,7 +15,7 @@ function marcar(){const f=MSG.filter(m=>m.de==='fc');if(f.length)LS.s('fc_cv_vis
 function agenda(){clearTimeout(tm);if(!MSG.length&&LS.g('fc_cv_on','')!=='1'&&!aberto)return;tm=setTimeout(async()=>{await ler();agenda();},aberto?6000:25000);}
 function hm(t){const d=new Date(t);return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});}
 function desenha(){const L=document.getElementById('rcL');if(!L)return;const p=perfil();
- L.innerHTML=(MSG.length?'':`<div class="rcI">Olá! Escreva o que você precisa (produto, medida, quantidade). O Fernando, da FC Consultoria, responde por aqui${p.fone?' e pelo seu WhatsApp':''}.</div>`)+MSG.map(m=>`<div class="rcM ${m.de==='fc'?'fc':'eu'}"><span>${esc(m.txt).replace(/\n/g,'<br>')}</span><small>${m.de==='fc'?'FC Consultoria · ':''}${hm(m.criado_em)}</small></div>`).join('');
+ L.innerHTML=(MSG.length?'':`<div class="rcI">${esc(CFG.ola||'Olá! Escreva o que você precisa (produto, medida, quantidade).')} O Fernando, da FC Consultoria, responde por aqui${p.fone?' e pelo seu WhatsApp':''}.</div>`)+MSG.map(m=>`<div class="rcM ${m.de==='fc'?'fc':'eu'}"><span>${esc(m.txt).replace(/\n/g,'<br>')}</span><small>${m.de==='fc'?'FC Consultoria · ':''}${hm(m.criado_em)}</small></div>`).join('');
  L.scrollTop=L.scrollHeight;const F=document.getElementById('rcF');if(F)F.style.display=(p.nome?'none':'grid');}
 function abrir(txt){aberto=true;const P=document.getElementById('rcP');P.classList.add('on');document.getElementById('rcB').setAttribute('aria-expanded','true');desenha();marcar();
  const T=document.getElementById('rcT');if(txt){T.value=txt;}setTimeout(()=>{const p=perfil();(p.nome?T:document.getElementById('rcN')).focus();},60);ler();agenda();hit('conv_abrir',txt?String(txt).slice(0,60):'');}
@@ -50,12 +50,12 @@ function montar(){if(document.getElementById('rcB'))return;const c=CFG.cor;const
 .rcWa{font-size:12.5px;color:#1f9d55;font-weight:700;text-decoration:none}
 @media(max-width:560px){#rcP{right:0;left:0;bottom:0;width:100%;height:min(88vh,640px);border-radius:18px 18px 0 0}#rcB{right:12px;bottom:12px}}
 @media(prefers-reduced-motion:reduce){#rcB.pulse,#rcP.on{animation:none}}`;document.head.appendChild(st);
- const b=document.createElement('button');b.type='button';b.id='rcB';b.setAttribute('aria-expanded','false');b.setAttribute('aria-controls','rcP');b.innerHTML='💬 Pedir orçamento pela conversa <i></i>';b.onclick=()=>aberto?fechar():abrir();document.body.appendChild(b);
+ const b=document.createElement('button');b.type='button';b.id='rcB';b.setAttribute('aria-expanded','false');b.setAttribute('aria-controls','rcP');b.innerHTML=(CFG.rotulo||'💬 Pedir orçamento pela conversa')+' <i></i>';b.onclick=()=>aberto?fechar():abrir();document.body.appendChild(b);
  const p=document.createElement('div');p.id='rcP';p.setAttribute('role','dialog');p.setAttribute('aria-label','Conversa com a FC Consultoria');
- p.innerHTML=`<div class="rcH"><img src="${CFG.logo||'../img/logo-fc-160.jpg'}" alt=""><div><b>FC Consultoria · ${esc(CFG.marca)}</b><small>Orçamento pela conversa · respondemos por aqui</small></div><button type="button" id="rcX" aria-label="Fechar conversa">×</button></div>
+ p.innerHTML=`<div class="rcH"><img src="${CFG.logo||'../img/logo-fc-160.jpg'}" alt=""><div><b>${CFG.marca==='FC Consultoria'?'FC Consultoria':'FC Consultoria · '+esc(CFG.marca)}</b><small>${esc(CFG.sub||'Orçamento pela conversa · respondemos por aqui')}</small></div><button type="button" id="rcX" aria-label="Fechar conversa">×</button></div>
   <div id="rcL" aria-live="polite"></div>
   <form id="rcForm"><div id="rcF"><input id="rcN" autocomplete="name" placeholder="Seu nome *" aria-label="Seu nome"><input id="rcW" autocomplete="tel" inputmode="tel" placeholder="WhatsApp (opcional)" aria-label="WhatsApp"><input id="rcC" placeholder="Cidade/UF" aria-label="Cidade"></div>
-  <textarea id="rcT" placeholder="Ex.: preciso de 10 rolos da fita glazing 12 mm" aria-label="Mensagem"></textarea>
+  <textarea id="rcT" placeholder="${esc(CFG.ph||'Ex.: preciso de 10 rolos da fita glazing 12 mm')}" aria-label="Mensagem"></textarea>
   <div class="rcR"><a class="rcWa" href="https://wa.me/${WA}" target="_blank" rel="noopener">ou chame no WhatsApp</a><button type="submit" id="rcS">Enviar</button></div><div id="rcMsg" role="status"></div></form>`;
  document.body.appendChild(p);document.getElementById('rcX').onclick=fechar;document.getElementById('rcForm').onsubmit=enviar;
  document.getElementById('rcT').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&window.innerWidth>700){e.preventDefault();document.getElementById('rcForm').requestSubmit();}});
