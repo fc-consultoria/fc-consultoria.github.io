@@ -88,7 +88,7 @@ footer{padding:28px 0 90px;color:var(--tm);font-size:13.5px}footer .w{display:fl
 <header class="top"><div class="w">
  <a class="brand" href="#inicio"><img src="img/logo-fc-160.jpg" alt=""><span>FC Consultoria<small>EM ESQUADRIA · REPRESENTAÇÃO</small></span></a>
  <button class="mbtn" id="mb" aria-label="Abrir menu">☰</button>
- <nav class="mn" id="mn"><a href="#servicos">Serviços</a><a href="#treinamento">Orientativo FC 3D</a><a href="#representacao">Representação</a><a href="#parceiros" id="pcNav" hidden>Parceiros</a><a href="#onde">Onde atendemos</a><a href="#sobre">Sobre</a><a href="#contato">Contato</a></nav>
+ <nav class="mn" id="mn"><a href="#servicos">Serviços</a><a href="#treinamento">Orientativo FC 3D</a><a href="#representacao">Representação</a><a href="#parceiros" id="pcNav" hidden>Parceiros</a><a href="#dicas" id="dcNav" hidden>Dicas</a><a href="#onde">Onde atendemos</a><a href="#sobre">Sobre</a><a href="#contato">Contato</a></nav>
  <a class="btn cy ac" href="https://fc-consultoria.github.io/treinamento/">🔐 Área do cliente</a>
  <a class="btn wz" href="https://wa.me/5566999867984?text=Ol%C3%A1%20Fernando%2C%20vim%20pelo%20site%20da%20FC." target="_blank" rel="noopener">💬 WhatsApp</a>
 </div></header>
@@ -150,6 +150,10 @@ footer{padding:28px 0 90px;color:var(--tm);font-size:13.5px}footer .w{display:fl
  <div class="sh"><div><span class="eb dk">Fornecedores parceiros</span><h2>Empresas parceiras da FC</h2></div><p>Fornecedores de perfis e componentes com quem a FC trabalha na implantação e alimentação dos sistemas de cálculo.</p></div>
  <div class="pcg" id="pcG"></div>
 </div></section>
+<section id="dicas" hidden><div class="w">
+ <div class="sh"><div><span class="eb dk">Dicas da FC</span><h2>Dicas para a obra e a fábrica</h2></div><p>Dicas rápidas de montagem, onde encontrar produtos e novidades do setor de esquadrias.</p></div>
+ <div id="fdSite"></div>
+</div></section>
 
 <section class="mp" id="onde"><div class="w">
  <div class="sh"><div><span class="eb">FC no Brasil</span><h2>FC Consultoria pelo Brasil</h2></div><p>Empresas de vidraçaria, serralheria e esquadrias que já contam com a FC: consultoria on-line em todo o Brasil, presencial onde a obra pede e o Orientativo FC 3D para treinar a equipe.</p></div>
@@ -171,7 +175,7 @@ footer{padding:28px 0 90px;color:var(--tm);font-size:13.5px}footer .w{display:fl
 
 <footer><div class="w" style="font-size:12px;opacity:.6;margin-bottom:6px">Contamos as visitas de forma anônima, sem cookies, para melhorar o site.</div><div class="w"><span>FC Consultoria em Esquadria · FC Desenvolvimento de Projetos de Compra e Venda LTDA · CNPJ 52.985.682/0001-32</span><span>Sinop-MT</span></div><div class="w" style="font-size:12px;opacity:.65;margin-top:6px">Suprema, Gold, WVetro e CEM são marcas de seus respectivos titulares, citadas apenas para fins de orientação técnica. A FC Consultoria não tem vínculo comercial com esses fabricantes e desenvolvedores.</div></footer>
 <a class="wfix" href="https://wa.me/5566999867984?text=Ol%C3%A1%20Fernando%2C%20vim%20pelo%20site%20da%20FC." target="_blank" rel="noopener" aria-label="WhatsApp da FC">💬</a>
-<script src="https://fc-consultoria.github.io/treinamento/mapa.js?v=1792027185"></script>
+<script src="https://fc-consultoria.github.io/treinamento/mapa.js?v=1792028270"></script>
 <script>
 document.getElementById('dplay').onclick=()=>{if(innerWidth<760){open('demo.html','_blank');return;}const b=document.getElementById('dbox');b.innerHTML='<iframe src="demo.html" title="Demonstração Orientativo FC 3D" loading="lazy"></iframe>';};
 document.getElementById('mb').onclick=()=>document.getElementById('mn').classList.toggle('on');
@@ -204,4 +208,6 @@ function mostrar(it,orr,cons,vit){if(window.FCM){if(FCM.render2)FCM.render2(docu
 <script>(async()=>{try{const r=await fetch('https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/trein_eventos?select=detalhe&tipo=eq.parceiros&order=criado_em.desc&limit=1',{headers:{apikey:'sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg'}});const j=await r.json();const L=((((j||[])[0]||{}).detalhe||{}).itens||[]).filter(x=>x&&!x.oc&&x.nome);if(!L.length)return;
 const e=v=>String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'),ok=u=>{try{const x=new URL(u);return /^https?:$/.test(x.protocol)?x.href:'';}catch(_){return '';}};
 document.getElementById('pcG').innerHTML=L.map(x=>{const u=ok(x.site||''),im=/^data:image\/(png|jpe?g|webp);base64,/.test(x.img||'')?x.img:'';return `<${u?`a href="${e(u)}" target="_blank" rel="noopener"`:'div'} class="pcc">${im?`<div class="lo" style="background-image:url('${im}')" role="img" aria-label="Logo ${e(x.nome)}"></div>`:''}<b>${e(x.nome)}</b>${x.cat?`<span>${e(x.cat)}</span>`:''}${u?'<i>Visitar site →</i>':''}</${u?'a':'div'}>`;}).join('');
-document.getElementById('parceiros').hidden=false;document.getElementById('pcNav').hidden=false;}catch(_){}})();</script></body></html>
+document.getElementById('parceiros').hidden=false;document.getElementById('pcNav').hidden=false;}catch(_){}})();</script><script src="https://fc-consultoria.github.io/treinamento/dicas.js?v=1792028270"></script><script>(async()=>{try{if(!window.FCD)return;const L=(await FCD.carregar()).filter(d=>FCD.ativa(d,'site'));if(!L.length)return;
+FCD.cards(document.getElementById('fdSite'),L,{pag:'site'});document.getElementById('dicas').hidden=false;document.getElementById('dcNav').hidden=false;
+const id=new URLSearchParams(location.search).get('dica'),d=id&&L.find(x=>x.id===id);if(d){document.getElementById('dicas').scrollIntoView();setTimeout(()=>FCD.abrir(d,'site'),400);}}catch(_){}})();</script></body></html>
