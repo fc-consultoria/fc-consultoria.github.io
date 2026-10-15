@@ -1,0 +1,20 @@
+name: coleta
+on: {push: {branches: [coleta]}}
+permissions: {contents: write}
+jobs:
+  c:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p out/pg
+          B=https://www.matrizescardeal.com.br/portfolio-collections/my-portfolio
+          for s in mc25-in-p mc25-in-m mcs25-250 mcs25-200-b mcs25-125 mcs25-p75 mcs25-m75 mcs25-m50 mcs25-p50 mcs25-p25 mcs25-m25 msc25-p mcs25-m project-title-6 project-title-5; do curl -sL -A "Mozilla/5.0" "$B/$s" -o out/pg/$s.html; done
+          curl -sL -A "Mozilla/5.0" https://www.matrizescardeal.com.br/ -o out/pg/home.html
+          curl -sL -A "Mozilla/5.0" https://www.matrizescardeal.com.br/portfolio -o out/pg/portfolio.html
+          mkdir -p out/img
+          grep -ohE 'https://static\.wixstatic\.com/media/[A-Za-z0-9_~.-]+' out/pg/*.html | sort -u > out/imgs.txt
+          while read u; do f=$(basename "$u"); curl -sL "$u" -o "out/img/$f"; done < out/imgs.txt
+          ls -la out/img | head -100
+          git config user.name bot; git config user.email bot@x
+          git add out; git commit -qm dados; git push origin HEAD:coleta-out
