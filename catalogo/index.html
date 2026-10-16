@@ -139,6 +139,10 @@ async function carregaCli(){const M=document.getElementById('lst');
  document.getElementById('cText').textContent=CLI.texto||'';document.querySelectorAll('.cFoot').forEach(e=>e.textContent=CLI.nome+(CLI.cidade?' · '+CLI.cidade:'')+(CLI.zap?' · WhatsApp '+CLI.zap:''));
  const z=document.getElementById('cZap');if(CLI.zap){z.href=zapUrl('Olá! Vi o catálogo de perfis e quero falar com vocês.');z.textContent='💬 WhatsApp '+CLI.zap;}else z.hidden=true;
  const st=document.createElement('style');st.textContent=`#v3 .cv::after,#v3 .mdp .wm::after,#lbx .wm::after,.cd .im::after{background-image:${wm(CLI.nome)}!important}#v3 .cv::before{content:'${(CLI.nome||'').replace(/'/g,'')}'!important}`;document.head.appendChild(st);
+ if(CLI.aviso&&!QS.get('print')){const AV={manutencao:['🔧','Catálogo em manutenção','Estamos fazendo ajustes neste catálogo. Você pode continuar navegando normalmente; em caso de dúvida, fale com a nossa equipe.'],atualizacao:['🔄','Catálogo em atualização','Perfis, cores e informações estão sendo atualizados. Confirme com a nossa equipe antes de fechar o pedido.']}[CLI.aviso];
+  if(AV){const b=document.createElement('div');b.setAttribute('role','status');b.style.cssText='background:#fff4d6;border-bottom:1px solid #f1d38a;color:#5c3d00;font:500 14.5px/1.45 system-ui,sans-serif';
+   const tx=(CLI.aviso_txt||'').trim()||AV[2];b.innerHTML=`<div style="max-width:1200px;margin:0 auto;padding:10px 18px;display:block;text-align:left"><b style="font-weight:700;font-size:15px;color:#5c3d00">${AV[0]} ${esc(AV[1])}</b> <span style="font-size:14px;font-weight:400;color:#5c3d00">· ${esc(tx)}</span></div>`;
+   const h=document.querySelector('header.top');h.after(b);}}
  LI=LN[0];desenha();HITX('cat_abrir',SLUG);
  if(QS.get('print'))setTimeout(imprimir,600);}
 function imprimir(){const M=document.getElementById('lst'),l0=LI;let H='';LN.forEach(l=>{LI=l;desenha();H+=`<div class="pline"><h2 class="ptitle">${esc(l.n)}</h2>${M.innerHTML}</div>`;});M.innerHTML=H;document.body.classList.add('printing');setTimeout(()=>{window.print();},500);
