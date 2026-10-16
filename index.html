@@ -43,6 +43,12 @@ section{padding:72px 0;scroll-margin-top:64px}
 .festa .fx{font-size:22px}.festa .fs{color:#4a2a00}
 .festa a{margin-left:auto;font-weight:700;color:#2b1700;text-decoration:underline}
 .festa button{border:0;background:rgba(0,0,0,.12);color:#2b1700;width:30px;height:30px;border-radius:50%;font-size:18px;cursor:pointer}
+.fsart{position:fixed;inset:0;z-index:150;background:rgba(10,20,24,.65);display:flex;align-items:center;justify-content:center;padding:16px}
+.fsart .bx{background:#fff;border-radius:16px;max-width:520px;width:100%;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.fsart img{display:block;width:100%;max-height:72vh;object-fit:contain;background:#f4f7f8}
+.fsart .rd{padding:14px 18px;display:flex;gap:12px;align-items:center}
+.fsart .rd b{flex:1;font-family:var(--f-d);font-size:17px;color:#0c161d}
+.fsart button{border:0;background:#0e6b62;color:#fff;font:600 15px var(--f-d);padding:10px 18px;border-radius:10px;cursor:pointer}
 .accont{display:inline-flex;align-items:center;gap:8px;background:#fff7e6;border:1px solid #f6c983;color:#7a4300;border-radius:99px;padding:6px 14px;font-weight:600;font-size:14.5px;margin:0 0 18px}
 .acp{background:linear-gradient(180deg,#eef7f5,#fff)}
 .acp .sh h2,.acp .sh p{color:inherit}.acp .sh p{color:var(--tm)}
@@ -132,7 +138,7 @@ footer{padding:28px 0 90px;color:var(--tm);font-size:13.5px}footer .w{display:fl
  <div class="acw"><a class="btn cy ac" href="https://fc-consultoria.github.io/treinamento/">🔐 Área do cliente</a><small>Só clientes com contrato e login</small></div>
  <a class="btn wz" href="https://wa.me/5566999867984?text=Ol%C3%A1%20Fernando%2C%20vim%20pelo%20site%20da%20FC." target="_blank" rel="noopener">💬 WhatsApp</a>
 </div></header>
-<div class="festa" id="festa" hidden role="status"><div class="w"><span class="fx">🎉</span><span><b>Mais uma implantação de preços concluída pela FC!</b> <span class="fs">Linhas alimentadas, conferidas e com margem ajustada no sistema do cliente.</span></span><a href="#acompanhamento">Ver como acompanhamos ↓</a><button type="button" id="festaX" aria-label="Fechar aviso">×</button></div></div>
+<div class="festa" id="festa" hidden role="status"><div class="w"><span class="fx" id="festaIc">🎉</span><span><b id="festaT">Mais uma implantação de preços concluída pela FC!</b> <span class="fs" id="festaS">Linhas alimentadas, conferidas e com margem ajustada no sistema do cliente.</span></span><a href="#acompanhamento" id="festaL">Ver como acompanhamos ↓</a><button type="button" id="festaX" aria-label="Fechar aviso">×</button></div></div>
 <div class="free" id="free"><div class="w"><b>🆓 Navegue à vontade, sem login e sem custo:</b><a href="#acompanhamento">📡 Novidade: acompanhe a implantação pelo link</a><a href="perfis/">🧊 Perfis em 3D e bancada</a><a href="#treinamento">🪟 Testar a janela em 3D</a><a href="#representacao">🏭 Representação</a><a href="#onde">📍 Onde atendemos</a><a href="#contato">💬 Contato</a></div></div>
 
 <div class="hero" id="inicio"><div class="w">
@@ -307,13 +313,26 @@ function fcConfete(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)r
  const x=c.getContext('2d'),W=c.width=innerWidth,H=c.height=innerHeight,cores=['#f59e0b','#1fb3c9','#0e6b62','#f97316','#1f9d55','#ffffff'];
  const P=Array.from({length:140},()=>({x:Math.random()*W,y:-20-Math.random()*H*.5,vx:(Math.random()-.5)*3,vy:2+Math.random()*3,r:4+Math.random()*5,a:Math.random()*6,va:(Math.random()-.5)*.3,c:cores[Math.random()*cores.length|0]}));
  const t0=performance.now();(function f(t){x.clearRect(0,0,W,H);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});if(t-t0<3500)requestAnimationFrame(f);else c.remove();})(t0);}
-(async()=>{try{const r=await fetch('https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/rpc/site_implantacoes_concluidas',{method:'POST',headers:{apikey:'sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg','Content-Type':'application/json'},body:'{}'});if(!r.ok)return;const d=await r.json();if(!d||!d.total)return;
- const C=document.getElementById('acCont');C.hidden=false;C.textContent='🎉 '+d.total+(d.total>1?' implantações de preços concluídas':' implantação de preços concluída')+' com acompanhamento';
- if(!d.ultima)return;const dias=(Date.now()-new Date(d.ultima+'T12:00:00'))/864e5;if(dias>10)return;
- let fechado='';try{fechado=localStorage.getItem('fc_festa_x')||'';}catch(_){}if(fechado===d.ultima)return;
- const F=document.getElementById('festa');F.hidden=false;document.getElementById('festaX').onclick=()=>{F.hidden=true;try{localStorage.setItem('fc_festa_x',d.ultima);}catch(_){}};
- let visto='';try{visto=localStorage.getItem('fc_festa_v')||'';}catch(_){}if(visto!==d.ultima){setTimeout(fcConfete,600);try{localStorage.setItem('fc_festa_v',d.ultima);}catch(_){}}
-}catch(_){}})();
+(async()=>{const K='sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg',U='https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/';
+ const LSg=k=>{try{return localStorage.getItem(k)||'';}catch(_){return '';}},LSs=(k,v)=>{try{localStorage.setItem(k,v);}catch(_){}};
+ const F=document.getElementById('festa');
+ const hoje=(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+ const mostrar=(id,titulo,texto,link,confete,img)=>{if(LSg('fc_festa_x')===id)return;
+  document.getElementById('festaIc').hidden=/^\p{Extended_Pictographic}/u.test(titulo);document.getElementById('festaT').textContent=titulo;document.getElementById('festaS').textContent=texto||'';
+  const L=document.getElementById('festaL');L.hidden=!link;F.hidden=false;document.getElementById('festaX').onclick=()=>{F.hidden=true;LSs('fc_festa_x',id);};
+  if(LSg('fc_festa_v')===id)return;LSs('fc_festa_v',id);
+  if(img){const m=document.createElement('div');m.className='fsart';m.setAttribute('role','dialog');m.setAttribute('aria-label',titulo);
+   m.innerHTML='<div class="bx"><img alt=""><div class="rd"><b></b><button type="button">Fechar</button></div></div>';m.querySelector('img').src=img;m.querySelector('b').textContent=titulo;
+   const fe=()=>m.remove();m.querySelector('button').onclick=fe;m.onclick=e=>{if(e.target===m)fe();};document.addEventListener('keydown',function k(e){if(e.key==='Escape'){fe();document.removeEventListener('keydown',k);}});document.body.appendChild(m);}
+  if(confete)setTimeout(fcConfete,500);};
+ let manual=false;
+ try{const r=await fetch(U+'trein_eventos?select=detalhe&tipo=eq.site_festa&order=criado_em.desc&limit=1',{headers:{apikey:K}});if(r.ok){const f=((await r.json())[0]||{}).detalhe;
+  if(f&&f.ativo&&f.titulo&&(!f.de||f.de<=hoje)&&f.ate>=hoje){manual=true;mostrar(f.id||f.titulo,f.titulo,f.texto,false,f.confete!==false,f.img||null);}}}catch(_){}
+ try{const r=await fetch(U+'rpc/site_implantacoes_concluidas',{method:'POST',headers:{apikey:K,'Content-Type':'application/json'},body:'{}'});if(!r.ok)return;const d=await r.json();if(!d||!d.total)return;
+  const C=document.getElementById('acCont');C.hidden=false;C.textContent='🎉 '+d.total+(d.total>1?' implantações de preços concluídas':' implantação de preços concluída')+' com acompanhamento';
+  if(manual||!d.ultima)return;if((Date.now()-new Date(d.ultima+'T12:00:00'))/864e5>10)return;
+  mostrar('impl-'+d.ultima,'Mais uma implantação de preços concluída pela FC!','Linhas alimentadas, conferidas e com margem ajustada no sistema do cliente.',true,true,null);
+ }catch(_){}})();
 document.getElementById('acDemo').addEventListener('click',()=>{try{const s=sessionStorage.getItem('fc_s')||'x';fetch('https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/rpc/site_hit',{method:'POST',keepalive:true,headers:{apikey:'sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg','Content-Type':'application/json'},body:JSON.stringify({p_s:s,p_pag:'site',p_ev:'acomp_demo',p_o:sessionStorage.getItem('fc_o')||'direto',p_ref:''})});}catch(_){}});
 </script><script src="rep_chat.js?v=1792043132"></script><script>if(window.FCRC)FCRC.init({pag:"site",marca:"FC Consultoria",cor:"#1f9d55",logo:"img/logo-fc-160.jpg",rotulo:"💬 Fale com a FC",sub:"Consultoria, orientativo e representação · respondemos por aqui",ph:"Escreva sua dúvida ou pedido",ola:"Olá! Pode falar sobre qualquer assunto: consultoria, implantação de sistema, orientativo 3D ou orçamento de produtos."});</script><script>document.addEventListener("click",e=>{const a=e.target.closest("[data-orc]");if(!a||!window.FCRC)return;e.preventDefault();FCRC.abrir("Quero orçamento de "+a.dataset.orc+". Produto e quantidade: ");});</script>
 </body></html>
