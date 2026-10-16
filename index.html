@@ -38,6 +38,12 @@ nav.mn{margin-left:auto;display:flex;gap:4px}nav.mn a{white-space:nowrap;text-de
 .nums div{background:var(--ink2);padding:18px 20px}.nums b{display:block;font:700 30px var(--f-d);color:#fff}.nums span{font-size:13.5px;color:var(--mu)}
 /* seções */
 section{padding:72px 0;scroll-margin-top:64px}
+.festa{background:linear-gradient(90deg,#f59e0b,#f97316);color:#2b1700}
+.festa .w{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px;font-size:15px}
+.festa .fx{font-size:22px}.festa .fs{color:#4a2a00}
+.festa a{margin-left:auto;font-weight:700;color:#2b1700;text-decoration:underline}
+.festa button{border:0;background:rgba(0,0,0,.12);color:#2b1700;width:30px;height:30px;border-radius:50%;font-size:18px;cursor:pointer}
+.accont{display:inline-flex;align-items:center;gap:8px;background:#fff7e6;border:1px solid #f6c983;color:#7a4300;border-radius:99px;padding:6px 14px;font-weight:600;font-size:14.5px;margin:0 0 18px}
 .acp{background:linear-gradient(180deg,#eef7f5,#fff)}
 .acp .sh h2,.acp .sh p{color:inherit}.acp .sh p{color:var(--tm)}
 .acp .chip.nv{background:#f59e0b;color:#2b1700}
@@ -126,6 +132,7 @@ footer{padding:28px 0 90px;color:var(--tm);font-size:13.5px}footer .w{display:fl
  <div class="acw"><a class="btn cy ac" href="https://fc-consultoria.github.io/treinamento/">🔐 Área do cliente</a><small>Só clientes com contrato e login</small></div>
  <a class="btn wz" href="https://wa.me/5566999867984?text=Ol%C3%A1%20Fernando%2C%20vim%20pelo%20site%20da%20FC." target="_blank" rel="noopener">💬 WhatsApp</a>
 </div></header>
+<div class="festa" id="festa" hidden role="status"><div class="w"><span class="fx">🎉</span><span><b>Mais uma implantação de preços concluída pela FC!</b> <span class="fs">Linhas alimentadas, conferidas e com margem ajustada no sistema do cliente.</span></span><a href="#acompanhamento">Ver como acompanhamos ↓</a><button type="button" id="festaX" aria-label="Fechar aviso">×</button></div></div>
 <div class="free" id="free"><div class="w"><b>🆓 Navegue à vontade, sem login e sem custo:</b><a href="#acompanhamento">📡 Novidade: acompanhe a implantação pelo link</a><a href="perfis/">🧊 Perfis em 3D e bancada</a><a href="#treinamento">🪟 Testar a janela em 3D</a><a href="#representacao">🏭 Representação</a><a href="#onde">📍 Onde atendemos</a><a href="#contato">💬 Contato</a></div></div>
 
 <div class="hero" id="inicio"><div class="w">
@@ -157,6 +164,7 @@ footer{padding:28px 0 90px;color:var(--tm);font-size:13.5px}footer .w{display:fl
  <div class="sh"><div><span class="chip nv">NOVIDADE</span><br><span class="eb dk">Implantação de preços no sistema</span><h2>Acompanhe a alimentação de preços do seu sistema durante o contrato de alimentação</h2></div><p>Durante a implantação, a sua empresa recebe um link próprio para ver o andamento: quanto de cada linha já foi alimentado, em que etapa estamos e o que precisamos da sua equipe.</p></div>
  <div class="acg">
   <div>
+   <div class="accont" id="acCont" hidden></div>
    <ul class="acl">
     <li><i>📊</i><div><b>Percentual por linha contratada</b><span>Uma linha por vez. Quando chega a 100%, a próxima aparece no painel.</span></div></li>
     <li><i>🗓</i><div><b>Etapas com data prevista</b><span>Do acesso ao sistema até a conferência do orçamento e o ajuste de margem.</span></div></li>
@@ -294,6 +302,18 @@ document.addEventListener('submit',async e=>{if(e.target.id!=='acForm')return;e.
  try{await window.FCRC.enviar({nome,fone:v('acW'),cidade:v('acC')},txt,'implantacao');M.className='msg ok';M.textContent='✔ Pedido enviado! O Fernando responde pela conversa aqui do site ou pelo WhatsApp.';e.target.reset();setTimeout(()=>{try{window.FCRC.abrir();}catch(_){}},900);}
  catch(_){M.className='msg err';M.innerHTML='Não consegui enviar agora. <a href="https://wa.me/5566999867984?text='+encodeURIComponent(txt)+'" target="_blank" rel="noopener">Mandar pelo WhatsApp</a>';}
  B.disabled=false;});
+// Comemoração automática: quando uma implantação é concluída (etapa 10), o site festeja sem citar cliente nem cidade
+function fcConfete(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const c=document.createElement('canvas');c.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:200';document.body.appendChild(c);
+ const x=c.getContext('2d'),W=c.width=innerWidth,H=c.height=innerHeight,cores=['#f59e0b','#1fb3c9','#0e6b62','#f97316','#1f9d55','#ffffff'];
+ const P=Array.from({length:140},()=>({x:Math.random()*W,y:-20-Math.random()*H*.5,vx:(Math.random()-.5)*3,vy:2+Math.random()*3,r:4+Math.random()*5,a:Math.random()*6,va:(Math.random()-.5)*.3,c:cores[Math.random()*cores.length|0]}));
+ const t0=performance.now();(function f(t){x.clearRect(0,0,W,H);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});if(t-t0<3500)requestAnimationFrame(f);else c.remove();})(t0);}
+(async()=>{try{const r=await fetch('https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/rpc/site_implantacoes_concluidas',{method:'POST',headers:{apikey:'sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg','Content-Type':'application/json'},body:'{}'});if(!r.ok)return;const d=await r.json();if(!d||!d.total)return;
+ const C=document.getElementById('acCont');C.hidden=false;C.textContent='🎉 '+d.total+(d.total>1?' implantações de preços concluídas':' implantação de preços concluída')+' com acompanhamento';
+ if(!d.ultima)return;const dias=(Date.now()-new Date(d.ultima+'T12:00:00'))/864e5;if(dias>10)return;
+ let fechado='';try{fechado=localStorage.getItem('fc_festa_x')||'';}catch(_){}if(fechado===d.ultima)return;
+ const F=document.getElementById('festa');F.hidden=false;document.getElementById('festaX').onclick=()=>{F.hidden=true;try{localStorage.setItem('fc_festa_x',d.ultima);}catch(_){}};
+ let visto='';try{visto=localStorage.getItem('fc_festa_v')||'';}catch(_){}if(visto!==d.ultima){setTimeout(fcConfete,600);try{localStorage.setItem('fc_festa_v',d.ultima);}catch(_){}}
+}catch(_){}})();
 document.getElementById('acDemo').addEventListener('click',()=>{try{const s=sessionStorage.getItem('fc_s')||'x';fetch('https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/rpc/site_hit',{method:'POST',keepalive:true,headers:{apikey:'sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg','Content-Type':'application/json'},body:JSON.stringify({p_s:s,p_pag:'site',p_ev:'acomp_demo',p_o:sessionStorage.getItem('fc_o')||'direto',p_ref:''})});}catch(_){}});
 </script><script src="rep_chat.js?v=1792043132"></script><script>if(window.FCRC)FCRC.init({pag:"site",marca:"FC Consultoria",cor:"#1f9d55",logo:"img/logo-fc-160.jpg",rotulo:"💬 Fale com a FC",sub:"Consultoria, orientativo e representação · respondemos por aqui",ph:"Escreva sua dúvida ou pedido",ola:"Olá! Pode falar sobre qualquer assunto: consultoria, implantação de sistema, orientativo 3D ou orçamento de produtos."});</script><script>document.addEventListener("click",e=>{const a=e.target.closest("[data-orc]");if(!a||!window.FCRC)return;e.preventDefault();FCRC.abrir("Quero orçamento de "+a.dataset.orc+". Produto e quantidade: ");});</script>
 </body></html>
