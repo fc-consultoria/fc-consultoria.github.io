@@ -2,6 +2,24 @@
 "v": 1,
 "itens": [
 {
+"id": "acao-acomp",
+"pag": "",
+"marca": "FC Consultoria",
+"t": "Acompanhe a implantação pelo link",
+"img": "img/acao-acomp.jpg",
+"pdf": "",
+"acao": "acomp"
+},
+{
+"id": "acao-3d",
+"pag": "",
+"marca": "FC Consultoria",
+"t": "Teste a janela de correr em 3D",
+"img": "img/acao-3d.jpg",
+"pdf": "",
+"acao": "3d"
+},
+{
 "id": "nopla-main",
 "pag": "nopla",
 "marca": "Nopla Metais",
