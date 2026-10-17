@@ -40,18 +40,20 @@
       c.innerHTML=`<div class="vtzh"><span>📣 FOLDERS · ORÇAMENTO</span><button type="button" id="vtMin" title="Minimizar" aria-label="Minimizar">–</button></div>
         <button type="button" class="vtzi" id="vtI" aria-label="Abrir folder"><img id="vtImg" src="${esc(BASE+x.img)}" alt="${esc(x.t)}"></button>
         <div class="vtzt" id="vtTt">${esc(x.t)}</div><div class="vtzm" id="vtMc">${esc(x.marca)}</div>
-        <button type="button" class="vtzb" id="vtB">💬 Pedir orçamento</button><div class="vtzd" id="vtD">${L.length<=24?L.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join(''):''}</div>`;
+        <button type="button" class="vtzb" id="vtB">${rotB(x)}</button><div class="vtzd" id="vtD">${L.length<=24?L.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join(''):''}</div>`;
       document.body.appendChild(c);
       c.addEventListener('mouseenter',()=>{pausa=true;});c.addEventListener('mouseleave',()=>{pausa=false;});
-      document.getElementById('vtI').onclick=()=>abrir(i);document.getElementById('vtB').onclick=()=>orcar(L[i]);
+      document.getElementById('vtI').onclick=()=>clicar(i);document.getElementById('vtB').onclick=()=>{const y=L[i];y.acao?clicar(i):orcar(y);};
       document.getElementById('vtMin').onclick=()=>{SS.s('vt_min','1');desenhar();};}
     else{const t=document.createElement('button');t.type='button';t.id='vtT';t.setAttribute('aria-label','Ver folders e pedir orçamento');
-      t.innerHTML=`<img id="vtImg" src="${esc(BASE+x.img)}" alt=""><span>📣 Folders<small id="vtTt">${esc(x.t)}</small></span>`;document.body.appendChild(t);t.onclick=()=>abrir(i);}
+      t.innerHTML=`<img id="vtImg" src="${esc(BASE+x.img)}" alt=""><span>📣 Folders<small id="vtTt">${esc(x.t)}</small></span>`;document.body.appendChild(t);t.onclick=()=>clicar(i);}
     rodar();}
   function trocar(){if(pausa||document.getElementById('vtM')||L.length<2)return;i=(i+1)%L.length;const x=L[i],im=document.getElementById('vtImg');if(!im)return;
     const nova=new Image();nova.onload=()=>{im.style.opacity=0;setTimeout(()=>{im.src=nova.src;im.alt=x.t;im.style.opacity=1;},250);};nova.src=BASE+x.img;
-    const t=document.getElementById('vtTt'),m=document.getElementById('vtMc'),d=document.getElementById('vtD');if(t)t.textContent=x.t;if(m)m.textContent=x.marca;
+    const t=document.getElementById('vtTt'),m=document.getElementById('vtMc'),d=document.getElementById('vtD'),bb=document.getElementById('vtB');if(bb)bb.textContent=rotB(x);if(t)t.textContent=x.t;if(m)m.textContent=x.marca;
     if(d)[...d.children].forEach((e,k)=>e.classList.toggle('on',k===i));}
+  function clicar(k){const x=L[k];if(x&&x.acao&&window.FCTH){hit('acao:'+x.id);FCTH.abrir(x.acao);return;}abrir(k);}
+  const rotB=x=>x&&x.acao?'▶ Ver agora':'💬 Pedir orçamento';
   function rodar(){parar();if(L.length>1)tm=setInterval(trocar,seg*1000);}function parar(){if(tm)clearInterval(tm);tm=null;}
   function orcar(x){hit('orc:'+x.id);const t='Quero orçamento de '+x.t+' ('+x.marca+'). Quantidade: ';fechar();if(window.FCRC){FCRC.abrir(t);}else{location.href='https://wa.me/5566999867984?text='+encodeURIComponent(t);}}
   function fechar(){const m=document.getElementById('vtM');if(m)m.remove();document.removeEventListener('keydown',tecla);}
@@ -69,8 +71,9 @@
       const [rc,rj]=await Promise.all([fetch(SB+'/rest/v1/trein_eventos?select=detalhe&tipo=eq.site_vitrine&order=criado_em.desc&limit=1',{headers:{apikey:KEY}}),fetch(BASE+'vitrine.json',{cache:'no-cache'})]);
       if(!rc.ok||!rj.ok)return;const cfg=((await rc.json())[0]||{}).detalhe;if(!cfg||!cfg.on)return;const cat=(await rj.json()).itens||[];
       const ids=Array.isArray(cfg.ids)&&cfg.ids.length?cfg.ids:cat.map(x=>x.id),T=cfg.t||{};
-      L=ids.map(id=>cat.find(x=>x.id===id)).filter(Boolean).map(x=>Object.assign({},x,{t:T[x.id]||x.t}));if(!L.length)return;
-      seg=Math.max(3,Math.min(20,+cfg.seg||6));if(cfg.mist!==false){for(let a=L.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[L[a],L[b]]=[L[b],L[a]];}}
+      const OFF=cfg.off||[];cat.filter(x=>x.acao&&!OFF.includes(x.id)&&!ids.includes(x.id)).forEach(x=>ids.push(x.id));L=ids.map(id=>cat.find(x=>x.id===id)).filter(Boolean).map(x=>Object.assign({},x,{t:T[x.id]||x.t}));if(!L.length)return;
+      seg=Math.max(3,Math.min(20,+cfg.seg||6));const AC=L.filter(x=>x.acao),FO=L.filter(x=>!x.acao);if(cfg.mist!==false){for(let a=FO.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[FO[a],FO[b]]=[FO[b],FO[a]];}}
+      L=[];let ia=0;if(AC.length)L.push(AC[ia++%AC.length]);FO.forEach((x,k)=>{L.push(x);if(AC.length&&(k+1)%5===0)L.push(AC[ia++%AC.length]);});if(!FO.length)L=AC.slice();
       if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',montar);else montar();
     }catch(_){}}
   window.FCVT={abrir:k=>abrir(k||0)};
