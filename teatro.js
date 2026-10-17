@@ -1,5 +1,6 @@
 /* ===== Modo teatro: abre a demonstração grande na tela, sem sair do site ===== */
 (function(){
+  const TB=(document.currentScript&&document.currentScript.src||location.href).replace(/[^/]*$/,'');
   const ACOMP='https://fc-consultoria.github.io/treinamento/acompanhamento/?demo=1&play=1';
   const css=`#thM{position:fixed;inset:0;z-index:9995;background:rgba(4,12,18,0);display:grid;place-items:center;padding:14px;transition:background .35s}
 #thM.on{background:rgba(4,12,18,.86)}
@@ -21,7 +22,7 @@
   function esc(e){if(e.key==='Escape')fechar();}
   function abrir(qual){fechar();hit(qual);const m=document.createElement('div');m.id='thM';
     const acomp=qual==='acomp';
-    m.innerHTML=`<div class="thb">${acomp?`<div class="thf"><iframe src="${ACOMP}" title="Demonstração do acompanhamento da implantação" allow="clipboard-write"></iframe></div>`:`<div class="thw"><iframe src="demo.html" title="Demonstração Orientativo FC 3D"></iframe></div>`}
+    m.innerHTML=`<div class="thb">${acomp?`<div class="thf"><iframe src="${ACOMP}" title="Demonstração do acompanhamento da implantação" allow="clipboard-write"></iframe></div>`:`<div class="thw"><iframe src="${TB}demo.html" title="Demonstração Orientativo FC 3D"></iframe></div>`}
       <button type="button" class="thx" aria-label="Fechar">✕</button>
       <div class="thl">${acomp?'Demonstração com cliente fictício · os dias avançam sozinhos':'Gire, abra as folhas e desmonte peça por peça'} · <a href="#" data-thx>fechar</a></div></div>`;
     document.body.appendChild(m);document.documentElement.style.overflow='hidden';requestAnimationFrame(()=>requestAnimationFrame(()=>m.classList.add('on')));
