@@ -254,7 +254,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches&&e.
 const qs=new URLSearchParams(location.search);{const l=LN.find(x=>x.id===qs.get('l'));if(l)LI=l;}desenha();
 {const p=qs.get('p');if(p){const k=nz(p),l=LN.find(x=>x.p.some(y=>nz(y.c)===k));if(l){LI=l;desenha();setTimeout(()=>{const el=document.getElementById('p-'+k);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('hl');}},300);}}}
 </script>
-<script src="../rep_chat.js?v=1792076962"></script><script src="../teatro.js?v=2"></script><script src="../vitrine.js?v=4"></script><script>if(window.FCRC)FCRC.init({pag:"perfis",marca:"FC Consultoria",cor:"#17606b",logo:"../img/logo-fc-160.jpg",rotulo:"💬 Fale com a FC"});</script>
+<script src="../rep_chat.js?v=1792076962"></script><script src="../teatro.js?v=3"></script><script src="../vitrine.js?v=4"></script><script>if(window.FCRC)FCRC.init({pag:"perfis",marca:"FC Consultoria",cor:"#17606b",logo:"../img/logo-fc-160.jpg",rotulo:"💬 Fale com a FC"});</script>
 <script>window.FC_PAG="perfis";</script><script>/* contagem anônima de visitas (sem nome, sem cookie) */
 (function(){try{{const e=new URLSearchParams(location.search).get('eu');if(e==='1')localStorage.setItem('fc_eu','1');if(e==='0')localStorage.removeItem('fc_eu');}if(localStorage.getItem('fc_eu')==='1')return;const SB='https://cpkjphodruyxfouirhpd.supabase.co',KEY='sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg';
  let s=sessionStorage.getItem('fc_s');if(!s){s=Math.random().toString(36).slice(2,12)+Date.now().toString(36);sessionStorage.setItem('fc_s',s);}
