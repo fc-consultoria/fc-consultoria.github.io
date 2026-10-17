@@ -1,0 +1,333 @@
+{
+"v": 1,
+"itens": [
+{
+"id": "nopla-main",
+"pag": "nopla",
+"marca": "Nopla Metais",
+"t": "Conexões de alumínio a 45°",
+"img": "nopla/folders/main.jpg",
+"pdf": "nopla/folders/main.pdf"
+},
+{
+"id": "nopla-dinaflex",
+"pag": "nopla",
+"marca": "Nopla Metais",
+"t": "Linha Dinaflex",
+"img": "nopla/folders/dinaflex.jpg",
+"pdf": "nopla/folders/dinaflex.pdf"
+},
+{
+"id": "nopla-fachadas",
+"pag": "nopla",
+"marca": "Nopla Metais",
+"t": "Fachadas",
+"img": "nopla/folders/fachadas.jpg",
+"pdf": "nopla/folders/fachadas.pdf"
+},
+{
+"id": "nopla-gold",
+"pag": "nopla",
+"marca": "Nopla Metais",
+"t": "Linha Gold",
+"img": "nopla/folders/gold.jpg",
+"pdf": "nopla/folders/gold.pdf"
+},
+{
+"id": "nopla-idall",
+"pag": "nopla",
+"marca": "Nopla Metais",
+"t": "Linha Idall",
+"img": "nopla/folders/idall.jpg",
+"pdf": "nopla/folders/idall.pdf"
+},
+{
+"id": "nopla-linha25",
+"pag": "nopla",
+"marca": "Nopla Metais",
+"t": "Linha 25 / Suprema",
+"img": "nopla/folders/linha25.jpg",
+"pdf": "nopla/folders/linha25.pdf"
+},
+{
+"id": "nopla-linha30",
+"pag": "nopla",
+"marca": "Nopla Metais",
+"t": "Linha 30",
+"img": "nopla/folders/linha30.jpg",
+"pdf": "nopla/folders/linha30.pdf"
+},
+{
+"id": "nopla-linha42",
+"pag": "nopla",
+"marca": "Nopla Metais",
+"t": "Linha 42",
+"img": "nopla/folders/linha42.jpg",
+"pdf": "nopla/folders/linha42.pdf"
+},
+{
+"id": "nopla-perfilatto",
+"pag": "nopla",
+"marca": "Nopla Metais",
+"t": "Linha Perfilatto",
+"img": "nopla/folders/perfilatto.jpg",
+"pdf": "nopla/folders/perfilatto.pdf"
+},
+{
+"id": "nopla-tubos",
+"pag": "nopla",
+"marca": "Nopla Metais",
+"t": "Tubos",
+"img": "nopla/folders/tubos.jpg",
+"pdf": "nopla/folders/tubos.pdf"
+},
+{
+"id": "engefitas-main",
+"pag": "engefitas",
+"marca": "Engefitas / ProGlaze",
+"t": "Fita estrutural Glazing",
+"img": "engefitas/folders/main.jpg",
+"pdf": "engefitas/folders/main.pdf"
+},
+{
+"id": "engefitas-alcool",
+"pag": "engefitas",
+"marca": "Engefitas / ProGlaze",
+"t": "Álcool isopropílico",
+"img": "engefitas/folders/alcool.jpg",
+"pdf": "engefitas/folders/alcool.pdf"
+},
+{
+"id": "engefitas-alicate",
+"pag": "engefitas",
+"marca": "Engefitas / ProGlaze",
+"t": "Alicate de aplicação",
+"img": "engefitas/folders/alicate.jpg",
+"pdf": "engefitas/folders/alicate.pdf"
+},
+{
+"id": "engefitas-crepe540",
+"pag": "engefitas",
+"marca": "Engefitas / ProGlaze",
+"t": "Fita crepe 540",
+"img": "engefitas/folders/crepe540.jpg",
+"pdf": "engefitas/folders/crepe540.pdf"
+},
+{
+"id": "engefitas-crepeverde",
+"pag": "engefitas",
+"marca": "Engefitas / ProGlaze",
+"t": "Crepe automotiva verde",
+"img": "engefitas/folders/crepeverde.jpg",
+"pdf": "engefitas/folders/crepeverde.pdf"
+},
+{
+"id": "engefitas-df12310",
+"pag": "engefitas",
+"marca": "Engefitas / ProGlaze",
+"t": "Adesivo DF/TR 12310",
+"img": "engefitas/folders/df12310.jpg",
+"pdf": "engefitas/folders/df12310.pdf"
+},
+{
+"id": "engefitas-df15311",
+"pag": "engefitas",
+"marca": "Engefitas / ProGlaze",
+"t": "Adesivo DF 15311",
+"img": "engefitas/folders/df15311.jpg",
+"pdf": "engefitas/folders/df15311.pdf"
+},
+{
+"id": "engefitas-df15316",
+"pag": "engefitas",
+"marca": "Engefitas / ProGlaze",
+"t": "Adesivo DF 15316",
+"img": "engefitas/folders/df15316.jpg",
+"pdf": "engefitas/folders/df15316.pdf"
+},
+{
+"id": "engefitas-fitacell",
+"pag": "engefitas",
+"marca": "Engefitas / ProGlaze",
+"t": "Fita Cell",
+"img": "engefitas/folders/fitacell.jpg",
+"pdf": "engefitas/folders/fitacell.pdf"
+},
+{
+"id": "engefitas-pp45",
+"pag": "engefitas",
+"marca": "Engefitas / ProGlaze",
+"t": "Fita PP45",
+"img": "engefitas/folders/pp45.jpg",
+"pdf": "engefitas/folders/pp45.pdf"
+},
+{
+"id": "engefitas-primer",
+"pag": "engefitas",
+"marca": "Engefitas / ProGlaze",
+"t": "Primer",
+"img": "engefitas/folders/primer.jpg",
+"pdf": "engefitas/folders/primer.pdf"
+},
+{
+"id": "engefitas-rolete",
+"pag": "engefitas",
+"marca": "Engefitas / ProGlaze",
+"t": "Rolete aplicador",
+"img": "engefitas/folders/rolete.jpg",
+"pdf": "engefitas/folders/rolete.pdf"
+},
+{
+"id": "engefitas-silano",
+"pag": "engefitas",
+"marca": "Engefitas / ProGlaze",
+"t": "Silano PG+",
+"img": "engefitas/folders/silano.jpg",
+"pdf": "engefitas/folders/silano.pdf"
+},
+{
+"id": "cardeal-main",
+"pag": "cardeal",
+"marca": "Matrizes Cardeal",
+"t": "Matrizes para esquadrias",
+"img": "cardeal/folders/main.jpg",
+"pdf": "cardeal/folders/main.pdf"
+},
+{
+"id": "cardeal-mc25-in-m",
+"pag": "cardeal",
+"marca": "Matrizes Cardeal",
+"t": "Matriz MC25-IN-M",
+"img": "cardeal/folders/mc25-in-m.jpg",
+"pdf": "cardeal/folders/mc25-in-m.pdf"
+},
+{
+"id": "cardeal-mc25-in-p",
+"pag": "cardeal",
+"marca": "Matrizes Cardeal",
+"t": "Matriz MC25-IN-P",
+"img": "cardeal/folders/mc25-in-p.jpg",
+"pdf": "cardeal/folders/mc25-in-p.pdf"
+},
+{
+"id": "cardeal-mcs25-125",
+"pag": "cardeal",
+"marca": "Matrizes Cardeal",
+"t": "Matriz MCS25-125",
+"img": "cardeal/folders/mcs25-125.jpg",
+"pdf": "cardeal/folders/mcs25-125.pdf"
+},
+{
+"id": "cardeal-mcs25-200-b",
+"pag": "cardeal",
+"marca": "Matrizes Cardeal",
+"t": "Matriz MCS25-200-B",
+"img": "cardeal/folders/mcs25-200-b.jpg",
+"pdf": "cardeal/folders/mcs25-200-b.pdf"
+},
+{
+"id": "cardeal-mcs25-250",
+"pag": "cardeal",
+"marca": "Matrizes Cardeal",
+"t": "Matriz MCS25-250",
+"img": "cardeal/folders/mcs25-250.jpg",
+"pdf": "cardeal/folders/mcs25-250.pdf"
+},
+{
+"id": "cardeal-mcs25-m",
+"pag": "cardeal",
+"marca": "Matrizes Cardeal",
+"t": "Matriz MCS25-M",
+"img": "cardeal/folders/mcs25-m.jpg",
+"pdf": "cardeal/folders/mcs25-m.pdf"
+},
+{
+"id": "cardeal-mcs25-m-b",
+"pag": "cardeal",
+"marca": "Matrizes Cardeal",
+"t": "Matriz MCS25-M-B",
+"img": "cardeal/folders/mcs25-m-b.jpg",
+"pdf": "cardeal/folders/mcs25-m-b.pdf"
+},
+{
+"id": "cardeal-mcs25-m-b3",
+"pag": "cardeal",
+"marca": "Matrizes Cardeal",
+"t": "Matriz MCS25-M-B3",
+"img": "cardeal/folders/mcs25-m-b3.jpg",
+"pdf": "cardeal/folders/mcs25-m-b3.pdf"
+},
+{
+"id": "cardeal-mcs25-m25",
+"pag": "cardeal",
+"marca": "Matrizes Cardeal",
+"t": "Matriz MCS25-M25",
+"img": "cardeal/folders/mcs25-m25.jpg",
+"pdf": "cardeal/folders/mcs25-m25.pdf"
+},
+{
+"id": "cardeal-mcs25-m50",
+"pag": "cardeal",
+"marca": "Matrizes Cardeal",
+"t": "Matriz MCS25-M50",
+"img": "cardeal/folders/mcs25-m50.jpg",
+"pdf": "cardeal/folders/mcs25-m50.pdf"
+},
+{
+"id": "cardeal-mcs25-m75",
+"pag": "cardeal",
+"marca": "Matrizes Cardeal",
+"t": "Matriz MCS25-M75",
+"img": "cardeal/folders/mcs25-m75.jpg",
+"pdf": "cardeal/folders/mcs25-m75.pdf"
+},
+{
+"id": "cardeal-mcs25-p25",
+"pag": "cardeal",
+"marca": "Matrizes Cardeal",
+"t": "Matriz MCS25-P25",
+"img": "cardeal/folders/mcs25-p25.jpg",
+"pdf": "cardeal/folders/mcs25-p25.pdf"
+},
+{
+"id": "cardeal-mcs25-p50",
+"pag": "cardeal",
+"marca": "Matrizes Cardeal",
+"t": "Matriz MCS25-P50",
+"img": "cardeal/folders/mcs25-p50.jpg",
+"pdf": "cardeal/folders/mcs25-p50.pdf"
+},
+{
+"id": "cardeal-mcs25-p75",
+"pag": "cardeal",
+"marca": "Matrizes Cardeal",
+"t": "Matriz MCS25-P75",
+"img": "cardeal/folders/mcs25-p75.jpg",
+"pdf": "cardeal/folders/mcs25-p75.pdf"
+},
+{
+"id": "cardeal-msc25-p",
+"pag": "cardeal",
+"marca": "Matrizes Cardeal",
+"t": "Matriz MSC25-P",
+"img": "cardeal/folders/msc25-p.jpg",
+"pdf": "cardeal/folders/msc25-p.pdf"
+},
+{
+"id": "sintex-main",
+"pag": "sintex",
+"marca": "Sintex Borrachas",
+"t": "Guarnições em EPDM",
+"img": "sintex/folders/main.jpg",
+"pdf": "sintex/folders/main.pdf"
+},
+{
+"id": "sintex-catalogo",
+"pag": "sintex",
+"marca": "Sintex Borrachas",
+"t": "Catálogo Sintex",
+"img": "sintex/folders/catalogo.jpg",
+"pdf": "sintex/folders/catalogo.pdf"
+}
+]
+}
