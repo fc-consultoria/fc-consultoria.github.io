@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="generator" content="FC Consultoria em Esquadria">
+<title>Enquete Orientativo 3D · FC Consultoria</title>
+<link rel="icon" href="/img/logo-fc-160.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--tl:#0f4f53;--tl2:#0f6b70;--or:#f2a51e;--ink:#16262b;--tm:#4a5a5e;--ln:#d8e2e6;--bg:#f6f4ee;--ok:#16a34a;--no:#c2410c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 Barlow,system-ui,sans-serif}
+.hero{background:var(--tl);color:#f4f1ea;padding:22px 16px 90px;position:relative;overflow:hidden}.hero:before{content:"";position:absolute;left:0;top:0;bottom:0;width:8px;background:var(--or)}
+.w{max-width:620px;margin:0 auto}.top{display:flex;align-items:center;gap:12px}.top img{width:52px;height:52px;border-radius:12px;object-fit:cover}.top small{display:block;color:var(--or);font:700 12px Barlow;letter-spacing:.12em;text-transform:uppercase}.top b{font:700 15px Barlow}
+h1{font:800 clamp(34px,8vw,48px)/1.02 'Barlow Condensed',sans-serif;margin:22px 0 10px}.hero p{margin:0;font-size:18px;color:#cfe3e1}.hero p.o{color:var(--or);font-weight:700;margin-top:4px}
+.jan{max-width:620px;margin:-70px auto 0;padding:0 16px;position:relative}.jan div{background:#fff;border-radius:20px;padding:14px;box-shadow:0 20px 40px rgba(15,79,83,.22);position:relative}.jan img{width:100%;display:block;max-height:300px;object-fit:contain}.jan span{position:absolute;left:14px;top:12px;background:var(--tl2);color:#fff;font:700 13px Barlow;border-radius:99px;padding:4px 12px}
+main{max-width:620px;margin:0 auto;padding:18px 16px 40px}
+.q{background:#fff;border:1px solid var(--ln);border-radius:16px;padding:18px;margin:14px 0}.q h2{font:800 24px/1.1 'Barlow Condensed',sans-serif;margin:0 0 12px;color:var(--tl)}
+.op{display:grid;grid-template-columns:1fr 1fr;gap:10px}.op button{border:2px solid var(--ln);background:#fff;border-radius:14px;padding:14px 8px;font:700 17px Barlow;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}.op button i{font-style:normal;font-size:34px;line-height:1}
+.op button[aria-pressed=true]{border-color:var(--tl2);background:#e5f2f2}.op button.g[aria-pressed=true]{border-color:var(--ok);background:#e9f8ee}.op button.n[aria-pressed=true]{border-color:var(--no);background:#fdeee6}
+label{display:block;font:600 14px Barlow;color:var(--tm);margin:10px 0 4px}input,textarea{width:100%;border:1.5px solid var(--ln);border-radius:10px;padding:11px 12px;font:16px Barlow;background:#fff;color:var(--ink)}textarea{min-height:80px;resize:vertical}
+.go{width:100%;border:0;border-radius:14px;padding:15px;font:800 20px 'Barlow Condensed',sans-serif;letter-spacing:.02em;background:var(--or);color:#2a1b00;cursor:pointer;margin-top:6px}.go:disabled{opacity:.5;cursor:default}
+.err{color:var(--no);font-weight:600;min-height:20px;margin-top:6px}
+.ok{text-align:center;background:#fff;border:1px solid var(--ln);border-radius:16px;padding:26px 18px;margin-top:14px}.ok h2{font:800 32px 'Barlow Condensed',sans-serif;color:var(--tl);margin:6px 0}.ok a.b{display:inline-block;margin-top:12px;background:var(--tl2);color:#fff;text-decoration:none;font:700 17px Barlow;border-radius:12px;padding:13px 20px}
+.dica{text-align:center;color:var(--tm);font-size:15px;margin-top:22px}.dica b{color:var(--or)}.dica a{color:var(--tl);font-weight:700}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<section class="hero"><div class="w">
+ <div class="top"><img src="/img/logo-fc.jpg" alt="FC Consultoria"><div><small>FC Consultoria em Esquadria</small><b id="emp">Enquete rápida</b></div></div>
+ <h1>Oi! Você já entrou no link do Orientativo 3D?</h1>
+ <p>Agora ele precisa virar rotina.</p><p class="o">Conhecimento nunca é demais.</p>
+</div></section>
+<div class="jan"><div><span>Gire, abra e desmonte em 3D</span><img src="/img/janela-3d.png" alt="Janela de correr em 3D no Orientativo FC"></div></div>
+<main>
+<form id="f" novalidate>
+ <div class="q"><h2>1. Você já entrou no link do Orientativo 3D?</h2>
+  <div class="op" data-q="entrou"><button type="button" data-v="sim"><i>👍</i>Sim, já entrei</button><button type="button" data-v="nao"><i>⏳</i>Ainda não</button></div></div>
+ <div class="q" id="q2" hidden><h2>2. Gostou ou não?</h2>
+  <div class="op" data-q="gostou"><button type="button" class="g" data-v="gostei"><i>👍</i>Gostei</button><button type="button" class="n" data-v="nao_gostei"><i>👎</i>Não gostei</button></div>
+  <label for="pq" id="pqL">Conta pra gente o porquê (opcional)</label><textarea id="pq" maxlength="400"></textarea></div>
+ <div class="q" id="q3" hidden><h2>2. O que falta para você entrar?</h2>
+  <textarea id="falta" maxlength="400" placeholder="Ex.: não recebi o acesso, não tive tempo, não sei como entrar…"></textarea></div>
+ <div class="q"><h2>Seu nome</h2><input id="nome" maxlength="60" autocomplete="name" placeholder="Nome e sobrenome">
+  <label for="empI">Empresa</label><input id="empI" maxlength="40"></div>
+ <button class="go" id="go" type="submit">Enviar resposta</button><div class="err" id="err" role="alert"></div>
+</form>
+<div class="ok" id="ok" hidden><div style="font-size:46px">🙌</div><h2>Obrigado!</h2><p id="okT">Sua resposta chegou para a FC.</p>
+ <a class="b" href="/treinamento/" id="okA">Entrar no Orientativo 3D</a></div>
+<p class="dica"><b>Dica:</b> entre no site da FC · <a href="https://fc-consultoria.github.io/">fc-consultoria.github.io</a></p>
+</main>
+<script>
+(function(){const SB='https://cpkjphodruyxfouirhpd.supabase.co',KEY='sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg';
+const EMP={guapore:'Guaporé Vidros',cde:'CDE Vidros & Esquadrias',cb:'Casa Bandeirante'};
+const q=new URLSearchParams(location.search),ek=(q.get('e')||'').toLowerCase(),emp=EMP[ek]||q.get('e')||'';
+const $=s=>document.querySelector(s);if(emp){$('#emp').textContent=emp;$('#empI').value=emp;}
+const R={};document.querySelectorAll('.op').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));R[g.dataset.q]=b.dataset.v;
+ if(g.dataset.q==='entrou'){$('#q2').hidden=R.entrou!=='sim';$('#q3').hidden=R.entrou!=='nao';}
+ if(g.dataset.q==='gostou')$('#pqL').textContent=R.gostou==='nao_gostei'?'O que falta para ficar útil para você? (opcional)':'O que mais ajudou? (opcional)';}));
+try{const s=JSON.parse(localStorage.getItem('fc_enq')||'{}');if(s.n)$('#nome').value=s.n;}catch(_){}
+$('#f').addEventListener('submit',async e=>{e.preventDefault();const nome=$('#nome').value.trim(),err=$('#err');err.textContent='';
+ if(!R.entrou)return err.textContent='Responda a pergunta 1.';if(R.entrou==='sim'&&!R.gostou)return err.textContent='Diga se gostou ou não.';if(nome.length<2)return err.textContent='Escreva o seu nome.';
+ const r={entrou:R.entrou,gostou:R.entrou==='sim'?R.gostou:null,porque:R.entrou==='sim'?$('#pq').value.trim():$('#falta').value.trim(),empresa:$('#empI').value.trim()};
+ const b=$('#go');b.disabled=true;b.textContent='Enviando…';
+ try{const x=await fetch(SB+'/rest/v1/rpc/enq_responder',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({p_emp:ek||r.empresa,p_nome:nome,p_r:r})});const ok=await x.json();if(!x.ok||ok!==true)throw 0;
+  try{localStorage.setItem('fc_enq',JSON.stringify({n:nome}))}catch(_){}
+  $('#f').hidden=true;$('#ok').hidden=false;$('#okT').textContent=R.entrou==='sim'?'Sua resposta chegou para a FC. Continue usando: conhecimento nunca é demais.':'Sua resposta chegou para a FC. Que tal entrar agora? Leva 2 minutos.';$('#okA').textContent=R.entrou==='sim'?'Voltar ao Orientativo 3D':'Entrar agora no Orientativo 3D';scrollTo({top:0,behavior:'smooth'});
+ }catch(_){err.textContent='Não foi possível enviar agora. Tente de novo em instantes.';b.disabled=false;b.textContent='Enviar resposta';}});
+})();
+</script>
+</body>
+</html>
