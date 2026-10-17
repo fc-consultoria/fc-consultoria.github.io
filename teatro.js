@@ -30,7 +30,7 @@
   window.FCTH={abrir,fechar};
   function ligar(){
     const d=document.getElementById('acDemo');if(d){d.textContent='▶ Ver funcionando aqui';d.removeAttribute('target');d.href='#acompanhamento';d.classList.add('thpulse');d.addEventListener('click',e=>{e.preventDefault();abrir('acomp');});}
-    const f=document.querySelector('.fone');if(f&&!f.querySelector('.thov')){const o=document.createElement('div');o.className='thov';o.title='Abrir em tela grande';o.innerHTML='<button type="button" class="thz thpulse">▶ Reproduzir em tela grande</button>';o.onclick=()=>abrir('acomp');f.appendChild(o);}
+    const f=document.querySelector('.fone');if(f&&!document.getElementById('thBig')){const o=document.createElement('div');o.id='thBig';o.style.cssText='position:absolute;left:0;right:0;bottom:-96px;display:flex;justify-content:center';o.innerHTML='<button type="button" class="thz thpulse">▶ Ver em tela grande</button>';o.querySelector('button').onclick=()=>abrir('acomp');f.appendChild(o);f.style.marginBottom='100px';}
     const p=document.getElementById('dplay');if(p){p.onclick=e=>{e.preventDefault();abrir('3d');};p.classList.add('thpulse');}
     document.querySelectorAll('a[href="#demo"]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();abrir('3d');}));
     if(location.hash==='#ver-acomp')abrir('acomp');if(location.hash==='#ver-3d')abrir('3d');}
