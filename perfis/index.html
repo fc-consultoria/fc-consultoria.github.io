@@ -271,5 +271,12 @@ const qs=new URLSearchParams(location.search);{const l=LN.find(x=>x.id===qs.get(
 }catch(_){}})();
 </script>
 <script>window.BANC_URL="banc.json?v=1792076962";</script><script src="bancada.js?v=1792076962"></script>
+<script>/* modo incorporado: o Treinamento em Esquadrias da FC abre o 3D do perfil direto (?ver=CODIGO&embed=1) */
+(function(){const q=new URLSearchParams(location.search),V=q.get('ver');if(!V||q.get('embed')!=='1'||!/\/treinamento\//.test(document.referrer||'')||window.top===window)return;
+ const st=document.createElement('style');st.textContent='body>*:not(#v3){display:none!important}body{background:#fff!important;overflow:hidden}#v3{position:fixed!important;inset:0!important;padding:0!important;background:#fff!important}#v3>*{max-width:none!important;width:100%!important;height:100%!important;border-radius:0!important;margin:0!important;box-shadow:none!important}';document.head.appendChild(st);
+ const ab=()=>{const p=LN.flatMap(l=>l.p).find(x=>x.c===V||String(x.c).split(' / ').includes(V));if(!p||!p.d3){parent.postMessage({fc3d:'sem3d',c:V},location.origin);return;}v3(p.i,p.c,p.n,p.m);
+  const ob=new MutationObserver(()=>{if(!document.getElementById('v3')){parent.postMessage({fc3d:'fechou'},location.origin);ob.disconnect();}});ob.observe(document.body,{childList:true});};
+ if(document.readyState==='complete')setTimeout(ab,200);else addEventListener('load',()=>setTimeout(ab,200));})();
+</script>
 </body>
 </html>
