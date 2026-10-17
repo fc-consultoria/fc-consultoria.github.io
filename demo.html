@@ -341,7 +341,7 @@ details.card:not([open]){gap:0}
 .dia-tb{width:100%;border-collapse:collapse;font-size:12.5px}.dia-tb td,.dia-tb th{padding:4px 5px;border-bottom:1px solid var(--line);text-align:left}.dia-tb th{font:500 10px var(--f-mono);color:var(--muted);text-transform:uppercase}
 .dia-q ol{margin:0;padding-left:18px;font-size:12.5px;color:var(--muted)}
 [hidden]{display:none!important}
-</style>
+#d2Ct>*,#d2Ca>*,#d2Op2>*{margin:auto}</style>
 
 <div class="wrap">
   <header>
@@ -2792,7 +2792,7 @@ function resize(){
 addEventListener('scroll',()=>{if(cv.classList.contains('cvfix'))resize();},{passive:true});
 new ResizeObserver(resize).observe(stage);
 const tsel=document.getElementById('typo');const opt=k=>`<option value="${k}">${TYPOS[k].n} · ${TYPOS[k].code}</option>`;
-/* Linhas: para incluir uma linha nova (ex.: Chroma, Ecoline), acrescente aqui com as tipologias dela */
+/* Linhas: para incluir uma linha nova , acrescente aqui com as tipologias dela */
 const LINHAS=[{k:'sup',n:'Suprema',c:'#2f7fb8',t:['jcr200','jcr200a','jcr300','jcr205','pcr200','pvz300','pgr100','max800']},
   {k:'gold',n:'Gold',c:'#c8932f',t:['gjc2f','gjc4f','gjc4fs','gpc2f','gpc2fm','gpc3fvz','gpc2fpe','gmax']}];
 let LINCUR=null;const linOf=t=>LINHAS.find(l=>l.t.includes(t))||LINHAS[0];
@@ -2801,10 +2801,10 @@ function linSync(t){const L=linOf(t);if(LINCUR!==L.k){LINCUR=L.k;tsel.innerHTML=
 document.getElementById('linSel').innerHTML=LINHAS.map(l=>`<button type="button" data-l="${l.k}" style="--lc:${l.c}" aria-pressed="false"><i></i>Linha ${l.n}</button>`).join('');
 document.querySelectorAll('#linSel button').forEach(b=>b.onclick=()=>{const L=LINHAS.find(l=>l.k===b.dataset.l);if(L.k===LINCUR)return;linSync(L.t[0]);setTypo(L.t[0]);});
 /* novas linhas em breve (sem valor exposto) */
-{const LS=document.getElementById('linSel');[['chroma','Chroma','#7a5bd0'],['ecoline','Ecoline','#2f9a6a']].forEach(([k,n,c])=>{const b=document.createElement('button');b.type='button';b.className='soon';b.style.setProperty('--lc',c);b.title='Linha '+n+' · em breve';
-  b.innerHTML=`<i></i>Linha ${n}<small>em breve</small>`;b.onclick=()=>{trk('linha_em_breve',{l:k});let o=document.getElementById('soonOv');if(o)o.remove();o=document.createElement('div');o.id='soonOv';
+{const LS=document.getElementById('linSel');[['novas','Novas linhas','#7a5bd0']].forEach(([k,n,c])=>{const b=document.createElement('button');b.type='button';b.className='soon';b.style.setProperty('--lc',c);b.title='Novidade: '+n+' · em breve';
+  b.innerHTML=`<i></i>✨ ${n}<small>em breve</small>`;b.onclick=()=>{trk('linha_em_breve',{l:k});let o=document.getElementById('soonOv');if(o)o.remove();o=document.createElement('div');o.id='soonOv';
    o.style.cssText='position:fixed;inset:0;z-index:9000;background:rgba(10,16,22,.6);display:grid;place-items:center;padding:16px';
-   o.innerHTML=`<div style="background:#fff;border-radius:14px;max-width:420px;padding:22px;font:400 15px/1.5 var(--f-body,system-ui);box-shadow:0 20px 50px rgba(0,0,0,.4);border-top:6px solid ${c}"><div style="font:600 12px var(--f-mono);letter-spacing:.1em;color:${c}">NOVO MÓDULO · EM BREVE</div><h3 style="margin:6px 0 8px;font:700 21px var(--f-display)">Linha ${n}</h3><p style="margin:0 0 14px;color:#4b5a63">As tipologias da Linha ${n} estão sendo preparadas e vão chegar ao Orientativo FC 3D em breve, como um módulo novo.</p><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button type="button" id="soonX" style="border:1px solid #c9d3da;background:#fff;border-radius:8px;padding:9px 14px;font:600 14px var(--f-display);cursor:pointer">Fechar</button><button type="button" id="soonY" style="border:0;background:${c};color:#fff;border-radius:8px;padding:9px 14px;font:600 14px var(--f-display);cursor:pointer">🔔 Quero ser avisado</button></div></div>`;
+   o.innerHTML=`<div style="background:#fff;border-radius:14px;max-width:420px;padding:22px;font:400 15px/1.5 var(--f-body,system-ui);box-shadow:0 20px 50px rgba(0,0,0,.4);border-top:6px solid ${c}"><div style="font:600 12px var(--f-mono);letter-spacing:.1em;color:${c}">NOVO MÓDULO · EM BREVE</div><h3 style="margin:6px 0 8px;font:700 21px var(--f-display)">Novidade: novas linhas</h3><p style="margin:0 0 14px;color:#4b5a63">As tipologias de novas linhas de perfis estão sendo preparadas e vão chegar ao Orientativo FC 3D em breve, como um módulo novo.</p><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button type="button" id="soonX" style="border:1px solid #c9d3da;background:#fff;border-radius:8px;padding:9px 14px;font:600 14px var(--f-display);cursor:pointer">Fechar</button><button type="button" id="soonY" style="border:0;background:${c};color:#fff;border-radius:8px;padding:9px 14px;font:600 14px var(--f-display);cursor:pointer">🔔 Quero ser avisado</button></div></div>`;
    document.body.appendChild(o);document.getElementById('soonX').onclick=()=>o.remove();o.addEventListener('click',e=>{if(e.target===o)o.remove();});
    document.getElementById('soonY').onclick=e=>{trk('linha_interesse',{l:k,n});e.target.textContent='✔ Você será avisado';e.target.disabled=true;};};LS.appendChild(b);});}
 linSync(S.typo);
@@ -2845,6 +2845,7 @@ function demo2Init(){
   const SB='https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/rpc/',KEY='sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg';
   const code=(new URLSearchParams(location.search).get('c')||'').trim();
   const WA=t=>'https://wa.me/5566999867984?text='+encodeURIComponent(t);
+  const DEV=(()=>{try{let v=localStorage.getItem('fc_demo_dev');if(!v){v=Math.random().toString(36).slice(2,12)+Date.now().toString(36);localStorage.setItem('fc_demo_dev',v);}return v;}catch(_){return 'x'+Math.random().toString(36).slice(2,12);}})();
   const rpc=(f,b)=>fetch(SB+f,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
   const st=document.createElement('style');st.textContent=`
   .dhide{display:none!important}.modes button.dlk{color:#7b8790;position:relative}.modes button.dlk::before{content:'🔒 '}
@@ -2874,11 +2875,12 @@ function demo2Init(){
   LINHAS[0].t=['jcr200','pcr200'];LINHAS[1].t=['gjc2f','gpc2f'];LINCUR=null;
   let NOME='',FIM=0,q=[],last={},PROMO=null;
   const fmt=s=>{s=Math.max(0,s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?`${h} h ${String(m).padStart(2,'0')} min`:`${m} min`;};
-  const send=(t,d)=>PREV?Promise.resolve():rpc('demo_log',{p_code:code,p_tipo:t,p_detalhe:d||null}).then(r=>{if(r&&r.ok===false&&r.restante===undefined){FIM=Date.now();tick();}if(r&&r.convite)setTimeout(()=>convite(r.convite),800);}).catch(()=>{});
+  const send=(t,d)=>PREV?Promise.resolve():rpc('demo_log',{p_code:code,p_tipo:t,p_detalhe:d||null,p_dev:DEV}).then(r=>r&&r.ok!==undefined?r:rpc('demo_log',{p_code:code,p_tipo:t,p_detalhe:d||null})).then(r=>{if(r&&r.ok===false&&r.restante===undefined){FIM=Date.now();tick();}if(r&&r.convite)setTimeout(()=>convite(r.convite),800);}).catch(()=>{});
   window.TRK=(t,d)=>{if(PREV)return;const k=t+JSON.stringify(d||{});if(last[k]&&Date.now()-last[k]<4000)return;last[k]=Date.now();send(t,d);};
   function tick(){const r=Math.round((FIM-Date.now())/1000),e=document.getElementById('d2tm');if(e)e.textContent='⏱ restam '+fmt(r);
     if(r<=0){fim('O seu demonstrativo terminou','Obrigado por testar o Orientativo FC 3D. Para liberar mais tempo ou contratar para a sua equipe, fale com a FC.');}}
-  if(!PREV)rpc('demo_start',{p_code:code}).then(r=>{
+  if(!PREV)rpc('demo_start',{p_code:code,p_dev:DEV}).then(r=>r&&r.estado?r:rpc('demo_start',{p_code:code})).then(r=>{
+    if(r&&r.estado==='lotado'){fim('Link aberto em 6 aparelhos','Este demonstrativo já está aberto em 6 aparelhos ao mesmo tempo, que é o limite. Feche em um deles e abra de novo em alguns minutos.');return;}
     if(!r||r.estado==='invalido'){fim('Link não encontrado','Confira se o link foi copiado inteiro ou peça um novo para a FC Consultoria.');return;}
     if(r.estado==='expirado'){fim('O seu demonstrativo terminou','As 24 horas de teste acabaram. Se quiser mais tempo ou contratar para a sua equipe, fale com a FC.');return;}
     if(r.estado==='encerrado'){fim('Demonstrativo encerrado','Este link foi encerrado pela FC Consultoria.');return;}
@@ -2889,11 +2891,51 @@ function demo2Init(){
     setTypo('jcr200');
   }).catch(()=>fim('Sem conexão','Verifique a internet e abra o link de novo.'));
   function montarBarra(){
-    const bar=document.createElement('div');bar.className='d2bar';bar.innerHTML=`<span><b>Demonstrativo${NOME?' · '+NOME.replace(/</g,'&lt;'):''}</b> · 2 tipologias da Suprema e 2 da Gold. Gire, abra as folhas, desmonte e veja os cortes.</span><span class="tm" id="d2tm"></span><button type="button" id="d2Cat" style="margin-left:auto;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.5);color:#fff;font:600 14px var(--f-display);padding:8px 12px;border-radius:8px;cursor:pointer">📄 Catálogos 🔒</button><button type="button" id="d2Op" style="background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.5);color:#fff;font:600 14px var(--f-display);padding:8px 12px;border-radius:8px;cursor:pointer">⭐ Dar opinião</button><a href="#" id="d2Q" style="margin-left:0">${PROMO?'🔥 Oferta: contratar agora':'💳 Contratar agora'}</a>`;
+    const bar=document.createElement('div');bar.className='d2bar';bar.innerHTML=`<span><b>Demonstrativo${NOME?' · '+NOME.replace(/</g,'&lt;'):''}</b> · 2 tipologias da Suprema e 2 da Gold. Gire, abra as folhas, desmonte e veja os cortes. Teste também Monte a esquadria, Orientação em Sistema e Diagrama (3 vezes cada).</span><span class="tm" id="d2tm"></span><button type="button" id="d2Cat" style="margin-left:auto;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.5);color:#fff;font:600 14px var(--f-display);padding:8px 12px;border-radius:8px;cursor:pointer">📄 Catálogos grátis</button><button type="button" id="d2Op" style="background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.5);color:#fff;font:600 14px var(--f-display);padding:8px 12px;border-radius:8px;cursor:pointer">⭐ Dar opinião</button><a href="#" id="d2Q" style="margin-left:0">${PROMO?'🔥 Oferta: contratar agora':'💳 Contratar agora'}</a>`;
     const wr=document.querySelector('.wrap');wr.insertBefore(bar,wr.firstChild);document.getElementById('d2Q').onclick=e=>{e.preventDefault();contratar('Faixa do demonstrativo');};document.getElementById('d2Op').onclick=()=>opiniao(false);document.getElementById('d2Cat').onclick=catalogos;tick();setInterval(tick,30000);
     if(!PREV)setInterval(()=>{if(document.visibilityState==='visible')send('tempo',{s:60,t:S.typo});},60000);
     chatInit();
+    try{espelho();}catch(e){console.warn(e);}
   }
+  /* ===== Espelho: o instrutor da FC acompanha o demonstrativo (só visualização) ===== */
+  function espelho(){const ESP=(new URLSearchParams(location.search).get('espelho')||'').trim();
+    if(PREV&&!ESP)return;const room=PREV?ESP:code;if(!room)return;
+    const go=()=>{if(!window.supabase){const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';s.onload=go;document.head.appendChild(s);return;}
+      const cli=window.supabase.createClient('https://cpkjphodruyxfouirhpd.supabase.co',KEY,{auth:{persistSession:false,autoRefreshToken:false,storageKey:'fc-esp'}});
+      const ch=cli.channel('espelho-'+room,{config:{broadcast:{self:false},presence:{key:PREV?'fc':'cli-'+DEV}}});
+      const r3=v=>Math.round(v*1000)/1000;
+      const snap=()=>({t:S.typo,m:S.mode,wv:!!S.wvOn,cem:!!S.cemOn,dia:!!S.diaOn,o:Object.assign({},S.open),d:typeof DESM!=='undefined'?!!DESM:false,
+        c:[r3(camera.position.x),r3(camera.position.y),r3(camera.position.z)],g:[r3(controls.target.x),r3(controls.target.y),r3(controls.target.z)],cor:S.cor,w:S.w,h:S.h,y:Math.round(scrollY)});
+      if(!PREV){/* cliente: transmite só enquanto o instrutor estiver olhando */
+        let fc=false,last='',tm=null;const bd=document.createElement('button');bd.type='button';bd.id='d2Esp';
+        bd.style.cssText='position:fixed;left:12px;bottom:12px;z-index:9500;display:none;align-items:center;gap:8px;background:#0f1a22;color:#fff;border:2px solid #1fb3c9;border-radius:999px;padding:9px 14px;font:600 13.5px system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.3);cursor:pointer;max-width:calc(100vw - 24px)';
+        bd.innerHTML='<span style="width:9px;height:9px;border-radius:50%;background:#2ecc71;box-shadow:0 0 0 3px rgba(46,204,113,.3)"></span><span>👁 Instrutor FC acompanhando · <u>Precisa de ajuda? Toque aqui</u></span>';
+        bd.onclick=()=>{try{chatAbrir('Pedido de ajuda (instrutor acompanhando)');}catch(_){}};document.body.appendChild(bd);
+        const tick=()=>{if(!fc||document.visibilityState!=='visible')return;const s=JSON.stringify(snap());if(s===last)return;last=s;ch.send({type:'broadcast',event:'st',payload:JSON.parse(s)});};
+        ch.on('presence',{event:'sync'},()=>{const P=ch.presenceState();fc=!!P.fc;bd.style.display=fc?'inline-flex':'none';if(fc){last='';if(!tm)tm=setInterval(tick,600);tick();}else if(tm){clearInterval(tm);tm=null;}})
+          .on('broadcast',{event:'pede'},()=>{last='';tick();})
+          .subscribe(st=>{if(st==='SUBSCRIBED')ch.track({c:1});});
+      }else{/* instrutor: recebe e repete a tela, sem comandos */
+        const tb=()=>{const p=document.getElementById('d2Prev');if(p)p.remove();};tb();setTimeout(tb,800);
+        const bl=document.createElement('div');bl.style.cssText='position:fixed;inset:0;z-index:9400;cursor:not-allowed';document.body.appendChild(bl);
+        const ban=document.createElement('div');ban.style.cssText='position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:9600;background:#0f1a22;color:#fff;border-radius:999px;padding:8px 16px;font:600 13.5px system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.35);display:flex;gap:8px;align-items:center';
+        ban.innerHTML='<span id="espDot" style="width:9px;height:9px;border-radius:50%;background:#e8912d"></span><span id="espTx">👁 Espelho · aguardando o cliente…</span>';document.body.appendChild(ban);
+        const tx=t=>{document.getElementById('espTx').textContent=t;};let lastT=0;
+        const modo=s=>s.dia?'dia':s.cem?'cem':s.wv?'wv':s.m;
+        const apply=s=>{lastT=Date.now();document.getElementById('espDot').style.background='#2ecc71';tx('👁 Espelho ao vivo · somente visualização');
+          try{if(s.t&&s.t!==S.typo&&TYPOS[s.t])setTypo(s.t);
+            if(modo(s)!==modo({m:S.mode,wv:S.wvOn,cem:S.cemOn,dia:S.diaOn}))setMode(modo(s));
+            if(typeof DESM!=='undefined'&&!!s.d!==!!DESM){const b=document.getElementById('v-desm');if(b)b.click();}
+            if(s.o){S.open=Object.assign({},s.o);if(typeof stopAll==='function')stopAll();placeSashes();Object.keys(S.open).forEach(k=>{try{syncSlider(k);}catch(_){}});}
+            camTarget=null;camera.position.set(...s.c);controls.target.set(...s.g);controls.update();
+            if(typeof s.y==='number')window.scrollTo({top:s.y,behavior:'smooth'});}catch(e){console.warn('espelho',e);}};
+        setInterval(()=>{if(lastT&&Date.now()-lastT>20000){document.getElementById('espDot').style.background='#e8912d';tx('👁 Espelho · cliente parado ou saiu');}},5000);
+        ch.on('broadcast',{event:'st'},({payload})=>apply(payload))
+          .subscribe(st=>{if(st==='SUBSCRIBED'){ch.track({fc:1});setTimeout(()=>ch.send({type:'broadcast',event:'pede',payload:{}}),800);}});
+        window.ESPELHO_APPLY=apply;
+      }
+      window.ESPELHO_SNAP=snap;};
+    go();}
   function previa(){NOME='Cliente exemplo';FIM=Date.now()+24*3600e3;gate.remove();
     let tk=null;try{tk=JSON.parse(localStorage.getItem('trein-fc-auth')).access_token;}catch(_){}
     fetch('https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/trein_eventos?select=detalhe&tipo=eq.promo&order=criado_em.desc&limit=1',{headers:{apikey:KEY,Authorization:'Bearer '+tk}}).then(r=>r.json()).then(j=>{const p=Array.isArray(j)&&j[0]&&j[0].detalhe;if(p&&p.on)PROMO={de:p.de,por:p.por,texto:p.texto,restam:p.vagas};}).catch(()=>{}).finally(()=>{
@@ -2909,23 +2951,26 @@ function demo2Init(){
         else if(k==='tu')document.getElementById('m-test').click();
         else if(k==='cat')catalogos();
         else if(k==='chat')chatAbrir();
+        else if(k==='boas'||k==='fcmsg'){const tx=k==='boas'?'Olá! Parabéns por buscar conhecimento: são pessoas assim que fazem o nosso segmento crescer. 👏\nComece girando a janela e tocando em “Desmontar”. Se ficar alguma dúvida, me chame aqui mesmo, que eu respondo.\n— Fernando, FC Consultoria':String(window.__pvTx||'').slice(0,1000);if(tx){CH.itens.push({id:900000+CH.itens.length,q:'fc',tx,em:new Date().toISOString()});}chatAbrir();chatDraw();}
+        else if(k==='esp'){let bd=document.getElementById('d2EspSim');if(bd){bd.remove();}else{bd=document.createElement('button');bd.type='button';bd.id='d2EspSim';bd.style.cssText='position:fixed;left:12px;bottom:12px;z-index:9500;display:inline-flex;align-items:center;gap:8px;background:#0f1a22;color:#fff;border:2px solid #1fb3c9;border-radius:999px;padding:9px 14px;font:600 13.5px system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.3);cursor:pointer';bd.innerHTML='<span style="width:9px;height:9px;border-radius:50%;background:#2ecc71"></span><span>👁 Instrutor FC acompanhando · <u>Precisa de ajuda? Toque aqui</u></span>';bd.onclick=()=>chatAbrir();document.body.appendChild(bd);}}
+        else if(k==='lotado'){const g=document.createElement('div');g.id='d2Gate';g.innerHTML='<div class="c"><div style="font:600 13px var(--f-mono);letter-spacing:.12em;color:#1fb3c9">ORIENTATIVO FC 3D · DEMONSTRATIVO</div><h2>Link aberto em 6 aparelhos</h2><p>Este demonstrativo já está aberto em 6 aparelhos ao mesmo tempo, que é o limite. Feche em um deles e abra de novo em alguns minutos.</p><div><button type="button" style="margin-top:18px;border:1px solid #3a5866;background:#16262f;color:#fff;border-radius:8px;padding:8px 12px;cursor:pointer" onclick="this.closest(\'#d2Gate\').remove()">← Fechar visualização</button></div></div>';document.body.appendChild(g);}
         else if(k==='fim'){const g=document.createElement('div');g.id='d2Gate';g.innerHTML=`<div class="c"><div style="font:600 13px var(--f-mono);letter-spacing:.12em;color:#1fb3c9">ORIENTATIVO FC 3D · DEMONSTRATIVO</div><h2>O seu demonstrativo terminou</h2><p>As 24 horas de teste acabaram. Se quiser mais tempo ou contratar para a sua equipe, fale com a FC.</p><a href="#" onclick="return false">💬 Falar com a FC no WhatsApp</a><div><button type="button" style="margin-top:18px;border:1px solid #3a5866;background:#16262f;color:#fff;border-radius:8px;padding:8px 12px;cursor:pointer" onclick="this.closest('#d2Gate').remove()">← Fechar visualização</button></div></div>`;document.body.appendChild(g);}
         else tb.remove();};
       tb.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>act(b.dataset.p));
       if(window.top!==window){tb.remove();addEventListener('message',e=>{if(e.origin!==location.origin||!e.data||!e.data.fcPrev)return;
-        document.querySelectorAll('#d2Gate,#d2Op2,#d2Q2,#d2Ct,#d2Vid,#d2Cv,#d2Ca,#d2ChP').forEach(x=>x.remove());{const cb=document.getElementById('d2ChB');if(cb)cb.style.display='';CH.open=false;}if(e.data.fcPrev!=='limpar')act(e.data.fcPrev);});
+        document.querySelectorAll('#d2Gate,#d2Op2,#d2Q2,#d2Ct,#d2Vid,#d2Cv,#d2Ca,#d2ChP').forEach(x=>x.remove());{const cb=document.getElementById('d2ChB');if(cb)cb.style.display='';CH.open=false;}window.__pvTx=e.data.tx||'';if(e.data.fcPrev==='esp'||e.data.fcPrev==='fcmsg'||e.data.fcPrev==='boas'){}if(e.data.fcPrev!=='limpar')act(e.data.fcPrev);});
         try{parent.postMessage({fcPrevPronto:1,promo:!!PROMO},location.origin);}catch(_){}}});}
-  function catalogos(){send('catalogo',{});let o=document.getElementById('d2Ca');if(o)o.remove();o=document.createElement('div');o.id='d2Ca';o.style.cssText='position:fixed;inset:0;z-index:9100;background:rgba(10,16,22,.7);display:grid;place-items:center;padding:16px;overflow:auto';
-    const card=(n,c,d,mb)=>`<div style="display:flex;gap:12px;align-items:center;border:1px solid #d6dee4;border-radius:11px;padding:11px 12px;margin-bottom:8px;background:#f7f9fa"><div style="width:42px;height:54px;border-radius:6px;background:${c};display:grid;place-items:center;color:#fff;font:700 11px system-ui;flex:none">PDF</div><div style="flex:1"><b>${n}</b><div style="font-size:13px;color:#5d6b76">${d} · ${mb}</div></div><span style="font-size:13px;font-weight:700;color:#8a5a00;background:#fff3d6;border:1px solid #f0c48a;border-radius:7px;padding:5px 9px;white-space:nowrap">🔒 Bloqueado</span></div>`;
-    o.innerHTML=`<div style="background:#fff;color:#1b232a;border-radius:14px;max-width:480px;width:100%;padding:22px;font:400 15px/1.5 system-ui,sans-serif;box-shadow:0 20px 50px rgba(0,0,0,.4)">
-     <div style="font:600 12px var(--f-mono);letter-spacing:.1em;color:#1f6f9a">FONTE TÉCNICA DO ORIENTATIVO</div>
-     <h3 style="margin:4px 0 6px;font:700 21px var(--f-display)">📄 Catálogos técnicos Suprema e Gold</h3>
-     <p style="margin:0 0 12px;color:#4b5a63">Os catálogos técnicos completos, com perfis, componentes e cortes, ficam liberados para baixar <b>só para empresas que contratam</b> o Orientativo FC 3D.</p>
-     ${card('Linha Suprema','#2f7fb8','Catálogo técnico completo','9,7 MB')}${card('Linha Gold','#c8932f','Catálogo técnico completo','5,5 MB')}
-     <button type="button" id="d2CaGo" style="width:100%;margin-top:8px;border:0;border-radius:10px;padding:12px;background:#e8912d;color:#fff;font:700 16px system-ui;cursor:pointer">${PROMO?'🔥 Oferta: contratar e liberar os catálogos':'💳 Contratar e liberar os catálogos'}</button>
+  function catalogos(){send('catalogo',{});let o=document.getElementById('d2Ca');if(o)o.remove();o=document.createElement('div');o.id='d2Ca';o.style.cssText='position:fixed;inset:0;z-index:9100;background:rgba(10,16,22,.7);display:grid;padding:16px;overflow:auto';
+    const SITE=location.hostname.endsWith('github.io')?location.origin+'/':'https://fc-consultoria.github.io/';
+    const card=(n,c,d,mb,url,dl)=>`<div style="display:flex;gap:12px;align-items:center;border:1px solid #d6dee4;border-radius:11px;padding:11px 12px;margin-bottom:8px;background:#f7f9fa"><div style="width:42px;height:54px;border-radius:6px;background:${c};display:grid;place-items:center;color:#fff;font:700 11px system-ui;flex:none">${dl?'PDF':'3D'}</div><div style="flex:1"><b>${n}</b><div style="font-size:13px;color:#5d6b76">${d}${mb?' · '+mb:''}</div></div><a href="${url}" target="_blank" rel="noopener" ${dl?'download':''} data-cat="${n}" style="font-size:13.5px;font-weight:700;color:#fff;background:#16a34a;border-radius:7px;padding:7px 11px;white-space:nowrap;text-decoration:none">${dl?'⬇ Baixar':'↗ Abrir'}</a></div>`;
+    o.innerHTML=`<div style="background:#fff;color:#1b232a;border-radius:14px;max-width:480px;width:100%;padding:22px;font:400 15px/1.5 system-ui,sans-serif;box-shadow:0 20px 50px rgba(0,0,0,.4);margin:auto">
+     <div style="font:600 12px var(--f-mono);letter-spacing:.1em;color:#15803d">✅ LIBERADO · SEM CUSTO</div>
+     <h3 style="margin:4px 0 6px;font:700 21px var(--f-display)">📄 Catálogos Suprema e Gold</h3>
+     <p style="margin:0 0 12px;color:#4b5a63">Baixe e use sempre que precisar. No site da FC você também tem o <b>Catálogo 3D de perfis</b>, com medidas na foto 3D, para consultar a qualquer hora.</p>
+     ${card('Catálogo 3D de perfis','#1f6f9a','Suprema e Gold · gire e veja as medidas','',SITE+'perfis/',false)}
+     ${card('Linha Suprema','#2f7fb8','Catálogo de perfis em PDF','4,8 MB',SITE+'perfis/pdf/catalogo-perfis-suprema-fc.pdf',true)}${card('Linha Gold','#c8932f','Catálogo de perfis em PDF','4,8 MB',SITE+'perfis/pdf/catalogo-perfis-gold-fc.pdf',true)}
      <div style="text-align:right;margin-top:10px"><button type="button" id="d2CaX" style="border:1px solid #c9d3da;background:#fff;border-radius:8px;padding:8px 14px;font:600 14px system-ui;cursor:pointer">← Voltar ao demonstrativo</button></div></div>`;
-    document.body.appendChild(o);o.addEventListener('click',e=>{if(e.target===o)o.remove();});document.getElementById('d2CaX').onclick=()=>o.remove();
-    document.getElementById('d2CaGo').onclick=()=>{o.remove();contratar('Catálogos');};}
+    document.body.appendChild(o);o.addEventListener('click',e=>{if(e.target===o)o.remove();const a=e.target.closest&&e.target.closest('[data-cat]');if(a)send('catalogo_baixou',{c:a.dataset.cat});});document.getElementById('d2CaX').onclick=()=>o.remove();}
   /* ===== Conversa com a FC dentro do link ===== */
   const CH={last:0,open:false,init:false,intro:false,seen:0,itens:[]};try{CH.seen=+localStorage.getItem('fcd2-ch-'+code)||0;}catch(_){}
   function chatInit(){if(CH.init)return;CH.init=true;
@@ -2947,7 +2992,7 @@ function demo2Init(){
   const escH=v=>String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
   function chatDraw(){const l=document.querySelector('#d2ChP .l');if(!l)return;
     const intro=`<div class="m fc">Olá${NOME?', '+escH(NOME):''}! 👋 Ficou alguma dúvida ou quer negociar para a sua empresa? Escreva aqui que o <b>Fernando</b> responde por aqui mesmo.<small>FC Consultoria</small></div>`;
-    l.innerHTML=intro+CH.itens.map(x=>`<div class="m ${x.q==='fc'?'fc':'eu'}">${escH(x.tx)}<small>${x.q==='fc'?'Fernando · FC':'Você'} · ${hora(x.em)}</small></div>`).join('');l.scrollTop=l.scrollHeight;}
+    l.innerHTML=(CH.itens.some(x=>x.q==='fc')?'':intro)+CH.itens.map(x=>`<div class="m ${x.q==='fc'?'fc':'eu'}">${escH(x.tx)}<small>${x.q==='fc'?'Fernando · FC':'Você'} · ${hora(x.em)}</small></div>`).join('');l.scrollTop=l.scrollHeight;}
   function marcarVisto(){const mx=CH.itens.reduce((m,x)=>x.q==='fc'&&x.id>m?x.id:m,0);if(mx>CH.seen){CH.seen=mx;try{localStorage.setItem('fcd2-ch-'+code,String(mx));}catch(_){}}badge();}
   function badge(){const n=CH.itens.filter(x=>x.q==='fc'&&x.id>CH.seen).length,b=document.getElementById('d2ChB');if(!b)return;b.classList.toggle('nv',!!n);const i=document.getElementById('d2ChN');if(i)i.textContent=n||'';}
   function chatAbrir(ctx){if(document.getElementById('d2ChP')){chatDraw();return;}CH.open=true;const b=document.getElementById('d2ChB');if(b)b.style.display='none';
@@ -2977,36 +3022,40 @@ function demo2Init(){
     document.body.appendChild(o);document.getElementById('d2Qx').onclick=()=>o.remove();document.getElementById('d2QCh').onclick=()=>{o.remove();chatAbrir('Ex.: quero para a minha empresa, quantas pessoas, valores…');};o.addEventListener('click',e=>{if(e.target===o)o.remove();});
     document.getElementById('d2F').onsubmit=e=>{e.preventDefault();const f=document.getElementById('d2Fone').value.trim();if(f.replace(/\D/g,'').length<10){document.getElementById('d2Fone').focus();return;}send('contato',{fone:f,m});document.getElementById('d2Fok').hidden=false;};
     setTimeout(()=>{const i=document.getElementById('d2Fone');if(i)i.focus();},50);}
-  const PRECO=()=>PROMO?Number(PROMO.por)||150:150,brl2=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const PLANOS={1:{n:'1 acesso',p:50,u:1,d:'1 pessoa · 1 aparelho'},2:{n:'2 a 3 pessoas',p:70,u:3,d:'até 3 colaboradores'},3:{n:'4 a 6 pessoas',p:100,u:6,d:'até 6 colaboradores'}};let PLANO=2,CAT3=false;
+  const CATV=()=>0,PRECO=()=>PLANOS[PLANO].p,RENOVA=()=>PLANOS[PLANO].p+(CAT3?CATV():0),brl2=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
   /* convite enviado pela FC pelo painel */
   const CVV=new Set();function convite(c){if(!c||CVV.has(c.id)||document.getElementById('d2Cv')||document.getElementById('d2Ct'))return;CVV.add(c.id);send('convite_visto',{id:c.id});
     const o=document.createElement('div');o.id='d2Cv';o.style.cssText='position:fixed;inset:0;z-index:9200;background:rgba(10,16,22,.75);display:grid;place-items:center;padding:16px';
     o.innerHTML=`<div style="background:#fff;color:#1b232a;border-radius:16px;max-width:500px;width:100%;overflow:hidden;font:400 15.5px/1.55 system-ui,sans-serif;box-shadow:0 24px 60px rgba(0,0,0,.5)">
      <div style="background:#0f1a22;color:#fff;padding:16px 20px;display:flex;gap:12px;align-items:center"><div style="width:42px;height:42px;border-radius:50%;background:#1fb3c9;color:#06222a;display:grid;place-items:center;font:800 18px var(--f-display)">FC</div><div><div style="font:600 11.5px var(--f-mono);letter-spacing:.12em;color:#1fb3c9">MENSAGEM DA FC CONSULTORIA</div><div style="font:700 18px var(--f-display)">Fernando te enviou uma proposta</div></div></div>
      <div style="padding:18px 20px"><p style="margin:0 0 14px;white-space:pre-wrap">${String(c.msg||'').replace(/</g,'&lt;')}</p>
-      <div style="border:1px solid #d5dde2;border-radius:12px;padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">${PROMO?`<span style="background:#e0972e;color:#1b1206;font:800 11.5px var(--f-display);padding:3px 9px;border-radius:20px">🔥 OFERTA · RESTAM ${PROMO.restam}</span><s style="color:#8d99a3">${brl2(PROMO.de)}</s>`:''}<b style="font:800 24px var(--f-display)">${brl2(PRECO())}</b><span style="color:#5d6b76">a cada 30 dias · até 6 colaboradores</span></div>
+      <div style="border:1px solid #d5dde2;border-radius:12px;padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="color:#5d6b76">Planos a partir de</span><b style="font:800 24px var(--f-display)">R$ 50,00</b><span style="color:#5d6b76">por mês · 1, até 3 ou até 6 colaboradores</span><span style="flex-basis:100%;background:#e0972e;color:#1b1206;font:800 11.5px var(--f-display);padding:4px 10px;border-radius:20px;justify-self:start;width:max-content">🎁 Catálogo 3D grátis no 1º mês contratando agora</span></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button type="button" id="d2CvX" style="border:1px solid #c9d3da;background:#fff;border-radius:9px;padding:10px 14px;font:600 14px system-ui;cursor:pointer">Agora não</button><a href="${WA('Olá Fernando, recebi a sua proposta no demonstrativo do Orientativo FC 3D'+(NOME?' ('+NOME+')':'')+'.')}" target="_blank" rel="noopener" id="d2CvW" style="border:0;background:#1f9d55;color:#fff;text-decoration:none;border-radius:9px;padding:10px 14px;font:600 14px system-ui">💬 Falar com o Fernando</a><button type="button" id="d2CvY" style="border:0;background:#1f6f9a;color:#fff;border-radius:9px;padding:10px 16px;font:700 15px system-ui;cursor:pointer">Ver proposta e contratar →</button></div></div></div>`;
     document.body.appendChild(o);document.getElementById('d2CvX').onclick=()=>{send('convite_depois',{id:c.id});o.remove();};
     document.getElementById('d2CvW').onclick=()=>send('convite_whats',{id:c.id});
     document.getElementById('d2CvY').onclick=()=>{send('convite_aceito',{id:c.id});o.remove();contratar('Convite da FC');};}
   /* contratar agora: proposta, dados e PIX */
   function contratar(m){send('interesse',{m:'Contratar · '+m});send('contratar_aberto',{m});let o=document.getElementById('d2Ct');if(o)o.remove();o=document.createElement('div');o.id='d2Ct';
-    o.style.cssText='position:fixed;inset:0;z-index:9150;background:rgba(10,16,22,.72);display:grid;place-items:center;padding:14px;overflow:auto';
+    o.style.cssText='position:fixed;inset:0;z-index:9150;background:rgba(10,16,22,.72);display:grid;padding:14px;overflow:auto';
     const inp='width:100%;box-sizing:border-box;font:500 15px system-ui;padding:9px 11px;border:1px solid #c9d3da;border-radius:8px';
     o.innerHTML=`<div style="background:#fff;color:#1b232a;border-radius:16px;max-width:560px;width:100%;font:400 15px/1.5 system-ui,sans-serif;box-shadow:0 24px 60px rgba(0,0,0,.45);overflow:hidden">
      <div style="background:linear-gradient(120deg,#0e6b62,#1f6f9a);color:#fff;padding:18px 22px"><div style="font:600 12px var(--f-mono);letter-spacing:.12em;opacity:.85">FC CONSULTORIA · ORIENTATIVO FC 3D</div>
-      ${PROMO?`<div style="display:inline-block;margin-top:8px;background:#e0972e;color:#1b1206;font:800 12.5px var(--f-display);letter-spacing:.04em;padding:4px 10px;border-radius:20px">🔥 OFERTA DE LANÇAMENTO · RESTAM ${PROMO.restam} VAGA${PROMO.restam>1?'S':''}</div>`:''}
-      <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-top:6px">${PROMO?`<div style="font:600 20px/1 var(--f-display);text-decoration:line-through;opacity:.7;padding-bottom:4px">${brl2(PROMO.de)}</div>`:''}<div style="font:800 34px/1 var(--f-display)">${brl2(PRECO())}</div><div style="opacity:.9;padding-bottom:3px">a cada 30 dias de acesso</div></div>
-      ${PROMO&&PROMO.texto?`<div style="margin-top:6px;font-size:14px;opacity:.95">${String(PROMO.texto).replace(/</g,'&lt;')}</div>`:''}</div>
+      <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-top:6px"><div style="font:800 34px/1 var(--f-display)" id="d2Cpr"></div><div style="opacity:.9;padding-bottom:3px" id="d2Cprs">a cada 30 dias de acesso</div></div>
+      <div style="display:inline-block;margin-top:10px;background:#e0972e;color:#1b1206;font:800 12.5px var(--f-display);letter-spacing:.02em;padding:5px 11px;border-radius:20px">🎁 Catálogo 3D grátis no 1º mês se contratar até o fim do seu demonstrativo</div></div>
+     <div style="padding:16px 22px 0"><div style="font-weight:700;margin-bottom:8px">Escolha o seu plano</div>
+      <div id="d2Pl" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${[1,2,3].map(k=>`<button type="button" data-pl="${k}" style="position:relative;text-align:left;border:2px solid #d6dee4;background:#fff;border-radius:12px;padding:12px 10px 10px;cursor:pointer;font:400 13px/1.35 system-ui">${k===2?'<span style="position:absolute;top:-10px;left:8px;background:#1f8a4c;color:#fff;font:700 10.5px system-ui;padding:2px 7px;border-radius:9px">MAIS ESCOLHIDO</span>':''}<b style="display:block;font:700 15px var(--f-display);color:#1b232a">${PLANOS[k].n}</b><span style="color:#5d6b76">${PLANOS[k].d}</span><b style="display:block;margin-top:6px;font:800 19px var(--f-display);color:#0e6b62">${brl2(PLANOS[k].p)}</b><span style="color:#5d6b76;font-size:12px">por mês</span></button>`).join('')}</div>
+      <div style="margin-top:10px;border:1px solid #9fd4b4;background:#e3f4ea;border-radius:10px;padding:10px 12px;font-size:14px"><b>📦 Catálogo 3D incluído grátis</b> · perfis Suprema e Gold em 3D, medidas, usinagem e bancada de montagem.<input type="checkbox" id="d2Cat3" hidden><span id="d2CatV" hidden></span></div>
+      <div id="d2Tot" style="margin-top:10px;font-size:14px;color:#3a4650"></div></div>
      <div style="padding:18px 22px">
       <div style="font-weight:700;margin-bottom:6px">O que está incluso</div>
       <ul style="margin:0 0 14px;padding-left:20px;color:#3a4650">
-       <li>1 acesso da empresa para até <b>6 colaboradores</b>, de domingo a domingo</li>
+       <li>Acesso da empresa para <b id="d2Cinc">até 3 colaboradores</b>, de domingo a domingo</li>
        <li>Tipologias das linhas <b>Suprema e Gold</b> em 3D: girar, abrir, desmontar e ver os cortes</li>
-       <li><b>Monte a esquadria</b>, <b>Diagrama de dimensões</b> e <b>Orientação em Sistema</b>: como lançar os pedidos no sistema que a sua empresa já usa (WVetro ou CEM)</li>
+       <li><b>Monte a esquadria</b>, <b>Diagrama de dimensões</b> e <b>Orientação em Sistema</b>: como lançar os pedidos no sistema que a sua empresa já usa</li>
        <li><b>Painel do Gestor</b> (até 4 aparelhos) com o progresso de cada colaborador</li>
        <li>Catálogos técnicos Suprema e Gold para consulta</li></ul>
-      <div style="margin:0 0 14px;padding:9px 12px;border-radius:9px;background:#fff7e8;border:1px solid #f0c48a;font-size:13.5px;color:#5a3d0c">⚠ <b>Importante:</b> o Orientativo FC 3D é um material de orientação. <b>Não inclui a licença do WVetro nem do CEM</b>; esses sistemas são contratados direto com os seus fornecedores.</div>
+      <div style="margin:0 0 14px;padding:9px 12px;border-radius:9px;background:#fff7e8;border:1px solid #f0c48a;font-size:13.5px;color:#5a3d0c">⚠ <b>Importante:</b> o Orientativo FC 3D é um material de orientação. <b>Não inclui a licença do sistema de cálculo</b>; o sistema é contratado direto com o seu fornecedor.</div>
       <div id="d2C1"><div style="font-weight:700;margin-bottom:8px">1 · Seus dados para criar o acesso</div>
        <form id="d2CF" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <input id="d2Ce" required placeholder="Nome da empresa" style="${inp};grid-column:1/-1" value="${(NOME||'').replace(/"/g,'&quot;')}">
@@ -3015,14 +3064,14 @@ function demo2Init(){
         <select id="d2Cs" required style="${inp};grid-column:1/-1"><option value="">Qual sistema de cálculo a sua empresa usa?</option><option>WVetro</option><option>CEM</option><option>WVetro e CEM</option><option>Outro sistema</option><option>Ainda não usa sistema</option></select>
         <details style="grid-column:1/-1;border:1px solid #d6dee4;border-radius:9px;padding:8px 12px;font-size:13.5px;color:#3a4650"><summary style="cursor:pointer;font-weight:600">📄 Termos de uso (toque para ler)</summary><ul style="margin:8px 0 2px;padding-left:18px">
          <li>Acesso por <b>30 dias</b> a partir da liberação; a renovação é feita com um novo PIX.</li>
-         <li>1 login da empresa para <b>até 6 colaboradores</b> e o Painel do Gestor em até 4 aparelhos. O login é da empresa e <b>não pode ser repassado</b> a terceiros.</li>
-         <li>Material de <b>orientação</b>. <b>Não inclui a licença do WVetro nem do CEM</b>.</li>
+         <li>1 login da empresa para o número de colaboradores do plano escolhido (1, até 3 ou até 6) e o Painel do Gestor em até 4 aparelhos. O login é da empresa e <b>não pode ser repassado</b> a terceiros.</li>
+         <li>Material de <b>orientação</b>. <b>Não inclui a licença do sistema de cálculo</b>.</li>
          <li>Sem fidelidade: para cancelar, basta não renovar. Sem renovação, o acesso é bloqueado ao fim do período.</li>
          <li>Suprema e Gold são linhas de terceiros, citadas só para fins de orientação técnica.</li></ul></details>
         <div style="grid-column:1/-1;display:flex;flex-direction:row;gap:8px;align-items:center;font-size:14px;font-weight:600"><input type="checkbox" id="d2Cacc" required style="width:18px;height:18px;margin:0;flex:none;display:inline-block"><span onclick="document.getElementById('d2Cacc').click()" style="cursor:pointer;flex:1">Li e aceito os termos de uso</span></div>
         <button type="submit" style="grid-column:1/-1;border:0;border-radius:9px;padding:11px;background:#1f6f9a;color:#fff;font:700 16px system-ui;cursor:pointer">Continuar para o pagamento →</button></form><div style="font-size:12px;color:#7a8790;margin-top:8px">🔒 Seus dados serão usados só pela FC Consultoria para contato sobre o Orientativo FC 3D.</div></div>
       <div id="d2C2" hidden><div style="font-weight:700;margin-bottom:8px">2 · Pague pelo PIX</div>
-       <div style="border:2px dashed #1f8a4c;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div><div style="font-size:12.5px;color:#5d6b76">Chave PIX (CNPJ)</div><div style="font:700 20px var(--f-mono)">52.985.682/0001-32</div><div style="font-size:12.5px;color:#5d6b76">Favorecido: FC Desenvolvimento de Projetos de Compra e Venda LTDA</div><div style="font-size:12.5px;color:#5d6b76">Valor: <b>${brl2(PRECO())}</b>${PROMO?' (oferta)':''}</div></div>
+       <div style="border:2px dashed #1f8a4c;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div><div style="font-size:12.5px;color:#5d6b76">Chave PIX (CNPJ)</div><div style="font:700 20px var(--f-mono)">52.985.682/0001-32</div><div style="font-size:12.5px;color:#5d6b76">Favorecido: FC Desenvolvimento de Projetos de Compra e Venda LTDA</div><div style="font-size:12.5px;color:#5d6b76">Valor do 1º mês: <b id="d2Cval"></b></div></div>
         <button type="button" id="d2Cp" style="margin-left:auto;border:0;border-radius:9px;padding:10px 14px;background:#1f8a4c;color:#fff;font:700 14px system-ui;cursor:pointer">📋 Copiar chave</button></div>
        <div style="font-weight:700;margin:14px 0 6px">3 · Envie o comprovante</div><p style="margin:0 0 10px;color:#4b5a63">Mande o comprovante no WhatsApp da FC. A liberação é <b>no mesmo dia</b>: você recebe o login, a senha e o acesso do gestor.</p>
        <a id="d2Cw" target="_blank" rel="noopener" style="display:block;text-align:center;background:#1f9d55;color:#fff;text-decoration:none;font:700 16px system-ui;padding:12px;border-radius:10px">💬 Enviar comprovante no WhatsApp</a><div style="text-align:center;margin-top:8px;font-size:13.5px">Dúvidas? <a href="#" id="d2CCh" style="color:#1f6f9a;font-weight:700">Fale com a FC aqui mesmo</a></div></div>
@@ -3032,11 +3081,16 @@ function demo2Init(){
     document.getElementById('d2CF').onsubmit=e=>{e.preventDefault();const D={empresa:document.getElementById('d2Ce').value.trim(),nome:document.getElementById('d2Cn').value.trim(),fone:document.getElementById('d2Cfone').value.trim(),cidade:document.getElementById('d2Cc').value.trim(),sistema:document.getElementById('d2Cs').value,m};if(!D.sistema){document.getElementById('d2Cs').focus();return;}
       if(D.fone.replace(/\D/g,'').length<10){document.getElementById('d2Cfone').focus();return;}
       if(!document.getElementById('d2Cacc').checked){document.getElementById('d2Cacc').focus();return;}D.termos=true;
-      D.valor=PRECO();D.promo=!!PROMO;send('contratar',D);send('contato',{fone:D.fone,m:'Contratar'});
+      D.valor=PRECO();D.plano=PLANOS[PLANO].n;D.usuarios=PLANOS[PLANO].u;D.cat3d=CAT3;D.renova=RENOVA();D.promo=CAT3;send('contratar',D);document.getElementById('d2Cval').textContent=brl2(PRECO())+' · plano '+PLANOS[PLANO].n+(CAT3?' + Catálogo 3D grátis no 1º mês':'');send('contato',{fone:D.fone,m:'Contratar'});
       document.getElementById('d2C1').hidden=true;document.getElementById('d2C2').hidden=false;
-      document.getElementById('d2Cw').href=WA(`Olá Fernando! Quero contratar o Orientativo FC 3D (${brl2(PRECO())} / 30 dias${PROMO?' · oferta de lançamento':''}).\nEmpresa: ${D.empresa}\nResponsável: ${D.nome}\nCidade: ${D.cidade}\nSistema que usamos: ${D.sistema}\nSegue o comprovante do PIX:`);
+      document.getElementById('d2Cw').href=WA(`Olá Fernando! Quero contratar o Orientativo FC 3D · plano ${PLANOS[PLANO].n} (${brl2(PRECO())} no 1º mês${CAT3?', com o Catálogo 3D grátis no 1º mês; depois '+brl2(RENOVA())+' / 30 dias':''}).\nEmpresa: ${D.empresa}\nResponsável: ${D.nome}\nCidade: ${D.cidade}\nSistema que usamos: ${D.sistema}\nSegue o comprovante do PIX:`);
       document.getElementById('d2Cw').onclick=()=>send('contratar_whats',{});document.getElementById('d2CCh').onclick=ev=>{ev.preventDefault();chatAbrir('Escreva sua dúvida sobre o pagamento ou a liberação…');};
       document.getElementById('d2Cp').onclick=async ev=>{try{await navigator.clipboard.writeText('52985682000132');ev.target.textContent='✔ Chave copiada';}catch(_){prompt('Copie a chave PIX:','52985682000132');}send('contratar_pix',{});};};
+    const plUp=()=>{o.querySelectorAll('[data-pl]').forEach(b=>{const on=+b.dataset.pl===PLANO;b.style.borderColor=on?'#0e6b62':'#d6dee4';b.style.background=on?'#e9f6f3':'#fff';});
+      document.getElementById('d2Cpr').textContent=brl2(PRECO());document.getElementById('d2Cprs').textContent='por mês · plano '+PLANOS[PLANO].n;document.getElementById('d2CatV').textContent=brl2(CATV());
+      document.getElementById('d2Cinc').textContent=PLANOS[PLANO].u===1?'1 colaborador (1 aparelho)':'até '+PLANOS[PLANO].u+' colaboradores';
+      document.getElementById('d2Tot').innerHTML=CAT3?`<b>1º mês: ${brl2(PRECO())}</b> (Catálogo 3D de presente) · a partir do 2º mês: ${brl2(RENOVA())}`:`<b>Total: ${brl2(PRECO())}</b> por mês`;};
+    o.querySelectorAll('[data-pl]').forEach(b=>b.onclick=()=>{PLANO=+b.dataset.pl;plUp();send('plano',{p:PLANO});});document.getElementById('d2Cat3').onchange=e=>{CAT3=e.target.checked;plUp();};plUp();
     setTimeout(()=>{const i=document.getElementById(NOME?'d2Cn':'d2Ce');if(i)i.focus();},60);}
   /* opinião: aparece sozinha depois que o cliente navega pelo demonstrativo */
   const VIS={t:new Set(),cortes:0,t0:Date.now()};let OPD=false;try{OPD=localStorage.getItem('fcd2-op-'+code)==='1';}catch(_){}
@@ -3045,7 +3099,7 @@ function demo2Init(){
     const min=(Date.now()-VIS.t0)/60000;if((VIS.t.size>=4&&VIS.cortes>=2)||(VIS.t.size>=3&&min>=6)||min>=12)setTimeout(()=>opiniao(true),2500);}
   setInterval(gatilho,60000);
   function opiniao(auto){if(document.getElementById('d2Op2'))return;OPD=true;try{localStorage.setItem('fcd2-op-'+code,'1');}catch(_){}send('opiniao_aberta',{auto});
-    const o=document.createElement('div');o.id='d2Op2';o.style.cssText='position:fixed;inset:0;z-index:9100;background:rgba(10,16,22,.7);display:grid;place-items:center;padding:16px;overflow:auto';
+    const o=document.createElement('div');o.id='d2Op2';o.style.cssText='position:fixed;inset:0;z-index:9100;background:rgba(10,16,22,.7);display:grid;padding:16px;overflow:auto';
     o.innerHTML=`<form id="d2OF" style="background:#fff;color:#1b232a;border-radius:14px;max-width:480px;width:100%;padding:22px;font:400 15px/1.5 system-ui,sans-serif;box-shadow:0 20px 50px rgba(0,0,0,.4)">
      <h3 style="margin:0 0 4px;font:700 21px var(--f-display)">${auto?'Gostou do que viu? 😊':'Sua opinião'}</h3><p style="margin:0 0 12px;color:#4b5a63">Conte para a FC o que achou do Orientativo FC 3D. A gente lê tudo e entra em contato.</p>
      <div style="font-weight:600;margin-bottom:4px">Que nota você dá?</div><div id="d2St" style="font-size:34px;letter-spacing:4px;cursor:pointer;user-select:none;color:#c9d3da">${[1,2,3,4,5].map(n=>`<span data-n="${n}">★</span>`).join('')}</div>
@@ -3064,12 +3118,20 @@ function demo2Init(){
   const TUT={'m-test':['Monte a esquadria','tut_monte.mp4','O colaborador monta a esquadria peça por peça, em 3 níveis, com tempo, estrelas e recorde.'],
     'm-prat':['Orientação em Sistema','tut_sistema.mp4','Lançamento do pedido no WVetro e no CEM, conferido item a item, como na empresa.'],
     'm-dia':['Diagrama de dimensões','tut_diagrama.mp4','Pressão de vento e tamanho máximo de cada mão de amigo, com a estrutura reagindo em 3D.']};
-  const vid=id=>{const [t,f,x]=TUT[id];TRK('tutorial',{m:t});let o=document.getElementById('d2Vid');if(o)o.remove();o=document.createElement('div');o.id='d2Vid';
-    o.innerHTML=`<div><h3>▶ Como funciona: ${t}</h3><video src="${f}" controls autoplay muted playsinline></video><p style="margin:10px 0 0;color:#b9c8d0">${x} Disponível no <b>Orientativo FC 3D completo</b>.</p><div class="r"><button type="button" id="d2X">← Voltar ao demonstrativo</button><a href="#" id="d2W">💳 Contratar agora</a></div></div>`;
+  const vid=(id,acabou)=>{const [t,f,x]=TUT[id];TRK('tutorial',{m:t});let o=document.getElementById('d2Vid');if(o)o.remove();o=document.createElement('div');o.id='d2Vid';
+    o.innerHTML=`<div><h3>${acabou?'✔ Você usou os '+LIM+' testes de '+t+' deste demonstrativo':'▶ Como funciona: '+t}</h3><video src="${f}" controls autoplay muted playsinline></video><p style="margin:10px 0 0;color:#b9c8d0">${x} Disponível no <b>Orientativo FC 3D completo</b>.</p><div class="r"><button type="button" id="d2X">← Voltar ao demonstrativo</button><a href="#" id="d2W">💳 Contratar agora</a></div></div>`;
     document.body.appendChild(o);const v=o.querySelector('video');v.onended=()=>document.getElementById('d2W').classList.add('big');
     document.getElementById('d2X').onclick=()=>o.remove();o.addEventListener('click',e=>{if(e.target===o)o.remove();});
     document.getElementById('d2W').addEventListener('click',ev=>{ev.preventDefault();o.remove();contratar('Tutorial: '+t);});};
-  Object.keys(TUT).forEach(id=>{const b=document.getElementById(id);if(!b)return;b.hidden=false;b.classList.add('dlk');b.title='Ver como funciona';const n=b.cloneNode(true);b.replaceWith(n);n.addEventListener('click',e=>{e.stopImmediatePropagation();vid(id);});});
+  /* ferramentas liberadas com limite de testes por link (neste aparelho) */
+  const LIM=3,uk=id=>'fc_demo_uso_'+code+'_'+id,usos=id=>{try{return +localStorage.getItem(uk(id))||0;}catch(_){return 0;}};
+  const ativo=id=>id==='m-test'?S.mode==='test':id==='m-dia'?!!S.diaOn:!!(S.wvOn||S.cemOn);
+  const rot=id=>{const b=document.getElementById(id);if(!b)return;const r=PREV?LIM:Math.max(0,LIM-usos(id));b.classList.toggle('dlk',r<=0&&!ativo(id));b.title=r>0?`Liberado no demonstrativo: ${r} de ${LIM} testes`:'Ver como funciona';let s=b.querySelector('.d2u');if(!s){s=document.createElement('span');s.className='d2u';b.appendChild(s);}s.textContent=r>0?r+'/'+LIM:'';};
+  {const k=document.createElement('style');k.textContent='.modes button .d2u:not(:empty){margin-left:6px;font:700 11px var(--f-mono);background:#e0972e;color:#1b1206;border-radius:10px;padding:1px 6px;vertical-align:1px}';document.head.appendChild(k);}
+  Object.keys(TUT).forEach(id=>{const b=document.getElementById(id);if(b){b.hidden=false;rot(id);}});
+  {const md=document.querySelector('.modes');if(md)md.addEventListener('click',e=>{setTimeout(()=>Object.keys(TUT).forEach(rot),60);const b=e.target.closest('#m-test,#m-prat,#m-dia');if(!b||PREV)return;const id=b.id;if(ativo(id))return;
+    if(usos(id)>=LIM){e.stopImmediatePropagation();e.preventDefault();vid(id,true);return;}
+    const n=usos(id)+1;try{localStorage.setItem(uk(id),n);}catch(_){}TRK('ferramenta',{m:TUT[id][0],n});rot(id);},true);}
   ['c-swap','c-us'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.add('dhide');});
   const gb=document.querySelector('.guiabtn');if(gb)gb.classList.add('dhide');
   {const c=document.getElementById('in-cor');if(c)c.addEventListener('change',()=>TRK('cor',{t:S.typo,c:c.value}));}
