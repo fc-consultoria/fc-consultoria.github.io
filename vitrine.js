@@ -14,7 +14,7 @@
 #vtC .vtzh button{all:unset;cursor:pointer;width:22px;height:22px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.14);font-size:13px}
 #vtC .vtzi{position:relative;display:block;width:100%;aspect-ratio:600/849;background:#eef2f4;cursor:pointer;border:0;padding:0}
 #vtC .vtzi img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .5s}
-#vtC .vtzt{background:none;color:#13232e;padding:8px 10px 4px;font:700 13.5px/1.25 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}#vtC .vtzm{padding:0 10px;font-size:11.5px;color:#5d6f7a}
+#vtC .vtzt{background:none;color:#13232e;padding:9px 12px 4px;font:700 calc(11px + var(--vtw,190px)*.018)/1.25 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}#vtC .vtzm{padding:0 10px;font-size:11.5px;color:#5d6f7a}
 #vtC .vtzb{all:unset;box-sizing:border-box;display:block;width:calc(100% - 20px);margin:8px 10px 6px;text-align:center;cursor:pointer;background:#1f9d55;color:#fff;border-radius:9px;padding:7px 6px;font:700 12.5px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 #vtC .vtzd{display:flex;gap:4px;justify-content:center;padding:0 0 9px;flex-wrap:wrap}#vtC .vtzd i{width:5px;height:5px;border-radius:50%;background:#cfd8de}#vtC .vtzd i.on{background:#1f9d55;width:12px;border-radius:3px}
 #vtT{position:fixed;left:12px;bottom:12px;z-index:60;display:flex;align-items:center;gap:8px;background:#0f2a36;color:#fff;border:0;border-radius:14px;padding:6px 12px 6px 6px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.3);font:700 13px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
@@ -28,14 +28,14 @@
 #vtM .va .pri{background:#1f9d55;border-color:#1f9d55;color:#fff}#vtM .vn{display:flex;gap:8px}#vtM .vn button{flex:1}
 #vtM .vx{all:unset;position:absolute;top:10px;right:10px;cursor:pointer;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:18px}
 @media(max-width:700px){#vtM .vc{grid-template-columns:1fr}#vtM .vimg img{max-height:52vh;width:auto;margin:0 auto}#vtT{bottom:12px;padding:5px 10px 5px 5px}#vtT small{display:none}#vtT img{width:32px;height:45px}}`;
-  function largo(){return window.innerWidth>=1480&&SS.g('vt_min')!=='1';}
+  function largo(){if(SS.g('vt_min')==='1'||window.innerWidth<1300)return false;const hw=document.querySelector('.hero .w')||document.querySelector('.w');const esq=hw?hw.getBoundingClientRect().left+(parseFloat(getComputedStyle(hw).paddingLeft)||0):0;return esq>=190;}
   function montar(){
     const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);desenhar();
     window.addEventListener('resize',()=>{clearTimeout(window.__vtR);window.__vtR=setTimeout(desenhar,200);});
     document.addEventListener('visibilitychange',()=>{if(document.hidden)parar();else rodar();});}
   function desenhar(){['vtC','vtT'].forEach(id=>{const e=document.getElementById(id);if(e)e.remove();});
     const x=L[i];if(!x)return;
-    if(largo()){const w=Math.max(150,Math.min(210,(window.innerWidth-1180)/2-30));
+    if(largo()){const hw=document.querySelector('.hero .w')||document.querySelector('.w');const esq=hw?hw.getBoundingClientRect().left+(parseFloat(getComputedStyle(hw).paddingLeft)||0):(window.innerWidth-1180)/2;const w=Math.max(150,Math.min(330,esq-40,(window.innerHeight-200)*600/849));
       const c=document.createElement('aside');c.id='vtC';c.style.setProperty('--vtw',w+'px');c.setAttribute('aria-label','Folders das representadas');
       c.innerHTML=`<div class="vtzh"><span>📣 FOLDERS · ORÇAMENTO</span><button type="button" id="vtMin" title="Minimizar" aria-label="Minimizar">–</button></div>
         <button type="button" class="vtzi" id="vtI" aria-label="Abrir folder"><img id="vtImg" src="${esc(BASE+x.img)}" alt="${esc(x.t)}"></button>
