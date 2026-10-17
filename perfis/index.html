@@ -240,6 +240,7 @@ async function v3(i,c,n,md){window.__dimUpd=null;hit('perfis_3d',c);const CT=con
  {const ul=o.querySelector('[data-usl]');if(ul)ul.onclick=()=>cadastro(c,()=>v3(i,c,n,md));}
  const usP=o.querySelector('.usp');if(usP){let k=0;const sh=()=>{const f=AS.usi(US[k]);usP.querySelector('img').src=f;usP.querySelector('.un span').textContent=US.length>1?`Desenho ${k+1} de ${US.length}`:'';};sh();
   const pv=usP.querySelector('[data-up]'),nx=usP.querySelector('[data-un]');if(pv)pv.onclick=()=>{k=(k+US.length-1)%US.length;sh();};if(nx)nx.onclick=()=>{k=(k+1)%US.length;sh();};}
+ window.__ang={get:()=>{let a=ry*180/Math.PI;a=((a+180)%360+360)%360-180;return{az:a,el:rx*180/Math.PI,R:dist};},set:(az,el)=>{auto=false;tg=null;ry=az*Math.PI/180;rx=Math.max(-1.4,Math.min(1.4,el*Math.PI/180));}};
  cvs.addEventListener('pointerdown',e=>{auto=false;tg=null;drag=[e.clientX,e.clientY,ry,rx];cvs.setPointerCapture(e.pointerId);cvs.style.cursor='grabbing';});
  cvs.addEventListener('pointermove',e=>{if(!drag)return;ry=drag[2]+(e.clientX-drag[0])*.01;rx=Math.max(-1.4,Math.min(1.4,drag[3]+(e.clientY-drag[1])*.01));});
  const up=()=>{drag=null;cvs.style.cursor='grab';};cvs.addEventListener('pointerup',up);cvs.addEventListener('pointercancel',up);
