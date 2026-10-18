@@ -139,6 +139,10 @@ td.c{font:600 12px var(--f-m);white-space:nowrap}
   </aside>
 </div>
 
+<div id="mcDica" hidden role="dialog" aria-modal="true" aria-labelledby="mcDicaT"><div class="c"><h3 id="mcDicaT">Como jogar em 3 passos</h3>
+<ol><li><b>Toque num lote</b> do bairro (ou em “Montar” no painel) para entrar na obra.</li><li><b>Escolha a esquadria</b> e toque no vão da parede onde ela vai: a obra monta em câmera lenta.</li><li><b>Passeie</b>: gire com o dedo ou o mouse, use o boneco para andar na rua e troque dia e noite.</li></ol>
+<button type="button" id="mcDicaOk">Entendi, vamos montar</button></div></div>
+<style>#mcDica{position:fixed;inset:0;z-index:60;background:rgba(6,20,26,.66);display:grid;place-items:center;padding:14px}#mcDica[hidden]{display:none}#mcDica .c{background:#fff;color:#14231f;border-radius:16px;max-width:420px;width:100%;padding:20px;display:flex;flex-direction:column;gap:12px;font:400 15px/1.5 system-ui,sans-serif;box-shadow:0 20px 50px rgba(0,0,0,.35)}#mcDica h3{margin:0;font:700 20px system-ui,sans-serif;text-transform:none;letter-spacing:0;color:#14231f}#mcDica ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px}#mcDica button{all:unset;cursor:pointer;text-align:center;background:#e8912d;color:#fff;font:700 16px system-ui,sans-serif;padding:12px;border-radius:11px}#mcDica button:focus-visible{outline:3px solid #1fb3c9;outline-offset:2px}</style>
 <div class="md" id="md" hidden role="dialog" aria-modal="true" aria-labelledby="mdT">
   <div class="mdc">
     <h2 id="mdT">Gostou de montar a sua casa?</h2>
@@ -853,6 +857,8 @@ function loop(){requestAnimationFrame(loop);passoAvatar();if(!AV.on){passoVoo();
 aplicaCores();tamanho();montar();painel();
 if(ST.vista==='bairro'){cam.position.set(-20,46,62);ctl.target.set(-8,0,0);}else{const M=MODELOS[ST.m],[LW,LD]=M.lote;cam.position.set(-LW*.35,4.2,LD/2+9);ctl.target.set(0,1.6,LD*.12);vista('rua');}
 botoes();
+(function(){const K='fc_montecasa_dica1';let ja=false;try{ja=!!localStorage.getItem(K);}catch(_){}if(ja)return;const d=$('#mcDica');d.hidden=false;const b=$('#mcDicaOk');setTimeout(()=>b.focus(),50);
+  const fecha=()=>{d.hidden=true;try{localStorage.setItem(K,'1');}catch(_){}};b.onclick=fecha;d.addEventListener('click',e=>{if(e.target===d)fecha();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!d.hidden)fecha();});})();
 loop();
 window.MC={ST,montar,painel,cam,ctl,AV,entrarObra,irBairro,andarOn,TECLAS,get ALVO(){return ALVO;}};
 })();
