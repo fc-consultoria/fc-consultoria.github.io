@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Monte sua Casa 3D · FC Mostruário 3D</title>
+<meta name="description" content="Monte uma casa em 3D com esquadrias de alumínio Suprema e Gold: escolha a planta, as cores e as janelas, e passeie pela rua. Demonstração grátis da FC Consultoria em Esquadria.">
+<link rel="icon" href="../img/logo-fc-160.jpg">
+<meta property="og:title" content="Monte sua Casa 3D · FC Mostruário 3D"><meta property="og:description" content="Escolha a planta, as cores e as janelas Suprema e Gold, e passeie pela rua. Grátis, no celular."><meta property="og:image" content="https://fc-consultoria.github.io/img/logo-fc-160.jpg"><meta property="og:url" content="https://fc-consultoria.github.io/monte-sua-casa/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Prévia da página do site: Monte sua Casa 3D (demonstração jogável + convite para o Orientativo FC 3D) */
+:root{--bg:#f1f5f3;--panel:#fff;--fg:#14231f;--muted:#56675f;--line:#d6e2dd;--teal:#0e6b62;--teal-soft:#e2f0ec;--amber:#d98a1f;--amber-soft:#fbecd5;
+  --f-d:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;--f-b:'Inter',ui-sans-serif,system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1916;--panel:#16241f;--fg:#e9f2ee;--muted:#9fb3ab;--line:#28403a;--teal:#46b8a8;--teal-soft:#183530;--amber:#f0a947;--amber-soft:#33260f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1916;--panel:#16241f;--fg:#e9f2ee;--muted:#9fb3ab;--line:#28403a;--teal:#46b8a8;--teal-soft:#183530;--amber:#f0a947;--amber-soft:#33260f;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font:400 16px/1.6 var(--f-b)}
+a{color:inherit}
+.nav{display:flex;align-items:center;gap:12px;padding:14px max(16px,calc((100% - 1120px)/2));background:var(--panel);border-bottom:1px solid var(--line)}
+.nav b{font:700 17px var(--f-d)}.nav .sp{flex:1}.nav a{font:600 14px var(--f-b);text-decoration:none;color:var(--muted)}
+.mk{display:flex;gap:3px;height:24px}.mk i{width:6px;border-radius:2px}.mk i:nth-child(1){background:var(--teal);height:60%;align-self:flex-end}.mk i:nth-child(2){background:var(--fg)}.mk i:nth-child(3){background:var(--amber);height:78%;align-self:flex-end}
+.wrap{max-width:1120px;margin:0 auto;padding:36px 16px 64px;display:flex;flex-direction:column;gap:44px}
+.eb{font:600 12px ui-monospace,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+h1{font:700 clamp(32px,5.4vw,54px)/1.05 var(--f-d);margin:8px 0 14px;text-wrap:balance}
+h2{font:700 clamp(24px,3.4vw,32px)/1.15 var(--f-d);margin:0 0 10px}
+.lead{font-size:18px;color:var(--muted);max-width:62ch;margin:0}
+.ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.bt{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font:700 15px var(--f-d);padding:13px 18px;border-radius:12px;background:var(--teal);color:#fff;border:0;cursor:pointer}
+.bt.am{background:var(--amber);color:#1b1205}.bt.gh{background:transparent;color:var(--fg);border:1.5px solid var(--line)}
+.jogo{position:relative;border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:0 24px 60px rgba(10,40,35,.14);background:#0f1418;height:min(720px,82vh)}
+.jogo iframe{width:100%;height:100%;border:0;display:block}
+.jogo .tag{position:absolute;left:14px;top:-1px;transform:translateY(-100%)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:8px}
+.card i{font-style:normal;font-size:24px;width:44px;height:44px;border-radius:12px;background:var(--teal-soft);display:grid;place-items:center}
+.card b{font:700 17px var(--f-d)}.card p{margin:0;color:var(--muted);font-size:15px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cmp .card ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:15px}
+.cmp .card.pro{border:2px solid var(--teal)}
+.pill{display:inline-block;font:600 12px var(--f-b);padding:3px 10px;border-radius:99px;background:var(--amber-soft)}
+.share{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px}
+.wa{background:#e5ddd5;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.wa .msg{background:#dcf8c6;color:#111;border-radius:12px 12px 2px 12px;padding:10px 12px;font-size:14.5px;line-height:1.45;align-self:flex-end;max-width:94%;box-shadow:0 1px 1px rgba(0,0,0,.1)}
+.wa .lk{background:#fff;color:#111;border-radius:10px;overflow:hidden;border:1px solid #cfd8d1;margin-top:8px}
+.wa .lk div{background:linear-gradient(135deg,#0e6b62,#123a35);color:#fff;padding:16px 12px;font:700 15px var(--f-d)}
+.wa .lk p{margin:0;padding:8px 12px;font-size:12.5px;color:#456}
+.lkb{display:flex;gap:6px;margin-top:10px}.lkb input{flex:1;min-width:0;font:500 13px ui-monospace,Menlo,monospace;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--fg)}
+.nt{font-size:13px;color:var(--muted)}
+footer{border-top:1px solid var(--line);padding:22px 16px;text-align:center;color:var(--muted);font-size:14px}
+@media (max-width:860px){.grid3,.cmp,.share{grid-template-columns:1fr}.jogo{height:78vh}.nav a{display:none}}
+</style>
+</head>
+<body>
+<nav class="nav"><a href="../" style="display:flex;text-decoration:none"><span class="mk"><i></i><i></i><i></i></span></a><b>FC Consultoria em Esquadria</b><span class="sp"></span><a href="../">Início</a><a href="#jogo">Monte sua Casa</a><a href="#mostruario">FC Mostruário 3D</a><a class="bt" href="#" data-wa style="padding:9px 14px;font-size:14px;color:#fff">Fale com a FC</a></nav>
+<main class="wrap">
+  <header>
+    <span class="eb">Novo · grátis para testar</span>
+    <h1>Monte sua Casa 3D com esquadrias de alumínio</h1>
+    <p class="lead">Escolha a planta, troque as cores do telhado, das paredes e dos perfis, e feche cada vão com janelas e portas das linhas Suprema e Gold. Passeie pela rua, abra as esquadrias e veja a casa de dia e de noite.</p>
+    <div class="ctas"><a class="bt am" href="#jogo">▶ Testar agora</a><a class="bt gh" href="#compartilhar">Enviar para um colega</a></div>
+  </header>
+
+  <section id="jogo"><div class="jogo"><iframe src="jogo.html?demo=1" title="Monte sua Casa 3D · demonstração" allow="fullscreen" loading="lazy"></iframe></div>
+    <div class="ctas" style="margin-top:12px"><a class="bt am" href="jogo.html?demo=1" target="_blank" rel="noopener">⤢ Abrir em tela cheia</a></div>
+    <p class="nt" style="margin-top:8px">Funciona no celular e no computador. Medidas e pesos são demonstrativos: confirme sempre com o seu fornecedor de perfis.</p></section>
+
+  <section><h2>A obra do seu cliente, em 3D</h2>
+    <div class="grid3">
+      <div class="card"><i>🏠</i><b>Planta completa</b><p>Casas com garagem, quintal e piscina, num bairro com avenida, praça, mercado e posto.</p></div>
+      <div class="card"><i>🪟</i><b>Esquadrias de verdade</b><p>Correr 2 e 4 folhas, maxim-ar e porta de giro, com os desenhos dos perfis Suprema e Gold.</p></div>
+      <div class="card"><i>🎨</i><b>Do seu jeito</b><p>Telhado, paredes, muro e cor dos perfis. Abra as esquadrias e veja a casa à noite com as luzes acesas.</p></div>
+    </div></section>
+
+  <section id="mostruario"><h2>Demonstração × FC Mostruário 3D</h2>
+    <div class="cmp">
+      <div class="card"><b>Demonstração no site</b><span class="pill">grátis</span><ul><li>Bairro e passeio a pé</li><li>Casa Compacta e Térrea</li><li>Cores, telhado e tipologias</li></ul></div>
+      <div class="card pro"><b>No FC Mostruário 3D</b><span class="pill">para a sua vidraçaria</span><ul><li>Casa em L e <b>prédio de 12 apartamentos</b></li><li>Modo Carreira com selos, até fechar o bairro</li><li>Perfis, cortes e peso da obra em Suprema e Gold</li><li>16 tipologias em 3D e catálogo de perfis, para apresentar ao cliente e vender com segurança</li></ul>
+        <a class="bt" href="#" data-wa style="align-self:flex-start;margin-top:6px">Quero o Mostruário 3D</a></div>
+    </div></section>
+
+  <section id="compartilhar" class="share">
+    <div><h2>Envie para os seus clientes e colegas</h2><p class="lead" style="font-size:16px">Um link direto para a demonstração. Quem testa conhece a FC e pode pedir o FC Mostruário 3D pelo WhatsApp.</p>
+      <div class="lkb"><input readonly id="lk" value="https://fc-consultoria.github.io/monte-sua-casa/" aria-label="Link da demonstração"><button type="button" class="bt" id="cp">Copiar</button></div>
+      <div class="ctas"><a class="bt" id="waS" target="_blank" rel="noopener" href="#" style="background:#1f9d55">Enviar pelo WhatsApp</a></div></div>
+    <div class="wa" aria-label="Como a mensagem aparece no WhatsApp">
+      <div class="msg">🏠 Já montou uma casa em 3D com esquadrias de alumínio? Teste grátis o <b>Monte sua Casa 3D</b> da FC Consultoria: escolha a planta, as cores e as janelas Suprema e Gold, e passeie pela rua. Funciona no celular!
+        <div class="lk"><div>Monte sua Casa 3D</div><p>fc-consultoria.github.io · Demonstração grátis</p></div></div>
+    </div>
+  </section>
+</main>
+<footer>FC Consultoria em Esquadria · Sinop/MT · Atendimento de segunda a sexta, das 8h às 11h e das 13h às 17h</footer>
+<script>
+(function(){const MSG='🏠 Já montou uma casa em 3D com esquadrias de alumínio? Teste grátis o Monte sua Casa 3D da FC Consultoria: escolha a planta, as cores e as janelas Suprema e Gold, e passeie pela rua. Funciona no celular! ';
+  const L=document.getElementById('lk').value,WA='https://wa.me/5566999867984?text='+encodeURIComponent('Olá! Vi o Monte sua Casa 3D no site e quero conhecer o FC Mostruário 3D para a minha vidraçaria.');
+  document.querySelectorAll('[data-wa]').forEach(a=>{a.href=WA;a.target='_blank';a.rel='noopener';});
+  document.getElementById('waS').href='https://wa.me/?text='+encodeURIComponent(MSG+L);
+  document.getElementById('cp').onclick=e=>{const i=document.getElementById('lk');i.select();(navigator.clipboard?navigator.clipboard.writeText(L):Promise.reject()).then(()=>{e.target.textContent='Copiado';}).catch(()=>{try{document.execCommand('copy');e.target.textContent='Copiado';}catch(_){}});};
+  let s0='x';try{s0=sessionStorage.getItem('fc_s')||(()=>{const v=Math.random().toString(36).slice(2,10);sessionStorage.setItem('fc_s',v);return v;})();}catch(_){}
+  const hit=ev=>{try{fetch('https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/rpc/site_hit',{method:'POST',keepalive:true,headers:{apikey:'sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg','Content-Type':'application/json'},body:JSON.stringify({p_s:s0,p_pag:'monte-sua-casa',p_ev:ev,p_o:'direto',p_ref:(document.referrer||'').slice(0,80)})}).catch(()=>{});}catch(_){}};
+  hit('view');addEventListener('message',e=>{if(e.data&&e.data.fc==='cta')hit('mc_cta');});document.querySelectorAll('[data-wa]').forEach(a=>a.addEventListener('click',()=>hit('whats')));document.getElementById('waS').addEventListener('click',()=>hit('mc_share'));})();
+</script>
+</body>
+</html>
