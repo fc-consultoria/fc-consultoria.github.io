@@ -22,16 +22,17 @@
   function esc(e){if(e.key==='Escape')fechar();}
   function abrir(qual){fechar();hit(qual);const m=document.createElement('div');m.id='thM';
     const acomp=qual==='acomp';
-    m.innerHTML=`<div class="thb">${acomp?`<div class="thf"><iframe src="${ACOMP}" title="Demonstração do acompanhamento da implantação" allow="clipboard-write"></iframe></div>`:`<div class="thw"><iframe src="${TB}demo.html" title="Demonstração Orientativo FC 3D"></iframe></div>`}
+    m.innerHTML=`<div class="thb">${acomp?`<div class="thf"><iframe src="${ACOMP}" title="Demonstração do acompanhamento da implantação" allow="clipboard-write"></iframe></div>`:`<div class="thw" style="background:#0b141a"><video id="thV" src="${TB}vid/tut_monte.mp4" controls autoplay playsinline style="width:100%;height:100%;object-fit:contain;display:block"></video></div>`}
       <button type="button" class="thx" aria-label="Fechar">✕</button>
-      <div class="thl">${acomp?'Demonstração com cliente fictício · os dias avançam sozinhos':'Gire, abra as folhas e desmonte peça por peça'} · <a href="#" data-thx>fechar</a></div></div>`;
+      <div class="thl">${acomp?'Demonstração com cliente fictício · os dias avançam sozinhos':'Assista como funciona · gostou? <a href="#" data-thc style="color:#7fe0a5">💬 Peça um acesso para conhecer</a>'} · <a href="#" data-thx>fechar</a></div></div>`;
     document.body.appendChild(m);document.documentElement.style.overflow='hidden';requestAnimationFrame(()=>requestAnimationFrame(()=>m.classList.add('on')));
-    m.addEventListener('click',e=>{if(e.target===m||e.target.closest('.thx')||e.target.closest('[data-thx]')){e.preventDefault();fechar();}});document.addEventListener('keydown',esc);}
+    if(!acomp){const V=m.querySelector('#thV'),VS=['tut_monte','tut_sistema','tut_diagrama'];let vi=0;V.addEventListener('ended',()=>{vi++;if(vi<VS.length){V.src=TB+'vid/'+VS[vi]+'.mp4';V.play().catch(()=>{});}});V.play().catch(()=>{V.muted=true;V.play().catch(()=>{});});}
+    m.addEventListener('click',e=>{if(e.target.closest('[data-thc]')){e.preventDefault();fechar();if(window.FCRC)FCRC.abrir('Olá! Assisti ao vídeo do FC Mostruário 3D e quero um acesso para conhecer. Minha empresa e cidade: ');else open('https://wa.me/5566999867984','_blank');return;}if(e.target===m||e.target.closest('.thx')||e.target.closest('[data-thx]')){e.preventDefault();fechar();}});document.addEventListener('keydown',esc);}
   window.FCTH={abrir,fechar};
   function ligar(){
     const d=document.getElementById('acDemo');if(d){d.textContent='▶ Ver funcionando aqui';d.removeAttribute('target');d.href='#acompanhamento';d.classList.add('thpulse');d.addEventListener('click',e=>{e.preventDefault();abrir('acomp');});}
     const f=document.querySelector('.fone');if(f&&!document.getElementById('thBig')){const o=document.createElement('div');o.id='thBig';o.style.cssText='position:absolute;left:0;right:0;bottom:-96px;display:flex;justify-content:center';o.innerHTML='<button type="button" class="thz thpulse">▶ Ver em tela grande</button>';o.querySelector('button').onclick=()=>abrir('acomp');f.appendChild(o);f.style.marginBottom='100px';}
-    const p=document.getElementById('dplay');if(p){p.onclick=e=>{e.preventDefault();abrir('3d');};p.classList.add('thpulse');}
+    const p=document.getElementById('dplay');if(p)p.classList.add('thpulse');
     document.querySelectorAll('a[href="#demo"]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();abrir('3d');}));
     if(location.hash==='#ver-acomp')abrir('acomp');if(location.hash==='#ver-3d')abrir('3d');}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ligar);else ligar();
