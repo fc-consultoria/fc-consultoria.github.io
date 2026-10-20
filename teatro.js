@@ -22,11 +22,11 @@
   function esc(e){if(e.key==='Escape')fechar();}
   function abrir(qual){fechar();hit(qual);const m=document.createElement('div');m.id='thM';
     const acomp=qual==='acomp';
-    m.innerHTML=`<div class="thb">${acomp?`<div class="thf"><iframe src="${ACOMP}" title="Demonstração do acompanhamento da implantação" allow="clipboard-write"></iframe></div>`:`<div class="thw" style="background:#0b141a"><video id="thV" src="${TB}vid/tut_monte.mp4" controls autoplay playsinline style="width:100%;height:100%;object-fit:contain;display:block"></video></div>`}
+    m.innerHTML=`<div class="thb">${acomp?`<div class="thf"><iframe src="${ACOMP}" title="Demonstração do acompanhamento da implantação" allow="clipboard-write"></iframe></div>`:`<div class="thw" style="background:#0b141a"><video id="thV" src="${TB}vid/porta_gold.mp4" controls autoplay playsinline style="width:100%;height:100%;object-fit:contain;display:block"></video></div>`}
       <button type="button" class="thx" aria-label="Fechar">✕</button>
       <div class="thl">${acomp?'Demonstração com cliente fictício · os dias avançam sozinhos':'Assista como funciona · gostou? <a href="#" data-thc style="color:#7fe0a5">💬 Peça um acesso para conhecer</a>'} · <a href="#" data-thx>fechar</a></div></div>`;
     document.body.appendChild(m);document.documentElement.style.overflow='hidden';requestAnimationFrame(()=>requestAnimationFrame(()=>m.classList.add('on')));
-    if(!acomp){const V=m.querySelector('#thV'),VS=['tut_monte','tut_sistema','tut_diagrama'];let vi=0;V.addEventListener('ended',()=>{vi++;if(vi<VS.length){V.src=TB+'vid/'+VS[vi]+'.mp4';V.play().catch(()=>{});}});V.play().catch(()=>{V.muted=true;V.play().catch(()=>{});});}
+    if(!acomp){const V=m.querySelector('#thV'),VS=['porta_gold'];let vi=0;V.addEventListener('ended',()=>{vi++;if(vi<VS.length){V.src=TB+'vid/'+VS[vi]+'.mp4';V.play().catch(()=>{});}});V.play().catch(()=>{V.muted=true;V.play().catch(()=>{});});}
     m.addEventListener('click',e=>{if(e.target.closest('[data-thc]')){e.preventDefault();fechar();if(window.FCRC)FCRC.abrir('Olá! Assisti ao vídeo do FC Mostruário 3D e quero um acesso para conhecer. Minha empresa e cidade: ');else open('https://wa.me/5566999867984','_blank');return;}if(e.target===m||e.target.closest('.thx')||e.target.closest('[data-thx]')){e.preventDefault();fechar();}});document.addEventListener('keydown',esc);}
   window.FCTH={abrir,fechar};
   function ligar(){
