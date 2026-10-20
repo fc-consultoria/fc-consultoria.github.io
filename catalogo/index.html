@@ -90,7 +90,7 @@ footer{background:var(--ink);color:#c7d6dd;padding:34px 0 90px;font-size:14.5px;
 <body>
 <header class="top"><div class="w">
  <span class="brand"><span id="cSig" class="csig"></span><span><b id="cName">Catálogo</b><small>Catálogo de perfis de alumínio</small></span></span>
- <nav><button type="button" class="btn b-gh noprint" onclick="imprimir()">🖨 Imprimir / PDF</button><a class="btn b-or noprint" id="cZap" target="_blank" rel="noopener" style="background:#1f9d55;color:#fff">💬 WhatsApp</a></nav>
+ <nav><button type="button" class="btn b-gh noprint" id="cPrint" onclick="imprimir()">🖨 Imprimir / PDF</button><script>try{if(window.top!==window.self)document.getElementById('cPrint').style.display='none';}catch(_){document.getElementById('cPrint').style.display='none';}</script><a class="btn b-or noprint" id="cZap" target="_blank" rel="noopener" style="background:#1f9d55;color:#fff">💬 WhatsApp</a></nav>
 </div></header>
 
 <section class="hero hs"><div class="w"><div>
