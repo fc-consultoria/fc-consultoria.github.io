@@ -26,6 +26,7 @@
 #cvz .cvo{position:absolute;left:8px;top:8px;background:#e8912d;color:#fff;font:800 11px system-ui;border-radius:99px;padding:2px 8px}
 #cvtab{position:fixed;left:10px;bottom:10px;z-index:900;border:0;border-radius:14px;background:${cor};color:#fff;font:700 12.5px/1.2 system-ui;padding:5px 12px 5px 5px;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.3);display:none;align-items:center;gap:8px;max-width:min(240px,62vw);text-align:left}
 #cvtab .ti{width:46px;height:46px;flex:none;border-radius:9px;background:#fff center/contain no-repeat;transition:opacity .4s}#cvtab .tt{min-width:0}#cvtab .tt small{display:block;font-weight:500;opacity:.88;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cvz.inh{position:relative;left:auto;top:auto;transform:none;justify-self:end;align-self:center;width:min(300px,100%);z-index:1;box-shadow:0 14px 34px rgba(0,0,0,.35)}#cvz.inh .cvi{aspect-ratio:16/10}#cvz.inh [data-cv=min]{display:none}
 #cvz.min{opacity:0;pointer-events:none;transform:translate(-30px,-50%)}
 @media print{#cvz,#cvtab{display:none!important}}`;document.head.appendChild(st);
     const B=document.createElement('div');B.id='cvz';B.innerHTML=`<div class="cvh">📣 <span>Destaques · ${esc(C.nome||'')}</span><button type="button" title="Minimizar" data-cv="min">–</button></div><div class="cvi"><img alt=""></div><div class="cvt"><b></b><small></small><button type="button" class="cvg"></button></div><div class="cvd">${itens.map(()=>'<i></i>').join('')}</div>`;
@@ -46,7 +47,10 @@
     B.addEventListener('mouseenter',()=>pausa=true);B.addEventListener('mouseleave',()=>pausa=false);
     setInterval(()=>{if(pausa||itens.length<2)return;i=(i+1)%itens.length;mostra();},seg*1000);
     const lugar=()=>{const w=document.querySelector('main .w')||document.querySelector('.w');const esq=w?w.getBoundingClientRect().left:0;const larg=Math.min(320,esq-32);
-      const cabe=innerWidth>=1300&&larg>=200;B.style.setProperty('--cvw',larg+'px');
+      const cabe=innerWidth>=1300&&larg>=200;const hw=document.querySelector('.hero .w');
+      if(!cabe&&hw){if(B.parentNode!==hw)hw.appendChild(B);B.classList.add('inh');B.classList.remove('min');B.style.display='';T.style.display='none';return;}
+      if(B.classList.contains('inh')){B.classList.remove('inh');document.body.appendChild(B);if(min)B.classList.add('min');}
+      B.style.setProperty('--cvw',larg+'px');
       B.style.display=cabe?'':'none';T.style.display=cabe?(min?'flex':'none'):'flex';};
     B.querySelector('[data-cv=min]').onclick=()=>{const mm=document.getElementById('cvm');if(mm){mm.click();return;}min=true;SS.s('cv_min','1');B.classList.add('min');lugar();};
     T.onclick=()=>{if(innerWidth>=1300&&B.style.display!=='none'){min=false;SS.s('cv_min','0');B.classList.remove('min');lugar();return;}
