@@ -79,7 +79,7 @@ section{padding:72px 0;scroll-margin-top:64px}
 @media(max-width:560px){.acf{padding:20px}.acf form{grid-template-columns:1fr}}
 .sh{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:28px;flex-wrap:wrap}.sh h2{font-size:clamp(28px,3.6vw,40px);margin-top:6px}.sh p{max-width:52ch;color:var(--tm);margin:0}
 .eb.dk{color:var(--te)}
-.srv{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.srv{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}.srv>.sv{grid-column:span 2}.srv>.sv:nth-child(n+4){grid-column:span 3}
 .sv{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:8px;transition:.15s}.sv:hover{border-color:var(--te);transform:translateY(-2px);box-shadow:0 10px 24px rgba(14,107,98,.1)}
 .sv i{font-style:normal;width:44px;height:44px;border-radius:11px;display:grid;place-items:center;background:#e2f0ec;font-size:22px}
 .sv h3{font-size:19px}.sv p{margin:0;color:var(--tm);font-size:15px}
@@ -119,7 +119,7 @@ footer{padding:28px 0 90px;color:var(--tm);font-size:13.5px}footer .w{display:fl
 .acw{display:flex;flex-direction:column;align-items:center;gap:2px;margin-left:4px}.acw small{font-size:10.5px;color:#9fc3cf;white-space:nowrap;line-height:1.1}.acw .btn.ac{margin-left:0}
 .free{background:#0e2a33;border-bottom:1px solid #22394a}.free .w{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding-top:9px;padding-bottom:9px;font-size:14px;color:#cfe6ec}.free b{color:#fff;font-weight:700}.free a{color:#5fd3e6;text-decoration:none;font-weight:600;white-space:nowrap}.free a:hover{text-decoration:underline}
 @media(max-width:620px){.acw small{font-size:9.5px}.free .w{font-size:13px;gap:4px 12px}.free b{flex-basis:100%}}
-@media(max-width:960px){.hero .w,.trg,.sob,.ct{grid-template-columns:1fr}.srv{grid-template-columns:1fr 1fr}.rep{grid-template-columns:1fr 1fr}.nums{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.nums div{padding:16px 14px;min-width:0}.nums b{font-size:22px;overflow-wrap:anywhere}.nums span{font-size:12.5px;line-height:1.45;display:block}.hero .ph img{margin:0 auto}.shots{min-height:300px}
+@media(max-width:960px){.hero .w,.trg,.sob,.ct{grid-template-columns:1fr}.srv{grid-template-columns:1fr 1fr}.srv>.sv,.srv>.sv:nth-child(n+4){grid-column:auto}.srv>.sv:last-child{grid-column:1/-1}.rep{grid-template-columns:1fr 1fr}.nums{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.nums div{padding:16px 14px;min-width:0}.nums b{font-size:22px;overflow-wrap:anywhere}.nums span{font-size:12.5px;line-height:1.45;display:block}.hero .ph img{margin:0 auto}.shots{min-height:300px}
 }
 @media(max-width:1440px){nav.mn{display:none;position:absolute;top:64px;left:0;right:0;background:var(--ink);flex-direction:column;padding:10px 20px 16px;border-bottom:1px solid #22394a}nav.mn.on{display:flex}.mbtn{display:block;margin-left:8px;order:5}.top .btn.ac{margin-left:auto}.acw{margin-left:auto}}
 @media(max-width:620px){.top .btn.wz{display:none}.brand small{display:none}.top .btn.ac{padding:7px 9px;font-size:12.5px}.brand{margin-right:6px;font-size:15px}.brand img{width:34px;height:34px}.top .w{gap:6px}}
@@ -160,7 +160,6 @@ footer{padding:28px 0 90px;color:var(--tm);font-size:13.5px}footer .w{display:fl
  <div class="srv">
   <div class="sv"><i>💲</i><h3>Precificação</h3><p>Preço de custo e de venda calculados com método: perfis, componentes, vidro, mão de obra e margem por grupo.</p></div>
   <div class="sv"><i>🖥️</i><h3>Sistema de cálculo</h3><p>Implantação e parametrização do sistema de cálculo: cadastros, tabelas de preço e parâmetros. Consulte a disponibilidade para o seu sistema.</p></div>
-  <div class="sv"><i>⚙️</i><h3>Tipologias e plano de corte</h3><p>Desenvolvimento de tipologias e ajuste de plano de corte nas linhas Suprema, Gold e outras.</p><span class="disp">Consulte disponibilidade</span></div>
   <div class="sv"><i>🔎</i><h3>Pesquisa de fornecedores</h3><p>Comparativo de perfis e componentes entre fornecedores, com equivalência de códigos e preço por quilo.</p></div>
   <div class="sv"><i>📊</i><h3>Tabela de preços calibrada</h3><p>Tabela ajustada ao seu custo real, para o orçamento sair rápido e sem perder margem.</p></div>
   <div class="sv"><i>🪟</i><h3>Mostruário 3D para vendas</h3><p>A vidraçaria apresenta as esquadrias em 3D ao cliente, e vendedores e orçamentistas ganham segurança no sistema, com relatório de uso.</p></div>
