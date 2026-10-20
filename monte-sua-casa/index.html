@@ -3,14 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Monte sua Casa 3D · FC Mostruário 3D</title>
-<meta name="description" content="Monte uma casa em 3D com esquadrias de alumínio Suprema e Gold: escolha a planta, as cores e as janelas, e passeie pela rua. Demonstração grátis da FC Consultoria em Esquadria.">
+<title>Simule as esquadrias na planta · FC Consultoria</title>
+<meta name="description" content="Simule a montagem de esquadrias de alumínio Suprema e Gold nas plantas, em 3D: janelas, portas, cores, dia e noite. Achou interessante? Fale com a FC Consultoria em Esquadria.">
 <link rel="icon" href="../img/logo-fc-160.jpg">
-<meta property="og:title" content="Monte sua Casa 3D · FC Mostruário 3D"><meta property="og:description" content="Escolha a planta, as cores e as janelas Suprema e Gold, e passeie pela rua. Grátis, no celular."><meta property="og:image" content="https://fc-consultoria.github.io/img/logo-fc-160.jpg"><meta property="og:url" content="https://fc-consultoria.github.io/monte-sua-casa/">
+<meta property="og:title" content="Simule as esquadrias na planta · FC Consultoria"><meta property="og:description" content="Montagem de esquadrias Suprema e Gold nas plantas, em 3D. Fale com a FC Consultoria."><meta property="og:image" content="https://fc-consultoria.github.io/img/logo-fc-160.jpg"><meta property="og:url" content="https://fc-consultoria.github.io/monte-sua-casa/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
 <style>
-/* Prévia da página do site: Monte sua Casa 3D (demonstração jogável + convite para o Orientativo FC 3D) */
+/* Página do site: Monte sua Casa 3D · apresentação da simulação (sem teste no site) e contato com a FC */
+.gal{display:grid;grid-template-columns:1.25fr 1fr;gap:12px}.gal figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}.gal img{display:block;width:100%;height:100%;object-fit:cover;aspect-ratio:16/10}.gal figure:first-child{grid-row:span 2}.gal figure:first-child img{aspect-ratio:auto}.gal figcaption{padding:9px 12px;font-size:14px;color:var(--muted);border-top:1px solid var(--line)}.gal .sm{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ct{display:grid;grid-template-columns:1.2fr .8fr;gap:22px;align-items:center;background:linear-gradient(150deg,#0e6b62,#123a35);color:#fff;border-radius:20px;padding:28px}.ct h2{color:#fff}.ct p{color:#d5ebe6;margin:0}.ct .bt{background:#fff;color:#0e6b62}.ct .bt.wa{background:#1f9d55;color:#fff}.ct .tel{font:700 22px var(--f-d);margin-top:10px;display:block;color:#fff;text-decoration:none}
+@media (max-width:860px){.gal,.ct{grid-template-columns:1fr}.gal .sm{grid-template-columns:1fr}}
 :root{--bg:#f1f5f3;--panel:#fff;--fg:#14231f;--muted:#56675f;--line:#d6e2dd;--teal:#0e6b62;--teal-soft:#e2f0ec;--amber:#d98a1f;--amber-soft:#fbecd5;
   --f-d:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;--f-b:'Inter',ui-sans-serif,system-ui,sans-serif}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1916;--panel:#16241f;--fg:#e9f2ee;--muted:#9fb3ab;--line:#28403a;--teal:#46b8a8;--teal-soft:#183530;--amber:#f0a947;--amber-soft:#33260f;color-scheme:dark}}
@@ -53,53 +56,51 @@ footer{border-top:1px solid var(--line);padding:22px 16px;text-align:center;colo
 </style>
 </head>
 <body>
-<nav class="nav"><a href="../" style="display:flex;text-decoration:none"><span class="mk"><i></i><i></i><i></i></span></a><b>FC Consultoria em Esquadria</b><span class="sp"></span><a href="../">Início</a><a href="#jogo">Monte sua Casa</a><a href="#mostruario">FC Mostruário 3D</a><a class="bt" href="#" data-wa style="padding:9px 14px;font-size:14px;color:#fff">Fale com a FC</a></nav>
+<nav class="nav"><a href="../" style="display:flex;text-decoration:none"><span class="mk"><i></i><i></i><i></i></span></a><b>FC Consultoria em Esquadria</b><span class="sp"></span><a href="../">Início</a><a href="#simulacao">Simulação</a><a href="#mostruario">FC Mostruário 3D</a><a class="bt" href="#contato" style="padding:9px 14px;font-size:14px;color:#fff">Fale com a FC</a></nav>
 <main class="wrap">
   <header>
-    <span class="eb">Novo · grátis para testar</span>
-    <h1>Monte sua Casa 3D com esquadrias de alumínio</h1>
-    <p class="lead">Escolha a planta, troque as cores do telhado, das paredes e dos perfis, e feche cada vão com janelas e portas das linhas Suprema e Gold. Passeie pela rua, abra as esquadrias e veja a casa de dia e de noite.</p>
-    <div class="ctas"><a class="bt am" href="#jogo">▶ Testar agora</a><a class="bt gh" href="#compartilhar">Enviar para um colega</a></div>
+    <span class="eb">Monte sua Casa 3D · FC Mostruário 3D</span>
+    <h1>Simule a montagem de esquadrias nas plantas</h1>
+    <p class="lead">Escolha a planta, feche cada vão com janelas e portas das linhas Suprema e Gold, troque as cores do telhado, das paredes e dos perfis, e veja a obra de dia e de noite. Uma forma de mostrar ao seu cliente como a casa fica antes de fabricar.</p>
+    <div class="ctas"><a class="bt am" href="#" data-chat>💬 Achou interessante? Fale com a FC</a><a class="bt gh" href="#" data-wa>WhatsApp (66) 9 9986-7984</a></div>
   </header>
 
-  <section id="jogo"><div class="jogo"><iframe src="jogo.html?demo=1" title="Monte sua Casa 3D · demonstração" allow="fullscreen" loading="lazy"></iframe></div>
-    <div class="ctas" style="margin-top:12px"><a class="bt am" href="jogo.html?demo=1" target="_blank" rel="noopener">⤢ Abrir em tela cheia</a></div>
-    <p class="nt" style="margin-top:8px">Funciona no celular e no computador. Medidas e pesos são demonstrativos: confirme sempre com o seu fornecedor de perfis.</p></section>
+  <section id="simulacao"><h2>Veja como fica a simulação</h2>
+    <div class="gal">
+      <figure><img src="../img/monte/planta-terrea.webp" alt="Casa térrea moderna em 3D com as esquadrias montadas" loading="lazy"><figcaption>Térrea moderna · esquadrias Suprema montadas em todos os vãos</figcaption></figure>
+      <figure><img src="../img/monte/casa-em-l.webp" alt="Casa em L com varanda gourmet em 3D" loading="lazy"><figcaption>Casa em L · troca de cores de telhado, paredes e perfis</figcaption></figure>
+      <div class="sm"><figure><img src="../img/monte/noite.webp" alt="Casa vista à noite com as luzes acesas" loading="lazy"><figcaption>De noite, com as luzes acesas</figcaption></figure>
+      <figure><img src="../img/monte/bairro.webp" alt="Bairro com várias obras para fechar com esquadrias" loading="lazy"><figcaption>Bairro com várias obras</figcaption></figure></div>
+    </div>
+    <p class="nt" style="margin-top:8px">Imagens da simulação no FC Mostruário 3D. Medidas e pesos são demonstrativos: confirme sempre com o seu fornecedor de perfis.</p></section>
 
   <section><h2>A obra do seu cliente, em 3D</h2>
     <div class="grid3">
-      <div class="card"><i>🏠</i><b>Planta completa</b><p>Casas com garagem, quintal e piscina, num bairro com avenida, praça, mercado e posto.</p></div>
+      <div class="card"><i>🏠</i><b>Plantas completas</b><p>Casas com garagem, quintal e piscina, casa em L e prédio de apartamentos, num bairro com avenida, praça e comércio.</p></div>
       <div class="card"><i>🪟</i><b>Esquadrias de verdade</b><p>Correr 2 e 4 folhas, maxim-ar e porta de giro, com os desenhos dos perfis Suprema e Gold.</p></div>
-      <div class="card"><i>🎨</i><b>Do seu jeito</b><p>Telhado, paredes, muro e cor dos perfis. Abra as esquadrias e veja a casa à noite com as luzes acesas.</p></div>
+      <div class="card"><i>🎨</i><b>Do jeito do cliente</b><p>Telhado, paredes, muro e cor dos perfis. Abra as esquadrias e veja a casa à noite com as luzes acesas.</p></div>
     </div></section>
 
-  <section id="mostruario"><h2>Demonstração × FC Mostruário 3D</h2>
-    <div class="cmp">
-      <div class="card"><b>Demonstração no site</b><span class="pill">grátis</span><ul><li>Bairro e passeio a pé</li><li>Casa Compacta e Térrea</li><li>Cores, telhado e tipologias</li></ul></div>
-      <div class="card pro"><b>No FC Mostruário 3D</b><span class="pill">para a sua vidraçaria</span><ul><li>Casa em L e <b>prédio de 12 apartamentos</b></li><li>Modo Carreira com selos, até fechar o bairro</li><li>Perfis, cortes e peso da obra em Suprema e Gold</li><li>16 tipologias em 3D e catálogo de perfis, para apresentar ao cliente e vender com segurança</li></ul>
-        <a class="bt" href="#" data-wa style="align-self:flex-start;margin-top:6px">Quero o Mostruário 3D</a></div>
-    </div></section>
+  <section id="mostruario"><div class="card" style="border:2px solid var(--teal)"><b style="font-size:20px">A simulação faz parte do FC Mostruário 3D</b><span class="pill" style="align-self:flex-start">para a sua vidraçaria</span>
+    <ul style="margin:4px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:15px"><li>Montagem de esquadrias nas plantas e no prédio de 12 apartamentos</li><li>Perfis, cortes e peso da obra em Suprema e Gold</li><li>16 tipologias em 3D e catálogo de perfis, para apresentar ao cliente e vender com segurança</li><li>Treinamento da equipe com acompanhamento do gestor</li></ul></div></section>
 
-  <section id="compartilhar" class="share">
-    <div><h2>Envie para os seus clientes e colegas</h2><p class="lead" style="font-size:16px">Um link direto para a demonstração. Quem testa conhece a FC e pode pedir o FC Mostruário 3D pelo WhatsApp.</p>
-      <div class="lkb"><input readonly id="lk" value="https://fc-consultoria.github.io/monte-sua-casa/" aria-label="Link da demonstração"><button type="button" class="bt" id="cp">Copiar</button></div>
-      <div class="ctas"><a class="bt" id="waS" target="_blank" rel="noopener" href="#" style="background:#1f9d55">Enviar pelo WhatsApp</a></div></div>
-    <div class="wa" aria-label="Como a mensagem aparece no WhatsApp">
-      <div class="msg">🏠 Já montou uma casa em 3D com esquadrias de alumínio? Teste grátis o <b>Monte sua Casa 3D</b> da FC Consultoria: escolha a planta, as cores e as janelas Suprema e Gold, e passeie pela rua. Funciona no celular!
-        <div class="lk"><div>Monte sua Casa 3D</div><p>fc-consultoria.github.io · Demonstração grátis</p></div></div>
-    </div>
+  <section id="contato" class="ct">
+    <div><h2>Quer saber mais? Entre em contato</h2><p>Mostramos a simulação funcionando para a sua equipe e explicamos como usar nas vendas. Converse com a FC aqui pelo site ou pelo WhatsApp.</p>
+      <a class="tel" href="#" data-wa>📱 (66) 9 9986-7984</a></div>
+    <div style="display:flex;flex-direction:column;gap:10px"><a class="bt" href="#" data-chat>💬 Conversar aqui no site</a><a class="bt wa" href="#" data-wa>Chamar no WhatsApp</a></div>
   </section>
 </main>
 <footer>FC Consultoria em Esquadria · Sinop/MT · Atendimento de segunda a sexta, das 8h às 11h e das 13h às 17h</footer>
+<script src="../rep_chat.js?v=1792043132"></script>
 <script>
-(function(){const MSG='🏠 Já montou uma casa em 3D com esquadrias de alumínio? Teste grátis o Monte sua Casa 3D da FC Consultoria: escolha a planta, as cores e as janelas Suprema e Gold, e passeie pela rua. Funciona no celular! ';
-  const L=document.getElementById('lk').value,WA='https://wa.me/5566999867984?text='+encodeURIComponent('Olá! Vi o Monte sua Casa 3D no site e quero conhecer o FC Mostruário 3D para a minha vidraçaria.');
+if(window.FCRC)FCRC.init({pag:"monte-sua-casa",marca:"FC Consultoria",cor:"#1f9d55",logo:"../img/logo-fc-160.jpg",rotulo:"💬 Fale com a FC",sub:"Simulação de esquadrias e FC Mostruário 3D · respondemos por aqui",ph:"Escreva sua dúvida ou pedido",ola:"Olá! Quer ver a simulação de esquadrias funcionando? Deixe sua mensagem que a FC responde por aqui."});
+(function(){const WA='https://wa.me/5566999867984?text='+encodeURIComponent('Olá! Vi a simulação de esquadrias nas plantas (Monte sua Casa 3D) no site e quero saber mais.');
   document.querySelectorAll('[data-wa]').forEach(a=>{a.href=WA;a.target='_blank';a.rel='noopener';});
-  document.getElementById('waS').href='https://wa.me/?text='+encodeURIComponent(MSG+L);
-  document.getElementById('cp').onclick=e=>{const i=document.getElementById('lk');i.select();(navigator.clipboard?navigator.clipboard.writeText(L):Promise.reject()).then(()=>{e.target.textContent='Copiado';}).catch(()=>{try{document.execCommand('copy');e.target.textContent='Copiado';}catch(_){}});};
   let s0='x';try{s0=sessionStorage.getItem('fc_s')||(()=>{const v=Math.random().toString(36).slice(2,10);sessionStorage.setItem('fc_s',v);return v;})();}catch(_){}
   const hit=ev=>{try{fetch('https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/rpc/site_hit',{method:'POST',keepalive:true,headers:{apikey:'sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg','Content-Type':'application/json'},body:JSON.stringify({p_s:s0,p_pag:'monte-sua-casa',p_ev:ev,p_o:'direto',p_ref:(document.referrer||'').slice(0,80)})}).catch(()=>{});}catch(_){}};
-  hit('view');addEventListener('message',e=>{if(e.data&&e.data.fc==='cta')hit('mc_cta');});document.querySelectorAll('[data-wa]').forEach(a=>a.addEventListener('click',()=>hit('whats')));document.getElementById('waS').addEventListener('click',()=>hit('mc_share'));})();
+  hit('view');
+  document.querySelectorAll('[data-wa]').forEach(a=>a.addEventListener('click',()=>hit('whats')));
+  document.querySelectorAll('[data-chat]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();hit('mc_chat');if(window.FCRC)FCRC.abrir('Olá! Vi a simulação de esquadrias nas plantas e quero saber mais.');else window.open(WA,'_blank');}));})();
 </script>
 </body>
 </html>
