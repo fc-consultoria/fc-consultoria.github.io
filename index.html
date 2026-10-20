@@ -95,6 +95,7 @@ section{padding:72px 0;scroll-margin-top:64px}
 .demo h3{color:#fff;font-size:24px;margin:2px 0 4px}.demo p{color:#b9cdd6;margin:0}.demo .dnote{font-size:13.5px;margin-top:10px}
 .dbox{position:relative;margin-top:14px;border-radius:12px;overflow:hidden;border:1px solid #2b4a58;background:#dfe5ea}
 .dbox img{width:100%;filter:brightness(.55)}.dbox iframe{display:block;width:100%;height:min(720px,80vh);border:0;background:#eef1f3}
+#dvid{display:block;width:100%;height:100%;object-fit:contain;background:#0b141a}.vtabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}.vtabs button{font:600 14px var(--f-b,system-ui);padding:8px 14px;border-radius:99px;border:1px solid rgba(255,255,255,.25);background:transparent;color:inherit;cursor:pointer}.vtabs button.on{background:var(--cy);color:#06222a;border-color:var(--cy)}.vcta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}.vcta b{width:100%;font-size:17px}
 #dplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:700 18px var(--f-d);padding:16px 26px;border-radius:12px;border:0;background:var(--cy);color:#06222a;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.4)}#dplay:hover{filter:brightness(1.08)}
 .chip{display:inline-block;font:600 12px ui-monospace,monospace;letter-spacing:.06em;color:#06222a;background:var(--cy);border-radius:6px;padding:3px 8px;margin-bottom:10px}
 /* representação */
@@ -215,9 +216,11 @@ footer{padding:28px 0 90px;color:var(--tm);font-size:13.5px}footer .w{display:fl
   <div class="shots"><img class="s1" src="img/02-conhecer.jpg" alt="Tela do Mostruário 3D: janela de correr em 3D" loading="lazy"><img class="s2" src="img/14-diagrama.jpg" alt="Diagrama de dimensões com o vento" loading="lazy"></div>
  </div>
  <div class="demo" id="demo">
-  <div class="dhd"><div><span class="chip">GRÁTIS</span><h3>Simule a montagem: janela de correr 2 folhas em 3D</h3><p>Gire, abra as folhas, desmonte peça por peça e veja os cortes das junções, direto no navegador.</p></div></div>
-  <div class="dbox" id="dbox"><img src="img/02-conhecer.jpg" alt="Prévia da demonstração 3D" loading="lazy"><button type="button" id="dplay">▶ Simular a montagem da janela em 3D</button></div>
-  <p class="dnote">Demonstração com 1 tipologia. O Mostruário completo tem 16 tipologias, desafios, orientação em sistema, diagrama de dimensões e o Monte sua Casa 3D.</p><p class="dnote">📘 <b>Fonte técnica:</b> conteúdo baseado nos catálogos técnicos oficiais das linhas Suprema e Gold (Alcoa). Os usuários têm os catálogos para baixar dentro do Mostruário. Medidas e pesos são demonstrativos: confirme sempre com o seu fornecedor. Marcas pertencem aos seus titulares.</p>
+  <div class="dhd"><div><span class="chip">VÍDEO</span><h3>Assista como funciona: janela de correr 2 folhas em 3D</h3><p>Veja a montagem peça por peça, o lançamento do pedido no sistema e o diagrama de dimensões. Gostou? Entre em contato.</p></div></div>
+  <div class="vtabs" role="tablist"><button type="button" class="on" data-v="tut_monte">🧩 Montagem peça por peça</button><button type="button" data-v="tut_sistema">💻 Lançamento no sistema</button><button type="button" data-v="tut_diagrama">📐 Diagrama de dimensões</button></div>
+  <div class="dbox" id="dbox"><video id="dvid" src="vid/tut_monte.mp4" poster="img/02-conhecer.jpg" controls playsinline muted preload="none"></video><button type="button" id="dplay">▶ Assista como funciona</button></div>
+  <div class="vcta"><b>Gostou? Entre em contato e peça um acesso para conhecer.</b><a class="btn cy" href="#" data-chatv>💬 Falar com a FC</a><a class="btn gh" href="https://wa.me/5566999867984?text=Ol%C3%A1%20Fernando%2C%20assisti%20ao%20v%C3%ADdeo%20do%20FC%20Mostru%C3%A1rio%203D%20e%20quero%20um%20acesso%20para%20conhecer." target="_blank" rel="noopener">WhatsApp (66) 9 9986-7984</a></div>
+  <p class="dnote">O vídeo mostra 1 tipologia. O Mostruário completo tem 16 tipologias, desafios, orientação em sistema, diagrama de dimensões e o Monte sua Casa 3D.</p><p class="dnote">📘 <b>Fonte técnica:</b> conteúdo baseado nos catálogos técnicos oficiais das linhas Suprema e Gold (Alcoa). Os usuários têm os catálogos para baixar dentro do Mostruário. Medidas e pesos são demonstrativos: confirme sempre com o seu fornecedor. Marcas pertencem aos seus titulares.</p>
  </div>
 </div></section>
 
@@ -266,7 +269,9 @@ footer{padding:28px 0 90px;color:var(--tm);font-size:13.5px}footer .w{display:fl
 <noscript><a class="wfix" href="https://wa.me/5566999867984?text=Ol%C3%A1%20Fernando%2C%20vim%20pelo%20site%20da%20FC." target="_blank" rel="noopener" aria-label="WhatsApp da FC">💬</a></noscript>
 <script src="https://fc-consultoria.github.io/treinamento/mapa.js?v=1792037768"></script>
 <script>
-document.getElementById('dplay').onclick=()=>{if(innerWidth<760){open('demo.html','_blank');return;}const b=document.getElementById('dbox');b.innerHTML='<iframe src="demo.html" title="Demonstração FC Mostruário 3D" loading="lazy"></iframe>';};
+{const v=document.getElementById('dvid'),pb=document.getElementById('dplay');const play=()=>{pb.hidden=true;v.muted=false;v.play().catch(()=>{v.muted=true;v.play();});};pb.onclick=play;v.addEventListener('play',()=>{pb.hidden=true;});
+document.querySelectorAll('.vtabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.vtabs button').forEach(x=>x.classList.toggle('on',x===b));v.src='vid/'+b.dataset.v+'.mp4';play();});
+document.querySelectorAll('[data-chatv]').forEach(a=>a.onclick=e=>{e.preventDefault();if(window.FCRC)FCRC.abrir('Olá! Assisti ao vídeo do FC Mostruário 3D e quero um acesso para conhecer. Minha empresa e cidade: ');else open('https://wa.me/5566999867984','_blank');});}
 document.getElementById('mb').onclick=()=>document.getElementById('mn').classList.toggle('on');
 document.querySelectorAll('#mn a').forEach(a=>a.onclick=()=>document.getElementById('mn').classList.remove('on'));
 const MAPA_FALLBACK=[{"c": "Sinop", "n": 3, "s": "and", "t": "on", "u": "MT"}, {"c": "Cuiabá", "n": 1, "s": "and", "t": "pr", "u": "MT"}, {"c": "Cuiabá", "n": 6, "s": "and", "t": "on", "u": "MT"}, {"c": "Manaus", "n": 1, "s": "and", "t": "pr", "u": "AM"}, {"c": "Recife", "n": 1, "s": "and", "t": "pr", "u": "PE"}];
