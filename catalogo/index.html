@@ -4,7 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Catálogo de perfis</title>
-<meta name="robots" content="noindex">
+<script>/* catálogos liberados para o Google: os demais ficam fora da busca */
+(function(){var PUB=['casa-bandeirante'];var q=new URLSearchParams(location.search),s=window.CAT_SLUG||q.get('c')||(location.pathname.match(/\/catalogo\/([^\/?#]+)/)||[])[1]||'';
+ if(PUB.indexOf(s)<0){document.write('<meta name="robots" content="noindex">');}
+ else{document.write('<link rel="canonical" href="https://fc-consultoria.github.io/catalogo/?c='+s+'">');}})();</script>
 <meta name="generator" content="Catálogo Virtual FC · FC Consultoria em Esquadria">
 <meta name="author" content="FC Consultoria em Esquadria · fc-consultoria.github.io">
 <meta name="copyright" content="© FC Consultoria em Esquadria (CNPJ 52.985.682/0001-32) · criação FC · todos os direitos reservados">
