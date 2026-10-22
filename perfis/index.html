@@ -143,9 +143,9 @@ function desenha(){
  document.getElementById('tabs').innerHTML=LN.length>1?LN.map(l=>`<button type="button" class="tb" data-l="${l.id}" aria-pressed="${l===LI}">${esc(l.n)}</button>`).join(''):'';
  document.getElementById('dl').innerHTML=LN.map(l=>`<a class="btn ${l===LI?'b-or':'b-gh'}" href="${PDFP}${l.pdf}" download data-dl="${l.id}">📄 Baixar ${esc(l.n)} (PDF)</a>`).join('');
  document.getElementById('gf').innerHTML=[['all','Todos','#55636c']].concat(LI.g.map(g=>[g[0],g[1],COR[g[0]]])).map(([k,n,c])=>`<button type="button" data-g="${k}" aria-pressed="${G===k}"><i style="background:${c}"></i>${esc(n)}</button>`).join('');
- const t=nz(Q);let html='';
- LI.g.forEach(([g,nm,ds])=>{if(G!=='all'&&G!==g)return;const L=LI.p.filter(p=>p.g===g&&!p.oc&&(!t||nz(p.c).includes(t)||nz(p.n).includes(t)||nz(p.cd||'').includes(t)||nz(p.nd||'').includes(t)));if(!L.length)return;
-  html+=`<div class="gh"><i style="background:${COR[g]}"></i><div><h2>${esc(nm)}</h2><p>${esc(ds)}</p></div></div><div class="grid">${L.map(card).join('')}</div>`;});
+ const t=nz(Q);let html='';const LS=t?[LI].concat(LN.filter(l=>l!==LI)):[LI];
+ LS.forEach(LL=>LL.g.forEach(([g,nm,ds])=>{if(G!=='all'&&G!==g)return;const L=LL.p.filter(p=>p.g===g&&!p.oc&&(!t||nz(p.c).includes(t)||nz(p.n).includes(t)||nz(p.cd||'').includes(t)||nz(p.nd||'').includes(t)));if(!L.length)return;
+  html+=`<div class="gh"><i style="background:${COR[g]}"></i><div><h2>${esc(t&&LN.length>1?LL.n+' · '+nm:nm)}</h2><p>${esc(ds)}</p></div></div><div class="grid">${L.map(card).join('')}</div>`;}));
  document.getElementById('lst').innerHTML=html||'<p style="color:var(--tm);margin:30px 0">Nenhum perfil encontrado. Tente outro código ou nome.</p>';
  document.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{LI=LN.find(l=>l.id===b.dataset.l);G='all';desenha();hit('perfis_linha',LI.id);history.replaceState(null,'','?l='+LI.id);});
  document.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{G=b.dataset.g;desenha();});}
