@@ -6,6 +6,9 @@
 <title>Catálogo de perfis</title>
 <meta name="robots" content="noindex">
 <meta name="generator" content="Catálogo Virtual FC · FC Consultoria em Esquadria">
+<meta name="author" content="FC Consultoria em Esquadria · fc-consultoria.github.io">
+<meta name="copyright" content="© FC Consultoria em Esquadria (CNPJ 52.985.682/0001-32) · criação FC · todos os direitos reservados">
+<!-- Catálogo Virtual desenvolvido por FC Consultoria em Esquadria (FC Desenvolvimento de Projetos de Compra e Venda LTDA · CNPJ 52.985.682/0001-32) · Sinop-MT · todos os direitos reservados · uso licenciado ao cliente -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600;700&display=swap">
 <style>
@@ -70,6 +73,7 @@ header.top .w{display:flex;align-items:center;gap:14px;height:64px}
 .bk-foot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:14px}.bk-foot .note{color:var(--tm);font-size:13px}
 .bk-full{position:fixed!important;inset:0;z-index:65;border-radius:0!important;overflow:auto;width:100vw;height:100vh;box-sizing:border-box;margin:0!important;display:flex;flex-direction:column}.bk-full .bk-body{flex:1;display:flex;flex-direction:column;min-height:0}.bk-full .bk-cv{flex:1;height:auto;min-height:300px}#banc:fullscreen{background:#fff}.bk-none button,.bk-none label{opacity:.45;pointer-events:none}.bk-none .bk-sc{font:600 14px var(--f-b)!important;color:#7a4a08!important}body.bk-lock{overflow:hidden}
 @media(max-width:600px){.bk-cv{height:58vh}.bk-top b{font-size:22px}}
+.fccred{align-self:flex-end;color:rgba(199,214,221,.78)!important;font-size:12.5px;text-decoration:none;letter-spacing:.02em}.fccred b{color:#fff;font-weight:600}.fccred:hover b{text-decoration:underline}
 footer{background:var(--ink);color:#c7d6dd;padding:34px 0 90px;font-size:14.5px;margin-top:40px}footer .w{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}footer a{color:#fff}footer small{display:block;opacity:.75;margin-top:8px;max-width:680px}
 @media(max-width:860px){.hero .w{grid-template-columns:1fr}}
 @media(max-width:560px){header.top .brand small{display:none}.top nav .b-gh{display:none}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.cd .im{height:140px}.cd .im img.d3{max-height:100px}.cd .im img.d2{height:30px}.cd b{font-size:17px}.cd span{font-size:12.5px}}
@@ -84,7 +88,7 @@ footer{background:var(--ink);color:#c7d6dd;padding:34px 0 90px;font-size:14.5px;
 @media print{@page{size:A4;margin:10mm}body{background:#fff}.noprint,.tools,#v3,footer .btn,.sco{display:none!important}header.top{position:static}.hero{padding:12px 0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.hero h1{font-size:28px!important}
  .grid{grid-template-columns:repeat(4,1fr)!important;gap:6px}.cd{break-inside:avoid;padding:6px 8px}.cd .im{height:100px!important}.cd .im img.d3{max-height:64px!important}.cd b{font-size:15px}.cd span{font-size:10.5px}.cd .scb{border:0;background:none;padding:0;font-size:10.5px}
  .gh{margin:10px 0 6px;break-after:avoid}.gh h2{font-size:17px}.pline{break-before:page}.pline:first-child{break-before:auto}.ptitle{display:block;font:800 22px var(--f-d);color:var(--cc);margin:6px 0}
- .cd,.ccor i,.csig,header.top,.gh i{-webkit-print-color-adjust:exact;print-color-adjust:exact}footer{background:#fff!important;color:#555!important;padding:8px 0!important}}
+ .cd,.ccor i,.csig,header.top,.gh i{-webkit-print-color-adjust:exact;print-color-adjust:exact}footer{background:#fff!important;color:#555!important;padding:8px 0!important}.fccred,.fccred b{color:#666!important}}
 </style>
 </head>
 <body>
@@ -104,7 +108,7 @@ footer{background:var(--ink);color:#c7d6dd;padding:34px 0 90px;font-size:14.5px;
 <main class="w" id="lst"></main>
 <footer><div class="w">
  <div><b style="color:#fff" class="cFoot"></b><small>Imagens ilustrativas. Confirme código, cor e disponibilidade antes de fechar o pedido.</small></div>
- <a id="cCred" href="https://fc-consultoria.github.io/" target="_blank" rel="noopener" title="Catálogo Virtual FC" style="align-self:flex-end;color:rgba(199,214,221,.38);font-size:11px;text-decoration:none;letter-spacing:.02em">tecnologia FC</a>
+ <a id="cCred" class="fccred" href="https://fc-consultoria.github.io/" target="_blank" rel="noopener" title="Catálogo Virtual desenvolvido pela FC Consultoria em Esquadria">Desenvolvido por <b>FC Consultoria em Esquadria</b></a>
 </div></footer>
 
 <script src="cat-vitrine.js?v=4"></script>
@@ -155,7 +159,7 @@ async function carregaCli(){const M=document.getElementById('lst');
  try{window.CVIT&&CVIT.init({cli:CLI,ln:LN,img:IMG,zap:zapUrl,hit:HITX});}catch(e){console.warn('vitrine',e);}
  try{window.CAPRES&&CAPRES.init({cli:CLI,zap:zapUrl});}catch(e){console.warn('apres',e);}
  try{window.CLOJA&&CLOJA.init({cli:CLI,zap:zapUrl,hit:HITX,sbu:SBU,sbk:SBK});}catch(e){console.warn('loja',e);}
- {const cr=document.getElementById('cCred');if(cr&&CLI.vitrine&&CLI.vitrine.semcred)cr.remove();}
+ /* assinatura da FC fica sempre no rodapé (criação FC) */
  /* proteção FC: código do catálogo, aviso de cópia publicada em outro endereço e de cópia de conteúdo */
  window.fcK='FC-'+String(CLI.id||SLUG).toUpperCase();
  {const h=location.hostname,ok=['fc-consultoria.github.io','localhost','127.0.0.1',''].concat(CLI.dominio?[String(CLI.dominio).replace(/^https?:\/\//,'').replace(/\/.*$/,'')]:[]);if(!ok.includes(h))HITX('copia_dominio',h+' · '+fcK);}
