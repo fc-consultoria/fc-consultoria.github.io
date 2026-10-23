@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /treinamento/
+Disallow: /obra/
 
 Sitemap: https://fc-consultoria.github.io/sitemap.xml
