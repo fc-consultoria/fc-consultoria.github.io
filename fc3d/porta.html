@@ -28,7 +28,7 @@ a{display:inline-block;margin-top:6px;padding:10px 18px;border-radius:99px;backg
   <small>Plataforma FC 3D</small>
   <b id="tt">Carregando conteúdo protegido…</b>
   <p id="ds">Conferindo o seu acesso.</p>
-  <a href="./" id="vt" hidden>Voltar ao portal</a>
+  <a href="./" id="vt" target="_top" hidden>Voltar ao portal</a>
 </div>
 <script>
 /* Carregador da Plataforma FC 3D.
@@ -37,6 +37,7 @@ a{display:inline-block;margin-top:6px;padding:10px 18px;border-radius:99px;backg
 (function(){
   'use strict';
   var SB_URL='https://pawwncmfadzxfahfvhry.supabase.co',SB_KEY='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs';
+  var TOP=(function(){try{return window.top.location.href&&window.top}catch(e){return window}})();
   var id=(new URLSearchParams(location.search).get('c')||'').toLowerCase().replace(/[^a-z0-9-]/g,'');
   var ses=null;try{ses=JSON.parse(localStorage.getItem('fc3d.ses')||'null')}catch(e){}
   function erro(t,d,sair){
@@ -46,7 +47,7 @@ a{display:inline-block;margin-top:6px;padding:10px 18px;border-radius:99px;backg
     document.getElementById('vt').hidden=false;
     if(sair){try{localStorage.removeItem('fc3d.ses')}catch(e){}}
   }
-  if(!ses||!ses.token){location.replace('./');return}
+  if(!ses||!ses.token){TOP.location.replace(new URL('./',location.href).href);return}
   if(!id){erro('Abra pelo portal','Escolha a entrega no portal para ver em 3D.');return}
   fetch(SB_URL+'/rest/v1/rpc/fc3d_conteudo',{
     method:'POST',
@@ -56,7 +57,7 @@ a{display:inline-block;margin-top:6px;padding:10px 18px;border-radius:99px;backg
   .then(function(x){
     if(!x.ok){
       var m=(x.j&&x.j.message)||'Não foi possível abrir.';
-      if(/Sessão expirada|Acesso pausado|Licença pausada/.test(m)){erro('Acesso encerrado',m,true);if(window.top===window)setTimeout(function(){location.replace('./')},2500);return}
+      if(/Sessão expirada|Acesso pausado|Licença pausada/.test(m)){erro('Acesso encerrado',m,true);setTimeout(function(){TOP.location.replace(new URL('./',location.href).href)},2500);return}
       erro('Não foi possível abrir',m);return;
     }
     if(typeof x.j!=='string'||x.j.length<100){erro('Conteúdo indisponível','Fale com a FC Consultoria.');return}
