@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>FC 3D Comercial · Painel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: faixa grafite com a empresa e as abas; conteúdo claro em colunas (principal + lateral); entrada por perfil em tela dividida. */
+:root{
+  --bg:#F4F3F0;--panel:#FFFFFF;--ink:#121316;--mute:#5F6066;--line:#DAD7D0;--soft:#EFEDE8;--dark:#0E0F11;--dark2:#1C1D21;
+  --gold:#B8935A;--goldInk:#7D5F33;--goldSoft:#E9E2D4;
+  --ok:#1D5B36;--okBg:#E3F1E8;--warn:#8A4B0F;--warnBg:#FFF1DC;--bad:#9A2E12;--badBg:#FBE7E1;--info:#1F4E8C;--infoBg:#E8EEF7;
+  --f-d:'Sora',system-ui,sans-serif;--f-b:'Instrument Sans',system-ui,-apple-system,sans-serif;--f-m:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121315;--panel:#1A1B1E;--ink:#F0EFEC;--mute:#A6A7AB;--line:#2D2E32;--soft:#232428;--goldInk:#D6B47A;--goldSoft:#3A3122;--okBg:#173A26;--ok:#9FD9B4;--warnBg:#3D2A12;--warn:#F2C58A;--badBg:#3F1F17;--bad:#F3A58F;--infoBg:#18273D;--info:#9CC0EE;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121315;--panel:#1A1B1E;--ink:#F0EFEC;--mute:#A6A7AB;--line:#2D2E32;--soft:#232428;--goldInk:#D6B47A;--goldSoft:#3A3122;--okBg:#173A26;--ok:#9FD9B4;--warnBg:#3D2A12;--warn:#F2C58A;--badBg:#3F1F17;--bad:#F3A58F;--infoBg:#18273D;--info:#9CC0EE;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 var(--f-b);padding-top:env(safe-area-inset-top,0px)}
+button,input,textarea,select{font:inherit;color:inherit}
+h1,h2,h3{margin:0;font-family:var(--f-d);font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+p{margin:0}
+a{color:var(--goldInk)}
+.eb{font:600 11px var(--f-m);letter-spacing:.14em;text-transform:uppercase;color:var(--goldInk)}
+.mute{color:var(--mute)}
+.mono{font-family:var(--f-m)}
+[hidden]{display:none!important}
+.btn{appearance:none;border:1px solid var(--ink);background:transparent;border-radius:11px;padding:10px 16px;font-weight:600;font-size:14px;cursor:pointer;min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;color:var(--ink)}
+.btn.pri{background:var(--ink);color:var(--bg)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#141416}
+.btn.ghost{border-color:var(--line)}
+.btn.sm{min-height:34px;padding:6px 12px;font-size:13px;border-radius:9px}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,.nav a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,.rc:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+input,textarea,select{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:11px 12px;min-width:0}
+textarea{resize:vertical;min-height:84px}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--mute)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;border-radius:99px;padding:3px 10px;white-space:nowrap}
+.c-revisar{background:var(--warnBg);color:var(--warn)}.c-aprovado,.c-entregue{background:var(--okBg);color:var(--ok)}.c-ajuste{background:var(--badBg);color:var(--bad)}
+.c-andamento{background:var(--infoBg);color:var(--info)}.c-fazer,.c-aguardando{border:1px solid var(--line);color:var(--mute)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--dark);color:#F2F0EB;padding:12px 18px;border-radius:12px;font-weight:600;font-size:14px;z-index:50;max-width:calc(100% - 32px);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+/* ===== Entrada ===== */
+.login{min-height:100vh;display:flex;flex-wrap:wrap}
+.lg-l{flex:1 1 440px;min-width:0;background:var(--dark);color:#F2F0EB;padding:48px max(24px,env(safe-area-inset-left,0px)) 40px 56px;display:flex;flex-direction:column;gap:34px}
+.lg-r{flex:999 1 520px;min-width:0;padding:48px max(20px,env(safe-area-inset-right,0px)) 48px 48px;display:flex;flex-direction:column;justify-content:center;gap:24px;max-width:760px}
+.brand{display:flex;align-items:center;gap:12px}
+.bdg{width:40px;height:40px;border-radius:10px;background:var(--gold);color:#0E0F11;display:grid;place-items:center;font:700 14px var(--f-d);flex:none}
+.brand b{display:block;font:600 16px var(--f-d)}
+.brand small{display:block;font:600 10.5px var(--f-m);letter-spacing:.12em;text-transform:uppercase;color:#C9AE82}
+.lg-l h1{font-size:clamp(32px,4vw,46px);line-height:1.08;letter-spacing:-.02em}
+.lg-l p{font-size:16.5px;color:#B9B6AF;max-width:460px}
+.art{flex:1;min-height:200px;display:flex;align-items:flex-end;justify-content:center;gap:22px}
+.art .d1{width:140px;height:280px;border:3px solid #3A3B40;border-radius:4px;padding:10px;display:flex}
+.art .d1 i{flex:1;background:linear-gradient(160deg,#A9A8A3,#6E6D69);border-radius:2px;position:relative}
+.art .d1 i::after{content:"";position:absolute;right:18px;top:38px;width:8px;height:190px;background:#121316;border-radius:2px}
+.art .d2{width:104px;height:216px;border:3px solid #3A3B40;border-radius:4px;padding:8px;display:flex;gap:6px}
+.art .d2 i{flex:1;border:2px solid #55565C;background:rgba(160,190,205,.22)}
+.pills{display:flex;flex-wrap:wrap;gap:8px;font:500 12px var(--f-m);color:#B9B6AF}
+.pills span{border:1px solid #34353A;border-radius:99px;padding:6px 12px}
+.roles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.rc{appearance:none;text-align:left;cursor:pointer;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;min-height:120px}
+.rc.on{border:2px solid var(--ink);padding:15px}
+.rc b{font:600 16px var(--f-d)}
+.rc span{font-size:13px;color:var(--mute);line-height:1.4}
+.rc svg{width:26px;height:26px;stroke:var(--ink);fill:none;stroke-width:1.7;stroke-linecap:round}
+.rc[aria-disabled="true"]{opacity:.62}
+.lgform{display:flex;flex-direction:column;gap:14px}
+.err{color:var(--bad);font-size:13.5px;font-weight:600;min-height:20px}
+/* ===== App ===== */
+.top{background:var(--dark);color:#F2F0EB;padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:env(safe-area-inset-top,0px);z-index:10}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:11;background:var(--dark)}
+.emp{display:flex;align-items:center;gap:10px;min-width:0}
+.emp .bdg{background:#F2F0EB;width:36px;height:36px;font-size:12px}
+.emp b{font:600 15px var(--f-d);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.emp select{background:var(--dark2);color:#F2F0EB;border-color:#34353A;padding:7px 10px;width:auto;font-weight:600}
+.nav{display:flex;gap:3px;flex-wrap:wrap;background:var(--dark2);border-radius:99px;padding:4px}
+.nav a{color:#D9D6CF;text-decoration:none;padding:8px 15px;border-radius:99px;font-size:13.5px;font-weight:500;white-space:nowrap}
+.nav a.on{background:#F2F0EB;color:#0E0F11;font-weight:600}
+.nav a .n{display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:9px;background:var(--gold);color:#141416;font:700 11px var(--f-m);margin-left:6px;padding:0 5px}
+.sp{flex:1}
+.who{display:flex;align-items:center;gap:10px;font-size:13px;color:#C9C6BF}
+.who button{background:transparent;border:1px solid #34353A;color:#F2F0EB;border-radius:9px;padding:6px 12px;cursor:pointer;font-weight:600;font-size:13px}
+main{padding:28px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px));max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.hd{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.hd h1{font-size:28px}
+.cols{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start}
+.c-main{flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:22px}
+.c-side{flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:22px}
+.etapas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+.etapas div{display:flex;flex-direction:column;gap:7px}
+.etapas i{height:6px;border-radius:3px;background:var(--soft);display:block;overflow:hidden}
+.etapas i b{display:block;height:100%;background:var(--ink)}
+.etapas strong{font-size:14px;font-weight:600}
+.etapas span{font-size:12.5px;color:var(--mute)}
+.ent{display:flex;gap:16px;padding:16px 0;border-top:1px solid var(--soft);flex-wrap:wrap}
+.ent:first-of-type{border-top:0}
+.ent .dt{font:500 12.5px var(--f-m);color:var(--mute);width:62px;flex:none;padding-top:2px}
+.ent .bd{flex:1;min-width:220px;display:flex;flex-direction:column;gap:8px}
+.ent .tt{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.ent .tt b{font-size:15.5px;font-weight:600}
+.ent .ds{font-size:13.5px;color:var(--mute)}
+.ent .pc{font-size:13px;background:var(--soft);border-radius:10px;padding:8px 10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pend label{display:flex;gap:10px;align-items:flex-start;font-size:14px;padding:8px 0;border-top:1px solid #2C2D32}
+.pend label:first-of-type{border-top:0}
+.pend input{width:18px;height:18px;margin-top:2px;accent-color:var(--gold);flex:none}
+.pend .ok{color:#8C8A84;text-decoration:line-through}
+.darkc{background:var(--dark);color:#F2F0EB;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:10px}
+.darkc .eb{color:#C9AE82}
+.anx{display:flex;gap:12px;align-items:center;border:1px solid var(--soft);border-radius:12px;padding:10px 12px}
+.anx .ic{width:38px;height:46px;border-radius:6px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font:600 10px var(--f-m);flex:none}
+.anx .nm{flex:1;min-width:0}
+.anx .nm b{display:block;font-size:13.5px;font-weight:600;overflow-wrap:anywhere}
+.anx .nm span{font-size:12px;color:var(--mute)}
+.drop{border:1.5px dashed var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;cursor:pointer}
+.drop.ov{border-color:var(--gold);background:var(--goldSoft)}
+.prog{height:6px;border-radius:3px;background:var(--soft);overflow:hidden}.prog b{display:block;height:100%;background:var(--gold);width:0}
+.msgs{display:flex;flex-direction:column;gap:8px;max-height:360px;overflow:auto;padding-right:4px}
+.msg{border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.45;max-width:92%;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.fc{background:var(--soft);align-self:flex-start}
+.msg.cl{background:var(--goldSoft);align-self:flex-end}
+.msg small{display:block;font:600 11px var(--f-m);color:var(--mute);margin-bottom:2px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font:600 11px var(--f-m);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);padding:10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:12px 10px;border-bottom:1px solid var(--soft);vertical-align:middle}
+td.n{font-family:var(--f-m);text-align:right;white-space:nowrap}
+.code{display:flex;flex-direction:column;gap:10px;background:var(--goldSoft);border-radius:14px;padding:16px}
+.code b.big{font:600 30px var(--f-m);letter-spacing:.2em}
+.kv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.kv div{background:var(--soft);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:4px}
+.kv span{font-size:12.5px;color:var(--mute)}
+.kv b{font:600 21px var(--f-d)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.porta{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;height:min(78vh,860px);min-height:520px}
+.porta iframe{width:100%;height:100%;border:0;display:block}
+.empc{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.empc button{appearance:none;text-align:left;cursor:pointer;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.empc button.on{border:2px solid var(--ink);padding:17px}
+dialog{border:0;border-radius:18px;padding:0;max-width:min(560px,calc(100% - 32px));width:100%;background:var(--panel);color:var(--ink)}
+dialog::backdrop{background:rgba(10,10,12,.5)}
+dialog form{padding:22px;display:flex;flex-direction:column;gap:12px}
+.loading{padding:60px 0;text-align:center;color:var(--mute);font:600 12px var(--f-m);letter-spacing:.1em}
+@media (max-width:700px){.roles,.etapas,.kv,.grid2{grid-template-columns:1fr}.lg-l{padding:32px 20px}.lg-r{padding:32px 20px}.art{display:none}.top{gap:10px}.who span{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ===================== ENTRADA ===================== -->
+<div class="login" id="vLogin" hidden>
+  <section class="lg-l">
+    <div class="brand"><div class="bdg">FC</div><div><b>FC 3D Comercial</b><small>Tecnologia FC Consultoria</small></div></div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <span class="eb" style="color:#C9AE82">Ambiente da empresa</span>
+      <h1>Venda a obra antes de ela existir.</h1>
+      <p>As tipologias da sua empresa em 3D, montadas na obra do cliente, com proposta para o arquiteto e pedido de orçamento direto no painel de vendas.</p>
+    </div>
+    <div class="art" aria-hidden="true"><div class="d1"><i></i></div><div class="d2"><i></i><i></i></div></div>
+    <div class="pills"><span>Apresentação em 3D</span><span>Proposta por link</span><span>Painel de vendas</span></div>
+  </section>
+  <section class="lg-r">
+    <div><h2 style="font-size:30px">Como você vai entrar?</h2><p class="mute" style="margin-top:6px">Cada perfil abre o seu próprio painel.</p></div>
+    <div class="roles" role="radiogroup" aria-label="Perfil de acesso">
+      <button type="button" class="rc on" role="radio" aria-checked="true" data-r="gestor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10l8-6 8 6v10"/><path d="M9 20v-6h6v6"/></svg><b>Gestor</b><span>Projeto, equipe, vendas e licença.</span></button>
+      <button type="button" class="rc" role="radio" aria-checked="false" data-r="vendedor"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><b>Vendedor</b><span>Apresentar em 3D e montar a proposta.</span></button>
+      <button type="button" class="rc" role="radio" aria-checked="false" aria-disabled="true" data-r="arquiteto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V8l7-4 7 4v13"/><path d="M9 12h6M9 16h6"/></svg><b>Arquiteto ou engenheiro</b><span>Entra pelo link da proposta que recebeu.</span></button>
+      <button type="button" class="rc" role="radio" aria-checked="false" data-r="fc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg><b>Administração FC</b><span>Empresas, contratos e linhas exclusivas.</span></button>
+    </div>
+    <form class="card lgform" id="fLogin" autocomplete="on">
+      <div id="arqNota" class="mute" hidden>Arquitetos e engenheiros entram direto pelo link da proposta enviado pelo vendedor. Não é preciso login aqui.</div>
+      <div id="campos">
+        <div class="grid2">
+          <label class="f" for="lgLogin"><span id="lbLogin">Login</span><input id="lgLogin" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+          <label class="f" for="lgCod"><span id="lbCod">Código de acesso</span><input id="lgCod" name="password" type="password" autocomplete="current-password" required></label>
+        </div>
+      </div>
+      <p class="err" id="lgErr" role="alert"></p>
+      <button class="btn pri" type="submit" id="lgBtn">Entrar</button>
+      <p class="mute" style="font-size:12.5px">O código é pessoal. O aparelho fica conectado por 30 dias. Esqueceu? Peça um novo ao gestor ou à FC: (66) 9 9986-7984.</p>
+    </form>
+  </section>
+</div>
+
+<!-- ===================== APP ===================== -->
+<div id="vApp" hidden>
+  <header class="top">
+    <div class="emp" id="empBox"></div>
+    <nav class="nav" id="nav" aria-label="Seções"></nav>
+    <div class="sp"></div>
+    <div class="who"><span id="whoNm"></span><button type="button" id="btSair">Sair</button></div>
+  </header>
+  <main id="main"><div class="loading">CARREGANDO…</div></main>
+</div>
+
+<dialog id="dlg"><form method="dialog" id="dlgF"></form></dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+(function(){
+'use strict';
+const SB_URL='https://pawwncmfadzxfahfvhry.supabase.co',SB_KEY='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs';
+const sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:false,storageKey:'fc3d-auth'}});
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(_){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}},del(k){try{localStorage.removeItem(k)}catch(_){}}};
+let SES=ls.get('fc3d.ses'),EMP=ls.get('fc3d.emp'),D=null,EMPS=[],ROLE='gestor',VIEW='projeto';
+function toast(t){const e=document.createElement('div');e.className='toast';e.textContent=t;e.setAttribute('role','status');document.body.appendChild(e);setTimeout(()=>e.remove(),3200)}
+async function rpc(fn,args){const {data,error}=await sb.rpc(fn,args);if(error){const m=error.message||'Erro';if(/Sessão expirada|Acesso pausado|Licença pausada/.test(m)){sair(m);}throw new Error(m)}return data}
+const brD=d=>{if(!d)return '';const [y,m,dd]=String(d).slice(0,10).split('-');return dd+'/'+m+(y!==String(new Date().getFullYear())?'/'+y.slice(2):'')};
+const brDT=d=>new Date(d).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+const tamF=b=>b>1048576?(b/1048576).toFixed(1).replace('.',',')+' MB':Math.max(1,Math.round(b/1024))+' KB';
+const ext=n=>{const m=String(n).match(/\.([a-z0-9]{1,4})$/i);return m?m[1].toUpperCase():'ARQ'};
+const ST={revisar:'Para revisar',aprovado:'Aprovado',ajuste:'Ajuste pedido',entregue:'Entregue',andamento:'Em desenvolvimento',fazer:'A fazer',aguardando:'Aguardando material'};
+const ETAPAS=[['Demonstrativo do evento','Residência, porta e modo apresentação'],['Ambientes e proposta','Link para o arquiteto e pedido de orçamento'],['Painel do gestor completo','Vendas, equipe e licença']];
+const ger=()=>SES&&(SES.matriz||SES.papel==='gestor');
+
+/* ===================== ENTRADA ===================== */
+function setRole(r){ROLE=r;$$('.rc').forEach(b=>{const on=b.dataset.r===r;b.classList.toggle('on',on);b.setAttribute('aria-checked',on)});
+  $('#arqNota').hidden=r!=='arquiteto';$('#campos').hidden=r==='arquiteto';$('#lgBtn').hidden=r==='arquiteto';
+  $('#lbLogin').textContent=r==='fc'?'Login da matriz':'Login';$('#lbCod').textContent=r==='fc'?'Senha':'Código de acesso';$('#lgErr').textContent='';}
+$$('.rc').forEach(b=>b.onclick=()=>setRole(b.dataset.r));
+$('#fLogin').onsubmit=async e=>{e.preventDefault();const btn=$('#lgBtn');btn.disabled=true;$('#lgErr').textContent='';
+  const lg=$('#lgLogin').value.trim(),cd=$('#lgCod').value;
+  try{
+    let r;
+    if(ROLE==='fc'){if(lg.toLowerCase()!=='matriz')throw new Error('Login ou senha incorretos');r=await rpc('fc3d_login_matriz',{p_senha:cd});}
+    else r=await rpc('fc3d_login',{p_login:lg,p_codigo:cd});
+    if(r&&r.erro)throw new Error(r.erro);
+    SES=r;ls.set('fc3d.ses',r);if(!r.matriz){EMP=r.empresa;ls.set('fc3d.emp',EMP)}
+    $('#lgCod').value='';await iniciar();
+  }catch(err){$('#lgErr').textContent=err.message;}finally{btn.disabled=false}};
+function sair(msg){if(SES)sb.rpc('fc3d_sair',{p_token:SES.token});SES=null;D=null;ls.del('fc3d.ses');$('#vApp').hidden=true;$('#vLogin').hidden=false;if(msg)$('#lgErr').textContent=msg;}
+$('#btSair').onclick=()=>sair();
+
+/* ===================== APP ===================== */
+async function iniciar(){
+  $('#vLogin').hidden=true;$('#vApp').hidden=false;
+  if(SES.matriz){EMPS=await rpc('fc3d_empresas_lista',{p_token:SES.token});if(!EMP||!EMPS.some(e=>e.id===EMP))EMP=EMPS[0]&&EMPS[0].id;ls.set('fc3d.emp',EMP);}
+  $('#whoNm').textContent=SES.nome+(SES.matriz?' · Matriz':SES.papel==='gestor'?' · Gestor':' · Vendedor');
+  VIEW=(location.hash||'#projeto').slice(1);await carregar();
+}
+async function carregar(){if(!EMP){D=null;render();return}D=await rpc('fc3d_painel',{p_token:SES.token,p_empresa:SES.matriz?EMP:null});render();}
+window.addEventListener('hashchange',()=>{VIEW=(location.hash||'#projeto').slice(1);if(D||SES&&SES.matriz)render()});
+function header(){
+  const e=D&&D.empresa;
+  $('#empBox').innerHTML=SES.matriz?`<div class="bdg" style="background:var(--gold)">FC</div><label for="selEmp" class="mute" style="position:absolute;left:-9999px">Empresa</label><select id="selEmp">${EMPS.map(x=>`<option value="${esc(x.id)}" ${x.id===EMP?'selected':''}>${esc(x.nome)}</option>`).join('')}</select>`
+    :`<div class="bdg">${esc(e?e.sigla||e.nome.slice(0,2):'')}</div><b>${esc(e?e.nome:'')}</b>`;
+  if(SES.matriz)$('#selEmp').onchange=async ev=>{EMP=ev.target.value;ls.set('fc3d.emp',EMP);await carregar()};
+  const rev=D?D.entregas.filter(x=>x.status==='revisar').length:0;
+  const it=[['projeto','Projeto',!SES.matriz&&ger()&&rev?rev:0],['porta','Porta 3D'],ger()&&['equipe','Equipe e acessos'],ger()&&['contrato','Contrato e licença'],SES.matriz&&['empresas','Empresas']].filter(Boolean);
+  if(!it.some(x=>x[0]===VIEW))VIEW='projeto';
+  $('#nav').innerHTML=it.map(([k,l,n])=>`<a href="#${k}" class="${k===VIEW?'on':''}" ${k===VIEW?'aria-current="page"':''}>${l}${n?`<span class="n">${n}</span>`:''}</a>`).join('');
+}
+function render(){header();const m=$('#main');
+  if(VIEW==='empresas')return vEmpresas(m);
+  if(!D){m.innerHTML='<div class="card">Nenhuma empresa cadastrada ainda. Abra <a href="#empresas">Empresas</a> e cadastre a primeira.</div>';return}
+  ({projeto:vProjeto,porta:vPorta,equipe:vEquipe,contrato:vContrato}[VIEW]||vProjeto)(m);
+}
+
+/* ---------- Projeto ---------- */
+function vProjeto(m){
+  const e=D.empresa,adm=SES.matriz;
+  m.innerHTML=`<div class="cols"><div class="c-main">
+    <section class="card"><div class="hd"><div><p class="eb">Projeto em desenvolvimento</p><h1 style="margin-top:6px">Plataforma comercial ${esc(e.nome.split('·').pop().trim())} 3D</h1></div>
+      <div class="row"><span class="chip c-revisar">Etapa ${e.etapa} de 3</span>${adm?`<button class="btn sm ghost" type="button" id="btEtapa">Mudar etapa</button>`:''}</div></div>
+      <div class="etapas">${ETAPAS.map((x,i)=>`<div><i><b style="width:${i+1<e.etapa?100:i+1===e.etapa?55:0}%"></b></i><strong ${i+1>e.etapa?'class="mute"':''}>${i+1} · ${x[0]}</strong><span>${x[1]}</span></div>`).join('')}</div>
+      ${e.linhas&&e.linhas.length?`<div class="row" style="margin-top:16px">${e.linhas.map(l=>`<span class="chip" style="${l.exclusiva?'background:var(--ink);color:var(--bg)':'border:1px solid var(--line)'}">${esc(l.nome)}${l.exclusiva?' · exclusiva':''}${l.obs?' · '+esc(l.obs):''}</span>`).join('')}</div>`:''}
+    </section>
+    <section class="card"><div class="hd" style="margin-bottom:6px"><h2 style="font-size:19px">Entregas</h2>${adm?`<button class="btn sm pri" type="button" id="btNovaEnt">+ Nova entrega</button>`:''}</div>
+      ${D.entregas.length?ordEnt(D.entregas).map(entHTML).join(''):'<p class="mute">Nenhuma entrega cadastrada.</p>'}</section>
+  </div><div class="c-side">
+    <section class="darkc pend"><span class="eb">O que a FC precisa de você</span>
+      ${D.pendencias.map(p=>`<label><input type="checkbox" data-pend="${p.id}" ${p.feito?'checked':''} ${ger()?'':'disabled'}><span class="${p.feito?'ok':''}">${esc(p.texto)}</span>${adm?`<button type="button" class="btn sm" data-pdel="${p.id}" style="margin-left:auto;border-color:#34353A;color:#F2F0EB;min-height:28px;padding:2px 8px" aria-label="Excluir item">×</button>`:''}</label>`).join('')||'<p style="color:#B9B6AF;font-size:14px">Nada pendente.</p>'}
+      ${adm?`<form id="fPend" class="row" style="margin-top:6px"><label for="pendTx" style="position:absolute;left:-9999px">Novo item</label><input id="pendTx" placeholder="Novo item" style="flex:1;background:#1C1D21;border-color:#34353A;color:#F2F0EB"><button class="btn sm gold" type="submit">Adicionar</button></form>`:''}
+    </section>
+    ${anexosHTML('projeto','Anexos do desenvolvimento','Catálogos, fotos de obras, desenhos e vídeos')}
+    <section class="card" style="display:flex;flex-direction:column;gap:12px"><h2 style="font-size:17px">Conversa do projeto</h2>
+      <div class="msgs" id="msgs">${msgsHTML()}</div>
+      <form id="fMsg" class="row"><label for="msgTx" style="position:absolute;left:-9999px">Mensagem</label><input id="msgTx" placeholder="${adm?'Responder ao cliente':'Escreva para a FC'}" style="flex:1" autocomplete="off"><button class="btn pri sm" type="submit" style="min-height:44px">Enviar</button></form>
+    </section>
+  </div></div>`;
+  const ms=$('#msgs');ms.scrollTop=ms.scrollHeight;
+  $('#fMsg').onsubmit=async ev=>{ev.preventDefault();const t=$('#msgTx').value.trim();if(!t)return;try{await rpc('fc3d_msg',{p_token:SES.token,p_empresa:SES.matriz?EMP:null,p_texto:t});await carregar()}catch(er){toast(er.message)}};
+  $$('[data-pend]').forEach(c=>c.onchange=async()=>{try{await rpc('fc3d_pend_marcar',{p_token:SES.token,p_id:+c.dataset.pend,p_feito:c.checked});await carregar()}catch(er){toast(er.message)}});
+  $$('[data-ok]').forEach(b=>b.onclick=()=>parecer(+b.dataset.ok,'aprovado'));
+  $$('[data-aj]').forEach(b=>b.onclick=()=>parecer(+b.dataset.aj,'ajuste'));
+  $$('[data-abrir]').forEach(b=>b.onclick=()=>{try{sessionStorage.setItem('fc3d.ent',b.dataset.abrir)}catch(_){}location.hash='porta'});
+  if(adm){
+    $('#btNovaEnt').onclick=()=>editEnt(null);
+    $$('[data-ed]').forEach(b=>b.onclick=()=>editEnt(D.entregas.find(x=>x.id===+b.dataset.ed)));
+    $('#btEtapa').onclick=()=>dialogo('Etapa do projeto',`<label class="f" for="dEt">Etapa atual<select id="dEt">${ETAPAS.map((x,i)=>`<option value="${i+1}" ${i+1===e.etapa?'selected':''}>${i+1} · ${x[0]}</option>`).join('')}</select></label>`,async()=>{await rpc('fc3d_admin_salvar',{p_token:SES.token,p_tipo:'empresa',p:{...e,etapa:+$('#dEt').value}})});
+    $('#fPend').onsubmit=async ev=>{ev.preventDefault();const t=$('#pendTx').value.trim();if(!t)return;await rpc('fc3d_admin_salvar',{p_token:SES.token,p_tipo:'pendencia',p:{empresa_id:EMP,texto:t}});await carregar()};
+    $$('[data-pdel]').forEach(b=>b.onclick=async ev=>{ev.preventDefault();await rpc('fc3d_admin_salvar',{p_token:SES.token,p_tipo:'pendencia',p:{id:+b.dataset.pdel,excluir:true}});await carregar()});
+  }
+  ligaAnexos('projeto');
+}
+const PESO={revisar:0,ajuste:1,andamento:2,aguardando:3,fazer:4,aprovado:5,entregue:6};
+function ordEnt(L){return L.slice().sort((a,b)=>(PESO[a.status]??9)-(PESO[b.status]??9)||String(b.data||'').localeCompare(String(a.data||''))||a.ordem-b.ordem)}
+function entHTML(x){
+  const pode=ger()&&x.status==='revisar';
+  return `<div class="ent"><span class="dt">${x.data?brD(x.data):x.status==='andamento'||x.status==='fazer'||x.status==='aguardando'?'A seguir':'—'}</span><div class="bd">
+    <div class="tt"><b>${esc(x.titulo)}</b><span class="chip c-${x.status}">${ST[x.status]||x.status}</span></div>
+    ${x.descricao?`<p class="ds">${esc(x.descricao)}</p>`:''}
+    ${x.parecer||x.parecer_em?`<p class="pc"><b>${esc(x.parecer_por||'')}</b> · ${x.parecer_em?brDT(x.parecer_em):''}${x.parecer?'<br>'+esc(x.parecer):''}</p>`:''}
+    <div class="row">${x.link?`<button type="button" class="btn sm pri" data-abrir="${x.id}">Abrir em 3D</button>`:''}${pode?`<button type="button" class="btn sm" data-ok="${x.id}">Aprovar</button><button type="button" class="btn sm ghost" data-aj="${x.id}">Pedir ajuste</button>`:''}${SES.matriz?`<button type="button" class="btn sm ghost" data-ed="${x.id}">Editar</button>`:''}</div>
+  </div></div>`;
+}
+function parecer(id,st){
+  const x=D.entregas.find(e=>e.id===id);
+  dialogo(st==='aprovado'?'Aprovar entrega':'Pedir ajuste',`<p><b>${esc(x.titulo)}</b></p><label class="f" for="dPc">${st==='aprovado'?'Comentário (opcional)':'O que precisa mudar?'}<textarea id="dPc" ${st==='ajuste'?'required':''}></textarea></label>`,
+    async()=>{await rpc('fc3d_parecer',{p_token:SES.token,p_id:id,p_status:st,p_texto:$('#dPc').value});toast(st==='aprovado'?'Entrega aprovada':'Pedido de ajuste enviado à FC')},st==='aprovado'?'Aprovar':'Enviar pedido');
+}
+function editEnt(x){
+  const v=x||{titulo:'',descricao:'',data:'',link:'',status:'andamento'};
+  dialogo(x?'Editar entrega':'Nova entrega',`<label class="f" for="eT">Título<input id="eT" required value="${esc(v.titulo)}"></label>
+   <label class="f" for="eD">Descrição<textarea id="eD">${esc(v.descricao||'')}</textarea></label>
+   <div class="grid2"><label class="f" for="eDt">Data<input id="eDt" type="date" value="${esc(v.data||'')}"></label><label class="f" for="eS">Situação<select id="eS">${Object.entries(ST).map(([k,l])=>`<option value="${k}" ${k===v.status?'selected':''}>${l}</option>`).join('')}</select></label></div>
+   <label class="f" for="eL">Link da entrega (porta.html abre a Porta 3D)<input id="eL" value="${esc(v.link||'')}"></label>
+   ${x?`<button type="button" class="btn sm ghost" id="eX" style="align-self:flex-start;color:var(--bad);border-color:var(--bad)">Excluir entrega</button>`:''}`,
+   async()=>{await rpc('fc3d_admin_salvar',{p_token:SES.token,p_tipo:'entrega',p:{id:x?x.id:null,empresa_id:EMP,titulo:$('#eT').value,descricao:$('#eD').value,data:$('#eDt').value,status:$('#eS').value,link:$('#eL').value,ordem:x?x.ordem:null}})});
+  const bx=$('#eX');if(bx)bx.onclick=async()=>{await rpc('fc3d_admin_salvar',{p_token:SES.token,p_tipo:'entrega',p:{id:x.id,excluir:true}});$('#dlg').close();await carregar()};
+}
+function msgsHTML(){return D.msgs.map(x=>`<div class="msg ${x.de_fc?'fc':'cl'}"><small>${esc(x.autor)} · ${brDT(x.criado)}</small>${esc(x.texto)}</div>`).join('')||'<p class="mute" style="font-size:13.5px">Nenhuma mensagem ainda.</p>'}
+
+/* ---------- Anexos ---------- */
+function anexosHTML(area,tit,sub){
+  const L=D.anexos.filter(a=>a.area===area),pode=area==='projeto'?SES.papel!=='arquiteto':SES.matriz;
+  return `<section class="card" style="display:flex;flex-direction:column;gap:10px"><h2 style="font-size:17px">${tit}</h2>
+    ${L.map(a=>`<div class="anx"><span class="ic">${esc(ext(a.nome))}</span><span class="nm"><b>${esc(a.nome)}</b><span>${tamF(a.tam||0)} · ${esc(a.enviado_por||'')} · ${brDT(a.criado)}</span></span>
+      <button type="button" class="btn sm" data-bx="${a.id}">Baixar</button>${SES.matriz||a.enviado_por===SES.nome?`<button type="button" class="btn sm ghost" data-dx="${a.id}" aria-label="Excluir ${esc(a.nome)}">×</button>`:''}</div>`).join('')||'<p class="mute" style="font-size:13.5px">Nenhum arquivo ainda.</p>'}
+    ${pode?`<label class="drop" data-drop="${area}"><input type="file" multiple data-file="${area}" style="position:absolute;left:-9999px"><b style="font-size:14px">Enviar arquivo${area==='contrato'?' do contrato':' para a FC'}</b><span class="mute" style="font-size:12.5px">${sub} · até 60 MB · toque ou arraste aqui</span></label>
+    <div class="prog" data-prog="${area}" hidden><b></b></div>`:''}</section>`;
+}
+function ligaAnexos(area){
+  $$('[data-bx]').forEach(b=>b.onclick=()=>baixar(D.anexos.find(a=>a.id===b.dataset.bx),b));
+  $$('[data-dx]').forEach(b=>b.onclick=()=>{const a=D.anexos.find(x=>x.id===b.dataset.dx);dialogo('Excluir arquivo',`<p>Excluir <b>${esc(a.nome)}</b>? Não dá para desfazer.</p>`,async()=>{await rpc('fc3d_anexo_excluir',{p_token:SES.token,p_id:a.id})},'Excluir')});
+  const inp=document.querySelector(`[data-file="${area}"]`),dz=document.querySelector(`[data-drop="${area}"]`);if(!inp)return;
+  inp.onchange=()=>enviar([...inp.files],area);
+  ['dragenter','dragover'].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.add('ov')}));
+  ['dragleave','drop'].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.remove('ov')}));
+  dz.addEventListener('drop',e=>enviar([...e.dataTransfer.files],area));
+}
+const CH=2000000;
+function b64(file){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(',')[1]||'');r.onerror=()=>no(new Error('Não consegui ler o arquivo'));r.readAsDataURL(file)})}
+async function enviar(files,area){
+  const pg=document.querySelector(`[data-prog="${area}"]`),bar=pg&&pg.querySelector('b');
+  for(const f of files){
+    if(f.size>60*1048576){toast(f.name+': maior que 60 MB');continue}
+    try{pg.hidden=false;bar.style.width='2%';
+      const s=await b64(f),n=Math.max(1,Math.ceil(s.length/CH));
+      const id=await rpc('fc3d_anexo_novo',{p_token:SES.token,p_empresa:SES.matriz?EMP:null,p_area:area,p_nome:f.name,p_tipo:f.type||'',p_tam:f.size,p_partes:n});
+      for(let i=0;i<n;i++){await rpc('fc3d_anexo_parte',{p_token:SES.token,p_id:id,p_idx:i,p_dados:s.slice(i*CH,(i+1)*CH)});bar.style.width=Math.round((i+1)/n*100)+'%'}
+      toast('Enviado: '+f.name);
+    }catch(er){toast(er.message)}
+  }
+  await carregar();
+}
+async function baixar(a,btn){
+  btn.disabled=true;const t0=btn.textContent;
+  try{let s='';for(let i=0;i<a.partes;i++){btn.textContent=a.partes>1?Math.round(i/a.partes*100)+'%':'…';s+=await rpc('fc3d_anexo_baixar',{p_token:SES.token,p_id:a.id,p_idx:i})||''}
+    const bin=atob(s),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+    const url=URL.createObjectURL(new Blob([u],{type:a.tipo||'application/octet-stream'}));const l=document.createElement('a');l.href=url;l.download=a.nome;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+  }catch(er){toast(er.message)}finally{btn.disabled=false;btn.textContent=t0}
+}
+
+/* ---------- Porta 3D ---------- */
+function vPorta(m){
+  const L=(D.entregas||[]).filter(x=>x.link&&/^porta\.html/.test(x.link));
+  if(!L.length){m.innerHTML=`<div class="hd"><div><p class="eb">Visualização 3D</p><h1 style="margin-top:6px">Nenhuma entrega em 3D ainda</h1></div></div><p class="mute" style="font-size:13.5px">Quando a FC publicar uma entrega em 3D, ela aparece aqui.</p>`;return}
+  const at=L.find(x=>x.id===+(sessionStorage.getItem('fc3d.ent')||0))||L[0];
+  m.innerHTML=`<div class="hd"><div><p class="eb">${esc(ST[at.status]||'Entrega')}</p><h1 style="margin-top:6px">${esc(at.titulo)}</h1></div><a class="btn ghost" href="${esc(at.link)}" target="_blank" rel="noopener">Abrir em tela cheia</a></div>
+  ${L.length>1?`<div class="row" style="gap:6px;flex-wrap:wrap">${L.map(x=>`<button type="button" class="btn sm ${x.id===at.id?'pri':''}" data-pt="${x.id}">${esc(x.titulo)}</button>`).join('')}</div>`:''}
+  <div class="porta"><iframe src="${esc(at.link)}" title="${esc(at.titulo)}" allow="fullscreen"></iframe></div>
+  <p class="mute" style="font-size:13.5px">Gire com o dedo ou o mouse. Use os modos no topo da visualização para apresentar, montar, ver o desenho técnico e trocar acabamentos.</p>`;
+  $$('[data-pt]').forEach(b=>b.onclick=()=>{try{sessionStorage.setItem('fc3d.ent',b.dataset.pt)}catch(_){}vPorta(m)});
+}
+
+/* ---------- Equipe ---------- */
+function vEquipe(m){
+  const L=D.acessos||[],adm=SES.matriz;
+  m.innerHTML=`<div class="hd"><div><p class="eb">Quem entra na plataforma</p><h1 style="margin-top:6px">Equipe e acessos</h1></div><span class="chip" style="border:1px solid var(--line)">${L.filter(a=>a.ativo&&a.papel!=='arquiteto').length} acesso(s) ativo(s)${D.contrato&&D.contrato.acessos?' de '+esc(D.contrato.acessos):''}</span></div>
+  <div class="cols"><div class="c-main"><section class="card" style="padding:0;overflow:hidden"><div class="tw"><table>
+    <thead><tr><th style="padding-left:22px">Pessoa</th><th>Perfil</th><th>Login</th><th>Último acesso</th><th>Acesso</th><th></th></tr></thead><tbody>
+    ${L.map(a=>{const ed=adm||a.papel==='vendedor';return `<tr><td style="padding-left:22px"><b style="font-weight:600">${esc(a.nome)}</b>${a.whatsapp?`<br><span class="mute" style="font-size:12.5px">${esc(a.whatsapp)}</span>`:''}</td>
+      <td>${a.papel==='gestor'?'Gestor':a.papel==='vendedor'?'Vendedor':'Arquiteto'}</td><td class="mono" style="font-size:13px">${esc(a.login)}</td>
+      <td class="mute" style="font-size:13px">${a.ultimo?brDT(a.ultimo):a.tem_codigo?'Ainda não entrou':'Sem código'}</td>
+      <td>${ed?`<label style="display:inline-flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" data-at="${a.id}" ${a.ativo?'checked':''} style="width:18px;height:18px;accent-color:var(--ink)">${a.ativo?'Ativo':'Pausado'}</label>`:(a.ativo?'Ativo':'Pausado')}</td>
+      <td style="padding-right:22px;text-align:right">${ed?`<button type="button" class="btn sm" data-cod="${a.id}">${a.tem_codigo?'Novo código':'Gerar código'}</button>`:''}</td></tr>`}).join('')||'<tr><td colspan="6" style="padding:22px" class="mute">Ninguém cadastrado.</td></tr>'}
+    </tbody></table></div></section>
+    <div id="codBox"></div>
+    <section class="darkc"><span class="eb">Arquitetos e engenheiros</span><p style="font-size:14px;color:#B9B6AF">Não ocupam acesso da licença. Na etapa 2, cada proposta gera um link para o arquiteto abrir a obra em 3D, comentar e pedir orçamento.</p></section>
+  </div><div class="c-side"><form class="card" id="fAc" style="display:flex;flex-direction:column;gap:12px">
+    <h2 style="font-size:17px">Cadastrar ${adm?'pessoa':'vendedor'}</h2>
+    <label class="f" for="acN">Nome<input id="acN" required autocomplete="off"></label>
+    <label class="f" for="acW">WhatsApp<input id="acW" type="tel" inputmode="tel" autocomplete="off"></label>
+    ${adm?`<label class="f" for="acP">Perfil<select id="acP"><option value="vendedor">Vendedor</option><option value="gestor">Gestor</option></select></label>`:''}
+    <button class="btn pri" type="submit">Cadastrar e gerar código</button>
+    <p class="mute" style="font-size:12.5px">O login é criado com o primeiro nome. O código aparece uma vez para você enviar pelo WhatsApp.</p>
+  </form></div></div>`;
+  $('#fAc').onsubmit=async ev=>{ev.preventDefault();const nm=$('#acN').value.trim();try{const r=await rpc('fc3d_acesso_salvar',{p_token:SES.token,p_empresa:SES.matriz?EMP:null,p:{nome:nm,whatsapp:$('#acW').value,papel:adm?$('#acP').value:'vendedor',novo_codigo:true}});await carregar();mostraCod(nm,r)}catch(er){toast(er.message)}};
+  $$('[data-at]').forEach(c=>c.onchange=async()=>{try{await rpc('fc3d_acesso_salvar',{p_token:SES.token,p_empresa:SES.matriz?EMP:null,p:{id:c.dataset.at,ativo:c.checked}});await carregar();toast(c.checked?'Acesso liberado':'Acesso pausado')}catch(er){toast(er.message)}});
+  $$('[data-cod]').forEach(b=>b.onclick=()=>{const a=L.find(x=>x.id===b.dataset.cod);dialogo('Gerar código',`<p>Gerar um código novo para <b>${esc(a.nome)}</b>? ${a.tem_codigo?'O código antigo deixa de funcionar e o aparelho conectado sai.':''}</p>`,async()=>{const r=await rpc('fc3d_acesso_salvar',{p_token:SES.token,p_empresa:SES.matriz?EMP:null,p:{id:a.id,novo_codigo:true}});setTimeout(()=>mostraCod(a.nome,r),50)},'Gerar código')});
+}
+function mostraCod(nome,r){
+  const url=location.origin+location.pathname;
+  const txt=`Olá, ${nome.split(' ')[0]}! Seu acesso à plataforma FC 3D:\n\n🔗 ${url}\n👤 Login: ${r.login}\n🔑 Código: ${r.codigo}\n\nO código é pessoal. Dúvidas: FC Consultoria · (66) 9 9986-7984`;
+  const b=$('#codBox');if(!b)return;
+  b.innerHTML=`<section class="code" aria-live="polite"><span class="eb">Código de ${esc(nome)} · aparece só agora</span><div class="row" style="gap:18px"><span><span class="mute" style="font-size:12.5px">Login</span><br><b class="mono" style="font-size:18px">${esc(r.login)}</b></span><span><span class="mute" style="font-size:12.5px">Código</span><br><b class="big">${esc(r.codigo)}</b></span></div>
+   <label class="f" for="codTx">Mensagem pronta<textarea id="codTx" readonly style="min-height:150px">${esc(txt)}</textarea></label><div class="row"><button type="button" class="btn pri sm" id="cpCod">Copiar mensagem</button><button type="button" class="btn sm ghost" id="okCod">Já enviei</button></div></section>`;
+  $('#cpCod').onclick=async()=>{try{await navigator.clipboard.writeText(txt);toast('Mensagem copiada')}catch(_){$('#codTx').select();toast('Selecionei o texto: copie com Ctrl+C')}};
+  $('#okCod').onclick=()=>{b.innerHTML=''};b.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+/* ---------- Contrato ---------- */
+function vContrato(m){
+  const c=D.contrato||{},adm=SES.matriz,P=c.parcelas||[];
+  const val=(k,ph)=>c[k]?esc(c[k]):`<span class="mute">${ph||'—'}</span>`;
+  m.innerHTML=`<div class="hd"><div><p class="eb">Só o gestor principal e a FC veem esta página</p><h1 style="margin-top:6px">Contrato e licença de uso</h1></div>${adm?`<button class="btn pri" type="button" id="btEdC">Editar contrato</button>`:''}</div>
+  <div class="cols"><div class="c-main">
+    <section class="card" style="display:flex;flex-direction:column;gap:16px"><h2 style="font-size:18px">Plano contratado</h2>
+      <div class="kv"><div><span>Valor da licença</span><b>${c.valor?'R$ '+esc(c.valor):'<span class="mute">a definir</span>'}</b><span>${val('modalidade','mensal ou anual')}</span></div>
+      <div><span>Acessos incluídos</span><b>${val('acessos','a definir')}</b><span>${c.extra?'acesso extra: R$ '+esc(c.extra):'acesso extra a definir'}</span></div>
+      <div><span>Vigência</span><b>${c.inicio?brD(c.inicio):'<span class="mute">a definir</span>'}</b><span>${c.fim?'até '+brD(c.fim):''}</span></div></div>
+      <p class="mute" style="font-size:13.5px">Forma de pagamento: ${val('pagamento','PIX · CNPJ 52.985.682/0001-32')}</p>
+      ${c.obs?`<p style="font-size:14px;white-space:pre-wrap">${esc(c.obs)}</p>`:''}
+    </section>
+    <section class="card" style="padding:0;overflow:hidden"><div style="padding:18px 22px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--soft)"><h2 style="font-size:18px">Pagamentos</h2>${adm?`<button class="btn sm pri" type="button" id="btParc">+ Parcela</button>`:''}</div>
+      <div class="tw"><table><thead><tr><th style="padding-left:22px">Parcela</th><th>Vencimento</th><th style="text-align:right">Valor</th><th>Situação</th>${adm?'<th></th>':''}</tr></thead><tbody>
+      ${P.map((p,i)=>`<tr><td style="padding-left:22px">${esc(p.desc)}</td><td class="mono">${brD(p.venc)}</td><td class="n">${p.valor?'R$ '+esc(p.valor):'—'}</td><td><span class="chip ${p.status==='pago'?'c-aprovado':p.status==='atrasado'?'c-ajuste':'c-revisar'}">${p.status==='pago'?'Pago':p.status==='atrasado'?'Atrasado':'Em aberto'}</span></td>${adm?`<td style="text-align:right;padding-right:22px"><button type="button" class="btn sm ghost" data-pi="${i}">Editar</button></td>`:''}</tr>`).join('')||`<tr><td colspan="5" style="padding:18px 22px" class="mute">Parcelas ainda não lançadas.</td></tr>`}
+      </tbody></table></div></section>
+    <section class="card" style="display:flex;flex-direction:column;gap:10px"><h2 style="font-size:18px">Pontos principais</h2>
+      ${[['Exclusividade','As linhas exclusivas da empresa não aparecem para outros licenciados da plataforma.'],['Tecnologia','A plataforma é licenciada para uso. A tecnologia continua da FC Consultoria.'],['Suporte','Segunda a sexta, 08:00–11:00 e 13:00–17:00, pela conversa do projeto ou WhatsApp (66) 9 9986-7984.']].map(([a,b])=>`<div class="row" style="align-items:flex-start;border-top:1px solid var(--soft);padding-top:10px;flex-wrap:nowrap"><span class="mono" style="font-size:12px;color:var(--goldInk);width:110px;flex:none">${a}</span><span style="font-size:14px">${b}</span></div>`).join('')}
+    </section>
+  </div><div class="c-side">${anexosHTML('contrato','Contrato e documentos','Contrato assinado, aditivos e notas fiscais')}</div></div>`;
+  ligaAnexos('contrato');
+  if(adm){
+    const salva=async nc=>{await rpc('fc3d_admin_salvar',{p_token:SES.token,p_tipo:'contrato',p:{empresa_id:EMP,contrato:nc}})};
+    $('#btEdC').onclick=()=>dialogo('Editar contrato',`<div class="grid2"><label class="f" for="cV">Valor da licença (R$)<input id="cV" value="${esc(c.valor||'')}"></label><label class="f" for="cM">Modalidade<input id="cM" value="${esc(c.modalidade||'')}" placeholder="mensal ou anual"></label>
+      <label class="f" for="cA">Acessos incluídos<input id="cA" value="${esc(c.acessos||'')}"></label><label class="f" for="cE">Acesso extra (R$)<input id="cE" value="${esc(c.extra||'')}"></label>
+      <label class="f" for="cI">Início<input id="cI" type="date" value="${esc(c.inicio||'')}"></label><label class="f" for="cF">Fim<input id="cF" type="date" value="${esc(c.fim||'')}"></label></div>
+      <label class="f" for="cP">Forma de pagamento<input id="cP" value="${esc(c.pagamento||'PIX · CNPJ 52.985.682/0001-32')}"></label>
+      <label class="f" for="cO">Observações<textarea id="cO">${esc(c.obs||'')}</textarea></label>`,
+      async()=>salva({...c,valor:$('#cV').value,modalidade:$('#cM').value,acessos:$('#cA').value,extra:$('#cE').value,inicio:$('#cI').value,fim:$('#cF').value,pagamento:$('#cP').value,obs:$('#cO').value}));
+    const edP=i=>{const p=i==null?{desc:'',venc:'',valor:'',status:'aberto'}:P[i];
+      dialogo(i==null?'Nova parcela':'Editar parcela',`<label class="f" for="pD">Descrição<input id="pD" required value="${esc(p.desc)}" placeholder="1 · Implantação"></label><div class="grid2"><label class="f" for="pV">Vencimento<input id="pV" type="date" value="${esc(p.venc)}"></label><label class="f" for="pR">Valor (R$)<input id="pR" value="${esc(p.valor)}"></label></div>
+        <label class="f" for="pS">Situação<select id="pS"><option value="aberto">Em aberto</option><option value="pago" ${p.status==='pago'?'selected':''}>Pago</option><option value="atrasado" ${p.status==='atrasado'?'selected':''}>Atrasado</option></select></label>${i!=null?`<label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="pX" style="width:18px;height:18px">Excluir esta parcela</label>`:''}`,
+        async()=>{const np=P.slice();const v={desc:$('#pD').value,venc:$('#pV').value,valor:$('#pR').value,status:$('#pS').value};if(i==null)np.push(v);else if($('#pX')&&$('#pX').checked)np.splice(i,1);else np[i]=v;await salva({...c,parcelas:np})})};
+    $('#btParc').onclick=()=>edP(null);$$('[data-pi]').forEach(b=>b.onclick=()=>edP(+b.dataset.pi));
+  }
+}
+
+/* ---------- Empresas (FC) ---------- */
+function vEmpresas(m){
+  m.innerHTML=`<div class="hd"><div><p class="eb">Administração FC · licenciamento</p><h1 style="margin-top:6px">Empresas licenciadas</h1></div><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn ghost" type="button" id="btSM">Trocar senha da matriz</button><button class="btn pri" type="button" id="btNE">+ Nova empresa</button></div></div>
+  <div class="empc">${EMPS.map(e=>`<button type="button" data-emp="${esc(e.id)}" class="${e.id===EMP?'on':''}"><span class="row" style="justify-content:space-between;width:100%"><span class="row"><span class="bdg" style="background:var(--ink);color:var(--bg)">${esc(e.sigla||e.nome.slice(0,2))}</span><b style="font-size:16px">${esc(e.nome)}</b></span><span class="chip ${e.ativo?'c-aprovado':'c-ajuste'}">${e.ativo?'Ativa':'Pausada'}</span></span>
+     <span class="row">${(e.linhas||[]).map(l=>`<span class="chip" style="${l.exclusiva?'background:var(--ink);color:var(--bg)':'border:1px solid var(--line)'}">${esc(l.nome)}</span>`).join('')}</span>
+     <span class="mute" style="font-size:13px">Etapa ${e.etapa} de 3 · ${e.acessos} acesso(s) ativo(s)${e.revisar?` · ${e.revisar} entrega(s) em revisão`:''}${e.msgs?` · ${e.msgs} mensagem(ns) do cliente na semana`:''}</span>
+     <span class="mute" style="font-size:13px">Contrato: ${e.contrato&&e.contrato.valor?'R$ '+esc(e.contrato.valor)+(e.contrato.modalidade?' · '+esc(e.contrato.modalidade):''):'a definir'}</span></button>`).join('')}</div>
+  <section class="darkc"><span class="eb">Linhas exclusivas</span><p style="font-size:14px;color:#B9B6AF">Cada empresa só enxerga os próprios dados, entregas, anexos e linhas. As linhas e tipologias próprias de um cliente nunca aparecem para outra empresa licenciada.</p></section>
+  <section class="card" style="display:flex;flex-direction:column;gap:12px">
+    <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:10px"><div><h2 style="font-size:18px">Conteúdos protegidos</h2><p class="mute" style="font-size:13.5px;margin-top:4px">Os desenhos, imagens e fichas de cada linha ficam no banco, fora do site público. Só abrem depois do login, para a empresa dona.</p></div><button class="btn pri sm" type="button" id="btPub">Publicar arquivo</button></div>
+    <div id="ctL" class="mute" style="font-size:13.5px">Carregando…</div>
+  </section>`;
+  carregaConteudos();
+  $('#btPub').onclick=()=>pubConteudo(null);
+  $('#btSM').onclick=()=>dialogo('Trocar senha da matriz',`<p class="mute" style="font-size:13px">Vale só para este portal (Plataforma FC 3D). A senha do Painel da Matriz não muda.</p>
+    <label class="f" for="smA">Senha atual<input id="smA" type="password" required autocomplete="current-password"></label>
+    <label class="f" for="smN">Nova senha (8 ou mais caracteres)<input id="smN" type="password" required minlength="8" autocomplete="new-password"></label>`,
+    async()=>{await rpc('fc3d_matriz_senha',{p_token:SES.token,p_atual:$('#smA').value,p_nova:$('#smN').value});toast('Senha da matriz trocada')},'Trocar');
+  $$('[data-emp]').forEach(b=>b.onclick=async()=>{EMP=b.dataset.emp;ls.set('fc3d.emp',EMP);location.hash='projeto';await carregar()});
+  $('#btNE').onclick=()=>dialogo('Nova empresa licenciada',`<div class="grid2"><label class="f" for="nI">Identificador (sem espaço)<input id="nI" required pattern="[a-z0-9-]{2,30}" placeholder="ex.: vidracaria-x"></label><label class="f" for="nS">Sigla<input id="nS" maxlength="3" placeholder="VX"></label></div>
+    <label class="f" for="nN">Nome que aparece<input id="nN" required></label><label class="f" for="nL">Linhas (uma por linha; termine com * se for exclusiva)<textarea id="nL" placeholder="Suprema&#10;Gold&#10;Linha própria *"></textarea></label>`,
+    async()=>{const linhas=$('#nL').value.split('\n').map(s=>s.trim()).filter(Boolean).map(s=>({nome:s.replace(/\*$/,'').trim(),exclusiva:/\*$/.test(s)}));
+      await rpc('fc3d_admin_salvar',{p_token:SES.token,p_tipo:'empresa',p:{id:$('#nI').value.trim().toLowerCase(),nome:$('#nN').value.trim(),sigla:$('#nS').value.trim().toUpperCase(),linhas,etapa:1,ativo:true}});
+      EMPS=await rpc('fc3d_empresas_lista',{p_token:SES.token});EMP=$('#nI').value.trim().toLowerCase();ls.set('fc3d.emp',EMP)},'Cadastrar');
+}
+let CTS=[];
+async function carregaConteudos(){
+  const box=$('#ctL');if(!box)return;
+  try{CTS=await rpc('fc3d_conteudos_lista',{p_token:SES.token})||[]}catch(er){box.textContent=er.message;return}
+  if(!CTS.length){box.innerHTML='Nenhum conteúdo publicado ainda. Use <b>Publicar arquivo</b> e escolha o arquivo .html da linha.';return}
+  const nm=id=>{const e=EMPS.find(x=>x.id===id);return e?e.nome:id};
+  box.innerHTML=CTS.map(c=>`<div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px;padding:10px 0;border-top:1px solid var(--line)">
+    <span style="display:flex;flex-direction:column;gap:2px;min-width:0"><b style="color:var(--ink)">${esc(c.titulo)}</b>
+    <span>${esc(nm(c.empresa_id))} · código <code>${esc(c.id)}</code> · versão ${c.versao} · ${tamF(c.tam)} · ${brDT(c.atualizado)} · ${c.aberturas} abertura(s) em 30 dias</span></span>
+    <span class="row" style="gap:6px"><a class="btn sm ghost" href="porta.html?c=${encodeURIComponent(c.id)}" target="_blank" rel="noopener">Abrir</a><button type="button" class="btn sm" data-ctup="${esc(c.id)}">Atualizar</button><button type="button" class="btn sm ghost" data-ctx="${esc(c.id)}" style="color:var(--bad);border-color:var(--bad)">Excluir</button></span></div>`).join('');
+  $$('[data-ctup]').forEach(b=>b.onclick=()=>pubConteudo(CTS.find(c=>c.id===b.dataset.ctup)));
+  $$('[data-ctx]').forEach(b=>b.onclick=()=>{const c=CTS.find(x=>x.id===b.dataset.ctx);
+    dialogo('Excluir conteúdo',`<p>Excluir <b>${esc(c.titulo)}</b> (${esc(c.id)})? Quem abrir o link vai ver "conteúdo ainda não publicado" até você publicar de novo.</p>`,
+      async()=>{await rpc('fc3d_conteudo_excluir',{p_token:SES.token,p_id:c.id});toast('Conteúdo excluído')},'Excluir')});
+}
+function pubConteudo(c){
+  dialogo(c?'Atualizar conteúdo':'Publicar conteúdo protegido',`<label class="f" for="pcE">Empresa dona<select id="pcE">${EMPS.map(e=>`<option value="${esc(e.id)}" ${(c?c.empresa_id:EMP)===e.id?'selected':''}>${esc(e.nome)}</option>`).join('')}</select></label>
+    <div class="grid2"><label class="f" for="pcI">Código (sem espaço)<input id="pcI" required pattern="[a-z0-9-]{2,60}" value="${esc(c?c.id:'')}" ${c?'readonly':''} placeholder="cliente-produto"></label>
+    <label class="f" for="pcT">Título<input id="pcT" required value="${esc(c?c.titulo:'')}" placeholder="Nome do produto em 3D"></label></div>
+    <label class="f" for="pcF">Arquivo .html da linha<input id="pcF" type="file" accept=".html,.htm,text/html" required></label>
+    <p class="mute" style="font-size:12.5px">O arquivo vai para o banco. O link de abertura fica <code>porta.html?c=código</code>. Na entrega, coloque esse mesmo link para o cliente abrir pelo portal.</p>`,
+    async()=>{const f=$('#pcF').files[0];if(!f)throw new Error('Escolha o arquivo');if(f.size>8*1048576)throw new Error('Arquivo acima de 8 MB');
+      const html=await f.text();if(!/<html|<script|<body/i.test(html))throw new Error('Esse arquivo não parece ser uma página .html');
+      const r=await rpc('fc3d_conteudo_salvar',{p_token:SES.token,p_id:$('#pcI').value.trim().toLowerCase(),p_empresa:$('#pcE').value,p_titulo:$('#pcT').value.trim(),p_html:html});
+      toast('Publicado · versão '+r.versao)},c?'Atualizar':'Publicar');
+}
+
+/* ---------- diálogo ---------- */
+function dialogo(tit,html,onOk,okTx){
+  const d=$('#dlg'),f=$('#dlgF');
+  f.innerHTML=`<h2 style="font-size:19px">${esc(tit)}</h2>${html}<p class="err" id="dErr" role="alert"></p><div class="row" style="justify-content:flex-end"><button type="button" class="btn ghost" id="dNo">Cancelar</button><button type="submit" class="btn pri" id="dOk">${esc(okTx||'Salvar')}</button></div>`;
+  $('#dNo').onclick=()=>d.close();
+  f.onsubmit=async ev=>{ev.preventDefault();$('#dOk').disabled=true;try{await onOk();d.close();await carregar()}catch(er){$('#dErr').textContent=er.message}finally{const b=$('#dOk');if(b)b.disabled=false}};
+  d.showModal();const fi=f.querySelector('input,textarea,select');if(fi)fi.focus();
+}
+
+/* ---------- atualização automática da conversa ---------- */
+setInterval(async()=>{
+  if(!SES||!D||document.hidden||$('#dlg').open)return;
+  const ae=document.activeElement;if(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))return;
+  try{const nd=await rpc('fc3d_painel',{p_token:SES.token,p_empresa:SES.matriz?EMP:null});const mudou=JSON.stringify(nd)!==JSON.stringify(D);D=nd;if(mudou)render()}catch(_){}
+},25000);
+
+/* ---------- início ---------- */
+if(SES&&SES.token){iniciar().catch(e=>sair(e.message))}else{$('#vLogin').hidden=false}
+})();
+</script>
+</body>
+</html>

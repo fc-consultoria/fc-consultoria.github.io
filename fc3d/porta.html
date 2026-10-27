@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Plataforma FC 3D</title>
+<style>
+:root{--bg:#f2f1ee;--ink:#141416;--mute:#696b70;--acc:#a8834d;--card:#fff;--line:#dedcd7;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121315;--ink:#f0efec;--mute:#a2a4a8;--acc:#c9a66b;--card:#1a1b1e;--line:#2c2d31;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121315;--ink:#f0efec;--mute:#a2a4a8;--acc:#c9a66b;--card:#1a1b1e;--line:#2c2d31;color-scheme:dark}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:grid;place-items:center;padding:16px;box-sizing:border-box}
+.box{max-width:380px;width:100%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
+.sp{width:34px;height:34px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--acc);animation:g 1s linear infinite}
+@keyframes g{to{transform:rotate(360deg)}}
+small{font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+b{font-size:17px}
+p{margin:0;color:var(--mute);font-size:14px}
+a{display:inline-block;margin-top:6px;padding:10px 18px;border-radius:99px;background:var(--ink);color:var(--bg);text-decoration:none;font-weight:600;font-size:14px}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){.sp{animation:none}}
+</style>
+</head>
+<body>
+<div class="box" id="box" role="status" aria-live="polite">
+  <div class="sp" id="sp"></div>
+  <small>Plataforma FC 3D</small>
+  <b id="tt">Carregando conteúdo protegido…</b>
+  <p id="ds">Conferindo o seu acesso.</p>
+  <a href="./" id="vt" hidden>Voltar ao portal</a>
+</div>
+<script>
+/* Carregador da Plataforma FC 3D.
+   Os desenhos, imagens e textos de cada linha NÃO ficam neste arquivo público:
+   ficam no banco e só são entregues depois do login, para a empresa dona da linha. */
+(function(){
+  'use strict';
+  var SB_URL='https://pawwncmfadzxfahfvhry.supabase.co',SB_KEY='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs';
+  var id=(new URLSearchParams(location.search).get('c')||'').toLowerCase().replace(/[^a-z0-9-]/g,'');
+  var ses=null;try{ses=JSON.parse(localStorage.getItem('fc3d.ses')||'null')}catch(e){}
+  function erro(t,d,sair){
+    document.getElementById('sp').hidden=true;
+    document.getElementById('tt').textContent=t;
+    document.getElementById('ds').textContent=d||'';
+    document.getElementById('vt').hidden=false;
+    if(sair){try{localStorage.removeItem('fc3d.ses')}catch(e){}}
+  }
+  if(!ses||!ses.token){location.replace('./');return}
+  if(!id){erro('Abra pelo portal','Escolha a entrega no portal para ver em 3D.');return}
+  fetch(SB_URL+'/rest/v1/rpc/fc3d_conteudo',{
+    method:'POST',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify({p_token:ses.token,p_id:id})
+  }).then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j}})})
+  .then(function(x){
+    if(!x.ok){
+      var m=(x.j&&x.j.message)||'Não foi possível abrir.';
+      if(/Sessão expirada|Acesso pausado|Licença pausada/.test(m)){erro('Acesso encerrado',m,true);if(window.top===window)setTimeout(function(){location.replace('./')},2500);return}
+      erro('Não foi possível abrir',m);return;
+    }
+    if(typeof x.j!=='string'||x.j.length<100){erro('Conteúdo indisponível','Fale com a FC Consultoria.');return}
+    document.open();document.write(x.j);document.close();
+  }).catch(function(){erro('Sem conexão','Verifique a internet e tente de novo.')});
+})();
+</script>
+</body>
+</html>
