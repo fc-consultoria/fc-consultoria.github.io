@@ -140,14 +140,21 @@ window.CARDX=p=>{const cs=(p.cores||[]).filter(k=>CORES[k]);return `${cs.length?
 document.addEventListener('click',e=>{const b=e.target.closest('[data-scb]');if(!b)return;const o=b.nextElementSibling;o.hidden=!o.hidden;HITX('cat_sc',b.closest('.cd').dataset.c);},true);
 const get=async q=>{const r=await fetch(SBU+q,{headers:{apikey:SBK}});if(!r.ok)throw new Error(r.status);return r.json();};
 function wm(nome){const s=`<svg xmlns='http://www.w3.org/2000/svg' width='260' height='150'><text x='130' y='80' text-anchor='middle' transform='rotate(-24 130 75)' font-family='Arial,sans-serif' font-weight='700' font-size='19' fill='#17606b' fill-opacity='.13'>${nome.replace(/[<&'"]/g,'')}</text></svg>`;return `url("data:image/svg+xml,${encodeURIComponent(s)}")`;}
+/* aplica as edições do painel (código, nome, peso, foto, publicar, sob consulta) */
+function aplicaIT(it){const IT={};it.forEach(x=>IT[x.base]=x);LN.forEach(l=>l.p.forEach(q=>{if(q.p0===undefined){q.p0=q.p||'';q.pb0=q.pb||'';}const e=IT[q.c]||{};q.cd=e.c||'';q.nd=e.n||'';q.oc=!!e.oc;q.sc=e.sc!==false;q.obs=!!e.obs;q.txt=e.txt||'';q.cores=e.cores||CLI.cores||['branco','preto','natural'];q.p=e.p||q.p0;q.pb=q.pb0;q.fd=e.foto||'';if(CLI.peso_oc||e.pe_oc){q.p='';q.pb='';}}));}
+/* atualização automática: a cada 1 min (e ao voltar para a aba) confere se houve edição e redesenha sozinho */
+function autoAtualiza(it0){const assina=(it,c)=>JSON.stringify([it.map(x=>x.base+'|'+x.atualizado).sort(),c&&c.atualizado]);let SIG=assina(it0,CLI),busy=false;
+ const confere=async()=>{if(busy||document.hidden||QS.get('print'))return;busy=true;try{const c=(await get('cat_clientes?select=*&ativo=eq.true&slug=eq.'+encodeURIComponent(SLUG)))[0];if(!c){location.reload();return;}const it=await get('cat_itens?select=*&cliente_id=eq.'+encodeURIComponent(CLI.id));const s=assina(it,c);if(s===SIG)return;SIG=s;
+  const lin=JSON.stringify(c.linhas)!==JSON.stringify(CLI.linhas);Object.assign(CLI,c);if(lin){location.reload();return;}aplicaIT(it);
+  const ocupado=document.querySelector('#v3,#lbx:not([hidden])')||/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'');if(ocupado)SIG='';else desenha();}catch(e){}finally{busy=false;}};
+ setInterval(confere,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)confere();});}
 async function carregaCli(){const M=document.getElementById('lst');
  if(!SLUG){M.innerHTML='<p style="padding:40px 0">Catálogo não encontrado.</p>';return;}
  try{const c=await get('cat_clientes?select=*&ativo=eq.true&slug=eq.'+encodeURIComponent(SLUG));CLI=c[0];}catch(e){}
  if(!CLI){document.getElementById('cName').textContent='Catálogo não encontrado';M.innerHTML='<p style="padding:40px 0">Este catálogo não existe ou foi desativado.</p>';return;}
  let it=[];try{it=await get('cat_itens?select=*&cliente_id=eq.'+encodeURIComponent(CLI.id));}catch(e){}
- const IT={};it.forEach(x=>IT[x.base]=x);
  for(let k=LN.length-1;k>=0;k--)if(!(CLI.linhas||[]).includes(LN[k].id))LN.splice(k,1);
- LN.forEach(l=>l.p.forEach(q=>{const e=IT[q.c]||{};q.cd=e.c||'';q.nd=e.n||'';q.oc=!!e.oc;q.sc=e.sc!==false;q.obs=!!e.obs;q.txt=e.txt||'';q.cores=e.cores||CLI.cores||['branco','preto','natural'];if(e.p)q.p=e.p;q.fd=e.foto||'';if(CLI.peso_oc||e.pe_oc){q.p='';q.pb='';}}));
+ aplicaIT(it);
  const R=document.documentElement.style;R.setProperty('--tl',CLI.cor||'#17606b');R.setProperty('--cc',CLI.cor||'#17606b');
  document.title='Catálogo de perfis · '+CLI.nome;
  document.getElementById('cName').textContent=CLI.nome;document.getElementById('cSig').textContent=CLI.sigla||CLI.nome.slice(0,2).toUpperCase();
@@ -158,7 +165,7 @@ async function carregaCli(){const M=document.getElementById('lst');
   if(AV){const b=document.createElement('div');b.setAttribute('role','status');b.style.cssText='background:#fff4d6;border-bottom:1px solid #f1d38a;color:#5c3d00;font:500 14.5px/1.45 system-ui,sans-serif';
    const tx=(CLI.aviso_txt||'').trim()||AV[2];b.innerHTML=`<div style="max-width:1200px;margin:0 auto;padding:10px 18px;display:block;text-align:left"><b style="font-weight:700;font-size:15px;color:#5c3d00">${AV[0]} ${esc(AV[1])}</b> <span style="font-size:14px;font-weight:400;color:#5c3d00">· ${esc(tx)}</span></div>`;
    const h=document.querySelector('header.top');h.after(b);}}
- LI=LN[0];desenha();HITX('cat_abrir',SLUG);
+ LI=LN[0];desenha();HITX('cat_abrir',SLUG);autoAtualiza(it);
  try{window.CVIT&&CVIT.init({cli:CLI,ln:LN,img:IMG,zap:zapUrl,hit:HITX});}catch(e){console.warn('vitrine',e);}
  try{window.CAPRES&&CAPRES.init({cli:CLI,zap:zapUrl});}catch(e){console.warn('apres',e);}
  try{window.CLOJA&&CLOJA.init({cli:CLI,zap:zapUrl,hit:HITX,sbu:SBU,sbk:SBK});}catch(e){console.warn('loja',e);}
