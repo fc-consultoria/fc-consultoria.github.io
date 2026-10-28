@@ -107,7 +107,8 @@
       const d=t.closest('[data-d]');if(d){const i=o.querySelector('#ljQ');i.value=Math.max(1,(+i.value||0)+(+d.dataset.d));return;}
       if(t.closest('[data-ok]')){q=Math.max(1,parseInt(o.querySelector('#ljQ').value)||1);const ex=CART.find(i=>i.c===p.c&&i.cor===cor);if(ex)ex.q=q;else CART.push({c:p.c,cd:p.cd,n:p.n,img:p.img,cor,q,un:p.un});salva();fecha(o);tt(`${p.cd} · ${CORN[cor]} · ${q} ${UNI(p)} na cotação`);O.hit&&O.hit('loja_add',p.c);}});}
   /* ---------- entrar / cadastro ---------- */
-  function conta(aba,depois){if(EU){minhaConta();return;}let A=aba||'entrar',msg='',err='';const o=ov('c','');
+  let AUTO=null;async function auto(){if(AUTO===null){try{AUTO=!!(await rpc('loja_auto',{p_cli:O.cli.id}));}catch(_){AUTO=false;}}return AUTO;}
+  async function conta(aba,depois){if(EU){minhaConta();return;}await auto();let A=aba||'entrar',msg='',err='';const o=ov('c','');
     const pinta=()=>{o.innerHTML=`<div class="lj-md" role="dialog" aria-label="Área do cliente"><div class="lj-h"><b>Área do cliente</b><button type="button" class="lj-x" data-x>✕</button></div>
       <p class="lj-sub">Com o seu acesso você monta a cotação e conversa direto com o vendedor da sua região na ${esc(O.cli.nome)}.</p>
       <div class="lj-tabs"><button type="button" data-ab="entrar" aria-pressed="${A==='entrar'}">Já tenho acesso</button><button type="button" data-ab="cad" aria-pressed="${A==='cad'}">Criar cadastro</button></div>
@@ -117,15 +118,20 @@
       :`<form class="lj-f" id="ljC"><div class="lj-2"><label>Nome<input name="nome" required></label><label>Empresa<input name="empresa"></label></div>
         <div class="lj-2"><label>CNPJ ou CPF<input name="doc" inputmode="numeric"></label><label>WhatsApp<input name="zap" inputmode="tel" required placeholder="(00) 9 0000-0000"></label></div>
         <div class="lj-2"><label>Cidade<input name="cidade" required placeholder="Ex.: Serra Talhada - PE"></label><label>E-mail<input name="email" type="email" required></label></div>
-        <button class="lj-go">Pedir meu acesso</button><p class="lj-sub">A loja confere o cadastro e envia a senha no seu WhatsApp. A cidade define o vendedor da sua região.</p></form>`}</div>`;};
+        ${AUTO?`<div class="lj-2"><label>Crie uma senha<input name="senha" type="password" autocomplete="new-password" required minlength="6"></label><label>Repita a senha<input name="senha2" type="password" autocomplete="new-password" required minlength="6"></label></div>`:''}
+        <button class="lj-go">${AUTO?'Criar meu acesso':'Pedir meu acesso'}</button><p class="lj-sub">${AUTO?'Seu acesso é liberado na hora. A cidade define o vendedor da sua região.':'A loja confere o cadastro e envia a senha no seu WhatsApp. A cidade define o vendedor da sua região.'}</p></form>`}</div>`;};
     pinta();
     o.addEventListener('click',e=>{const b=e.target.closest('[data-ab]');if(b){A=b.dataset.ab;err='';msg='';pinta();}});
     o.addEventListener('submit',async e=>{e.preventDefault();const f=e.target,bt=f.querySelector('button.lj-go');bt.disabled=true;err='';
       try{if(f.id==='ljE'){const r=await rpc('loja_entrar',{p_cli:O.cli.id,p_login:f.l.value,p_senha:f.s.value});if(r.erro){err=r.erro;pinta();return;}
           TOK=r.tok;ls.set('fc_loja_tok_'+O.cli.id,TOK);await carregaEu();fecha(o);O.hit&&O.hit('loja_login','');
           if(r.troca){trocaSenha(depois);}else{tt('Bem-vindo, '+EU.nome.split(' ')[0]+'!');depois&&depois();}}
-        else{const d={};['nome','empresa','doc','zap','cidade','email'].forEach(k=>d[k]=f[k].value);const r=await rpc('loja_cadastrar',{p_cli:O.cli.id,p:d});
-          if(r.erro){err=r.erro;pinta();return;}A='entrar';msg='✅ Cadastro enviado! A '+esc(O.cli.nome)+' vai conferir e mandar a sua senha no WhatsApp. Depois é só entrar aqui.';pinta();O.hit&&O.hit('loja_cadastro','');}}
+        else{const d={};['nome','empresa','doc','zap','cidade','email'].forEach(k=>d[k]=f[k].value);
+          if(f.senha){if(f.senha.value.length<6){err='A senha precisa ter pelo menos 6 caracteres.';pinta();return;}if(f.senha.value!==f.senha2.value){err='As duas senhas estão diferentes.';pinta();return;}d.senha=f.senha.value;}
+          const r=await rpc('loja_cadastrar',{p_cli:O.cli.id,p:d});
+          if(r.erro){err=r.erro;pinta();return;}O.hit&&O.hit('loja_cadastro','');
+          if(r.status==='ativo'){const r2=await rpc('loja_entrar',{p_cli:O.cli.id,p_login:d.email,p_senha:d.senha});if(r2&&r2.tok){TOK=r2.tok;ls.set('fc_loja_tok_'+O.cli.id,TOK);await carregaEu();fecha(o);tt('Cadastro feito! Bem-vindo, '+EU.nome.split(' ')[0]+'!');depois&&depois();return;}}
+          A='entrar';msg=r.status==='ativo'?'✅ Cadastro feito! Entre com o seu e-mail e a senha que você criou.':'✅ Cadastro enviado! A '+esc(O.cli.nome)+' vai conferir e mandar a sua senha no WhatsApp. Depois é só entrar aqui.';pinta();}}
       catch(x){err='Não consegui falar com o servidor. Tente de novo.';pinta();}});}
   function trocaSenha(depois){let err='';const o=ov('c','');const pinta=()=>{o.innerHTML=`<div class="lj-md"><div class="lj-h"><b>Crie a sua senha</b></div><p class="lj-sub">Você entrou com a senha enviada pela loja. Agora escolha uma senha sua (mínimo 6 caracteres).</p>${err?`<div class="lj-err">${esc(err)}</div>`:''}
       <form class="lj-f" id="ljS"><label>Nova senha<input name="a" type="password" autocomplete="new-password" required minlength="6"></label><label>Repita a senha<input name="b" type="password" autocomplete="new-password" required></label><button class="lj-go">Salvar senha</button></form></div>`;};
