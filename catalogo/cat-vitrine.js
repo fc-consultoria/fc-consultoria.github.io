@@ -42,7 +42,7 @@
     const B=document.createElement('div');B.id='cvz';B.innerHTML=`<div class="cvh">📣 <span>Destaques · ${esc(C.nome||'')}</span><button type="button" title="Minimizar" data-cv="min">–</button></div><div class="cvi"><img alt=""></div><div class="cvt"><b></b><small></small><button type="button" class="cvg"></button></div><div class="cvd">${itens.map(()=>'<i></i>').join('')}</div>`;
     const T=document.createElement('button');T.id='cvtab';T.type='button';T.innerHTML='<span class="ti"></span><span class="tt">📣 Destaques<small></small></span>';T.title='Ver os destaques';
     document.body.append(B,T);
-    let i=0,pausa=false,min=SS.g('cv_min')==='1';
+    let i=0,pausa=false,min=SS.g('cv_min')!=='0';   /* destaques começam fechados: o cliente abre se quiser */
     const im=B.querySelector('.cvi img'),tt=B.querySelector('.cvt b'),tx=B.querySelector('.cvt small'),go=B.querySelector('.cvg'),dots=[...B.querySelectorAll('.cvd i')];
     function mostra(){const x=itens[i],cvi=B.querySelector('.cvi');im.style.opacity=0;const sb=cvi.querySelector('.cvs');if(sb)sb.remove();
       if(x.img)setTimeout(()=>{im.src=x.img;im.className=x.k==='o'?'of':'';im.style.opacity=1;},180);
@@ -68,7 +68,13 @@
     setInterval(()=>{if(!R||R.style.display==='none'||itens.length<2)return;const n=R.querySelectorAll('.cc').length;if(itens.length<=n)return;off=(off+1)%itens.length;linha();},seg*1000);
     const lugar=()=>{const w=document.querySelector('main .w')||document.querySelector('.w');const esq=w?w.getBoundingClientRect().left:0;const larg=Math.min(320,esq-32);
       const cabe=innerWidth>=1300&&larg>=200;const hw=document.querySelector('.hero .w');
-      if(!cabe&&hw){B.style.display='none';T.style.display='none';montaLinha(hw);return;}
+      if(!cabe&&hw){B.style.display='none';T.style.display='none';
+        let bt=document.getElementById('cvbt');
+        if(!bt){bt=document.createElement('button');bt.id='cvbt';bt.type='button';bt.style.cssText='margin-top:6px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;border-radius:999px;padding:9px 16px;font:600 14px system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer;justify-self:start;width:max-content';
+          bt.onclick=()=>{const ab=SS.g('cv_row')!=='1';SS.s('cv_row',ab?'1':'0');if(ab)o.hit&&o.hit('vitrine_abrir','');lugar();};hw.appendChild(bt);}
+        const aberto=SS.g('cv_row')==='1';bt.textContent=aberto?'✕ Fechar destaques':'📣 Ver destaques ('+itens.length+')';
+        if(aberto){montaLinha(hw);hw.appendChild(bt);}else if(R)R.style.display='none';
+        return;}
       if(R)R.style.display='none';
       B.style.setProperty('--cvw',larg+'px');
       B.style.display=cabe?'':'none';T.style.display=cabe?(min?'flex':'none'):'flex';};

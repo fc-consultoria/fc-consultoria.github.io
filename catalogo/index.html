@@ -92,6 +92,10 @@ footer{background:var(--ink);color:#c7d6dd;padding:34px 0 90px;font-size:14.5px;
  .grid{grid-template-columns:repeat(4,1fr)!important;gap:6px}.cd{break-inside:avoid;padding:6px 8px}.cd .im{height:100px!important}.cd .im img.d3{max-height:64px!important}.cd b{font-size:15px}.cd span{font-size:10.5px}.cd .scb{border:0;background:none;padding:0;font-size:10.5px}
  .gh{margin:10px 0 6px;break-after:avoid}.gh h2{font-size:17px}.pline{break-before:page}.pline:first-child{break-before:auto}.ptitle{display:block;font:800 22px var(--f-d);color:var(--cc);margin:6px 0}
  .cd,.ccor i,.csig,header.top,.gh i{-webkit-print-color-adjust:exact;print-color-adjust:exact}footer{background:#fff!important;color:#555!important;padding:8px 0!important}.fccred,.fccred b{color:#666!important}}
+@media(max-width:560px){.top .w{height:56px;gap:8px}.brand{gap:8px;min-width:0;flex:1 1 auto}.brand>span:last-child{min-width:0}.brand b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.csig{flex:none}
+ .top nav{gap:6px;flex:none}.top nav .btn{padding:6px 10px;min-height:36px;font-size:13.5px;border-radius:9px;white-space:nowrap}.top .zn{display:none}
+ .hero{padding:22px 0 26px!important}.hero .w{gap:18px}.hero h1{font-size:32px!important;margin:8px 0 10px!important}.hero p{font-size:15px!important;margin:0 0 14px!important}}
+@media(max-width:420px){.top .zl{display:none}}
 </style>
 <script src="/whats.js?v=1"></script>
 </head>
@@ -115,7 +119,7 @@ footer{background:var(--ink);color:#c7d6dd;padding:34px 0 90px;font-size:14.5px;
  <a id="cCred" class="fccred" href="https://fc-consultoria.github.io/" target="_blank" rel="noopener" title="Catálogo Virtual desenvolvido pela FC Consultoria em Esquadria">Desenvolvido por <b>FC Consultoria em Esquadria</b></a>
 </div></footer>
 
-<script src="cat-vitrine.js?v=4"></script>
+<script src="cat-vitrine.js?v=5"></script>
 <script src="cat-apres.js?v=1"></script>
 <script src="cat-loja.js?v=5"></script>
 <script src="linhas-cda.js?v=3"></script><script src="linhas-guapore.js?v=13"></script><script src="medidas.js?v=3"></script>
@@ -162,7 +166,7 @@ async function carregaCli(){const M=document.getElementById('lst');
  if(ACX){const S=(i,v)=>{const e=document.getElementById(i);if(e)e.innerHTML=v;};S('cSub','Catálogo de perfis de alumínio e acessórios');S('cEb','Catálogo de perfis e acessórios');S('cH1','Perfis e <em>acessórios</em>');}
  document.getElementById('cName').textContent=CLI.nome;document.getElementById('cSig').textContent=CLI.sigla||CLI.nome.slice(0,2).toUpperCase();
  document.getElementById('cText').textContent=CLI.texto||'';document.querySelectorAll('.cFoot').forEach(e=>e.textContent=CLI.nome+(CLI.cidade?' · '+CLI.cidade:'')+(CLI.zap?' · WhatsApp '+CLI.zap:''));
- const z=document.getElementById('cZap');if(CLI.zap){z.href=zapUrl('Olá! Vi o catálogo de perfis e quero falar com vocês.');z.textContent='💬 WhatsApp '+CLI.zap;}else z.hidden=true;
+ const z=document.getElementById('cZap');if(CLI.zap){z.href=zapUrl('Olá! Vi o catálogo de perfis e quero falar com vocês.');z.innerHTML='💬<span class="zl"> WhatsApp</span><span class="zn"> '+String(CLI.zap).replace(/[<>&]/g,'')+'</span>';}else z.hidden=true;
  const st=document.createElement('style');st.textContent=`#v3 .cv::after,#v3 .mdp .wm::after,#lbx .wm::after,.cd .im::after{background-image:${wm(CLI.nome)}!important}#v3 .cv::before{content:'${(CLI.nome||'').replace(/'/g,'')}'!important}`;document.head.appendChild(st);
  if(CLI.aviso&&!QS.get('print')){const AV={manutencao:['🔧','Catálogo em manutenção','Estamos fazendo ajustes neste catálogo. Você pode continuar navegando normalmente; em caso de dúvida, fale com a nossa equipe.'],atualizacao:['🔄','Catálogo em atualização','Perfis, cores e informações estão sendo atualizados. Confirme com a nossa equipe antes de fechar o pedido.']}[CLI.aviso];
   if(AV){const b=document.createElement('div');b.setAttribute('role','status');b.style.cssText='background:#fff4d6;border-bottom:1px solid #f1d38a;color:#5c3d00;font:500 14.5px/1.45 system-ui,sans-serif';
