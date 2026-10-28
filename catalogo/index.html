@@ -96,13 +96,13 @@ footer{background:var(--ink);color:#c7d6dd;padding:34px 0 90px;font-size:14.5px;
 </head>
 <body>
 <header class="top"><div class="w">
- <span class="brand"><span id="cSig" class="csig"></span><span><b id="cName">Catálogo</b><small>Catálogo de perfis de alumínio</small></span></span>
+ <span class="brand"><span id="cSig" class="csig"></span><span><b id="cName">Catálogo</b><small id="cSub">Catálogo de perfis de alumínio</small></span></span>
  <nav><button type="button" class="btn b-gh noprint" id="cPrint" onclick="imprimir()">🖨 Imprimir / PDF</button><script>try{if(window.top!==window.self)document.getElementById('cPrint').style.display='none';}catch(_){document.getElementById('cPrint').style.display='none';}</script><a class="btn b-or noprint" id="cZap" target="_blank" rel="noopener" style="background:#1f9d55;color:#fff">💬 WhatsApp</a></nav>
 </div></header>
 
 <section class="hero hs"><div class="w"><div>
-  <span class="eb">Catálogo de perfis</span>
-  <h1>Perfis de <em>alumínio</em></h1>
+  <span class="eb" id="cEb">Catálogo de perfis</span>
+  <h1 id="cH1">Perfis de <em>alumínio</em></h1>
   <p id="cText"></p><div id="dl" hidden></div>
   <p class="note" style="color:#cfe9ec;font-size:14px;margin-top:10px">Toque no perfil para girar em 3D, ver as 📐 medidas e os 🔧 desenhos de usinagem.</p>
 </div></div></section>
@@ -156,7 +156,8 @@ async function carregaCli(){const M=document.getElementById('lst');
  for(let k=LN.length-1;k>=0;k--)if(!(CLI.linhas||[]).includes(LN[k].id))LN.splice(k,1);
  aplicaIT(it);
  const R=document.documentElement.style;R.setProperty('--tl',CLI.cor||'#17606b');R.setProperty('--cc',CLI.cor||'#17606b');
- document.title='Catálogo de perfis · '+CLI.nome;
+ const ACX=LN.some(l=>l.p.some(q=>q.ac));document.title=(ACX?'Catálogo de perfis e acessórios · ':'Catálogo de perfis · ')+CLI.nome;
+ if(ACX){const S=(i,v)=>{const e=document.getElementById(i);if(e)e.innerHTML=v;};S('cSub','Catálogo de perfis de alumínio e acessórios');S('cEb','Catálogo de perfis e acessórios');S('cH1','Perfis e <em>acessórios</em>');}
  document.getElementById('cName').textContent=CLI.nome;document.getElementById('cSig').textContent=CLI.sigla||CLI.nome.slice(0,2).toUpperCase();
  document.getElementById('cText').textContent=CLI.texto||'';document.querySelectorAll('.cFoot').forEach(e=>e.textContent=CLI.nome+(CLI.cidade?' · '+CLI.cidade:'')+(CLI.zap?' · WhatsApp '+CLI.zap:''));
  const z=document.getElementById('cZap');if(CLI.zap){z.href=zapUrl('Olá! Vi o catálogo de perfis e quero falar com vocês.');z.textContent='💬 WhatsApp '+CLI.zap;}else z.hidden=true;
