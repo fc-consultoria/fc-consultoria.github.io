@@ -2,8 +2,8 @@
    Liga com ?loja=1 ou cat_clientes.vitrine.loja = true. Dados: RPCs loja_* (Supabase). */
 (function(){
   const esc=v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  const CORN={branco:'Branco',preto:'Preto fosco',bronze:'Bronze',natural:'Natural',champanhe:'Champanhe',amadeirado:'Amadeirado'};
-  const CORH={branco:'#f4f5f6',preto:'#2f3236',bronze:'#5a4632',natural:'#b9bec3',champanhe:'#cbb28a',amadeirado:'#8a5a36'};
+  const CORN={branco:'Branco',preto:'Preto fosco',bronze:'Bronze',natural:'Natural',champanhe:'Champanhe',amadeirado:'Amadeirado',fosco:'Fosco',brilhante:'Brilhante',cromado:'Cromado',inox:'Inox',zincado:'Zincado'};
+  const CORH={branco:'#f4f5f6',preto:'#2f3236',bronze:'#5a4632',natural:'#b9bec3',champanhe:'#cbb28a',amadeirado:'#8a5a36',fosco:'#aeb4b9',brilhante:'#e6e9ec',cromado:'#d5dade',inox:'#c3c8cc',zincado:'#9ea7ad'};
   let O=null,K='',CART=[],TOK='',EU=null,CHAT=null,POLL=null,BG=null;
   const ls={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(_){return d;}},set(k,v){try{if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,JSON.stringify(v));}catch(_){}}};
   async function rpc(fn,args){const r=await fetch(O.sbu+'rpc/'+fn,{method:'POST',headers:{apikey:O.sbk,'Content-Type':'application/json'},body:JSON.stringify(args||{})});
@@ -88,23 +88,24 @@
     document.querySelectorAll('[data-conta]').forEach(b=>b.textContent=EU?'👤 '+EU.nome.split(' ')[0]:'👤 Entrar');}
   /* ---------- cards ---------- */
   function info(cd){const im=cd.querySelector('img.d2')||cd.querySelector('img');const cs=[...cd.querySelectorAll('.ccor i')].map(i=>Object.keys(CORN).find(k=>CORN[k]===i.title)).filter(Boolean);
-    return {c:cd.dataset.c,cd:(cd.querySelector('b')||{}).textContent||cd.dataset.c,n:(cd.querySelector('span')||{}).textContent||cd.dataset.n||'',img:im?im.getAttribute('src'):'',cores:cs.length?cs:['branco','preto','natural'],sc:!!cd.querySelector('.scb')};}
+    return {c:cd.dataset.c,cd:(cd.querySelector('b')||{}).textContent||cd.dataset.c,n:(cd.querySelector('span')||{}).textContent||cd.dataset.n||'',img:im?im.getAttribute('src'):'',cores:cs.length?cs:['branco','preto','natural'],sc:!!cd.querySelector('.scb'),un:cd.dataset.un||''};}
+  const UNI=i=>i&&i.un?'un.':'barras';
   function marca(){document.querySelectorAll('#lst .cd[data-c]').forEach(cd=>{let b=cd.querySelector('.lj-add');if(!b){b=document.createElement('button');b.type='button';b.className='lj-add nov3';b.dataset.ljadd='1';cd.appendChild(b);}
-    const n=CART.filter(i=>i.c===cd.dataset.c).reduce((s,i)=>s+i.q,0);b.classList.toggle('on',n>0);b.textContent=n?`✓ ${n} barras na cotação · alterar`:'＋ Adicionar à cotação';});}
+    const n=CART.filter(i=>i.c===cd.dataset.c).reduce((s,i)=>s+i.q,0);b.classList.toggle('on',n>0);b.textContent=n?`✓ ${n} ${cd.dataset.un?'un.':'barras'} na cotação · alterar`:'＋ Adicionar à cotação';});}
   function ov(cls,html){const o=document.createElement('div');o.className='lj-ov'+(cls?' '+cls:'');o.innerHTML=html;document.body.appendChild(o);o.addEventListener('click',e=>{if(e.target===o||e.target.closest('[data-x]'))fecha(o);});return o;}
   function fecha(o){if(o===BG){clearInterval(POLL);POLL=null;CHAT=null;BG=null;}o.remove();}
-  function escolher(cd){const p=info(cd);let cor=p.cores[0],q=10;
+  function escolher(cd){const p=info(cd);let cor=p.cores[0],q=p.un?1:10;
     const o=ov('c','');const pinta=()=>{o.innerHTML=`<div class="lj-md" role="dialog" aria-label="Adicionar à cotação"><div class="lj-h"><b>${esc(p.cd)}</b><button type="button" class="lj-x" data-x>✕</button></div>
       ${p.img?`<img src="${esc(p.img)}" alt="" style="height:90px;object-fit:contain;background:#fff">`:''}<p class="lj-sub">${esc(p.n)}</p>
       ${p.sc?'<p class="lj-sub" style="background:#fff7ec;color:#7a4a08;border-radius:9px;padding:8px 10px">Sob consulta: perfil fora do estoque de pronta entrega. A loja confirma o prazo.</p>':''}
       <div><b style="font-size:12.5px;letter-spacing:.1em;color:#55636c">COR</b><div class="lj-cores" style="margin-top:6px">${p.cores.map(k=>`<button type="button" data-cor="${k}" aria-pressed="${k===cor}"><span class="lj-dot" style="background:${CORH[k]}"></span>${CORN[k]}</button>`).join('')}</div></div>
-      <div><b style="font-size:12.5px;letter-spacing:.1em;color:#55636c">BARRAS DE 6 M</b><div class="lj-q" style="margin-top:6px"><button type="button" data-d="-1" aria-label="Menos">−</button><input id="ljQ" inputmode="numeric" value="${q}" aria-label="Quantidade de barras"><button type="button" data-d="1" aria-label="Mais">+</button></div></div>
+      <div><b style="font-size:12.5px;letter-spacing:.1em;color:#55636c">${p.un?'QUANTIDADE ('+esc(p.un)+')':'BARRAS DE 6 M'}</b><div class="lj-q" style="margin-top:6px"><button type="button" data-d="-1" aria-label="Menos">−</button><input id="ljQ" inputmode="numeric" value="${q}" aria-label="Quantidade de barras"><button type="button" data-d="1" aria-label="Mais">+</button></div></div>
       <button type="button" class="lj-go" data-ok>＋ Adicionar à cotação</button><p class="lj-sub" style="text-align:center">Sem preço aqui: o vendedor responde a cotação com valores e prazo.</p></div>`;};
     pinta();
     o.addEventListener('click',e=>{const t=e.target;
       const c=t.closest('[data-cor]');if(c){q=+o.querySelector('#ljQ').value||q;cor=c.dataset.cor;pinta();return;}
       const d=t.closest('[data-d]');if(d){const i=o.querySelector('#ljQ');i.value=Math.max(1,(+i.value||0)+(+d.dataset.d));return;}
-      if(t.closest('[data-ok]')){q=Math.max(1,parseInt(o.querySelector('#ljQ').value)||1);const ex=CART.find(i=>i.c===p.c&&i.cor===cor);if(ex)ex.q=q;else CART.push({c:p.c,cd:p.cd,n:p.n,img:p.img,cor,q});salva();fecha(o);tt(`${p.cd} · ${CORN[cor]} · ${q} barras na cotação`);O.hit&&O.hit('loja_add',p.c);}});}
+      if(t.closest('[data-ok]')){q=Math.max(1,parseInt(o.querySelector('#ljQ').value)||1);const ex=CART.find(i=>i.c===p.c&&i.cor===cor);if(ex)ex.q=q;else CART.push({c:p.c,cd:p.cd,n:p.n,img:p.img,cor,q,un:p.un});salva();fecha(o);tt(`${p.cd} · ${CORN[cor]} · ${q} ${UNI(p)} na cotação`);O.hit&&O.hit('loja_add',p.c);}});}
   /* ---------- entrar / cadastro ---------- */
   function conta(aba,depois){if(EU){minhaConta();return;}let A=aba||'entrar',msg='',err='';const o=ov('c','');
     const pinta=()=>{o.innerHTML=`<div class="lj-md" role="dialog" aria-label="Área do cliente"><div class="lj-h"><b>Área do cliente</b><button type="button" class="lj-x" data-x>✕</button></div>
@@ -142,9 +143,9 @@
   function carrinho(){const o=ov('','');let obs='';
     const pinta=()=>{const n=CART.reduce((s,i)=>s+i.q,0);
       o.innerHTML=`<div class="lj-pn" role="dialog" aria-label="Minha cotação"><div class="lj-h"><b>Minha cotação</b><button type="button" class="lj-x" data-x>✕ Fechar</button></div>
-      <p class="lj-sub">${CART.length} ${CART.length===1?'perfil':'perfis'} · ${n} barras de 6 m. Sem preço: o vendedor responde com valores e prazo.</p>
+      <p class="lj-sub">${CART.length} ${CART.length===1?'item':'itens'}${CART.some(i=>!i.un)?' · '+CART.filter(i=>!i.un).reduce((s,i)=>s+i.q,0)+' barras de 6 m':''}. Sem preço: o vendedor responde com valores e prazo.</p>
       <div>${CART.length?CART.map((i,k)=>`<div class="lj-it">${i.img?`<img src="${esc(i.img)}" alt="">`:'<span></span>'}<div><b>${esc(i.cd)}</b><small>${esc(i.n)}</small><small><span class="lj-dot" style="width:10px;height:10px;background:${CORH[i.cor]}"></span> ${CORN[i.cor]}</small><button type="button" class="lj-rm" data-rm="${k}">Tirar</button></div>
-        <div class="lj-q"><button type="button" data-k="${k}" data-d="-1" aria-label="Menos">−</button><input data-qi="${k}" inputmode="numeric" value="${i.q}" aria-label="Barras"><button type="button" data-k="${k}" data-d="1" aria-label="Mais">+</button></div></div>`).join(''):'<p class="lj-vz">A cotação está vazia.<br>Clique em <b>＋ Adicionar à cotação</b> nos perfis.</p>'}</div>
+        <div class="lj-q"><button type="button" data-k="${k}" data-d="-1" aria-label="Menos">−</button><input data-qi="${k}" inputmode="numeric" value="${i.q}" aria-label="Quantidade"><button type="button" data-k="${k}" data-d="1" aria-label="Mais">+</button></div>${i.un?`<small style="display:block;text-align:center;color:#55636c">${esc(i.un)}</small>`:''}</div>`).join(''):'<p class="lj-vz">A cotação está vazia.<br>Clique em <b>＋ Adicionar à cotação</b> nos perfis.</p>'}</div>
       ${CART.length?`${EU?vendBox():''}<label class="lj-f"><span style="font-size:13px;font-weight:600;color:#55636c">Observação (opcional)</span><textarea id="ljObs" rows="2" placeholder="Ex.: entrega na obra, prazo, outra cor">${esc(obs)}</textarea></label>
         <button type="button" class="lj-go" data-env>💬 Solicitar orçamento ${EU&&EU.vend?'ao '+esc(EU.vend.nome.split(' ')[0]):''}</button>
         ${EU?'':'<p class="lj-sub" style="text-align:center">Para enviar, entre na área do cliente ou crie o seu cadastro.</p>'}<button type="button" class="lj-x" data-limpa>Limpar a cotação</button>`:''}</div>`;};
@@ -156,7 +157,7 @@
       const ev=t.closest('[data-env]');if(ev){obs=(o.querySelector('#ljObs')||{}).value||'';
         if(!EU){fecha(o);conta('entrar',()=>carrinho());return;}
         ev.disabled=true;ev.textContent='Enviando…';
-        try{const r=await rpc('loja_cotar',{p_tok:TOK,p_itens:CART.map(i=>({c:i.c,cd:i.cd,n:i.n,cor:i.cor,corn:CORN[i.cor],q:i.q})),p_obs:obs});
+        try{const r=await rpc('loja_cotar',{p_tok:TOK,p_itens:CART.map(i=>({c:i.c,cd:i.cd,n:i.un?i.n+' ('+i.un+')':i.n,cor:i.cor,corn:CORN[i.cor],q:i.q,u:i.un?'un':'barra'})),p_obs:obs});
           if(r.erro){tt(r.erro);ev.disabled=false;ev.textContent='💬 Solicitar orçamento';if(/Entre/.test(r.erro)){TOK='';EU=null;fabs();}return;}
           CART=[];salva();fecha(o);O.hit&&O.hit('loja_cotar',String(r.numero));conversas(r.id);}
         catch(x){tt('Não consegui enviar. Tente de novo.');ev.disabled=false;}}});
