@@ -147,7 +147,7 @@ async function carregaCli(){const M=document.getElementById('lst');
  let it=[];try{it=await get('cat_itens?select=*&cliente_id=eq.'+encodeURIComponent(CLI.id));}catch(e){}
  const IT={};it.forEach(x=>IT[x.base]=x);
  for(let k=LN.length-1;k>=0;k--)if(!(CLI.linhas||[]).includes(LN[k].id))LN.splice(k,1);
- LN.forEach(l=>l.p.forEach(q=>{const e=IT[q.c]||{};q.cd=e.c||'';q.nd=e.n||'';q.oc=!!e.oc;q.sc=e.sc!==false;q.obs=!!e.obs;q.txt=e.txt||'';q.cores=e.cores||CLI.cores||['branco','preto','natural'];if(e.p)q.p=e.p;q.fd=e.foto||'';}));
+ LN.forEach(l=>l.p.forEach(q=>{const e=IT[q.c]||{};q.cd=e.c||'';q.nd=e.n||'';q.oc=!!e.oc;q.sc=e.sc!==false;q.obs=!!e.obs;q.txt=e.txt||'';q.cores=e.cores||CLI.cores||['branco','preto','natural'];if(e.p)q.p=e.p;q.fd=e.foto||'';if(CLI.peso_oc||e.pe_oc){q.p='';q.pb='';}}));
  const R=document.documentElement.style;R.setProperty('--tl',CLI.cor||'#17606b');R.setProperty('--cc',CLI.cor||'#17606b');
  document.title='Catálogo de perfis · '+CLI.nome;
  document.getElementById('cName').textContent=CLI.nome;document.getElementById('cSig').textContent=CLI.sigla||CLI.nome.slice(0,2).toUpperCase();
