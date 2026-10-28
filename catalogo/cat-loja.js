@@ -146,23 +146,40 @@
     :`<div class="lj-vd"><span class="lj-av">${esc(O.cli.sigla||'?')}</span><div><b>Equipe de vendas · ${esc(O.cli.nome)}</b><small>A loja indica o vendedor da sua região</small></div></div>`;}
   async function carregaEu(){if(!TOK){EU=null;return;}try{EU=await rpc('loja_eu',{p_tok:TOK});}catch(_){EU=null;}if(!EU){TOK='';ls.set('fc_loja_tok_'+O.cli.id,null);}fabs();}
   /* ---------- carrinho ---------- */
-  function carrinho(){const o=ov('','');let obs='';
+  let VZ=null;async function vendsZap(){if(!TOK)return null;if(VZ===null){try{VZ=await rpc('loja_vends',{p_tok:TOK})||{modo:'chat'};}catch(_){VZ={modo:'chat'};}}return VZ;}
+  const zapOn=()=>VZ&&VZ.modo==='zap'&&(VZ.vends||[]).length;
+  function vendPick(sel){return `<div class="lj-vl" role="radiogroup" aria-label="Escolha o vendedor"><span style="font-size:13px;font-weight:600;color:#55636c">Escolha o vendedor para enviar no WhatsApp</span>${VZ.vends.map(v=>`<button type="button" class="lj-vo" role="radio" aria-checked="${v.id===sel}" data-vs="${v.id}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1.5px solid ${v.id===sel?'var(--cc,#17606b)':'#d7dee2'};background:${v.id===sel?'#eef6f7':'#fff'};border-radius:12px;padding:9px 11px;margin-top:6px;cursor:pointer;font:inherit;color:inherit"><span class="lj-av">${esc(ini(v.nome))}</span><span style="flex:1;min-width:0"><b style="display:block">${esc(v.nome)}</b><small style="color:${v.on?'#1f9d55':'#6b7a83'}">${v.on?'🟢 On-line agora':'⚪ Off-line · responde quando voltar'}</small></span>${v.id===sel?'<span style="font-weight:800;color:var(--cc,#17606b)">✓</span>':''}</button>`).join('')}</div>`;}
+  async function carrinho(){if(TOK&&EU)await vendsZap();const o=ov('','');let obs='';
+    let vsel=zapOn()?(((VZ.vends.find(v=>v.id===VZ.meu&&v.on)||VZ.vends.find(v=>v.on)||VZ.vends.find(v=>v.id===VZ.meu)||VZ.vends[0])||{}).id):null;
     const pinta=()=>{const n=CART.reduce((s,i)=>s+i.q,0);
       o.innerHTML=`<div class="lj-pn" role="dialog" aria-label="Minha cotação"><div class="lj-h"><b>Minha cotação</b><button type="button" class="lj-x" data-x>✕ Fechar</button></div>
       <p class="lj-sub">${CART.length} ${CART.length===1?'item':'itens'}${CART.some(i=>!i.un)?' · '+CART.filter(i=>!i.un).reduce((s,i)=>s+i.q,0)+' barras de 6 m':''}. Sem preço: o vendedor responde com valores e prazo.</p>
       <div>${CART.length?CART.map((i,k)=>`<div class="lj-it">${i.img?`<img src="${esc(i.img)}" alt="">`:'<span></span>'}<div><b>${esc(i.cd)}</b><small>${esc(i.n)}</small><small><span class="lj-dot" style="width:10px;height:10px;background:${CORH[i.cor]}"></span> ${CORN[i.cor]}</small><button type="button" class="lj-rm" data-rm="${k}">Tirar</button></div>
         <div class="lj-q"><button type="button" data-k="${k}" data-d="-1" aria-label="Menos">−</button><input data-qi="${k}" inputmode="numeric" value="${i.q}" aria-label="Quantidade"><button type="button" data-k="${k}" data-d="1" aria-label="Mais">+</button></div>${i.un?`<small style="display:block;text-align:center;color:#55636c">${esc(i.un)}</small>`:''}</div>`).join(''):'<p class="lj-vz">A cotação está vazia.<br>Clique em <b>＋ Adicionar à cotação</b> nos perfis.</p>'}</div>
-      ${CART.length?`${EU?vendBox():''}<label class="lj-f"><span style="font-size:13px;font-weight:600;color:#55636c">Observação (opcional)</span><textarea id="ljObs" rows="2" placeholder="Ex.: entrega na obra, prazo, outra cor">${esc(obs)}</textarea></label>
-        <button type="button" class="lj-go" data-env>💬 Solicitar orçamento ${EU&&EU.vend?'ao '+esc(EU.vend.nome.split(' ')[0]):''}</button>
+      ${CART.length?`${EU?(zapOn()?vendPick(vsel):vendBox()):''}<label class="lj-f"><span style="font-size:13px;font-weight:600;color:#55636c">Observação (opcional)</span><textarea id="ljObs" rows="2" placeholder="Ex.: entrega na obra, prazo, outra cor">${esc(obs)}</textarea></label>
+        <button type="button" class="lj-go" data-env ${zapOn()?'style="background:#1f9d55"':''}>💬 ${zapOn()?'Enviar no WhatsApp de '+esc(((VZ.vends.find(v=>v.id===vsel)||{}).nome||'').split(' ')[0]):'Solicitar orçamento '+(EU&&EU.vend?'ao '+esc(EU.vend.nome.split(' ')[0]):'')}</button>
         ${EU?'':'<p class="lj-sub" style="text-align:center">Para enviar, entre na área do cliente ou crie o seu cadastro.</p>'}<button type="button" class="lj-x" data-limpa>Limpar a cotação</button>`:''}</div>`;};
     pinta();
     o.addEventListener('click',async e=>{const t=e.target;
       const r=t.closest('[data-rm]');if(r){CART.splice(+r.dataset.rm,1);salva();pinta();return;}
       const d=t.closest('[data-d][data-k]');if(d){const i=CART[+d.dataset.k];i.q=Math.max(1,i.q+(+d.dataset.d));salva();pinta();return;}
       if(t.closest('[data-limpa]')){CART=[];salva();pinta();return;}
+      const vs=t.closest('[data-vs]');if(vs){obs=(o.querySelector('#ljObs')||{}).value||obs;vsel=vs.dataset.vs;pinta();return;}
       const ev=t.closest('[data-env]');if(ev){obs=(o.querySelector('#ljObs')||{}).value||'';
         if(!EU){fecha(o);conta('entrar',()=>carrinho());return;}
         ev.disabled=true;ev.textContent='Enviando…';
+        if(zapOn()){const v=VZ.vends.find(x=>x.id===vsel);if(!v){tt('Escolha o vendedor.');ev.disabled=false;return;}
+          const itens=CART.map(i=>({c:i.c,cd:i.cd,n:i.un?i.n+' ('+i.un+')':i.n,cor:i.cor,corn:CORN[i.cor],q:i.q,u:i.un?'un':'barra'}));
+          try{const r=await rpc('loja_cotar_zap',{p_tok:TOK,p_itens:itens,p_obs:obs,p_vend:v.id});
+            if(r.erro){tt(r.erro);ev.disabled=false;pinta();if(/Entre/.test(r.erro)){TOK='';EU=null;VZ=null;fabs();}return;}
+            const txt=`Olá, ${v.nome.split(' ')[0]}! Sou ${r.nome||EU.nome}${r.empresa?' ('+r.empresa+')':''}${r.cidade?', de '+r.cidade:''}.\nPedido de cotação nº ${r.numero} pelo catálogo da ${O.cli.nome}:\n`+itens.map(i=>'• '+i.cd+' · '+(i.corn||'')+' · '+i.q+' '+(i.u==='un'?'un.':'barra(s) de 6 m')+(i.u==='un'?' · '+i.n:'')).join('\n')+(obs.trim()?'\n\nObs.: '+obs.trim():'');
+            const url='https://wa.me/55'+v.fone+'?text='+encodeURIComponent(txt);
+            CART=[];salva();O.hit&&O.hit('loja_cotar_zap',String(r.numero));fabs();
+            o.innerHTML=`<div class="lj-pn" role="dialog" aria-label="Cotação pronta"><div class="lj-h"><b>Cotação nº ${r.numero} pronta</b><button type="button" class="lj-x" data-x>✕ Fechar</button></div>
+              <p class="lj-sub">Toque no botão para abrir o WhatsApp de <b>${esc(v.nome)}</b> com a sua cotação já escrita. Depois é só enviar.</p>
+              <a class="lj-go" href="${url}" target="_blank" rel="noopener" style="display:flex;justify-content:center;text-decoration:none;background:#1f9d55;color:#fff">💬 Abrir o WhatsApp de ${esc(v.nome.split(' ')[0])}</a>
+              <p class="lj-sub" style="margin-top:10px">${v.on?'🟢 '+esc(v.nome.split(' ')[0])+' está on-line agora.':'⚪ '+esc(v.nome.split(' ')[0])+' está off-line e responde quando voltar.'}</p></div>`;
+          }catch(x){tt('Não consegui enviar. Tente de novo.');ev.disabled=false;}return;}
         try{const r=await rpc('loja_cotar',{p_tok:TOK,p_itens:CART.map(i=>({c:i.c,cd:i.cd,n:i.un?i.n+' ('+i.un+')':i.n,cor:i.cor,corn:CORN[i.cor],q:i.q,u:i.un?'un':'barra'})),p_obs:obs});
           if(r.erro){tt(r.erro);ev.disabled=false;ev.textContent='💬 Solicitar orçamento';if(/Entre/.test(r.erro)){TOK='';EU=null;fabs();}return;}
           CART=[];salva();fecha(o);O.hit&&O.hit('loja_cotar',String(r.numero));conversas(r.id);}
