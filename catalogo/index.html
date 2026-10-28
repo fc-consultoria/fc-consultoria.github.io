@@ -96,6 +96,17 @@ footer{background:var(--ink);color:#c7d6dd;padding:34px 0 90px;font-size:14.5px;
  .top nav{gap:6px;flex:none}.top nav .btn{padding:6px 10px;min-height:36px;font-size:13.5px;border-radius:9px;white-space:nowrap}.top .zn{display:none}
  .hero{padding:22px 0 26px!important}.hero .w{gap:18px}.hero h1{font-size:32px!important;margin:8px 0 10px!important}.hero p{font-size:15px!important;margin:0 0 14px!important}}
 @media(max-width:420px){.top .zl{display:none}}
+/* layout automático: barra das linhas rola na horizontal sem alargar a página (celular, tablet e notebook) */
+html,body{max-width:100%;overflow-x:hidden}
+.tools .w>*{min-width:0}
+#tabs{display:flex!important;flex-wrap:nowrap;gap:8px;width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+#tabs .tb{flex:none;white-space:nowrap;scroll-snap-align:start}
+.tools input{min-width:0;flex:1 1 220px}
+@media(max-width:900px){.tools{top:64px}.tools .w{gap:6px}.tools button.tb{font-size:14px;padding:7px 13px;min-height:38px}.gh h2{font-size:22px}}
+@media(max-width:560px){.tools{top:56px;padding:8px 0}.tools button.tb{font-size:13.5px;padding:6px 12px;min-height:36px}.tools input{font-size:15px;min-height:40px;padding:8px 12px;flex-basis:100%}
+ .tools .gf button{font-size:13px;padding:5px 10px;min-height:32px}.gh{margin:18px 0 8px}.gh h2{font-size:19px}.gh p{font-size:14px}
+ .lj-add{font-size:12.5px!important;padding:7px 4px!important;min-height:36px!important;white-space:normal!important;line-height:1.15!important}}
+@media(max-width:360px){.grid{grid-template-columns:1fr!important}}
 </style>
 <script src="/whats.js?v=1"></script>
 </head>
