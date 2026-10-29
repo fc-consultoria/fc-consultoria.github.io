@@ -77,34 +77,34 @@ function salvar(oc){if(!SEL)return;if(oc!==undefined)SEL.oc=oc;const o=!!SEL.oc,
 function zerar(){if(!SEL)return;SEL.b.sub(SEL.aj);SEL.aj=V3();SEL.ar=V3();applyEx();MSG='Ajuste zerado: clique em Salvar para gravar';painel();}
 
 /* painel sobre o 3D */
-const st=document.createElement('style');st.textContent=`#pfcMv{position:absolute;left:12px;bottom:12px;z-index:30;max-width:min(400px,calc(100% - 24px));max-height:calc(100% - 24px);overflow:auto;background:rgba(16,32,31,.93);color:#fff;border-radius:14px;padding:10px 12px;font:500 13px system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.25)}
-#pfcMv b{color:#f2c063}#pfcMv .r{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
+const st=document.createElement('style');st.textContent=`#pfcMv{position:absolute;left:10px;bottom:10px;z-index:30;width:max-content;max-width:min(292px,calc(100% - 20px));max-height:calc(100% - 20px);overflow:auto;background:rgba(16,32,31,.9);color:#fff;border-radius:11px;padding:7px 8px;font:500 12px system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.22)}
+#pfcMv b{color:#f2c063}#pfcMv .r{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;align-items:center}
+#pfcMv .hd{display:flex;gap:4px;align-items:center}#pfcMv .hd .nm{flex:1;white-space:nowrap;margin-right:4px}
 #pfcMv select{width:auto!important;display:inline-block!important}
-#pfcMv button,#pfcMv select{border:1px solid rgba(255,255,255,.28);background:transparent;color:#fff;border-radius:9px;padding:6px 10px;font:600 12.5px system-ui;cursor:pointer}
+#pfcMv button,#pfcMv select{border:1px solid rgba(255,255,255,.26);background:transparent;color:#fff;border-radius:7px;padding:3px 7px;font:600 11.5px system-ui;cursor:pointer;line-height:1.3}
 #pfcMv button:hover{background:rgba(255,255,255,.1)}#pfcMv button.p{background:#2bb3a6;border-color:#2bb3a6;color:#062b28}#pfcMv button.on{background:#fff;color:#0a4f4b;border-color:#fff}
-#pfcMv .aj{border-top:1px solid rgba(255,255,255,.18);margin-top:9px;padding-top:8px}#pfcMv h4{margin:0;font:700 12.5px system-ui;color:#9fd8d1;letter-spacing:.04em}
-#pfcMv .g{display:grid;grid-template-columns:auto 1fr 1fr auto;gap:5px 6px;align-items:center;margin-top:6px}#pfcMv .g span{font:600 12px ui-monospace,monospace;color:#cfe9e5}
-#pfcMv .m{font-size:12px;color:#bfe3df;margin-top:6px}#pfcMv .dica{color:#bfe3df}`;document.head.appendChild(st);
-const P=document.createElement('div');P.id='pfcMv';
+#pfcMv button.x{border:0;padding:2px 5px;font-size:13px;opacity:.8}
+#pfcMv .lb{font-size:11px;color:#bfe3df}
+#pfcMv details{border-top:1px solid rgba(255,255,255,.16);margin-top:6px;padding-top:4px}#pfcMv summary{cursor:pointer;font:700 11px system-ui;color:#9fd8d1;letter-spacing:.03em;list-style:none}#pfcMv summary::-webkit-details-marker{display:none}
+#pfcMv .g{display:grid;grid-template-columns:auto 22px 38px 22px 8px auto 22px 34px 22px;gap:3px 3px;align-items:center;margin-top:5px}
+#pfcMv .g button{padding:1px 0;width:22px}#pfcMv .g span{font:600 11px ui-monospace,monospace;color:#cfe9e5;text-align:center}#pfcMv .g .t{text-align:left;color:#9fd8d1}
+#pfcMv .m{font-size:11px;color:#bfe3df;margin-top:4px}#pfcMv .dica{color:#bfe3df;font-size:11.5px}`;document.head.appendChild(st);
+const P=document.createElement('div');P.id='pfcMv';let AJOPEN=false;
+P.addEventListener('toggle',e=>{if(e.target.tagName==='DETAILS'){AJOPEN=e.target.open;const sm=e.target.querySelector('summary');if(sm)sm.textContent='🔧 Ajuste técnico · só a Matriz '+(AJOPEN?'▴':'▾');}},true);
 const nf=v=>String(v).replace('.',',');
 function painel(soVal){const h=document.getElementById('stage');if(!h)return;if(!P.parentNode)h.appendChild(P);
   if(testando()){P.hidden=true;return;}P.hidden=false;
   const algum=Object.keys(MV).length||Object.keys(MR).length;
   if(!SEL){const noc=MATRIZ?todas().filter(x=>x.oc).length:0;P.innerHTML=`<span class="dica">🖐 <b>Dois cliques</b> numa peça ou acessório para escolher, mover e girar.</span>${noc?`<div class="m">🙈 ${noc} peça${noc>1?'s':''} oculta${noc>1?'s':''} nesta tipologia (transparentes, só a Matriz vê).</div>`:''}${MSG2?`<div class="m">${MSG2}</div>`:''}${algum?'<div class="r"><button class="p" data-a="volta">↺ Voltar ao original</button></div>':''}`;MSG2='';return;}
-  if(soVal&&P.querySelector('[data-v="giro"]')){const r=MR[SEL.pid]||V3();P.querySelector('[data-v="giro"]').textContent=`${nf(r1(r.x))}° · ${nf(r1(r.y))}° · ${nf(r1(r.z))}°`;return;}
+  if(soVal&&P.querySelector('[data-v="giro"]')){const r=MR[SEL.pid]||V3();P.querySelector('[data-v="giro"]').textContent=`${nf(r1(r.x))}°·${nf(r1(r.y))}°·${nf(r1(r.z))}°`;return;}
   const u=SEL.o.userData||{},nome=(u.code||u.comp||u.zone||'Peça'),r=MR[SEL.pid]||V3();
-  let s=`<div>Peça: <b>${nome}</b> · ${MODO==='girar'?'segure e arraste para girar 360°':'segure e arraste para mover'}</div>
-   <div class="r"><button data-a="modo" data-m="mover" class="${MODO==='mover'?'on':''}">✥ Mover</button><button data-a="modo" data-m="girar" class="${MODO==='girar'?'on':''}">⟳ Girar</button>
-   <span style="font-size:12px;color:#bfe3df">Giro: <span data-v="giro">${nf(r1(r.x))}° · ${nf(r1(r.y))}° · ${nf(r1(r.z))}°</span></span></div>
-   <div class="r">Girar 90°: <button data-a="g90" data-e="x">⟳ X</button><button data-a="g90" data-e="y">⟳ Y</button><button data-a="g90" data-e="z">⟳ Z</button></div>
-   <div class="r"><button class="p" data-a="volta">↺ Voltar ao original</button><button data-a="solta">✕ Soltar peça</button></div>`;
+  let s=`<div class="hd"><span class="nm">Peça <b>${nome}</b></span><button data-a="modo" data-m="mover" class="${MODO==='mover'?'on':''}" title="Segure e arraste para mover">✥ Mover</button><button data-a="modo" data-m="girar" class="${MODO==='girar'?'on':''}" title="Segure e arraste para girar 360°">⟳ Girar</button><button class="x" data-a="solta" title="Soltar peça">✕</button></div>
+   <div class="r"><span class="lb">90°</span><button data-a="g90" data-e="x">X</button><button data-a="g90" data-e="y">Y</button><button data-a="g90" data-e="z">Z</button><button class="p" data-a="volta" title="Voltar ao original">↺ Original</button><span class="lb" data-v="giro">${nf(r1(r.x))}°·${nf(r1(r.y))}°·${nf(r1(r.z))}°</span></div>`;
   if(MATRIZ){const [dx,dy,dz]=ajMM(),[rx,ry,rz]=ajG();
-    s+=`<div class="aj"><h4>🔧 AJUSTE TÉCNICO · SÓ A MATRIZ</h4>
-     <div class="r">Posição <select data-a="passo">${[0.5,1,2,5,10].map(v=>`<option value="${v}" ${v===PASSO?'selected':''}>${nf(v)} mm</option>`).join('')}</select>
-      Giro <select data-a="passog">${[1,5,15,45,90].map(v=>`<option value="${v}" ${v===PASSOG?'selected':''}>${v}°</option>`).join('')}</select></div>
-     <div class="g">${[['x','X (largura)',dx],['y','Y (altura)',dy],['z','Z (profundidade)',dz]].map(([e,t,v])=>`<span>${t}</span><button data-a="aj" data-e="${e}" data-s="-1">−</button><button data-a="aj" data-e="${e}" data-s="1">+</button><span>${nf(v)} mm</span>`).join('')}
-      ${[['x','Giro X',rx],['y','Giro Y',ry],['z','Giro Z',rz]].map(([e,t,v])=>`<span>${t}</span><button data-a="ajg" data-e="${e}" data-s="-1">⟲</button><button data-a="ajg" data-e="${e}" data-s="1">⟳</button><span>${nf(v)}°</span>`).join('')}</div>
-     <div class="r"><button class="p" data-a="salvar">💾 Salvar ajuste</button><button data-a="zerar">Zerar ajuste</button>${SEL.oc?'<button data-a="mostra">👁 Voltar a mostrar esta peça</button>':'<button data-a="oculta">🙈 Ocultar esta peça</button>'}</div>${MSG?`<div class="m">${MSG}</div>`:''}</div>`;}
+    s+=`<details ${AJOPEN?'open':''}><summary>🔧 Ajuste técnico · só a Matriz ${AJOPEN?'▴':'▾'}</summary>
+     <div class="r"><span class="lb">Passo</span><select data-a="passo">${[0.5,1,2,5,10].map(v=>`<option value="${v}" ${v===PASSO?'selected':''}>${nf(v)} mm</option>`).join('')}</select><select data-a="passog">${[1,5,15,45,90].map(v=>`<option value="${v}" ${v===PASSOG?'selected':''}>${v}°</option>`).join('')}</select></div>
+     <div class="g">${[['x',dx,rx],['y',dy,ry],['z',dz,rz]].map(([e,v,g])=>`<span class="t">${e.toUpperCase()}</span><button data-a="aj" data-e="${e}" data-s="-1">−</button><span>${nf(v)}</span><button data-a="aj" data-e="${e}" data-s="1">+</button><i></i><span class="t">G${e.toUpperCase()}</span><button data-a="ajg" data-e="${e}" data-s="-1">⟲</button><span>${nf(g)}°</span><button data-a="ajg" data-e="${e}" data-s="1">⟳</button>`).join('')}</div>
+     <div class="r"><button class="p" data-a="salvar">💾 Salvar</button><button data-a="zerar">Zerar</button>${SEL.oc?'<button data-a="mostra">👁 Mostrar</button>':'<button data-a="oculta">🙈 Ocultar</button>'}</div>${MSG?`<div class="m">${MSG}</div>`:''}</details>`;}
   P.innerHTML=s;}
 P.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;e.stopPropagation();const a=b.dataset.a;
   if(a==='volta')voltar();if(a==='solta')marca(null);if(a==='modo'){MODO=b.dataset.m;painel();}if(a==='g90')gira90(b.dataset.e,1);
