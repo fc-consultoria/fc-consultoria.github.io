@@ -8,6 +8,8 @@ const SP='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/',SPK='sb_publish
 const tok=()=>{try{return localStorage.getItem('pfc-token');}catch(_){return null;}};
 const rpc=(fn,b)=>fetch(SP+fn,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify(b)}).then(async r=>{const j=await r.json().catch(()=>null);if(!r.ok)throw new Error(j&&j.message||'Falha');return j;});
 let AJ={},MV={},MR={},SEL=null,SELMAT=null,MATRIZ=false,MODO='mover';
+/* giro 360° automático da peça escolhida (só com a janela desmontada) */
+let SPA=0,SPE='x',SPON=false;
 window.PFC_AJ={carregar(){return rpc('pfc_ajustes_3d_ler',{p_token:tok()}).then(j=>{AJ=j||{};}).catch(()=>{AJ={};});},matriz(v){MATRIZ=!!v;}};
 const V3=(x,y,z)=>new THREE.Vector3(x||0,y||0,z||0),R=Math.PI/180;
 const qDe=v=>new THREE.Quaternion().setFromEuler(new THREE.Euler(v.x*R,v.y*R,v.z*R,'XYZ'));
@@ -30,7 +32,27 @@ let _tm=null;
 const _applyEx=applyEx;
 applyEx=function(){_applyEx.apply(this,arguments);if(_tm!==testando()){_tm=testando();painel();}
   const t=testando();XA.forEach(x=>{if(x.b)x.o.position.copy(x.b);});todas().forEach(x=>{if(!x.q0)return;oculta(x);const q=x.q0.clone();if(x.ar&&(x.ar.x||x.ar.y||x.ar.z))q.multiply(qDe(x.ar));
-    if(!t){const r=MR[x.pid];if(r)q.multiply(qDe(r));const v=MV[x.pid];if(v)x.o.position.add(v);}x.o.quaternion.copy(q);});};
+    if(!t){const r=MR[x.pid];if(r)q.multiply(qDe(r));const v=MV[x.pid];if(v)x.o.position.add(v);}
+    if(!t&&x===SEL&&SPA&&x.__c){const cs=x.__c.clone().multiply(x.o.scale),a=cs.clone().applyQuaternion(q);q.multiply(new THREE.Quaternion().setFromAxisAngle(V3(SPE==='x'?1:0,SPE==='y'?1:0,SPE==='z'?1:0),SPA));x.o.position.add(a.sub(cs.applyQuaternion(q)));}
+    x.o.quaternion.copy(q);});};
+/* centro e eixo mais comprido da peça, no espaço dela */
+function medida(o){const b=new THREE.Box3();o.updateMatrixWorld(true);const inv=o.matrixWorld.clone().invert();
+  o.traverse(m=>{if(m.isMesh&&m.geometry){if(!m.geometry.boundingBox)m.geometry.computeBoundingBox();b.union(m.geometry.boundingBox.clone().applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv,m.matrixWorld)));}});
+  if(b.isEmpty())return {c:V3(),e:'y'};const d=b.getSize(V3());return {c:b.getCenter(V3()),e:d.x>=d.y&&d.x>=d.z?'x':d.y>=d.z?'y':'z'};}
+/* ampliar: a câmera chega perto da peça escolhida para ela ficar grande na tela */
+let ZOOM=null;
+function amplia(){if(!SEL)return;const o=SEL.o;o.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(o);if(b.isEmpty())return;
+  const c=b.getCenter(V3()),d=b.getSize(V3()),r=Math.max(d.x,d.y,d.z,.05);
+  if(!ZOOM)ZOOM={ct:CT.clone(),cam:camera.position.clone()};
+  const dir=camera.position.clone().sub(controls.target);if(dir.lengthSq()<1e-6)dir.set(0,0,1);dir.normalize();
+  const dist=Math.max(.12,r*.62/Math.tan(camera.fov*Math.PI/360));CT.copy(c);camTarget=c.clone().add(dir.multiplyScalar(dist));}
+function desamplia(){if(!ZOOM)return;CT.copy(ZOOM.ct);camTarget=ZOOM.cam.clone();ZOOM=null;}
+function paraGiro(){SPON=false;SPA=0;}
+function iniciaGiro(){if(!SEL)return;if(!SEL.__c){const m=medida(SEL.o);SEL.__c=m.c;SEL.__e=m.e;}if(!SPA)SPE=SEL.__e||'x';SPON=true;amplia();}
+let _tg=performance.now();
+(function gira(){requestAnimationFrame(gira);const now=performance.now(),dt=Math.min(.05,(now-_tg)/1000);_tg=now;
+  if(!SPON)return;if(!SEL||testando()||typeof DESM==='undefined'||!DESM){paraGiro();desamplia();applyEx();painel();return;}
+  SPA=(SPA+dt*Math.PI*2/6)%(Math.PI*2);applyEx();const g=P.querySelector('[data-v="g360"]');if(g)g.textContent=Math.round(SPA*180/Math.PI)+'°';})();
 
 /* peça oculta na plataforma */
 const MOC=new THREE.MeshStandardMaterial({color:0xd04a3a,transparent:true,opacity:.18,depthWrite:false,side:THREE.DoubleSide});
@@ -39,7 +61,7 @@ function oculta(x){if(!x.oc){if(x.o.userData.__ocm){x.o.traverse(m=>{if(m.isMesh
   else{x.o.visible=false;x.o.userData.__ocv=1;}}
 /* destaque da peça escolhida */
 const MSEL=new THREE.MeshStandardMaterial({color:0x2bb3a6,metalness:.25,roughness:.4,emissive:0x0b4f4a,emissiveIntensity:.55,side:THREE.DoubleSide});
-function marca(x){if(SEL&&SEL.o&&SELMAT){SEL.o.material=SELMAT;}const ant=SEL;SEL=x;SELMAT=null;if(ant){delete ant.o.userData.__ocm;ant.o.traverse(m=>{delete m.userData.__m0;});oculta(ant);}
+function marca(x){if(SPA||SPON){paraGiro();if(SEL){SEL.__c=null;}}if(!x)desamplia();if(SEL&&SEL.o&&SELMAT){SEL.o.material=SELMAT;}const ant=SEL;SEL=x;SELMAT=null;if(ant){delete ant.o.userData.__ocm;ant.o.traverse(m=>{delete m.userData.__m0;});oculta(ant);}
   if(x){if(x.o.isMesh){SELMAT=x.o.userData.__m0||x.o.material;x.o.material=MSEL;}else{x.o.traverse(m=>{if(m.isMesh){m.userData.__s0=m.material;m.material=MSEL;}});}}
   if(ant&&ant!==x&&!ant.o.isMesh)ant.o.traverse(m=>{if(m.isMesh&&m.userData.__s0){m.material=m.userData.__s0;delete m.userData.__s0;}});MSG='';painel();}
 function acha(ev){setRay(ev.clientX,ev.clientY);const L=todas();const h=ray.intersectObjects(L.map(x=>x.o).filter(o=>o.visible),true)[0];if(!h)return null;
@@ -61,7 +83,7 @@ const solta=ev=>{if(!drag)return;drag=null;controls.enabled=true;if(ev)ev.stopPr
 el.addEventListener('pointerup',solta,true);el.addEventListener('pointercancel',solta,true);
 addEventListener('keydown',e=>{if(e.key==='Escape'&&SEL)marca(null);});
 
-function voltar(){MV={};MR={};applyEx();marca(null);}
+function voltar(){paraGiro();desamplia();MV={};MR={};applyEx();marca(null);}
 function gira90(e,s){if(!SEL)return;const r=(MR[SEL.pid]||V3()).clone();r[e]+=90*s;MR[SEL.pid]=r;applyEx();painel();}
 /* ajuste técnico: posição em mm (X largura, Y altura, Z profundidade) e giro em graus */
 function ajusta(e,mm){if(!SEL)return;const v=V3();v[e]=mm/1000;SEL.b.add(v);SEL.aj.add(v);applyEx();painel();}
@@ -100,6 +122,8 @@ function painel(soVal){const h=document.getElementById('stage');if(!h)return;if(
   const u=SEL.o.userData||{},nome=(u.code||u.comp||u.zone||'Peça'),r=MR[SEL.pid]||V3();
   let s=`<div class="hd"><span class="nm">Peça <b>${nome}</b></span><button data-a="modo" data-m="mover" class="${MODO==='mover'?'on':''}" title="Segure e arraste para mover">✥ Mover</button><button data-a="modo" data-m="girar" class="${MODO==='girar'?'on':''}" title="Segure e arraste para girar 360°">⟳ Girar</button><button class="x" data-a="solta" title="Soltar peça">✕</button></div>
    <div class="r"><span class="lb">90°</span><button data-a="g90" data-e="x">X</button><button data-a="g90" data-e="y">Y</button><button data-a="g90" data-e="z">Z</button><button class="p" data-a="volta" title="Voltar ao original">↺ Original</button><span class="lb" data-v="giro">${nf(r1(r.x))}°·${nf(r1(r.y))}°·${nf(r1(r.z))}°</span></div>`;
+  s+=(typeof DESM!=='undefined'&&DESM)?`<div class="r"><span class="lb">360°</span><button class="${SPON?'on':'p'}" data-a="g360" title="Gira só esta peça, sem parar, no centro dela">${SPON?'⏸ Pausar':'🔄 Girar 360°'}</button><span class="lb">eixo</span>${['x','y','z'].map(e=>`<button data-a="e360" data-e="${e}" class="${(SPA||SPON)&&SPE===e?'on':''}" title="${e===((SEL.__e)||'')?'Eixo do comprimento da peça':'Girar neste eixo'}">${e.toUpperCase()}</button>`).join('')}<span class="lb" data-v="g360">${Math.round(SPA*180/Math.PI)}°</span></div><div class="r"><button class="${ZOOM?'on':''}" data-a="zoom" title="Aproxima a câmera da peça">${ZOOM?'↩ Ver tudo':'🔍 Ampliar peça'}</button></div>`
+    :`<div class="m">Clique em <b>Desmontar</b> para girar esta peça 360°.</div>`;
   if(MATRIZ){const [dx,dy,dz]=ajMM(),[rx,ry,rz]=ajG();
     s+=`<details ${AJOPEN?'open':''}><summary>🔧 Ajuste técnico · só a Matriz ${AJOPEN?'▴':'▾'}</summary>
      <div class="r"><span class="lb">Passo</span><select data-a="passo">${[0.5,1,2,5,10].map(v=>`<option value="${v}" ${v===PASSO?'selected':''}>${nf(v)} mm</option>`).join('')}</select><select data-a="passog">${[1,5,15,45,90].map(v=>`<option value="${v}" ${v===PASSOG?'selected':''}>${v}°</option>`).join('')}</select></div>
@@ -107,11 +131,12 @@ function painel(soVal){const h=document.getElementById('stage');if(!h)return;if(
      <div class="r"><button class="p" data-a="salvar">💾 Salvar</button><button data-a="zerar">Zerar</button>${SEL.oc?'<button data-a="mostra">👁 Mostrar</button>':'<button data-a="oculta">🙈 Ocultar</button>'}</div>${MSG?`<div class="m">${MSG}</div>`:''}</details>`;}
   P.innerHTML=s;}
 P.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;e.stopPropagation();const a=b.dataset.a;
-  if(a==='volta')voltar();if(a==='solta')marca(null);if(a==='modo'){MODO=b.dataset.m;painel();}if(a==='g90')gira90(b.dataset.e,1);
+  if(a==='volta')voltar();if(a==='zoom'){if(ZOOM)desamplia();else amplia();painel();}if(a==='g360'){if(SPON)SPON=false;else iniciaGiro();painel();}if(a==='e360'){if(!SEL.__c){const m=medida(SEL.o);SEL.__c=m.c;SEL.__e=m.e;}SPE=b.dataset.e;SPA=0;SPON=true;applyEx();amplia();painel();}if(a==='solta')marca(null);if(a==='modo'){MODO=b.dataset.m;painel();}if(a==='g90')gira90(b.dataset.e,1);
   if(a==='aj'){MSG='';ajusta(b.dataset.e,+b.dataset.s*PASSO);}if(a==='ajg'){MSG='';ajGira(b.dataset.e,+b.dataset.s*PASSOG);}
   if(a==='salvar')salvar();if(a==='zerar')zerar();if(a==='oculta')salvar(true);if(a==='mostra')salvar(false);});
 P.addEventListener('change',e=>{if(e.target.dataset.a==='passo')PASSO=+e.target.value;if(e.target.dataset.a==='passog')PASSOG=+e.target.value;});
 ['pointerdown','dblclick','wheel'].forEach(t=>P.addEventListener(t,e=>e.stopPropagation()));
+const bd=document.getElementById('v-desm');if(bd)bd.addEventListener('click',()=>setTimeout(()=>{if(!DESM){desamplia();if(SPA||SPON){paraGiro();applyEx();}}painel();},0));
 })();
 
 /* ===== Substituições possíveis: só indicação do catálogo (não troca a peça no 3D) ===== */
