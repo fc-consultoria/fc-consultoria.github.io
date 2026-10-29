@@ -13,7 +13,7 @@ const V3=(x,y,z)=>new THREE.Vector3(x||0,y||0,z||0),R=Math.PI/180;
 const qDe=v=>new THREE.Quaternion().setFromEuler(new THREE.Euler(v.x*R,v.y*R,v.z*R,'XYZ'));
 
 /* peças selecionáveis: perfis e acessórios do EX + acessórios sem grupo (guardam a posição de origem aqui) */
-let XA=[];const todas=()=>EX.concat(XA);
+let XA=[];const todas=()=>EX.concat(XA);window.PFC_AJ.todas=()=>{chaves();return todas();};
 /* identificação estável de cada peça: tipologia | grupo | código | ordem */
 function chaves(){const n={};const emEX=new Set(EX.map(x=>x.o));XA=(typeof compObjs!=='undefined'?compObjs:[]).filter(o=>o&&!emEX.has(o)&&o.parent).map(o=>({o,b:o.position.clone(),k:'C'}));todas().forEach(x=>{const u=x.o.userData||{},c=u.code||u.comp||u.zone||'peca',b=x.k+'|'+c;n[b]=(n[b]||0)+1;x.pid=b+'|'+n[b];});}
 const kAJ=x=>S.typo+'|'+x.pid;
@@ -104,7 +104,7 @@ function painel(soVal){const h=document.getElementById('stage');if(!h)return;if(
       Giro <select data-a="passog">${[1,5,15,45,90].map(v=>`<option value="${v}" ${v===PASSOG?'selected':''}>${v}°</option>`).join('')}</select></div>
      <div class="g">${[['x','X (largura)',dx],['y','Y (altura)',dy],['z','Z (profundidade)',dz]].map(([e,t,v])=>`<span>${t}</span><button data-a="aj" data-e="${e}" data-s="-1">−</button><button data-a="aj" data-e="${e}" data-s="1">+</button><span>${nf(v)} mm</span>`).join('')}
       ${[['x','Giro X',rx],['y','Giro Y',ry],['z','Giro Z',rz]].map(([e,t,v])=>`<span>${t}</span><button data-a="ajg" data-e="${e}" data-s="-1">⟲</button><button data-a="ajg" data-e="${e}" data-s="1">⟳</button><span>${nf(v)}°</span>`).join('')}</div>
-     <div class="r"><button class="p" data-a="salvar">💾 Salvar ajuste</button><button data-a="zerar">Zerar ajuste</button>${SEL.oc?'<button data-a="mostra">👁 Mostrar na plataforma</button>':'<button data-a="oculta">🙈 Ocultar na plataforma</button>'}</div>${MSG?`<div class="m">${MSG}</div>`:''}</div>`;}
+     <div class="r"><button class="p" data-a="salvar">💾 Salvar ajuste</button><button data-a="zerar">Zerar ajuste</button>${SEL.oc?'<button data-a="mostra">👁 Voltar a mostrar esta peça</button>':'<button data-a="oculta">🙈 Ocultar esta peça</button>'}</div>${MSG?`<div class="m">${MSG}</div>`:''}</div>`;}
   P.innerHTML=s;}
 P.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;e.stopPropagation();const a=b.dataset.a;
   if(a==='volta')voltar();if(a==='solta')marca(null);if(a==='modo'){MODO=b.dataset.m;painel();}if(a==='g90')gira90(b.dataset.e,1);
