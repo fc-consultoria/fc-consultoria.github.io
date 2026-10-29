@@ -78,6 +78,9 @@ input.in:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:tra
 .vercomo{display:flex;gap:4px;background:rgba(0,0,0,.18);padding:4px;border-radius:10px}
 .vercomo button{all:unset;cursor:pointer;font-size:12.5px;font-weight:600;padding:5px 10px;border-radius:7px;color:#cfe9e5}
 .vercomo button[aria-pressed="true"]{background:#fff;color:var(--teal2)}
+.dentro{display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.18);padding:4px 4px 4px 10px;border-radius:10px;font-size:12px;color:#cfe9e5}
+.dentro select{font:inherit;font-weight:600;font-size:12.5px;border:0;border-radius:7px;padding:5px 8px;background:#fff;color:var(--teal2);cursor:pointer;max-width:190px}
+.mestre{display:inline-block;margin-left:6px;font-size:10.5px;font-weight:700;letter-spacing:.3px;padding:2px 7px;border-radius:20px;background:#f3b23c;color:#3a2600;vertical-align:middle}
 nav.menu{background:var(--panel);border-bottom:1px solid var(--line);padding:0 14px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
 nav.menu button{all:unset;cursor:pointer;padding:14px 14px 12px;font-weight:600;font-size:14.5px;color:var(--mute);border-bottom:3px solid transparent;white-space:nowrap;display:flex;gap:7px;align-items:center}
 nav.menu button[aria-current="page"]{color:var(--teal);border-color:var(--teal)}
@@ -203,6 +206,7 @@ a.card.tip{text-decoration:none;color:inherit}
     <div class="lg" id="sigla">FC</div>
     <div class="tt"><b id="empNome">Plataforma FC 3D</b><span>Plataforma FC 3D</span></div>
     <div class="dir">
+      <label class="dentro" id="dentroDe" hidden>Dentro de <select id="selEmp" aria-label="Entrar na empresa como gestor mestre"></select></label>
       <div class="vercomo" id="verComo" hidden aria-label="Ver como"></div>
       <div class="eu"><span id="euNome"></span><br><i id="euPapel"></i></div>
       <button class="ic-bt" id="btTema" title="Claro / escuro" aria-label="Trocar fundo claro ou escuro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg></button>
@@ -237,6 +241,7 @@ $('#btTema').onclick=()=>{const atual=document.documentElement.getAttribute('dat
 /* ---------- conteúdo ---------- */
 /* nomes na tela (as chaves internas continuam gestor, vendedor e arquiteto) */
 const PAPEIS={gestor:'Gestor',vendedor:'Colaborador',arquiteto:'Portal do Cliente',fc:'FC Consultoria'};
+const SETORES={gestor:'Gestor',compras:'Compras',vendas:'Vendas (Comercial)',estoque:'Estoque',fabrica:'Fábrica',gerente:'Gerente comercial',marketing:'Marketing'};
 const MENU=[
   {k:'inicio',n:'Início',i:'⌂',p:['gestor','vendedor','arquiteto']},
   {k:'tip',n:'Tipologias',i:'▦',p:['gestor','vendedor','arquiteto']},
@@ -335,12 +340,22 @@ $('#entForm').addEventListener('submit',async e=>{
   finally{bt.disabled=false;bt.textContent='Entrar';}
 });
 
+const escH=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function abrir(token){
   try{S=await rpc('pfc_sessao',{p_token:token});S.token=token;}
   catch(err){ls.del(TK);S=null;mostrarEntrada(err.message&&/pausad/i.test(err.message)?err.message:'');return;}
   $('#entrada').hidden=true;$('#app').hidden=false;
-  $('#empNome').textContent=S.matriz?'Visão da FC Consultoria':S.empresa_nome;
-  $('#sigla').textContent=S.matriz?'FC':(S.sigla||(S.empresa_nome||'FC').slice(0,2).toUpperCase());
+  const dentro=S.matriz&&S.empresa;
+  $('#empNome').innerHTML=S.matriz&&!dentro?'Visão da FC Consultoria':escH(S.empresa_nome)+(dentro?'<span class="mestre" title="Você está dentro desta empresa como FC Consultoria">FC · gestor mestre</span>':'');
+  $('#sigla').textContent=S.matriz&&!dentro?'FC':(S.sigla||(S.empresa_nome||'FC').slice(0,2).toUpperCase());
+  const dd=$('#dentroDe');dd.hidden=!S.matriz;
+  if(S.matriz){
+    let E=[];try{E=await rpc('pfc_matriz_empresas',{p_token:token})||[];}catch(_){}
+    const sel=$('#selEmp');
+    sel.innerHTML='<option value="">Visão da FC</option>'+E.map(e=>`<option value="${escH(e.id)}" ${e.id===S.empresa?'selected':''}>${escH(e.nome)}</option>`).join('');
+    sel.onchange=async()=>{sel.disabled=true;try{const r=await rpc('pfc_matriz_empresa',{p_token:token,p_empresa:sel.value});if(r&&r.erro)alert(r.erro);}catch(err){alert(err.message||'Não foi possível trocar de empresa.');}
+      papelVer=sel.value?'gestor':papelVer;tab='inicio';sel.disabled=false;abrir(token);};
+  }
   $('#euNome').textContent=S.nome;
   const vc=$('#verComo');vc.hidden=!S.matriz;
   if(S.matriz){vc.innerHTML=['gestor','vendedor','arquiteto'].map(p=>`<button type="button" data-ver="${p}" aria-pressed="${papel()===p}">${PAPEIS[p]}</button>`).join('');
@@ -354,7 +369,7 @@ $('#btSair').onclick=async()=>{const t=S&&S.token;S=null;ls.del(TK);try{if(t)awa
 const itens=()=>MENU.filter(m=>m.p.includes(papel()));
 function render(){
   if(!itens().some(m=>m.k===tab))tab='inicio';
-  $('#euPapel').textContent=S.matriz?'vendo como '+PAPEIS[papel()]:PAPEIS[S.papel]||S.papel;
+  $('#euPapel').textContent=S.matriz?'vendo como '+PAPEIS[papel()]:(S.setor&&S.setor!=='gestor'?(SETORES[S.setor]||S.setor):(PAPEIS[S.papel]||S.papel));
   $('#menu').innerHTML=itens().map(m=>`<button type="button" data-tab="${m.k}" ${m.k===tab?'aria-current="page"':''}><span aria-hidden="true">${m.i}</span>${m.n}</button>`).join('');
   $('#menu').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();scrollTo(0,0);});
   $('#tela').innerHTML=({inicio:telaInicio,tip:telaTip,amb:telaAmb,apr:telaApr,ges:telaGes}[tab]||telaInicio)();

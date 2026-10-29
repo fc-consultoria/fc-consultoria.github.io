@@ -74,6 +74,7 @@ let TOK=null;try{TOK=localStorage.getItem('pfc-token')}catch(_){}
 async function rpc(fn,a){const r=await sb.rpc(fn,Object.assign({p_token:TOK},a||{}));if(r.error)throw new Error(r.error.message);return r.data;}
 const LINK='https://fc-consultoria.github.io/fc3d/clientes/';
 const PAP={gestor:'Gestor',vendedor:'Colaborador',arquiteto:'Portal do Cliente'};
+const SET={gestor:'Gestor',compras:'Compras',vendas:'Vendas (Comercial)',estoque:'Estoque',fabrica:'Fábrica',gerente:'Gerente comercial',marketing:'Marketing'};
 const SUG=[['casa-bandeirante','Casa Bandeirante','CB'],['guapore-vidros','Guaporé Vidros','GV'],['guapore-sinop','Guaporé Sinop','GS'],['cde','CDE Vidros & Esquadrias','CDE']];
 let L=[];
 const dataBR=d=>d?d.split('-').reverse().join('/'):'';
@@ -98,13 +99,14 @@ async function carregar(){
   $('#atal').querySelectorAll('[data-sug]').forEach(b=>b.onclick=()=>{const s=SUG.find(x=>x[0]===b.dataset.sug);formEmp({id:s[0],nome:s[1],sigla:s[2],ativo:true,licenca_ate:umAno(),novo:1});});
   $('#lista').innerHTML=L.length?L.map(e=>{const [st,c]=situ(e);return `<section class="emp ${c==='r'?'off':''}">
    <div class="eh"><div class="sig">${h(e.sigla||e.nome.slice(0,2).toUpperCase())}</div><div><h2>${h(e.nome)}</h2><span class="mute" style="font-size:13px">${h(e.contato||'')}${e.obs?' · '+h(e.obs):''}</span></div><span class="chip ${c}">${st}</span><span class="sp"></span>
-   <button class="btn sm" data-ed="${h(e.id)}">✎ Empresa e licença</button><button class="btn sm pri" data-np="${h(e.id)}">＋ Pessoa</button></div>
-   ${e.acessos.length?`<table><thead><tr><th>Pessoa</th><th>Papel</th><th>Último acesso</th><th></th></tr></thead><tbody>${e.acessos.map(a=>`<tr>
+   <button class="btn sm" data-in="${h(e.id)}" title="Abre a plataforma dentro desta empresa, como gestor mestre da FC">🔓 Entrar como gestor</button><button class="btn sm" data-ed="${h(e.id)}">✎ Empresa e licença</button><button class="btn sm pri" data-np="${h(e.id)}">＋ Pessoa</button></div>
+   ${e.acessos.length?`<table><thead><tr><th>Pessoa</th><th>Papel e setor</th><th>Último acesso</th><th></th></tr></thead><tbody>${e.acessos.map(a=>`<tr>
     <td><b>${h(a.nome)}</b><br><span class="mute" style="font-size:13px">login: ${h(a.login)}</span></td>
-    <td><span class="chip ${a.ativo?'t':'r'}">${PAP[a.papel]||a.papel}${a.ativo?'':' · pausado'}</span></td>
+    <td><span class="chip ${a.ativo?'t':'r'}">${PAP[a.papel]||a.papel}${a.ativo?'':' · pausado'}</span>${a.setor&&a.setor!=='gestor'?` <span class="chip">${h(SET[a.setor]||a.setor)}</span>`:''}${a.sincronizado?'<br><span class="mute" style="font-size:12px">mesma senha da Central do Cliente</span>':''}</td>
     <td class="mute" style="font-size:13px">${quando(a.ultimo)}</td>
-    <td><div class="acts"><button class="btn sm" data-cod="${a.id}" title="Gera um código novo e envia de novo">🔑 Novo código</button><button class="btn sm" data-ep="${a.id}">✎</button><button class="btn sm" data-tg="${a.id}">${a.ativo?'⏸ Pausar':'▶ Ativar'}</button><button class="btn sm red" data-del="${a.id}" title="Excluir">🗑</button></div></td></tr>`).join('')}</tbody></table>`:'<p class="vazio mute">Nenhuma pessoa ainda. Comece pelo Gestor da empresa.</p>'}</section>`;}).join(''):'<p class="mute">Nenhuma empresa cadastrada. Use o cadastro rápido acima ou “＋ Nova empresa”.</p>';
+    <td><div class="acts">${a.sincronizado?'':`<button class="btn sm" data-cod="${a.id}" title="Gera um código novo e envia de novo">🔑 Novo código</button>`}<button class="btn sm" data-ep="${a.id}">✎</button><button class="btn sm" data-tg="${a.id}">${a.ativo?'⏸ Pausar':'▶ Ativar'}</button><button class="btn sm red" data-del="${a.id}" title="Excluir">🗑</button></div></td></tr>`).join('')}</tbody></table>`:'<p class="vazio mute">Nenhuma pessoa ainda. Comece pelo Gestor da empresa.</p>'}</section>`;}).join(''):'<p class="mute">Nenhuma empresa cadastrada. Use o cadastro rápido acima ou “＋ Nova empresa”.</p>';
   const ach=id=>{for(const e of L){const a=e.acessos.find(x=>x.id===id);if(a)return [e,a];}};
+  document.querySelectorAll('[data-in]').forEach(b=>b.onclick=async()=>{try{const r=await rpc('pfc_matriz_empresa',{p_empresa:b.dataset.in});if(r&&r.erro){alert(r.erro);return;}location.href='../';}catch(err){alert(err.message);}});
   document.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>formEmp(L.find(e=>e.id===b.dataset.ed)));
   document.querySelectorAll('[data-np]').forEach(b=>b.onclick=()=>formPes(L.find(e=>e.id===b.dataset.np)));
   document.querySelectorAll('[data-ep]').forEach(b=>b.onclick=()=>{const [e,a]=ach(b.dataset.ep);formPes(e,a);});
