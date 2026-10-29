@@ -198,9 +198,9 @@ footer{padding:16px 20px;text-align:center;font-size:11.5px;letter-spacing:.06em
 (function(){
 const SB_URL='https://pawwncmfadzxfahfvhry.supabase.co';
 const SB_KEY='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs';
-const sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:false,storageKey:'fc3d-cli-auth'}});
+const sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:false,storageKey:'pfc-auth'}});
 const ZAP='https://wa.me/5566999867984?text='+encodeURIComponent('Olá, FC! Quero conhecer a Plataforma FC 3D.');
-const TK='fc3d-cli-token',TM='fc3d-cli-tema';
+const TK='pfc-token',TM='fc3d-cli-tema';
 const $=s=>document.querySelector(s);
 const h=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ls={get(k){try{return localStorage.getItem(k)}catch(_){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(_){}},del(k){try{localStorage.removeItem(k)}catch(_){}}};
@@ -233,7 +233,7 @@ const TIPS=[
   {id:'cor',n:'Fachada Cortina',g:'fac',l:'fac',d:'Fachada com colunas e travessas aparentes de 40 × 80, vidro preso por presilha e tampa externa. Montada a partir das medidas da obra.',uso:'Prédios comerciais, fachadas de loja',f:'Quadros fixos',ab:'Fixa',obra:'cortina'},
   {id:'atl',n:'Pele de Vidro Atlanta',g:'fac',l:'fac',d:'Fachada com quadros colados no vidro, sem perfil aparente do lado de fora, presos nas colunas por presilha.',uso:'Edifícios, fachadas de alto padrão',f:'Quadros colados',ab:'Fixa',obra:'atlanta'}];
 const LINHAS={res:{n:'Linha FC Residencial',s:'Disponível'},fac:{n:'Linha FC Fachadas',s:'3D disponível'},pre:{n:'Linha FC Premium',s:'Em breve'}};
-const OBRA=(t)=>'../../obra/?p=fc3d'+(t?'&t='+t:'');
+const OBRA=(t)=>'obra/'+(t?'?t='+t:'');
 
 /* Desenho de elevação simples de cada tipologia (esquema didático, sem escala) */
 function desenho(id){
@@ -269,7 +269,8 @@ $('#entForm').addEventListener('submit',async e=>{
   if(!cd){msg.textContent=modoFC?'Informe a senha.':'Informe o código.';return;}
   bt.disabled=true;bt.textContent='Entrando…';
   try{
-    const r=modoFC?await rpc('fc3d_login_matriz',{p_senha:cd}):await rpc('fc3d_login',{p_login:lg,p_codigo:cd});
+    const fc=modoFC||lg.toLowerCase()==='matriz';
+    const r=fc?await rpc('pfc_login_matriz',{p_senha:cd}):await rpc('pfc_login',{p_login:lg,p_codigo:cd});
     if(r.erro){msg.textContent=r.erro;return;}
     ls.set(TK,r.token);await abrir(r.token);
   }catch(err){msg.textContent='Não foi possível entrar agora. Confira a internet e tente de novo.';}
@@ -277,7 +278,7 @@ $('#entForm').addEventListener('submit',async e=>{
 });
 
 async function abrir(token){
-  try{S=await rpc('fc3d_cli_sessao',{p_token:token});S.token=token;}
+  try{S=await rpc('pfc_sessao',{p_token:token});S.token=token;}
   catch(err){ls.del(TK);S=null;mostrarEntrada(err.message&&/pausad/i.test(err.message)?err.message:'');return;}
   $('#entrada').hidden=true;$('#app').hidden=false;
   $('#empNome').textContent=S.matriz?'Visão da FC Consultoria':S.empresa_nome;
@@ -289,7 +290,7 @@ async function abrir(token){
   render();
 }
 function mostrarEntrada(m){$('#app').hidden=true;$('#entrada').hidden=false;$('#entMsg').textContent=m||'';}
-$('#btSair').onclick=async()=>{const t=S&&S.token;S=null;ls.del(TK);try{if(t)await rpc('fc3d_sair',{p_token:t});}catch(_){}mostrarEntrada('');};
+$('#btSair').onclick=async()=>{const t=S&&S.token;S=null;ls.del(TK);try{if(t)await rpc('pfc_sair',{p_token:t});}catch(_){}mostrarEntrada('');};
 
 /* ---------- telas ---------- */
 const itens=()=>MENU.filter(m=>m.p.includes(papel()));
