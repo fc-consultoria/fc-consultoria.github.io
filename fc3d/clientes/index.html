@@ -311,7 +311,7 @@ const TIPS=[
   {id:'cor',est:'tip',n:'Fachada Cortina',g:'fac',l:'fac',d:'Fachada com colunas e travessas aparentes de 40 × 80, vidro preso por presilha e tampa externa. Montada a partir das medidas da obra.',uso:'Prédios comerciais, fachadas de loja',f:'Quadros fixos',ab:'Fixa',obra:'cortina'},
   {id:'atl',est:'tip',n:'Pele de Vidro Atlanta',g:'fac',l:'fac',d:'Fachada com quadros colados no vidro, sem perfil aparente do lado de fora, presos nas colunas por presilha.',uso:'Edifícios, fachadas de alto padrão',f:'Quadros colados',ab:'Fixa',obra:'atlanta'}];
 /* Linha Gold em conferência: oculta para os clientes até a FC liberar (troque para true ao liberar) */
-const GOLD_LIBERADA=false;
+const GOLD_LIBERADA=true;
 TIPS.forEach(t=>{if(t.l==='gld'&&!GOLD_LIBERADA&&!t.aj)t.aj='Linha Gold em conferência pela FC; liberar depois da revisão';});
 const LINHAS={res:{n:'Linha Suprema',s:'Disponível'},fac:{n:'Linha FC Fachadas',s:'3D disponível'},pre:{n:'Linha Gold',s:'Em breve'},gld:{n:'Linha Gold',s:'Disponível'}};
 const OBRA=(t)=>'obra/'+(t?'?t='+t:'');

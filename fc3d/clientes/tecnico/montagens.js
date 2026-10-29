@@ -398,7 +398,7 @@ function ponto(o,a,b,ox,oz,oy){const k=o.sc||[1,1];a*=k[0];b*=k[1];return [o.p[0
    Valores: dx (para a direita), dy (para cima), dz (para o lado interno) em mm; rz = giro da seção (graus); ry = 180 espelha; oculto. */
 Object.keys(MONT).forEach(k=>{MONT[k].k=k;});
 /* Linha Gold em conferência: oculta para os clientes até a FC liberar (troque para true ao liberar) */
-const GOLD_LIBERADA=false;
+const GOLD_LIBERADA=true;
 Object.values(MONT).forEach(m=>{if(m.linha==='Linha Gold'&&!GOLD_LIBERADA&&!m.aj)m.aj='Linha Gold em conferência pela FC; liberar depois da revisão';});
 let AJ={};
 function ajDe(m,id,c){return AJ['mont:'+m.k+'|'+id]||AJ['mont:'+m.k+'|'+c+'#*']||null;}
