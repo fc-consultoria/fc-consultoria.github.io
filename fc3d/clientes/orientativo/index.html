@@ -127,6 +127,11 @@ dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:10px 0}dt{col
 .v3bar .med input{width:68px;border:0;border-radius:7px;padding:4px 6px;color:#10201f;text-align:right;background:#fff}
 .v3lb{position:absolute;left:10px;bottom:10px;right:10px;background:rgba(20,33,32,.9);color:#fff;border-radius:11px;padding:8px 12px;font-size:14px}
 .v3lb b{color:#f2c063}
+.v3w.v3cl .v3dica{color:#5a6b69}
+.v3cor{position:absolute;right:10px;top:58px;width:min(300px,calc(100% - 20px));background:rgba(20,33,32,.94);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:10px 12px;color:#dff3f0;font-size:13px;display:grid;gap:8px;z-index:3}
+.v3cor b{font-weight:600;display:block;margin-bottom:4px}.v3cor .sw{display:flex;gap:6px;flex-wrap:wrap}
+.v3cor button{width:30px;height:30px;border-radius:9px;border:2px solid rgba(255,255,255,.25);cursor:pointer;padding:0}
+.v3cor button[aria-pressed="true"]{border-color:#f2c063;box-shadow:0 0 0 2px #f2c063}
 .v3dica{position:absolute;right:12px;bottom:12px;color:#8fb3ad;font-size:12px}
 
 /* quiz */
@@ -297,7 +302,7 @@ function mGua(){return head(2,'Guarnições · vidro bem preso')+`<div class="se
 
 /* =========================== 04 · Correr (3D com seções FC) =========================== */
 const CR=[['2','Janela 2 folhas','As duas folhas correm uma por trás da outra, em dois trilhos.'],['3','Janela 3 folhas','Três trilhos: duas folhas correm e se juntam sobre a folha fixa, abrindo até 2/3 do vão.'],['4','Janela 4 folhas','As duas folhas do meio correm para as laterais.'],['4s','4 folhas sequenciais','Todas correm para o mesmo lado, uma atrás da outra.'],['6','6 folhas fechamento central','Três folhas de cada lado, que se juntam nas laterais.']];
-let CRK='2',CRA=false,SELC=null,CR3=(['jc2','jc3'].includes(new URLSearchParams(location.search).get('m'))?new URLSearchParams(location.search).get('m'):'jc2');
+let CRK='2',CRA=false,SELC=null,CR3=(FCM.MONT[new URLSearchParams(location.search).get('m')]?new URLSearchParams(location.search).get('m'):'jc2');
 const usados=k=>{const R=FCM.pecas(SEC,FCM.MONT[k],FCM.MONT[k].def[0],FCM.MONT[k].def[1]),u=[];R.P.forEach(o=>{if(!o.vid&&u.indexOf(o.c)<0)u.push(o.c);});return u.sort();};
 function correrSvg(k,aberto){const n=k==='4s'?4:+k,W=360,H=170,m=10,fw=(W-2*m)/n+(n>1?8:0),pos=[],mv=[];
  for(let i=0;i<n;i++)pos.push(m+i*((W-2*m)/n)-(i?4:0));
@@ -319,7 +324,8 @@ function mCor(){const T=CR.find(c=>c[0]===CRK);
  <div class="v3w" id="v3w"><div class="v3" id="v3"></div><div class="v3msg" id="v3msg">Carregando o 3D…</div>
   <div class="v3bar"><button class="btn" id="b3Ab" aria-pressed="false">↔ Abrir folhas</button><button class="btn" id="b3Ds" aria-pressed="false">✥ Desmontar</button><button class="btn" id="b3Vt">↺ Voltar ao original</button>
   <span class="med">L <input id="i3L" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[0]}" min="600" max="3000" step="10" aria-label="Largura em mm"> H <input id="i3H" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[1]}" min="500" max="1800" step="10" aria-label="Altura em mm"> mm</span>
-  <button class="btn" id="b3Fs">⛶ Tela cheia</button></div>
+  <button class="btn" id="b3Fs">⛶ Tela cheia</button><button class="btn" id="b3Co" aria-pressed="false">🎨 Cores</button></div>
+  <div class="v3cor" id="v3cor" hidden></div>
   <div class="v3lb" id="v3lb" hidden></div><span class="v3dica" id="v3dica">Arraste para girar · role para aproximar</span></div>
  <div class="row" style="margin-top:10px"><a class="btn" href="../tecnico/?m=${CR3}">📐 Ver o desenho técnico com os cortes</a></div></div>
  <div class="sec"><h2>📋 Perfis da ${esc(FCM.MONT[CR3].n.toLowerCase())}</h2><p class="nt">Toque no perfil para destacar a peça no 3D.</p><div class="pcs">${SEC?usados(CR3).map(c=>`<button type="button" class="pc ${SELC===c?'on':''}" data-pf="${c}"><span class="pcmini">${miniSec(c)}</span><b>${c}</b><span>${esc(SEC[c].n)}</span><small>${SEC[c].kg!=null?kg(SEC[c].kg)+' kg/m · ':''}${String(SEC[c].w).replace('.',',')} × ${String(SEC[c].h).replace('.',',')} mm</small></button>`).join(''):'<p class="mute">Carregando os perfis…</p>'}</div>
@@ -338,6 +344,10 @@ function miniSec(c){const s=SEC[c];if(!s)return '';const xs=[],ys=[];s.s.forEach
 
 /* ---------- 3D ---------- */
 let L3=null;
+const CORES={fundo:[['escuro','Escuro','#0f1a19'],['cinza','Cinza','#3a4446'],['claro','Claro','#e9eeec'],['branco','Branco','#ffffff'],['ceu','Céu','#bcd7e6']],
+ perfil:[['natural','Natural','#c3c9cd',.55,.38],['branco','Branco','#f1f1ee',.1,.5],['preto','Preto','#26292b',.35,.45],['bronze','Bronze','#6b4a2e',.45,.45],['champanhe','Champanhe','#cbb48a',.5,.4],['madeira','Amadeirado','#8a5a33',.1,.7]],
+ vidro:[['incolor','Incolor','#9fd0e0',.28],['verde','Verde','#5fae8a',.42],['fume','Fumê','#3c4448',.55],['bronze','Bronze','#8a6a4a',.5],['azul','Azul','#4f86b8',.42],['refletivo','Refletivo','#9aa7ad',.75]]};
+let COR=LSg('pfc-ori-cores',{fundo:'escuro',perfil:'natural',vidro:'incolor'});
 function carrega3(){if(window.THREE&&THREE.OrbitControls)return Promise.resolve();if(L3)return L3;
  const sc=u=>new Promise((ok,er)=>{const s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=er;document.head.appendChild(s);});
  L3=(window.THREE?Promise.resolve():sc('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js')).then(()=>THREE.OrbitControls?null:sc('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js'));return L3;}
@@ -382,9 +392,12 @@ function janela3d(host,key){
   voltar(){ab=0;ds=0;api.marca(null);enquadra();},
   medidas(l,h){W=l;H=h;montar();enquadra();},
   marca(c){sel=c;PECAS.forEach(p=>p.children.forEach(m=>{if(m.material!==MVID)m.material=c&&p.userData.c===c?MSEL:MAT;}));if(onSel)onSel(c);},
+  cores(c){const f=CORES.fundo.find(x=>x[0]===c.fundo)||CORES.fundo[0],p=CORES.perfil.find(x=>x[0]===c.perfil)||CORES.perfil[0],g=CORES.vidro.find(x=>x[0]===c.vidro)||CORES.vidro[0];
+   SC.background=new THREE.Color(f[2]);MAT.color.set(p[2]);MAT.metalness=p[3];MAT.roughness=p[4];MVID.color.set(g[2]);MVID.opacity=g[3];MAT.needsUpdate=MVID.needsUpdate=true;
+   host.parentNode.style.background=f[2];const cl=['claro','branco','ceu'].includes(f[0]);host.parentNode.classList.toggle('v3cl',cl);},
   fim(){vivo=false;cancelAnimationFrame(raf);RO.disconnect();CT.dispose();GEO.forEach(g=>g.dispose());R.dispose();host.innerHTML='';}};
  let onSel=null;api.onSel=f=>onSel=f;
- montar();enquadra();loop();return api;}
+ montar();enquadra();api.cores(COR);loop();return api;}
 function liga3d(){const host=$('#v3');if(!host)return;
  const ok=()=>{if(!$('#v3')||AT!=='cor')return;$('#v3msg').hidden=true;V3=janela3d(host,CR3);
   V3.onSel(c=>{const lb=$('#v3lb');SELC=c;document.querySelectorAll('[data-pf]').forEach(b=>b.classList.toggle('on',b.dataset.pf===c));
@@ -393,6 +406,9 @@ function liga3d(){const host=$('#v3');if(!host)return;
   bA.onclick=()=>{const on=bA.getAttribute('aria-pressed')!=='true';bA.setAttribute('aria-pressed',on);bA.textContent=on?'⟲ Fechar folhas':'↔ Abrir folhas';V3.abrir(on);};
   bD.onclick=()=>{const on=bD.getAttribute('aria-pressed')!=='true';bD.setAttribute('aria-pressed',on);bD.textContent=on?'✣ Montar':'✥ Desmontar';V3.desmontar(on);};
   $('#b3Vt').onclick=()=>{bA.setAttribute('aria-pressed','false');bA.textContent='↔ Abrir folhas';bD.setAttribute('aria-pressed','false');bD.textContent='✥ Desmontar';V3.voltar();};
+  const pintaCor=()=>{$('#v3cor').innerHTML=[['fundo','Fundo da tela'],['perfil','Cor do perfil'],['vidro','Cor do vidro']].map(([k,t])=>`<div><b>${t}</b><div class="sw">${CORES[k].map(x=>`<button type="button" title="${x[1]}" aria-label="${t}: ${x[1]}" data-cor="${k}:${x[0]}" aria-pressed="${COR[k]===x[0]}" style="background:${x[2]}"></button>`).join('')}</div></div>`).join('');};
+  $('#b3Co').onclick=()=>{const p=$('#v3cor'),on=p.hidden;p.hidden=!on;$('#b3Co').setAttribute('aria-pressed',on);if(on)pintaCor();};
+  $('#v3cor').onclick=e=>{const b=e.target.closest('[data-cor]');if(!b)return;const [k,v]=b.dataset.cor.split(':');COR[k]=v;LSs('pfc-ori-cores',COR);V3.cores(COR);pintaCor();};
   $('#b3Fs').onclick=()=>{const w=$('#v3w'),on=w.classList.toggle('fs');$('#b3Fs').textContent=on?'↙ Sair da tela cheia':'⛶ Tela cheia';};
   let tm=0;const med=()=>{clearTimeout(tm);tm=setTimeout(()=>{const l=Math.min(3000,Math.max(600,+$('#i3L').value||1200)),h=Math.min(1800,Math.max(500,+$('#i3H').value||1000));V3.medidas(l,h);},350);};
   $('#i3L').oninput=med;$('#i3H').oninput=med;};

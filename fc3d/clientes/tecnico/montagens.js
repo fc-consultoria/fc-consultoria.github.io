@@ -11,7 +11,21 @@ const MONT={
   fr:{t:'SU-010',b:'SU-011',s:'SU-012'},edge:19,contra:'SU-291',contra2:true,web0:13,
   folhas:[{n:'Folha interna',z:35,L:'SU-039',R:'SU-040',dir:1},{n:'Folha central',z:0,L:'SU-041',R:'SU-040',dir:1},{n:'Folha fixa',z:-35,L:'SU-041',R:'SU-039',fixa:true}],
   vidro:(L,H)=>[(L-174)/3,H-134],vtx:'(L − 174) / 3 × (H − 134)',dw:660}
-};
+,
+ jc2a:{n:'Janela de correr 2 folhas (marco com contrafecho)',cd:'FC JC2A · 01',linha:'Linha FC Residencial',def:[1200,1000],
+  fr:{t:'SU-026',b:'SU-251',s:'SU-028'},edge:35,contra:'SU-291',contra2:true,web0:7,
+  folhas:[{n:'Folha interna',z:17.5,L:'SU-039',R:'SU-040',dir:1},{n:'Folha externa',z:-17.5,L:'SU-041',R:'SU-039',dir:-1}],
+  vidro:(L,H)=>[(L-181.4)/2,H-167],vtx:'(L − 181,4) / 2 × (H − 167)',dw:500},
+ jc4:{n:'Janela de correr 4 folhas',cd:'FC JC4 · 01',linha:'Linha FC Residencial',def:[2000,1200],
+  fr:{t:'SU-026',b:'SU-251',s:'SU-028'},edge:35,contra:'SU-291',contra2:true,web0:7,ovs:[30,0,30],
+  folhas:[{n:'Folha fixa esquerda',z:-17.5,L:'SU-039',R:'SU-041',fixa:true},{n:'Folha móvel esquerda',z:17.5,L:'SU-040',R:'SU-039',dir:-1,curso:'passo'},
+          {n:'Folha móvel direita',z:17.5,L:'SU-039',R:'SU-040',dir:1,curso:'passo'},{n:'Folha fixa direita',z:-17.5,L:'SU-041',R:'SU-039',fixa:true}],
+  vidro:(L,H)=>[(L-295.7)/4,H-167],vtx:'(L − 295,7) / 4 × (H − 167)',dw:880},
+ jc4a:{n:'Janela de correr 4 folhas (marco liso)',cd:'FC JC4A · 01',linha:'Linha FC Residencial',def:[2000,1200],
+  fr:{t:'SU-001',b:'SU-002',s:'SU-003'},edge:14.4,ovs:[30,0,30],
+  folhas:[{n:'Folha fixa esquerda',z:-17.5,L:'SU-039',R:'SU-041',fixa:true},{n:'Folha móvel esquerda',z:17.5,L:'SU-040',R:'SU-039',dir:-1,curso:'passo'},
+          {n:'Folha móvel direita',z:17.5,L:'SU-039',R:'SU-040',dir:1,curso:'passo'},{n:'Folha fixa direita',z:-17.5,L:'SU-041',R:'SU-039',fixa:true}],
+  vidro:(L,H)=>[(L-257.5)/4,H-134],vtx:'(L − 257,5) / 4 × (H − 134)',dw:840}};
 /* montante que espelha o lado (perfil de encontro da folha externa) */
 const ESPELHA={'SU-041':1};
 const SDS=25,OV=30,WEB=13;
@@ -27,14 +41,14 @@ function pecas(S,m,W,H){
  const TL=W-2*WEB,Hf=H-FT-FB,yc=(FB-FT)/2;
  add({c:fr.t,len:TL,ex:Z,ey:Y,ez:X,p:[0,H/2-FT/2,0],g:-1,x:[0,1,0]});
  add({c:fr.b,len:TL,ex:Z,ey:Y,ez:X,p:[0,-H/2+FB/2,0],g:-1,x:[0,-1,0]});
- const rot=!!m.rotLat;
- add({c:fr.s,len:H,ex:Z,ey:X,ez:rot?N(Y):Y,p:[-W/2+FS/2,0,0],g:-1,x:[-1,0,0]});
- add({c:fr.s,len:H,ex:rot?N(Z):Z,ey:N(X),ez:rot?N(Y):Y,p:[W/2-FS/2,0,0],g:-1,x:[1,0,0]});
- const F=m.folhas,NS=F.length;
+ const F=m.folhas,NS=F.length,LROT=fr.s==='SU-003',rot=LROT&&F[0].z>0&&F[NS-1].z<0;
+ /* SU-003: lateral esquerdo girado 180° quando a folha interna fica à esquerda; senão espelhado */
+ add({c:fr.s,len:H,ex:rot?Z:LROT?N(Z):Z,ey:X,ez:rot?N(Y):Y,p:[-W/2+FS/2,0,0],g:-1,x:[-1,0,0]});
+ add({c:fr.s,len:H,ex:LROT?N(Z):Z,ey:N(X),ez:LROT?N(Y):Y,p:[W/2-FS/2,0,0],g:-1,x:[1,0,0]});
  if(m.contra){const WO=m.web0||0,sc=[30/PW(m.contra),15/PH(m.contra)];
   add({c:m.contra,len:Hf,ex:Z,ey:N(X),ez:Y,p:[W/2-FS-7.5+WO,yc,F[NS-1].z],g:-1,x:[.6,0,0],sc});
   if(m.contra2)add({c:m.contra,len:Hf,ex:Z,ey:X,ez:Y,p:[-W/2+FS+7.5-WO,yc,F[0].z],g:-1,x:[-.6,0,0],sc});}
- const Wi=W-2*m.edge,sW=(Wi+(NS-1)*OV)/NS,step=sW-OV,sH=H-50,[gw]=m.vidro(W,H);
+ const OVS=m.ovs||Array(NS-1).fill(OV),SOV=OVS.reduce((a,b)=>a+b,0),Wi=W-2*m.edge,sW=(Wi+SOV)/NS,step=sW-OV,sH=H-50,[gw]=m.vidro(W,H);
  const OB=S['SU-102'].offT||[2.98,18.02],oz=OB[0],inset=PH('SU-053')/2-OB[1],RW=PH('SU-053');
  const folhas=F.map((sd,i)=>{
   const L=sd.L,R=sd.R,xL=-sW/2+PW(L),xR=sW/2-PW(R),xLc=-sW/2+PW(L)/2,xRc=sW/2-PW(R)/2,tx=(xL+xR)/2,tl=xR-xL+4;
@@ -49,8 +63,8 @@ function pecas(S,m,W,H){
   add({c:'SU-102',len:blen,ex:Z,ey:Y,ez:X,p:[tx,yB,oz],g:i,x:[0,-.45,.4]});
   add({c:'SU-102',len:bhl,ex:Z,ey:X,ez:Y,p:[bxL,yc2,oz],g:i,x:[-.45,0,.4]});
   add({c:'SU-102',len:bhl,ex:Z,ey:N(X),ez:Y,p:[bxR,yc2,oz],g:i,x:[.45,0,.4]});
-  const ox=-Wi/2+sW/2+i*step;
-  return {n:sd.n,ox,z:sd.z,fixa:!!sd.fixa,dir:sd.dir||0,curso:sd.fixa?0:(sd.dir>0?(NS-1-i)*step:i*step),gx:tx};
+  const ox=-Wi/2+sW/2+i*sW-OVS.slice(0,i).reduce((a,b)=>a+b,0);
+  return {n:sd.n,ox,z:sd.z,fixa:!!sd.fixa,dir:sd.dir||0,curso:sd.fixa?0:sd.curso==='passo'?step:(sd.dir>0?(NS-1-i)*step:i*step),gx:tx};
  });
  return {P,folhas,sW,sH,step,Wi};
 }

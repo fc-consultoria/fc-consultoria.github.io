@@ -233,6 +233,7 @@ const ETAPAS=[['1','Estrutura','Entrada, painel e menu'],['2','Tipologias 3D','M
 const TIPS=[
   {id:'jc2',tec:'tecnico/',m3d:'jc2',est:'cor',n:'Janela de correr 2 folhas',g:'jan',l:'res',d:'A janela mais usada em residências: duas folhas que correm sobre trilho, uma passando pela outra.',uso:'Quartos, salas e cozinhas',f:'2 folhas móveis',ab:'Correr'},
   {id:'jc3',tec:'tecnico/?m=jc3',m3d:'jc3',est:'cor',n:'Janela de correr 3 folhas',g:'jan',l:'res',d:'Três folhas em trilhos paralelos: duas correm e se juntam sobre a folha fixa, abrindo até 2/3 do vão.',uso:'Vãos largos, salas',f:'2 folhas móveis + 1 fixa',ab:'Correr'},
+  {id:'jc4',tec:'tecnico/?m=jc4',m3d:'jc4',est:'cor',n:'Janela de correr 4 folhas',g:'jan',l:'res',d:'Duas folhas fixas nas laterais e duas móveis no centro, que correm sobre as fixas.',uso:'Salas, vãos largos',f:'2 móveis + 2 fixas',ab:'Correr'},
   {id:'jcb',est:'cor',n:'Janela de correr 2 folhas com bandeira',g:'jan',l:'res',d:'Correr 2 folhas com uma bandeira fixa na parte de cima, para vãos mais altos.',uso:'Pé-direito alto, fachadas',f:'2 folhas + bandeira',ab:'Correr'},
   {id:'pc2',est:'pad',n:'Porta de correr 2 folhas',g:'por',l:'res',d:'Porta de duas folhas de correr para integrar ambientes e áreas externas.',uso:'Varandas, salas, área gourmet',f:'2 folhas móveis',ab:'Correr'},
   {id:'pg1',est:'giro',n:'Porta de giro 1 folha',g:'por',l:'res',d:'Porta de abrir com dobradiças, para entradas e passagens.',uso:'Entradas, áreas de serviço',f:'1 folha',ab:'Giro'},
@@ -249,6 +250,7 @@ function desenho(id){
   let w=200,ht=150,b='';
   if(id==='jc2'){b=`<rect x="4" y="4" width="192" height="142" ${S}/><rect x="14" y="14" width="92" height="122" ${S} ${V}/><rect x="94" y="18" width="92" height="114" ${S} ${V}/>${seta(40,75,80)}${seta(160,75,120)}`;}
   if(id==='jc3'){w=260;b=`<rect x="4" y="4" width="252" height="142" ${S}/><rect x="14" y="14" width="84" height="122" ${S} ${V}/><rect x="88" y="18" width="84" height="114" ${S} ${V}/><rect x="162" y="14" width="84" height="122" ${S} ${V}/>${seta(36,75,72)}${seta(112,75,148)}<text x="204" y="81" text-anchor="middle" font-size="16" font-weight="700" fill="currentColor">F</text>`;}
+  if(id==='jc4'){w=300;b=`<rect x="4" y="4" width="292" height="142" ${S}/><rect x="14" y="18" width="74" height="114" ${S} ${V}/><rect x="80" y="14" width="72" height="122" ${S} ${V}/><rect x="148" y="14" width="72" height="122" ${S} ${V}/><rect x="212" y="18" width="74" height="114" ${S} ${V}/><text x="51" y="81" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">F</text><text x="249" y="81" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">F</text>${seta(134,75,98)}${seta(166,75,202)}`;}
   if(id==='jcb'){ht=200;b=`<rect x="4" y="4" width="192" height="192" ${S}/><line x1="4" y1="54" x2="196" y2="54" stroke="currentColor" stroke-width="3"/><rect x="14" y="14" width="172" height="30" ${S} ${V}/><rect x="14" y="64" width="92" height="122" ${S} ${V}/><rect x="94" y="68" width="92" height="114" ${S} ${V}/>${seta(40,125,80)}${seta(160,125,120)}`;}
   if(id==='pc2'){w=180;ht=240;b=`<rect x="4" y="4" width="172" height="232" ${S}/><rect x="12" y="12" width="84" height="224" ${S} ${V}/><rect x="84" y="16" width="84" height="220" ${S} ${V}/>${seta(34,124,70)}${seta(146,124,110)}`;}
   if(id==='pg1'){w=120;ht=240;b=`<rect x="4" y="4" width="112" height="232" ${S}/><rect x="14" y="14" width="92" height="222" ${S} ${V}/><path d="M106 14 L14 125 L106 236" stroke="currentColor" stroke-width="2" stroke-dasharray="6 5" fill="none"/><circle cx="92" cy="128" r="4" fill="currentColor"/>`;}
@@ -358,7 +360,7 @@ function detalhe(id){
    ${t.tec?`<a class="btn pri" href="${t.tec}">📐 Desenho técnico interativo</a>`:''}
    ${t.obra?`<a class="btn pri" href="${OBRA(t.obra)}" target="_blank" rel="noopener">Abrir em 3D com as medidas da obra</a>`:''}
    ${!t.m3d&&!t.obra?'<button class="btn sec" disabled title="Chega nas próximas etapas">Ver em 3D · em breve</button>':''}
-   ${papel()!=='arquiteto'&&t.est?`<a class="btn sec" href="orientativo/#${t.est}">📘 Estudar no Orientativo</a>`:''}
+   ${papel()!=='arquiteto'&&t.est&&!t.m3d?`<a class="btn sec" href="orientativo/#${t.est}">📘 Estudar no Orientativo</a>`:''}
    <p class="aviso">Desenho esquemático, sem escala. Medidas, pesos e acabamentos devem ser confirmados com o fornecedor da empresa.</p>
    <button class="btn sec" id="detFecha">Fechar</button></div></div>`;
   d.hidden=false;$('#detFecha').focus();
