@@ -32,6 +32,7 @@ h1{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,3vw,30px);m
 .guiabtn span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#1b1206;color:#ffd99a;font-size:13px;font-weight:700}
 .guiabtn:hover{background:#eba64a}.guiabtn:focus-visible{outline:3px solid #1b1206;outline-offset:2px}
 .hdr-r{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+@media(max-width:700px){.hdr-r{width:100%;min-width:0}.hdr-r,.hdr-r *{box-sizing:border-box;max-width:100%}}
 .typorow{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}.tcol{display:flex;flex-direction:column;gap:4px;min-width:0}
 .tstep{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
 .tlab{display:flex!important;flex-direction:row!important;justify-content:flex-start!important;text-align:left;align-items:center;gap:7px;font:600 12.5px var(--f-display);text-transform:uppercase;letter-spacing:.05em;color:var(--fg)}
@@ -2845,3 +2846,4 @@ applyTypo();build();renderParts();renderCuts();renderUs();renderSliders();render
 <script src="ajustes.js?v=5"></script>
 
 <script>if(window.top===window){const a=document.createElement("a");a.href="../#tip";a.textContent="← Plataforma FC 3D";a.style.cssText="position:fixed;right:14px;bottom:14px;z-index:9000;background:#0a4f4b;color:#fff;font:600 14px system-ui;padding:9px 14px;border-radius:11px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25)";document.body.appendChild(a);}</script>
+<script src="../toque.js?v=1"></script>

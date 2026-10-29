@@ -21,6 +21,7 @@ button{font-family:inherit}a{color:var(--tl)}
 /* topo */
 .top{background:var(--tl);color:#fff;position:sticky;top:0;z-index:50;box-shadow:0 2px 0 var(--or)}
 .top .w{max-width:1280px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:12px}
+@media(max-width:600px){.top .w{flex-wrap:wrap;row-gap:8px;padding:10px 14px}.top .w>div:not(.sp){min-width:0}.top b{font-size:18px}#bVolta{order:0}}
 .top img{width:40px;height:40px;border-radius:9px}.top b{font:800 21px/1 var(--f-d);letter-spacing:.01em}.top small{display:block;font:600 11.5px var(--f-b);letter-spacing:.12em;text-transform:uppercase;color:#ffd58a}
 .top .sp{flex:1}.prog{display:flex;align-items:center;gap:8px;font:600 13px var(--f-b)}.prog i{display:block;width:120px;height:8px;border-radius:9px;background:rgba(255,255,255,.25);overflow:hidden}.prog i s{display:block;height:100%;background:var(--or);text-decoration:none}
 .top button{border:1px solid rgba(255,255,255,.5);background:transparent;color:#fff;border-radius:8px;padding:7px 11px;font:600 14px var(--f-b);cursor:pointer}
@@ -770,5 +771,6 @@ marca();if(!ALUNO&&!ESTUDO){const g=$('#bGrav');if(g)g.hidden=false;}voltaBtn(!A
 </script>
 
 
+<script src="../toque.js?v=1"></script>
 </body>
 </html>
