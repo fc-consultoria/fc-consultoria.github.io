@@ -35,11 +35,11 @@ s=s.replace(old,r"""if(ALUNO||ESTUDO)iniciar();else (function(){/* Plataforma FC
  let tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
  if(!tk){nega('Entre na Plataforma FC 3D','O Orientativo abre pela plataforma, depois de entrar com o seu login.');return;}
  fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})}).then(r=>r.ok?r.json():null)
-  .then(d=>{if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}if(!d.matriz){const g=$('#bGrav');if(g)g.hidden=true;}iniciar();})
+  .then(d=>{if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}{const g=$('#bGrav');if(g)g.remove();}iniciar();})
   .catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));})();""")
 s=s.replace('<small>FC Consultoria · Matriz</small>','<small>Plataforma FC 3D</small>')
 # modo foco (?foco=1): abre só o módulo escolhido nas Tipologias, sem a sequência lateral
-s=s.replace('</style>','body.foco .nav,body.foco .foot [data-go],body.foco #bHome{display:none!important}body.foco .lay{grid-template-columns:1fr!important;max-width:1180px}\n</style>',1)
+s=s.replace('</style>','#bGrav{display:none!important}body.foco .nav,body.foco .foot [data-go],body.foco #bHome{display:none!important}body.foco .lay{grid-template-columns:1fr!important;max-width:1180px}\n</style>',1)
 s=s.replace('<body>','<body>\n<script>if(new URLSearchParams(location.search).get("foco")==="1")document.body.classList.add("foco");</script>',1)
 s=s.replace('<title>Esquadrias 3D · Passo a passo · FC Consultoria</title>','<title>Orientativo 3D · Plataforma FC 3D</title>')
 # Tipologias: só os modelos que têm 3D

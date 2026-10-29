@@ -374,7 +374,7 @@ function telaInicio(){
 function faixaOri(){if(papel()==='arquiteto')return '';let F=[];try{F=JSON.parse(localStorage.getItem('fc_esq_feito'))||[]}catch(_){}
   const M=[['cat','Catálogo de Perfis'],['tip','Tipologias'],['cm','Contramarco'],['gua','Guarnições'],['max','Maxim-Ar'],['cor','Janelas de Correr'],['pad','Perfis e Componentes Padrão'],['giro','Porta de Giro'],['div','Perfis Diversos'],['per','Porta com Persiana']],n=M.filter(m=>F.includes(m[0])).length,prox=(M.find(m=>!F.includes(m[0]))||M[0])[0];
   return `<div class="ori"><div class="ori-tx"><b>📘 Orientativo de Montagem 3D</b><span class="mute">${n} de ${M.length} módulos estudados · toque no assunto para abrir só aquele módulo</span><i class="ori-bar"><s style="width:${n/M.length*100}%"></s></i></div>
-   <div class="ori-bt"><a class="btn sec" href="orientativo/#quiz">✓ Prova final</a></div>
+   <div class="ori-bt"><a class="btn sec" href="orientativo/?foco=1#quiz">✓ Prova final</a></div>
    <div class="ori-m">${M.map((m,i)=>`<a href="orientativo/?foco=1#${m[0]}" title="Abrir só este módulo" class="${F.includes(m[0])?'ok':''}"><span>${F.includes(m[0])?'✓':String(i+1).padStart(2,'0')}</span>${m[1]}</a>`).join('')}</div></div>`;}
 function guiaTec(){const I=[
   ['1','Cabeçalho',1,1.5,98,6.4,'Nome da tipologia e o código da montagem no catálogo (ex.: SUP JCR 200). É por ele que a montagem é procurada no sistema.'],
