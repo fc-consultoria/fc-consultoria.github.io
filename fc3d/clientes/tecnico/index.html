@@ -68,6 +68,11 @@ svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto 
 /* lateral */
 .lat{display:flex;flex-direction:column;gap:12px}
 .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.aj{border-color:var(--amber)}.ajd{font-size:12.5px;color:var(--mute);margin:6px 0}.ajp{margin:4px 0 8px;font-size:13.5px}
+.ajesc{display:flex;flex-direction:column;gap:3px;font-size:13px;margin-bottom:8px}.ajl{display:flex;align-items:center;gap:4px;margin:5px 0;font-size:12.5px;flex-wrap:wrap}
+.ajl span{flex:1 0 100%;font-weight:600}.ajl button{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:4px 7px;cursor:pointer;font-size:12.5px}
+.ajl input[type=number]{width:70px;border:1px solid var(--line);border-radius:8px;padding:4px 6px;text-align:right}.ajl select{border:1px solid var(--line);border-radius:8px;padding:4px 6px}
+.ajc{gap:14px}.ajb{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.pc.oc{opacity:.28}.pc.ajs path{fill:#f3c27a;stroke:#b45309}
 .box h3{font-size:15px;margin-bottom:8px}
 .lista{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
 .lista button{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:grid;grid-template-columns:62px 1fr auto;gap:8px;align-items:center;padding:7px 8px;border-radius:9px;font-size:13px}
@@ -135,6 +140,7 @@ svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto 
   <button class="bt" id="btAjusta">⤢ Ajustar à tela</button>
   <button class="bt" id="btFs">⛶ Tela cheia</button>
   <button class="bt am" id="btMont">🧩 Montar o corte</button>
+  <button class="bt" id="btAj" hidden aria-pressed="false">🔧 Ajuste técnico</button>
   <span class="dica">Passe o mouse num perfil para ver o código · arraste para tirar do lugar · roda do mouse aproxima</span>
 </div>
 
@@ -149,6 +155,21 @@ svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto 
     <div class="marca">FC CONSULTORIA EM ESQUADRIA · USO EXCLUSIVO · © FC Consultoria em Esquadria</div>
   </section>
   <aside class="lat">
+    <div class="box aj" id="ajBox" hidden><h3>🔧 Ajuste técnico</h3>
+      <p class="ajd" id="ajMsg">Clique num perfil do corte para ajustar. Só a FC vê este painel; o ajuste salvo vale para todas as empresas.</p>
+      <div id="ajCt" hidden>
+        <p class="ajp"><b id="ajCod"></b> <span id="ajNm"></span></p>
+        <div class="ajesc"><label><input type="radio" name="ajE" value="1" checked> Só esta peça</label><label><input type="radio" name="ajE" value="t"> Todas deste perfil nesta montagem</label></div>
+        <div class="ajl"><span>→ Para a direita</span><button type="button" data-aj="dx:-5">−5</button><button type="button" data-aj="dx:-1">−1</button><input id="ajDx" type="number" step="0.5" value="0"><button type="button" data-aj="dx:1">+1</button><button type="button" data-aj="dx:5">+5</button></div>
+        <div class="ajl"><span>↑ Para o lado interno</span><button type="button" data-aj="dz:-5">−5</button><button type="button" data-aj="dz:-1">−1</button><input id="ajDz" type="number" step="0.5" value="0"><button type="button" data-aj="dz:1">+1</button><button type="button" data-aj="dz:5">+5</button></div>
+        <div class="ajl"><span>↑ Para cima</span><button type="button" data-aj="dy:-5">−5</button><button type="button" data-aj="dy:-1">−1</button><input id="ajDy" type="number" step="0.5" value="0"><button type="button" data-aj="dy:1">+1</button><button type="button" data-aj="dy:5">+5</button></div>
+        <div class="ajl"><span>Girar a seção</span><select id="ajRz"><option value="0">0°</option><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></div>
+        <div class="ajl ajc"><label><input type="checkbox" id="ajMi"> Espelhar</label><label><input type="checkbox" id="ajOc"> Esconder a peça</label></div>
+        <p class="ajd">Em mm. "Lado interno" e "para cima" seguem o desenho: no corte horizontal o lado interno fica em cima; no corte vertical, à esquerda.</p>
+        <div class="ajb"><button type="button" class="bt pri" id="ajSalva">Salvar ajuste</button><button type="button" class="bt" id="ajOrig">Voltar ao original</button></div>
+        <p class="ajd" id="ajSt" role="status"></p>
+      </div>
+    </div>
     <div class="box"><h3>Peças do corte</h3><ul class="lista" id="lista"></ul></div>
     <div class="box"><h3>Legenda</h3><div class="leg">
       <span><i style="background:var(--sec)"></i>Perfil de alumínio (seção)</span>
@@ -161,7 +182,7 @@ svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto 
 </div>
 <div id="tip" hidden></div>
 
-<script src="montagens.js?v=2"></script>
+<script src="montagens.js?v=3"></script>
 <script>
 (function(){
 /* ---------- acesso: só com a sessão da Plataforma FC 3D Clientes ---------- */
@@ -171,7 +192,7 @@ const gate=document.getElementById('gate');
 function nega(t,p){document.getElementById('gateT').textContent=t;document.getElementById('gateP').innerHTML=p+' <br><br><a href="../">Ir para a Plataforma FC 3D</a>';}
 if(!tk){nega('Entre na Plataforma FC 3D','Este desenho abre pela plataforma, depois de entrar com o seu login.');return;}
 fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
- .then(r=>r.ok?r.json():null).then(d=>{if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}MATRIZ=!!d.matriz;if(M.aj&&!MATRIZ){nega('Em ajuste','Esta montagem está em revisão pela FC Consultoria e volta em breve.');return;}gate.hidden=true;iniciar();})
+ .then(r=>r.ok?r.json():null).then(d=>{if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}MATRIZ=!!d.matriz;if(M.aj&&!MATRIZ){nega('Em ajuste','Esta montagem está em revisão pela FC Consultoria e volta em breve.');return;}gate.hidden=true;FCM.carregarAjustes().then(iniciar);})
  .catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));
 
 var MATRIZ=false;const KEY=(new URLSearchParams(location.search).get('m')||'jc2'),M=FCM.MONT[KEY]||FCM.MONT.jc2;
@@ -179,12 +200,13 @@ function iniciar(){
   document.title='Desenho Técnico FC · '+M.n;
   document.getElementById('tTit').textContent=M.n;document.getElementById('fTit').textContent=M.n;document.getElementById('fCd').textContent=M.cd;
   document.getElementById('tSub').textContent=M.linha+' · desenho técnico interativo'+(M.aj?' · ⚠ oculto para os clientes — '+M.aj:'');
-  {const GR=[['Janelas de correr',['jc2','jc2a','jc3','jc4','jc4a','jcb','jc4p','jc4pa']],['Janelas com veneziana',['jvz3','jc4v','jvc7','jvz6']],['Portas de correr',['pc2','pc2a','pc3','pc4','pc4a','pvz3']],['Giro e maxim-ar',['pg1','pg2','mx1','mx2p']]];
+  {const GR=[['Janelas de correr',['jc2','jc2a','jc3','jc4','jc4a','jcb','jc4p','jc4pa']],['Janelas com veneziana',['jvz3','jc4v','jvc7','jvz6']],['Portas de correr',['pc2','pc2a','pc3','pc4','pc4a','pvz3']],['Giro e maxim-ar',['pg1','pg2','mx1','mx2p']],
+    ['Gold · janelas de correr',['g_jc2','g_jc4','g_jc6','g_jvz3','g_jcb']],['Gold · portas de correr',['g_pc2pe','g_pvz3','g_pc4b']],['Gold · giro',['g_pg1v','g_pg2']],['Gold · maxim-ar e conjugadas',['g_mxa','g_mxb','g_cju','g_cjp']]];
    const op=k=>FCM.MONT[k]&&(!FCM.MONT[k].aj||MATRIZ)?`<option value="${k}" ${k===KEY?'selected':''}>${FCM.MONT[k].aj?'⚠ ':''}${FCM.MONT[k].cd} · ${FCM.MONT[k].n}</option>`:'';
    document.getElementById('troca').innerHTML='<select aria-label="Escolher a montagem">'+GR.map(([g,ks])=>`<optgroup label="${g}">${ks.map(op).join('')}</optgroup>`).join('')+'</select>';
    document.querySelector('#troca select').onchange=e=>{location.search='?m='+e.target.value;};}
   document.getElementById('inL').value=M.def[0];document.getElementById('inH').value=M.def[1];
-  fetch('secoes.json?v=2').then(r=>r.json()).then(montar).catch(()=>nega('Não foi possível abrir','Tente de novo em instantes.'));
+  fetch('secoes.json?v=3').then(r=>r.json()).then(montar).catch(()=>nega('Não foi possível abrir','Tente de novo em instantes.'));
 }
 
 const NS='http://www.w3.org/2000/svg';
@@ -197,6 +219,7 @@ function montar(secs){S=secs;
     const g=el('g',{},svg);VPS[id]={box,svg,g,vb:null,base:null};panZoom(VPS[id]);});
   desenhar();
   lista();
+  ajLiga();
   if(new URLSearchParams(location.search).get('montar')==='1')setTimeout(()=>montarCorte(1),300);
   document.getElementById('btDes').onclick=()=>animar(true);
   document.getElementById('btVolta').onclick=()=>{animar(false);ajustar();};
@@ -225,13 +248,14 @@ function desenhar(){
       const oy=f.oy||0;if(!o.vz){if(o.g===0||(M.zonas&&!VQ[o.p[1]+oy]))peca(gv,{vid:1,nm:o.nm,r:[-(f.z+o.p[2])-3,-(o.p[1]+oy+o.h/2),6,o.h],ex:[fz*-20,0],brkY:-(o.p[1]+oy)},'vpV');
       else peca(gv,{vid:1,nm:o.nm,r:[-(f.z+o.p[2])-3,-(o.p[1]+oy+o.h/2),6,o.h],ex:[fz*-20,0]},'vpV');if(M.zonas)VQ[o.p[1]+oy]=1;}
       return;}
+    if(o.oc&&!AJM)return;
     if(USADOS.indexOf(o.c)<0)USADOS.push(o.c);
     const ring=(r,map)=>'M'+r.map(([a,b])=>map(FCM.ponto(o,a,b,f.ox,f.z,f.oy)).map(f1).join(' ')).join('L')+'Z';
     const d=map=>S[o.c].s.map(sh=>ring(sh.o,map)+(sh.h||[]).map(h=>ring(h,map)).join('')).join('');
     if(Math.abs(o.ez[1])===1){/* peça vertical: aparece no corte horizontal */if(o.nh)return;
-      peca(gh,{c:o.c,nm:S[o.c].n,d:d(q=>[q[0],-q[2]]),ex:[o.x[0]*(o.g<0?70:35),-(fz*38+o.x[2]*14)]},'vpH');}
+      peca(gh,{c:o.c,id:o.id,oc:o.oc,nm:S[o.c].n,d:d(q=>[q[0],-q[2]]),ex:[o.x[0]*(o.g<0?70:35),-(fz*38+o.x[2]*14)]},'vpH');}
     else if(Math.abs(o.ez[0])===1){/* peça horizontal: aparece no corte vertical */
-      peca(gv,{c:o.c,nm:S[o.c].n,d:d(q=>[-q[2],-q[1]]),ex:[-(fz*30+o.x[2]*14),-(o.x[1]*(o.g<0?45:35))]},'vpV');}
+      peca(gv,{c:o.c,id:o.id,oc:o.oc,nm:S[o.c].n,d:d(q=>[-q[2],-q[1]]),ex:[-(fz*30+o.x[2]*14),-(o.x[1]*(o.g<0?45:35))]},'vpV');}
   });
   PARTS.filter(P=>P.brk!=null).forEach(P=>quebraV(gh,P.brk,P.brkC-9,P.brkC+9));
   PARTS.filter(P=>P.brkY!=null).forEach(P=>quebraH(gv,P.brkY,-TD-6,TD+6));
@@ -248,10 +272,10 @@ function desenhar(){
   if(document.getElementById('lista').children.length)lista();
 }
 function peca(g,p,vp){
-  const gg=el('g',{class:'pc'+(p.vid?' vid':''),'data-c':p.c||'VID'},g);
+  const gg=el('g',{class:'pc'+(p.vid?' vid':'')+(p.oc?' oc':'')+(AJM&&AJS&&p.id===AJS.id?' ajs':''),'data-c':p.c||'VID','data-id':p.id||''},g);
   if(p.vid)el('rect',Object.assign({x:f1(p.r[0]),y:f1(p.r[1]),width:f1(p.r[2]),height:f1(p.r[3])},p.vz?{style:'fill:#cfd5d8;stroke:#6b7479'}:{}),gg);
   else el('path',{d:p.d,'fill-rule':'evenodd'},gg);
-  const P={g:gg,c:p.c||'VID',nm:p.nm,ex:p.ex,dx:0,dy:0,tx:0,ty:0,vp,brk:p.brk,brkC:p.brkC,brkY:p.brkY};PARTS.push(P);
+  const P={g:gg,id:p.id,c:p.c||'VID',nm:p.nm,ex:p.ex,dx:0,dy:0,tx:0,ty:0,vp,brk:p.brk,brkC:p.brkC,brkY:p.brkY};PARTS.push(P);
   ligaPeca(P);
 }
 function cotaH(g,x0,x1,y,t){const c=el('g',{class:'cota'},g);
@@ -293,7 +317,8 @@ function elevG(g,L,H){g.innerHTML='';const R=FCM.pecas(S,M,L,H),k=Math.min(300/L
   R.folhas.forEach((f,i)=>{const e=f.el;if(!e)return;
     if(!f.fixo)A('rect',{x:X(e.x0),y:Y(e.y1),width:(e.x1-e.x0)*k,height:(e.y1-e.y0)*k,fill:'#eef6f9',stroke:'#1b1d1f','stroke-width':.8});
     R.P.filter(o=>o.vid&&o.g===i).forEach(o=>{const cx=(f.ox||0)+o.p[0]+(e.max||e.giro?0:0),cy=(f.oy||0)+o.p[1];
-      A('rect',{x:X(cx-o.w/2+6),y:Y(cy+o.h/2-6),width:(o.w-12)*k,height:(o.h-12)*k,fill:'#d9ecf3',stroke:'#1b1d1f','stroke-width':.4});
+      A('rect',{x:X(cx-o.w/2+6),y:Y(cy+o.h/2-6),width:(o.w-12)*k,height:(o.h-12)*k,fill:o.vz?'#eef1f2':'#d9ecf3',stroke:'#1b1d1f','stroke-width':.4});
+      if(o.vz&&f.inf!=='vz'&&f.inf!=='vzv')for(let yy=cy-o.h/2+30;yy<cy+o.h/2-20;yy+=40)A('line',{x1:X(cx-o.w/2+20),x2:X(cx+o.w/2-20),y1:Y(yy),y2:Y(yy),stroke:'#1b1d1f','stroke-width':.4});
       if(f.fixo){const t=el('text',{x:X(cx),y:Y(cy)+4,'text-anchor':'middle','font-size':10,'font-weight':700,fill:'#1b1d1f'},g);t.textContent='Fixo';}});
     if(f.inf==='vz'||f.inf==='vzv'){for(let y=e.y0+60;y<e.y1-50;y+=(f.inf==='vzv'?28:40))A('line',{x1:X(e.x0+40),x2:X(e.x1-40),y1:Y(y),y2:Y(y),stroke:'#1b1d1f','stroke-width':.4});}
     const cx=(e.x0+e.x1)/2,cy=(e.y0+e.y1)/2;
@@ -307,6 +332,24 @@ function elevG(g,L,H){g.innerHTML='';const R=FCM.pecas(S,M,L,H),k=Math.min(300/L
   cotaV(g,y0,y0+h,x0+w+26,'H = '+H);g.lastChild.querySelectorAll('line').forEach((l,i)=>{if(i>0){l.setAttribute('x1',x0+w+30);l.setAttribute('x2',x0+w+4);}});
 }
 
+/* ---------- ajuste técnico (só a Matriz): corrige posição, giro e espelho de um perfil; grava para todas as empresas ---------- */
+let AJM=false,AJS=null,AJV=null;const $a=id=>document.getElementById(id);
+function ajPeca(){return document.querySelector('input[name=ajE]:checked').value==='t'?AJS.c+'#*':AJS.id;}
+function ajLe(){const a=FCM.ajuste(M,ajPeca());AJV=a?a.map((v,i)=>i<6?+v||0:!!v):[0,0,0,0,0,0,false];
+  $a('ajDx').value=AJV[0];$a('ajDy').value=AJV[1];$a('ajDz').value=AJV[2];$a('ajRz').value=String(((AJV[5]%360)+360)%360);$a('ajMi').checked=AJV[4]%360===180;$a('ajOc').checked=!!AJV[6];}
+function ajSel(P){AJS={id:P.id,c:P.c};$a('ajCt').hidden=false;$a('ajMsg').hidden=true;$a('ajCod').textContent=P.c+' · peça '+P.id.split('#')[1];$a('ajNm').textContent=P.nm||'';$a('ajSt').textContent='';
+  const t=FCM.ajuste(M,P.id)?'1':FCM.ajuste(M,P.c+'#*')?'t':'1';document.querySelector('input[name=ajE][value="'+t+'"]').checked=true;ajLe();desenhar();}
+function ajPrevia(){const v=[+$a('ajDx').value||0,+$a('ajDy').value||0,+$a('ajDz').value||0,0,$a('ajMi').checked?180:0,+$a('ajRz').value||0,$a('ajOc').checked];
+  FCM.previa(M,ajPeca(),v);$a('ajSt').textContent='Prévia — clique em Salvar para gravar.';desenhar();}
+function ajLiga(){if(!MATRIZ)return;const b=$a('btAj');b.hidden=false;
+  b.onclick=()=>{AJM=!AJM;b.setAttribute('aria-pressed',AJM);b.classList.toggle('am',AJM);$a('ajBox').hidden=!AJM;if(!AJM){AJS=null;FCM.carregarAjustes().then(desenhar);}else desenhar();};
+  document.querySelectorAll('[data-aj]').forEach(x=>x.onclick=()=>{const [k,d]=x.dataset.aj.split(':'),i={dx:'ajDx',dy:'ajDy',dz:'ajDz'}[k];$a(i).value=Math.round(((+$a(i).value||0)+(+d))*10)/10;ajPrevia();});
+  ['ajDx','ajDy','ajDz'].forEach(i=>$a(i).oninput=ajPrevia);['ajRz','ajMi','ajOc'].forEach(i=>$a(i).onchange=ajPrevia);
+  document.querySelectorAll('input[name=ajE]').forEach(r=>r.onchange=()=>{ajLe();desenhar();});
+  $a('ajSalva').onclick=()=>{const v=[+$a('ajDx').value||0,+$a('ajDy').value||0,+$a('ajDz').value||0,0,$a('ajMi').checked?180:0,+$a('ajRz').value||0,$a('ajOc').checked];
+    $a('ajSt').textContent='Salvando…';FCM.salvarAjuste(M,ajPeca(),v).then(()=>{$a('ajSt').textContent='✔ Ajuste salvo. Já vale no 3D e para todas as empresas.';desenhar();}).catch(e=>{$a('ajSt').textContent='⚠ '+e.message;});};
+  $a('ajOrig').onclick=()=>{$a('ajSt').textContent='Voltando…';FCM.salvarAjuste(M,ajPeca(),null).then(()=>{ajLe();$a('ajSt').textContent='✔ Peça de volta ao original.';desenhar();}).catch(e=>{$a('ajSt').textContent='⚠ '+e.message;});};}
+
 /* ---------- interação: destacar, arrastar, desmontar, voltar ---------- */
 const tip=document.getElementById('tip');document.addEventListener('fullscreenchange',()=>{const F=document.querySelector('.folha');(document.fullscreenElement?F:document.body).appendChild(tip);});
 function info(P){if(MONT&&MONT.n===2&&P.c!=='VID'&&!P.ok)return '<b>Qual é este perfil?</b>Leve até o lugar dele no desenho';const s=S[P.c];return `<b>${P.c==='VID'?(/^Palhetas/.test(P.nm||'')?'VENEZIANA':'VIDRO'):P.c}</b>${P.nm}${s&&s.kg?'<br>'+String(s.kg).replace('.',',')+' kg/m':''}`;}
@@ -314,7 +357,7 @@ function ligaPeca(P){const g=P.g;
   g.addEventListener('pointerenter',e=>{g.classList.add('hi');tip.innerHTML=info(P);tip.hidden=false;});
   g.addEventListener('pointermove',e=>{tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY+12)+'px';});
   g.addEventListener('pointerleave',()=>{g.classList.remove('hi');tip.hidden=true;});
-  g.addEventListener('pointerdown',e=>{e.stopPropagation();if(MONT&&(P.ok||P.c==='VID'))return;const V=VPS[P.vp];const p0=pt(V,e),d0=[P.dx,P.dy];g.setPointerCapture(e.pointerId);V.svg.classList.add('arr');marca(P.c);
+  g.addEventListener('pointerdown',e=>{e.stopPropagation();if(AJM){if(P.c!=='VID')ajSel(P);return;}if(MONT&&(P.ok||P.c==='VID'))return;const V=VPS[P.vp];const p0=pt(V,e),d0=[P.dx,P.dy];g.setPointerCapture(e.pointerId);V.svg.classList.add('arr');marca(P.c);
     const mv=ev=>{const p=pt(V,ev);P.dx=d0[0]+p[0]-p0[0];P.dy=d0[1]+p[1]-p0[1];P.tx=P.dx;P.ty=P.dy;pos(P);};
     const up=()=>{g.removeEventListener('pointermove',mv);g.removeEventListener('pointerup',up);V.svg.classList.remove('arr');if(MONT)soltou(P);};
     g.addEventListener('pointermove',mv);g.addEventListener('pointerup',up);});
