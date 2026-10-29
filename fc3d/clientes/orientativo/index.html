@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Orientativo 3D FC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Orientativo 3D · passo a passo · Plataforma FC 3D Clientes
+   Mesmo modelo do Orientativo de Montagem 3D da FC, com linhas FC e códigos FC.
+   © FC Consultoria em Esquadria · criação da FC, uso exclusivo de empresas licenciadas. */
+:root{
+  --bg:#f3f5f4;--panel:#ffffff;--soft:#eaf0ee;--ink:#10201f;--mute:#5a6b69;--line:#d5dfdc;
+  --teal:#0e6f6a;--teal2:#0a4f4b;--tealSoft:#dcefec;--amber:#c88a1c;--amberSoft:#fbefd6;--amberInk:#8a5a08;
+  --ok:#1f7a48;--okSoft:#dff2e6;--bad:#b3261e;--badSoft:#fbe4e2;--vid:#bfe0ea;--alu:#c4cbcf;--alu2:#8e989d;--parede:#e6a57f;--parede2:#cf8a62;
+  --f-h:'Space Grotesk',system-ui,sans-serif;--f-b:'Inter',system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1514;--panel:#142120;--soft:#1a2b29;--ink:#e6efed;--mute:#97aaa7;--line:#263936;
+  --teal:#3cc0b5;--teal2:#2a9d93;--tealSoft:#163a37;--amber:#e8b04a;--amberSoft:#3a2d12;--amberInk:#f0c87a;--ok:#6fd39a;--okSoft:#173523;--bad:#f28b82;--badSoft:#3b1a18;--vid:#2c5866;--alu:#7d8a90;--alu2:#a9b6bb;--parede:#8a5a43;--parede2:#a56c50;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1514;--panel:#142120;--soft:#1a2b29;--ink:#e6efed;--mute:#97aaa7;--line:#263936;
+  --teal:#3cc0b5;--teal2:#2a9d93;--tealSoft:#163a37;--amber:#e8b04a;--amberSoft:#3a2d12;--amberInk:#f0c87a;--ok:#6fd39a;--okSoft:#173523;--bad:#f28b82;--badSoft:#3b1a18;--vid:#2c5866;--alu:#7d8a90;--alu2:#a9b6bb;--parede:#8a5a43;--parede2:#a56c50;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.55 var(--f-b)}
+button,input{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--f-h);margin:0;letter-spacing:-.01em;text-wrap:balance}
+p{margin:0}
+[hidden]{display:none!important}
+.mute{color:var(--mute)}
+a{color:var(--teal)}
+.btn{appearance:none;border:1px solid var(--line);background:var(--panel);border-radius:11px;padding:9px 15px;font-weight:600;cursor:pointer;min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;color:var(--ink)}
+.btn:hover{border-color:var(--teal)}
+.btn.pri{background:var(--teal);border-color:var(--teal);color:#fff}.btn.pri:hover{background:var(--teal2)}
+.btn.am{background:var(--amber);border-color:var(--amber);color:#1b1205}
+.btn[aria-pressed="true"]{background:var(--tealSoft);border-color:var(--teal);color:var(--teal)}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--soft);color:var(--mute)}
+.chip.t{background:var(--tealSoft);color:var(--teal)}.chip.a{background:var(--amberSoft);color:var(--amberInk)}
+
+/* acesso */
+.gate{position:fixed;inset:0;z-index:999;display:grid;place-items:center;background:var(--bg);padding:16px}
+.gate div{max-width:380px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px;text-align:center}
+.gate h1{font-size:21px;margin-bottom:8px}
+
+/* topo */
+.topo{background:var(--teal2);color:#fff;position:sticky;top:0;z-index:50;box-shadow:0 3px 0 var(--amber)}
+.topo .w{max-width:1280px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.topo a.volta{color:#fff;text-decoration:none;font-weight:600;font-size:14px;border:1px solid rgba(255,255,255,.35);border-radius:10px;padding:7px 12px;white-space:nowrap}
+.topo .tt b{display:block;font:700 18px/1.1 var(--f-h)}.topo .tt small{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:#f2d79a}
+.topo .sp{flex:1}
+.prog{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}.prog i{display:block;width:110px;height:8px;border-radius:9px;background:rgba(255,255,255,.22);overflow:hidden}.prog i s{display:block;height:100%;background:var(--amber);transition:width .4s}
+.topo button{border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;border-radius:10px;padding:7px 11px;font-weight:600;cursor:pointer;min-height:38px}
+@media(max-width:640px){.prog i{width:60px}.topo .tt small{display:none}.topo a.volta{padding:7px 9px}}
+
+/* layout */
+.lay{max-width:1280px;margin:0 auto;padding:18px 16px 40px;display:grid;grid-template-columns:250px minmax(0,1fr);gap:18px;align-items:start}
+.nav{position:sticky;top:78px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:3px}
+.nav .nh{font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);padding:6px 8px}
+.nav a{display:flex;align-items:center;gap:9px;padding:8px;border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;color:var(--ink);text-decoration:none}
+.nav a:hover{background:var(--soft)}.nav a.on{background:var(--tealSoft);color:var(--teal)}
+.nav .n{width:26px;height:26px;border-radius:8px;background:var(--soft);display:grid;place-items:center;font-size:12px;flex:none}
+.nav a.on .n{background:var(--teal);color:#fff}.nav .ck{margin-left:auto;color:var(--ok)}
+@media(max-width:900px){.lay{grid-template-columns:1fr}.nav{position:static;flex-direction:row;overflow-x:auto;padding:6px}.nav a{flex:none}.nav .nh{display:none}}
+
+/* conteúdo */
+.hero{background:radial-gradient(circle at 20% 10%,#1b8f87,#0b4a46 55%,#06211f);color:#fff;border-radius:18px;padding:30px}
+.hero .ey{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#f2d79a;font-weight:700}
+.hero h1{font-size:clamp(28px,4vw,40px);line-height:1.08;margin:8px 0 12px}
+.hero p{color:#cfe9e5;max-width:62ch}
+.mg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-top:16px}
+.mc{appearance:none;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:14px;display:flex;gap:12px;cursor:pointer;align-items:flex-start}
+.mc:hover{border-color:var(--teal)}.mc .n{width:34px;height:34px;border-radius:10px;background:var(--tealSoft);color:var(--teal);display:grid;place-items:center;font-weight:700;flex:none}
+.mc.ok .n{background:var(--okSoft);color:var(--ok)}.mc b{display:block;font-family:var(--f-h)}.mc small{color:var(--mute);font-size:13px;line-height:1.4;display:block;margin-top:2px}
+.mh{margin-bottom:14px}.mh .ey{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--amberInk);font-weight:700}
+.mh h1{font-size:clamp(24px,3vw,32px);margin:4px 0 6px}.mh p{color:var(--mute)}
+.sec{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:14px}
+.sec h2{font-size:19px;margin-bottom:6px}.sec .nt{color:var(--mute);font-size:14px;margin-bottom:10px}
+.dica{background:var(--amberSoft);color:var(--amberInk);border-radius:12px;padding:10px 13px;font-size:14px;margin-top:12px}
+.aviso{font-size:12.5px;color:var(--mute);margin-top:10px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;align-items:start}
+.fig{background:var(--soft);border-radius:14px;padding:12px;display:grid;place-items:center}
+.fig svg{width:100%;height:auto;max-height:360px;color:var(--ink)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.slider{display:flex;align-items:center;gap:10px;margin-top:10px;font-weight:600;font-size:14px}.slider input{flex:1;accent-color:var(--teal)}
+
+/* tipologias */
+.tips{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.tp{appearance:none;border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:10px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:6px}
+.tp:hover,.tp[aria-pressed="true"]{border-color:var(--teal)}.tp[aria-pressed="true"]{box-shadow:0 0 0 2px var(--tealSoft)}
+.tp .d{background:var(--soft);border-radius:10px;padding:10px;height:110px;display:grid;place-items:center}.tp .d svg{max-height:90px;width:auto;max-width:100%;color:var(--ink)}
+.tp b{font-family:var(--f-h);font-size:14px;line-height:1.25}
+.tdet{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:16px;margin-top:14px;align-items:center}
+.tdet .d{background:var(--soft);border-radius:14px;padding:16px;display:grid;place-items:center}.tdet .d svg{max-height:230px;width:auto;max-width:100%;color:var(--ink)}
+dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:10px 0}dt{color:var(--mute);font-size:13px}dd{margin:0;font-weight:600;font-size:14px}
+@media(max-width:700px){.tdet{grid-template-columns:1fr}}
+
+/* passos */
+.passos{display:grid;gap:6px}
+.ps{appearance:none;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:11px;padding:9px 11px;cursor:pointer;display:flex;gap:10px;align-items:center;font-weight:600;font-size:14px}
+.ps span{width:24px;height:24px;border-radius:7px;background:var(--soft);display:grid;place-items:center;font-size:12px;flex:none}
+.ps.on{border-color:var(--teal);background:var(--tealSoft);color:var(--teal)}.ps.on span{background:var(--teal);color:#fff}
+.ps.feito span{background:var(--okSoft);color:var(--ok)}
+.pstx{margin-top:10px;font-size:14.5px}
+
+/* peças */
+.pcs{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.pc{appearance:none;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.pc:hover,.pc.on{border-color:var(--teal)}.pc.on{background:var(--tealSoft)}
+.pc b{font-family:var(--f-h);color:var(--teal)}.pc span{font-size:13.5px;font-weight:600}.pc small{color:var(--mute);font-size:12.5px}
+.pcmini{display:block;height:46px;margin-bottom:4px}.pcmini svg{height:100%;width:auto;color:var(--ink)}
+
+/* 3D */
+.v3w{position:relative;border-radius:14px;overflow:hidden;background:#0f1a19}
+.v3w.fs{position:fixed;inset:0;z-index:900;border-radius:0}
+.v3{height:500px}.v3w.fs .v3{height:100vh}
+.v3 canvas{display:block;touch-action:none}
+.v3msg{position:absolute;inset:0;display:grid;place-items:center;color:#a9c2be;font-weight:600}
+.v3bar{position:absolute;left:10px;right:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
+.v3bar>*{pointer-events:auto}
+.v3bar .btn{min-height:36px;padding:6px 11px;font-size:13.5px;background:rgba(20,33,32,.86);color:#fff;border-color:rgba(255,255,255,.18)}
+.v3bar .btn[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.v3bar .med{display:flex;gap:6px;align-items:center;background:rgba(20,33,32,.86);border:1px solid rgba(255,255,255,.18);border-radius:11px;padding:4px 8px;color:#dff3f0;font-size:13px}
+.v3bar .med input{width:68px;border:0;border-radius:7px;padding:4px 6px;color:#10201f;text-align:right;background:#fff}
+.v3lb{position:absolute;left:10px;bottom:10px;right:10px;background:rgba(20,33,32,.9);color:#fff;border-radius:11px;padding:8px 12px;font-size:14px}
+.v3lb b{color:#f2c063}
+.v3dica{position:absolute;right:12px;bottom:12px;color:#8fb3ad;font-size:12px}
+
+/* quiz */
+.qz{display:grid;gap:12px}
+.q{border:1px solid var(--line);border-radius:12px;padding:12px}
+.q p{font-weight:600;margin-bottom:8px}
+.op{display:flex;flex-direction:column;gap:6px}
+.op button{appearance:none;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:9px 12px;cursor:pointer}
+.op button:hover{border-color:var(--teal)}
+.op button.certo{background:var(--okSoft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.op button.errado{background:var(--badSoft);border-color:var(--bad);color:var(--bad)}
+.ex{margin-top:8px;font-size:14px;color:var(--mute)}
+.foot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:18px}
+.res{font:700 44px var(--f-h);color:var(--teal)}
+
+@keyframes pisca{0%,100%{opacity:1}50%{opacity:.35}}
+.anim{transition:transform .9s cubic-bezier(.5,0,.2,1)}
+</style>
+</head>
+<body>
+<div class="gate" id="gate"><div><h1 id="gateT">Abrindo o Orientativo…</h1><p class="mute" id="gateP">Conferindo o seu acesso.</p></div></div>
+
+<header class="topo"><div class="w">
+  <a class="volta" href="../">← Plataforma</a>
+  <div class="tt"><small>Plataforma FC 3D · Equipe</small><b>Orientativo 3D · Passo a passo</b></div>
+  <span class="sp"></span>
+  <div class="prog" title="Módulos estudados"><i><s id="pgB" style="width:0"></s></i><span id="pgT">0/9</span></div>
+  <button type="button" id="btTema" aria-label="Trocar fundo claro ou escuro" title="Claro / escuro"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg></button>
+  <button type="button" id="bHome">☰ Início</button>
+</div></header>
+<div class="lay"><nav class="nav" id="nav" aria-label="Módulos"></nav><main id="main"><p style="padding:30px">Carregando…</p></main></div>
+
+<script>
+(function(){
+/* ---------- acesso: só com a sessão da Plataforma FC 3D Clientes (gestor e vendedor) ---------- */
+const SP='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_sessao',SPK='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs';
+const LSg=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(_){return d}},LSs=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}};
+let tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
+function nega(t,p){document.getElementById('gateT').textContent=t;document.getElementById('gateP').innerHTML=p+'<br><br><a href="../">Ir para a Plataforma FC 3D</a>';}
+if(!tk){nega('Entre na Plataforma FC 3D','O Orientativo abre pela plataforma, depois de entrar com o seu login.');return;}
+fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
+ .then(r=>r.ok?r.json():null).then(d=>{
+   if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}
+   if(!d.matriz&&!['gestor','vendedor'].includes(d.papel)){nega('Orientativo da equipe','O Orientativo 3D é para o gestor e os vendedores da empresa.');return;}
+   document.getElementById('gate').hidden=true;iniciar();})
+ .catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));
+
+/* ---------- tema (o mesmo da plataforma) ---------- */
+const TM='fc3d-cli-tema';
+function tema(m){if(m)document.documentElement.setAttribute('data-theme',m);else document.documentElement.removeAttribute('data-theme');}
+try{tema(localStorage.getItem(TM));}catch(_){}
+document.getElementById('btTema').onclick=()=>{const a=document.documentElement.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');const n=a==='dark'?'light':'dark';tema(n);try{localStorage.setItem(TM,n)}catch(_){}};
+
+const $=s=>document.querySelector(s);
+const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const kg=n=>n==null?'—':n.toLocaleString('pt-BR',{minimumFractionDigits:3,maximumFractionDigits:3});
+let SEC=null;/* seções FC da janela de correr 2 folhas (as mesmas do desenho técnico) */
+
+/* ---------- módulos (a mesma sequência do Orientativo de Montagem 3D) ---------- */
+const MOD=[
+ {id:'tip',n:'Tipologias',d:'Os modelos de janelas, portas e fachadas e como cada um abre'},
+ {id:'cm',n:'Contramarco',d:'O que é, os componentes e a instalação passo a passo'},
+ {id:'gua',n:'Guarnições',d:'Por que a guarnição muda com a espessura do vidro'},
+ {id:'cor',n:'Janelas de Correr',d:'A janela 2 folhas em 3D com os perfis FC, e as de 3, 4 e 6 folhas'},
+ {id:'max',n:'Janela Maxim-Ar',d:'Como abre e como se escolhe o braço'},
+ {id:'pad',n:'Perfis e Componentes Padrão',d:'O que se repete em janela e porta, e o trilho macarrão'},
+ {id:'giro',n:'Porta de Giro',d:'Como abre e a montagem a 90° e a 45°'},
+ {id:'div',n:'Perfis Diversos',d:'Lambris e venezianas'},
+ {id:'fac',n:'Fachadas',d:'Fachada Cortina e Pele de Vidro Atlanta em 3D'}];
+let FEITO=new Set(LSg('pfc-ori-feito',[])),AT=null,V3=null;
+
+function navUI(){$('#nav').innerHTML='<div class="nh">Sequência do passo a passo</div>'+MOD.map((m,k)=>`<a data-go="${m.id}" class="${AT===m.id?'on':''}"><span class="n">${String(k+1).padStart(2,'0')}</span>${esc(m.n)}${FEITO.has(m.id)?'<span class="ck">✓</span>':''}</a>`).join('')+`<a data-go="quiz" class="${AT==='quiz'?'on':''}"><span class="n">✓</span>Prova final</a>`;
+ $('#pgB').style.width=(FEITO.size/MOD.length*100)+'%';$('#pgT').textContent=FEITO.size+'/'+MOD.length;}
+function head(k,sub){const m=MOD[k];return `<div class="mh"><div class="ey">Módulo ${String(k+1).padStart(2,'0')} · ${esc(m.n)}</div><h1>${esc(sub||m.n)}</h1><p>${esc(m.d)}</p></div>`;}
+function foot(k){const a=MOD[k-1],b=MOD[k+1],f=FEITO.has(MOD[k].id);return `<div class="foot">${a?`<button class="btn" data-go="${a.id}">← ${esc(a.n)}</button>`:'<span></span>'}<button class="btn ${f?'':'am'}" data-feito="${MOD[k].id}">${f?'✓ Módulo estudado':'✔ Marcar como estudado'}</button>${b?`<button class="btn pri" data-go="${b.id}">${esc(b.n)} →</button>`:`<button class="btn pri" data-go="quiz">Prova final →</button>`}</div>`;}
+function quiz(qs,tit){qs=qs.map((q,i)=>{const o=q[1].map((t,j)=>[t,j]);for(let k=o.length-1;k>0;k--){const r=(i*7+k*3+q[0].length)%(k+1);[o[k],o[r]]=[o[r],o[k]];}return [q[0],o.map(x=>x[0]),o.findIndex(x=>x[1]===q[2]),q[3]];});
+ return `<div class="sec"><h2>✍️ ${tit||'Teste rápido'}</h2><p class="nt">Toque na resposta. Errou? A explicação aparece logo abaixo.</p><div class="qz">${qs.map((q,i)=>`<div class="q" data-r="${q[2]}"><p>${i+1}. ${esc(q[0])}</p><div class="op">${q[1].map((o,j)=>`<button type="button" data-o="${j}">${esc(o)}</button>`).join('')}</div><div class="ex" hidden>${esc(q[3]||'')}</div></div>`).join('')}</div></div>`;}
+
+/* ---------- desenhos esquemáticos (elevação, sem escala) ---------- */
+const S='stroke="currentColor" fill="none" stroke-width="3" stroke-linejoin="round"',VV='fill="currentColor" fill-opacity=".07"';
+const seta=(x1,y,x2)=>`<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="currentColor" stroke-width="2.5"/><path d="M${x2} ${y} l${x2>x1?-8:8} -6 v12z" fill="currentColor"/>`;
+function desenho(id){let w=200,ht=150,b='';
+ if(id==='jc2'){b=`<rect x="4" y="4" width="192" height="142" ${S}/><rect x="14" y="14" width="92" height="122" ${S} ${VV}/><rect x="94" y="18" width="92" height="114" ${S} ${VV}/>${seta(40,75,80)}${seta(160,75,120)}`;}
+ if(id==='jc3'){w=260;b=`<rect x="4" y="4" width="252" height="142" ${S}/><rect x="14" y="14" width="84" height="122" ${S} ${VV}/><rect x="88" y="18" width="84" height="114" ${S} ${VV}/><rect x="162" y="14" width="84" height="122" ${S} ${VV}/>${seta(36,75,72)}${seta(224,75,188)}`;}
+ if(id==='jcb'){ht=200;b=`<rect x="4" y="4" width="192" height="192" ${S}/><line x1="4" y1="54" x2="196" y2="54" stroke="currentColor" stroke-width="3"/><rect x="14" y="14" width="172" height="30" ${S} ${VV}/><text x="100" y="35" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">F</text><rect x="14" y="64" width="92" height="122" ${S} ${VV}/><rect x="94" y="68" width="92" height="114" ${S} ${VV}/>${seta(40,125,80)}${seta(160,125,120)}`;}
+ if(id==='pc2'){w=180;ht=240;b=`<rect x="4" y="4" width="172" height="232" ${S}/><rect x="12" y="12" width="84" height="224" ${S} ${VV}/><rect x="84" y="16" width="84" height="220" ${S} ${VV}/>${seta(34,124,70)}${seta(146,124,110)}`;}
+ if(id==='pg1'){w=120;ht=240;b=`<rect x="4" y="4" width="112" height="232" ${S}/><rect x="14" y="14" width="92" height="222" ${S} ${VV}/><path d="M106 14 L14 125 L106 236" stroke="currentColor" stroke-width="2" stroke-dasharray="6 5" fill="none"/><circle cx="92" cy="128" r="4" fill="currentColor"/>`;}
+ if(id==='mx1'){w=170;ht=130;b=`<rect x="4" y="4" width="162" height="122" ${S}/><rect x="14" y="14" width="142" height="102" ${S} ${VV}/><path d="M14 116 L85 14 L156 116" stroke="currentColor" stroke-width="2" stroke-dasharray="6 5" fill="none"/>`;}
+ if(id==='cor'){w=220;ht=200;b=`<rect x="4" y="4" width="212" height="192" ${S}/>`;for(let i=1;i<4;i++)b+=`<line x1="${4+i*53}" y1="4" x2="${4+i*53}" y2="196" stroke="currentColor" stroke-width="5"/>`;for(let j=1;j<3;j++)b+=`<line x1="4" y1="${4+j*64}" x2="216" y2="${4+j*64}" stroke="currentColor" stroke-width="5"/>`;b+=`<rect x="8" y="8" width="204" height="184" ${VV}/>`;}
+ if(id==='atl'){w=220;ht=200;b=`<rect x="4" y="4" width="212" height="192" ${VV} stroke="currentColor" stroke-width="2"/>`;for(let i=0;i<4;i++)for(let j=0;j<3;j++)b+=`<rect x="${8+i*52.5}" y="${8+j*63}" width="48" height="58" rx="1" fill="currentColor" fill-opacity=".08" stroke="currentColor" stroke-width="1.2" stroke-opacity=".6"/>`;}
+ return `<svg viewBox="0 0 ${w} ${ht}" role="img" aria-label="Desenho esquemático">${b}</svg>`;}
+
+/* =========================== 01 · Tipologias =========================== */
+const TIPS=[
+ {id:'jc2',n:'Janela de correr 2 folhas',l:'Linha FC Residencial',d:'Duas folhas que correm sobre trilho, uma passando pela outra. É a janela mais usada em residências.',ab:'Correr',f:'2 folhas móveis',uso:'Quartos, salas e cozinhas',go:'cor'},
+ {id:'jc3',n:'Janela de correr 3 folhas',l:'Linha FC Residencial',d:'Três folhas em trilhos paralelos: abre uma parte maior do vão.',ab:'Correr',f:'3 folhas móveis',uso:'Vãos largos, salas',go:'cor'},
+ {id:'jcb',n:'Correr 2 folhas com bandeira',l:'Linha FC Residencial',d:'Correr 2 folhas com uma bandeira em cima. Quando a bandeira é fixa, aparece com "F" no desenho.',ab:'Correr',f:'2 folhas + bandeira',uso:'Pé-direito alto',go:'cor'},
+ {id:'pc2',n:'Porta de correr 2 folhas',l:'Linha FC Residencial',d:'Duas folhas de correr para integrar a sala com a varanda ou a área externa.',ab:'Correr',f:'2 folhas móveis',uso:'Varandas, área gourmet',go:'pad'},
+ {id:'pg1',n:'Porta de giro 1 folha',l:'Linha FC Residencial',d:'Porta de abrir, girando nas dobradiças. O tracejado mostra o lado da dobradiça.',ab:'Giro',f:'1 folha',uso:'Entradas, área de serviço',go:'giro'},
+ {id:'mx1',n:'Maxim-ar 1 folha',l:'Linha FC Residencial',d:'A folha fica presa em cima e projeta para fora. O tracejado em "V" mostra a abertura.',ab:'Projetante',f:'1 folha',uso:'Banheiros, cozinhas',go:'max'},
+ {id:'cor',n:'Fachada Cortina',l:'Linha FC Fachadas',d:'Colunas e travessas aparentes, vidro preso por presilha e tampa externa.',ab:'Fixa',f:'Quadros fixos',uso:'Prédios comerciais, lojas',go:'fac'},
+ {id:'atl',n:'Pele de Vidro Atlanta',l:'Linha FC Fachadas',d:'Quadros colados no vidro: do lado de fora só aparece o vidro.',ab:'Fixa',f:'Quadros colados',uso:'Edifícios de alto padrão',go:'fac'}];
+let TSEL='jc2';
+function mTip(){const t=TIPS.find(x=>x.id===TSEL);
+ return head(0,'Tipologias · os modelos')+`<div class="sec"><h2>🪟 Os modelos com desenho</h2><p class="nt">Toque no desenho para ver o modelo grande, como ele abre e onde é indicado.</p>
+ <div class="tips">${TIPS.map(x=>`<button type="button" class="tp" data-tsel="${x.id}" aria-pressed="${x.id===TSEL}"><div class="d">${desenho(x.id)}</div><b>${esc(x.n)}</b><span class="chip ${x.l.includes('Fachadas')?'a':'t'}">${esc(x.l.replace('Linha ',''))}</span></button>`).join('')}</div>
+ <div class="tdet"><div class="d">${desenho(t.id)}</div><div><span class="chip t">${esc(t.l)}</span><h2 style="margin-top:8px">${esc(t.n)}</h2><p style="margin-top:6px">${esc(t.d)}</p>
+  <dl><dt>Abertura</dt><dd>${t.ab}</dd><dt>Folhas</dt><dd>${t.f}</dd><dt>Indicada para</dt><dd>${esc(t.uso)}</dd></dl>
+  <div class="row"><button class="btn pri" data-go="${t.go}">Estudar no módulo ${esc(MOD.find(m=>m.id===t.go).n)} →</button>${t.id==='jc2'?'<a class="btn" href="../tecnico/">📐 Desenho técnico</a>':''}</div></div></div>
+ <p class="dica">💡 Linha FC Premium: em breve, com novas tipologias.</p></div>`+
+ quiz([['Na janela 2 folhas de correr com bandeira fixa, o que é a bandeira?',['Um vidro fixo em cima das folhas','Uma folha que abre para fora','Um trilho extra'],0,'A bandeira fica em cima das folhas; quando é fixa, aparece com "F" no desenho.'],
+  ['O que indica o tracejado em "V" no desenho da maxim-ar?',['O sentido em que a folha abre','O tamanho do vidro','A posição do trinco'],0,'O tracejado mostra a abertura: a maxim-ar projeta para fora, presa em cima.'],
+  ['Qual tipologia é indicada para banheiro e cozinha, ventilando mesmo com chuva leve?',['Maxim-ar','Porta de giro','Fachada Cortina'],0,'A maxim-ar projeta a folha para fora e protege da chuva leve.']])+foot(0);}
+
+/* =========================== 02 · Contramarco =========================== */
+const CMST=[['Monte o requadro','Corte o perfil de contramarco FC-201 nas medidas do vão e una os cantos com a cantoneira de conexão FC-901.','req'],
+ ['Coloque os esquadros','Prenda os esquadros FC-902 nos cantos para o requadro não sair do esquadro durante a obra.','esq'],
+ ['Fixe os chumbadores','As grapas FC-903 vão nas laterais, espaçadas conforme a orientação do fornecedor do chumbador.','chu'],
+ ['Posicione no vão','Ajuste no prumo e no nível e calce com os calços FC-904.','niv'],
+ ['Chumbe na alvenaria','Encha com argamassa em volta dos chumbadores. Depois de curado, tire os esquadros.','arg'],
+ ['Instale a esquadria','Com o contramarco pronto, a esquadria de alumínio entra depois, com a obra acabada.','esd']];
+const CMPC=[['FC-201','Perfil de contramarco','Requadro de alumínio natural chumbado no vão'],['FC-901','Cantoneira de conexão','Une os cantos do requadro'],['FC-902','Esquadro','Trava os cantos em 90° durante a obra'],['FC-903','Grapa (chumbador)','Prende o contramarco na alvenaria'],['FC-904','Calço','Ajusta prumo e nível antes de chumbar']];
+let CMK=0;
+function vidroR(x,y,w,h){return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="var(--vid)" fill-opacity=".7" stroke="#5f8796" stroke-width="1"/>`;}
+function setaS(x,y,d){return `<path d="M${x} ${y} h${d*30} m${-d*8} -6 l${d*8} 6 l${-d*8} 6" stroke="#10201f" stroke-width="3" fill="none"/>`;}
+function cmSvg(k){const on=s=>CMST.findIndex(x=>x[2]===s)<=k;let s=`<svg viewBox="0 0 360 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Passo ${k+1} da instalação do contramarco">`;
+ for(let y=0;y<260;y+=20)for(let x=(y/20)%2?-20:0;x<360;x+=40)s+=`<rect x="${x}" y="${y}" width="38" height="18" fill="var(--parede)" stroke="var(--parede2)" stroke-width="1"/>`;
+ s+=`<rect x="60" y="40" width="240" height="180" fill="#f4f1ec"/>`;
+ if(on('arg'))s+=`<rect x="52" y="32" width="256" height="196" fill="none" stroke="#9aa1a5" stroke-width="10" opacity=".8"/>`;
+ s+=`<rect x="64" y="44" width="232" height="172" fill="none" stroke="#9fb0b8" stroke-width="7"/>`;
+ if(on('req'))[[64,44],[296,44],[64,216],[296,216]].forEach(([x,y])=>s+=`<rect x="${x-6}" y="${y-6}" width="12" height="12" fill="#263238"/>`);
+ if(on('esq')&&k<4)[[70,50,1,1],[290,50,-1,1],[70,210,1,-1],[290,210,-1,-1]].forEach(([x,y,a,b])=>s+=`<polygon points="${x},${y} ${x+a*46},${y} ${x},${y+b*46}" fill="none" stroke="#37474f" stroke-width="3"/>`);
+ if(on('chu'))[74,164,186].forEach(y=>{s+=`<path d="M60 ${y} h-16 m0 -6 v12" stroke="#5d4037" stroke-width="4" fill="none"/><path d="M300 ${y} h16 m0 -6 v12" stroke="#5d4037" stroke-width="4" fill="none"/>`;});
+ if(on('niv')){s+=`<rect x="140" y="200" width="80" height="12" rx="3" fill="#f2a51e" stroke="#9a6b00"/><circle cx="180" cy="206" r="3.5" fill="#7cc576"/><line x1="282" y1="60" x2="282" y2="140" stroke="#263238" stroke-dasharray="3 3"/><polygon points="276,140 288,140 282,152" fill="#263238"/>`;
+  [[64,98],[296,98],[180,44],[180,216]].forEach(([x,y])=>s+=`<rect x="${x-4}" y="${y-4}" width="8" height="8" fill="#8d6e63"/>`);}
+ if(on('esd')){s+=`<rect x="70" y="50" width="220" height="160" fill="#cfd8dc" stroke="#37474f" stroke-width="2"/>`+vidroR(76,56,104,148)+vidroR(180,56,104,148)+setaS(112,130,1)+setaS(248,130,-1);}
+ return s+'</svg>';}
+function mCm(){return head(1,'Contramarco · instalação e componentes')+`<div class="sec"><h2>O que é o contramarco?</h2><p>É um requadro de <b>alumínio natural</b> chumbado no vão da alvenaria, onde depois é instalada a esquadria. Assim a esquadria entra com a obra pronta, sem sujar e sem riscar.</p><p class="dica">Usado em janelas e portas de correr, portas de giro e maxim-ar.</p></div>
+ <div class="sec"><h2>🧱 Passo a passo da instalação</h2><p class="nt">Toque no passo: as peças entram na parede na ordem real da obra.</p>
+ <div class="grid2"><div class="fig" id="cmFig">${cmSvg(CMK)}</div><div><div class="passos">${CMST.map((x,k)=>`<button type="button" class="ps ${k===CMK?'on':k<CMK?'feito':''}" data-cmk="${k}"><span>${k<CMK?'✓':k+1}</span>${esc(x[0])}</button>`).join('')}</div>
+ <p class="pstx"><b>Passo ${CMK+1} de ${CMST.length}:</b> ${esc(CMST[CMK][1])}</p>
+ <div class="row" style="margin-top:10px"><button class="btn" data-cmk="${Math.max(0,CMK-1)}">← Anterior</button><button class="btn pri" data-cmk="${Math.min(CMST.length-1,CMK+1)}">Próximo passo →</button></div></div></div></div>
+ <div class="sec"><h2>🧩 Componentes</h2><p class="nt">As peças do contramarco com o código FC.</p><div class="pcs">${CMPC.map(p=>`<div class="pc"><b>${p[0]}</b><span>${esc(p[1])}</span><small>${esc(p[2])}</small></div>`).join('')}</div>
+ <p class="aviso">Espaçamento das grapas, argamassa e tempo de cura: siga a orientação do fornecedor da empresa.</p></div>`+
+ quiz([['Quando a esquadria de alumínio é instalada?',['Depois que o contramarco está chumbado e a obra pronta','Antes de chumbar o contramarco','Junto com o reboco'],0,'O contramarco é chumbado primeiro; a esquadria entra depois, com a obra acabada.'],
+  ['Para que serve o esquadro do contramarco?',['Manter o requadro no esquadro durante a obra','Fixar o vidro','Vedar a água'],0,'Ele trava os cantos em 90° e sai depois da cura da argamassa.'],
+  ['De que material é o contramarco?',['Alumínio natural','PVC','Madeira'],0,'É um requadro de alumínio natural.']])+foot(1);}
+
+/* =========================== 03 · Guarnições =========================== */
+const ESP=[4,6,8,10];let GE=6;
+function guaSvg(e){const C=16,sc=10,cw=C*sc,vw=e*sc,gw=(cw-vw)/2,x0=110,y0=40;
+ let s=`<svg viewBox="0 0 380 300" role="img" aria-label="Corte do canal do perfil com vidro de ${e} mm">`;
+ s+=`<path d="M${x0-24} ${y0+240} V${y0+70} h24 V${y0+230} h${cw} V${y0+70} h24 V${y0+240} Z" fill="var(--alu)" stroke="var(--alu2)" stroke-width="2"/>`;
+ s+=`<rect x="${x0+gw}" y="${y0}" width="${vw}" height="226" fill="var(--vid)" stroke="#5f8796" stroke-width="1.5"/>`;
+ [x0,x0+gw+vw].forEach(x=>{s+=`<rect x="${x}" y="${y0+80}" width="${gw}" height="40" rx="5" fill="#1d2326"/>`;for(let i=0;i<3;i++)s+=`<line x1="${x+3}" y1="${y0+88+i*11}" x2="${x+gw-3}" y2="${y0+88+i*11}" stroke="#55606a" stroke-width="2"/>`;});
+ s+=`<text x="${x0+cw/2}" y="${y0-10}" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">Vidro ${e} mm</text>`;
+ s+=`<line x1="${x0+gw+vw+gw+40}" y1="${y0+100}" x2="${x0+gw+vw+gw/2}" y2="${y0+100}" stroke="currentColor" stroke-width="1.5"/><text x="${x0+gw+vw+gw+44}" y="${y0+104}" font-size="13" fill="currentColor">guarnição</text>`;
+ s+=`<text x="${x0+cw/2}" y="${y0+262}" text-anchor="middle" font-size="12" fill="currentColor">canal do perfil (ilustrativo)</text>`;
+ return s+'</svg>';}
+function mGua(){return head(2,'Guarnições · vidro bem preso')+`<div class="sec"><h2>🔎 Por que a guarnição muda?</h2><p class="nt">O canal do perfil tem uma largura só. O que muda de um vidro para outro é a guarnição que preenche a folga e trava o vidro.</p>
+ <div class="grid2"><div class="fig" id="guaFig">${guaSvg(GE)}</div><div><p><b>Escolha a espessura do vidro:</b></p><div class="row" style="margin-top:8px">${ESP.map(e=>`<button class="btn" data-ge="${e}" aria-pressed="${e===GE}">${e} mm</button>`).join('')}</div>
+ <p style="margin-top:14px">Com vidro <b>${GE} mm</b>, a guarnição fica ${GE<=4?'mais grossa, para ocupar a folga grande':GE>=10?'bem fina, porque o vidro ocupa quase todo o canal':'média'}.</p>
+ <p class="dica">💡 Vidro mais grosso pede guarnição mais fina. A guarnição certa para cada perfil e espessura vem da tabela do fornecedor da empresa.</p></div></div></div>
+ <div class="sec"><h2>🧵 Interna e externa</h2><p>Em muitos perfis o vidro leva <b>guarnição dos dois lados</b>: a externa vai primeiro, encaixada no perfil, e a interna entra depois de colocar o vidro, junto com o baguete. A guarnição veda a água e o vento e segura o vidro sem folga.</p></div>`+
+ quiz([['O que muda quando o vidro fica mais grosso?',['A guarnição precisa ser trocada','Nada muda','Só o perfil muda'],0,'Cada espessura de vidro pede a guarnição do tamanho certo para travar o vidro.'],
+  ['Vidro mais grosso pede guarnição…',['Mais fina','Mais grossa','Igual'],0,'O canal é o mesmo; sobrando menos folga, a guarnição fica mais fina.']])+foot(2);}
+
+/* =========================== 04 · Correr (3D com seções FC) =========================== */
+const CR=[['2','Janela 2 folhas','As duas folhas correm uma por trás da outra, em dois trilhos.'],['3','Janela 3 folhas','Três trilhos: as folhas se juntam de um lado e abrem até 2/3 do vão.'],['4','Janela 4 folhas','As duas folhas do meio correm para as laterais.'],['4s','4 folhas sequenciais','Todas correm para o mesmo lado, uma atrás da outra.'],['6','6 folhas fechamento central','Três folhas de cada lado, que se juntam nas laterais.']];
+let CRK='2',CRA=false,SELC=null;
+function correrSvg(k,aberto){const n=k==='4s'?4:+k,W=360,H=170,m=10,fw=(W-2*m)/n+(n>1?8:0),pos=[],mv=[];
+ for(let i=0;i<n;i++)pos.push(m+i*((W-2*m)/n)-(i?4:0));
+ const st=(W-2*m)/n;
+ for(let i=0;i<n;i++){let d=0;
+  if(k==='2')d=i===0?st-12:0;
+  if(k==='3')d=i===0?2*st-16:i===1?st-8:0;
+  if(k==='4')d=i===1?-(st-12):i===2?(st-12):0;
+  if(k==='4s')d=(3-i)*(st-8);
+  if(k==='6')d=i===1?-(st-10):i===2?-(2*st-20):i===3?(2*st-20):i===4?(st-10):0;
+  mv.push(d);}
+ let s=`<svg viewBox="0 0 ${W} ${H+30}" role="img" aria-label="${esc(CR.find(c=>c[0]===k)[1])}"><rect x="2" y="2" width="${W-4}" height="${H}" rx="3" fill="none" stroke="currentColor" stroke-width="4"/>`;
+ const ord=[...Array(n).keys()].sort((a,b)=>Math.abs(mv[a])-Math.abs(mv[b]));
+ ord.forEach(i=>{const x=pos[i],dy=i%2?4:0;s+=`<g class="anim" style="transform:translateX(${aberto?mv[i]:0}px)"><rect x="${x}" y="${m+dy}" width="${fw}" height="${H-2*m-2*dy}" fill="var(--alu)" stroke="var(--alu2)" stroke-width="2"/><rect x="${x+7}" y="${m+dy+7}" width="${fw-14}" height="${H-2*m-2*dy-14}" fill="var(--vid)" fill-opacity=".85"/></g>`;});
+ s+=`<text x="${W/2}" y="${H+22}" text-anchor="middle" font-size="13" fill="currentColor">${aberto?'aberta':'fechada'} · vista de dentro</text>`;
+ return s+'</svg>';}
+function mCor(){const T=CR.find(c=>c[0]===CRK);
+ return head(3,'Janelas de Correr · Linha FC Residencial')+`<div class="sec"><h2>🧊 Janela de correr 2 folhas em 3D</h2><p class="nt">Gire com o dedo ou o mouse, abra as folhas, desmonte e toque na peça para ver o código FC. Os perfis são as seções reais da linha, em escala.</p>
+ <div class="v3w" id="v3w"><div class="v3" id="v3"></div><div class="v3msg" id="v3msg">Carregando o 3D…</div>
+  <div class="v3bar"><button class="btn" id="b3Ab" aria-pressed="false">↔ Abrir folhas</button><button class="btn" id="b3Ds" aria-pressed="false">✥ Desmontar</button><button class="btn" id="b3Vt">↺ Voltar ao original</button>
+  <span class="med">L <input id="i3L" type="number" inputmode="numeric" value="1200" min="600" max="2400" step="10" aria-label="Largura em mm"> H <input id="i3H" type="number" inputmode="numeric" value="1000" min="500" max="1800" step="10" aria-label="Altura em mm"> mm</span>
+  <button class="btn" id="b3Fs">⛶ Tela cheia</button></div>
+  <div class="v3lb" id="v3lb" hidden></div><span class="v3dica" id="v3dica">Arraste para girar · role para aproximar</span></div>
+ <div class="row" style="margin-top:10px"><a class="btn" href="../tecnico/">📐 Ver o desenho técnico com os cortes</a></div></div>
+ <div class="sec"><h2>📋 Perfis da janela 2 folhas</h2><p class="nt">Toque no perfil para destacar a peça no 3D.</p><div class="pcs">${SEC?Object.keys(SEC).map(c=>`<button type="button" class="pc ${SELC===c?'on':''}" data-pf="${c}"><span class="pcmini">${miniSec(c)}</span><b>${c}</b><span>${esc(SEC[c].n)}</span><small>${SEC[c].kg!=null?kg(SEC[c].kg)+' kg/m · ':''}${String(SEC[c].w).replace('.',',')} × ${String(SEC[c].h).replace('.',',')} mm</small></button>`).join(''):'<p class="mute">Carregando os perfis…</p>'}</div>
+ <p class="aviso">Pesos e medidas orientativos: confirme com o fornecedor da empresa e no sistema de cálculo.</p></div>
+ <div class="sec"><h2>🔀 2, 3, 4 e 6 folhas</h2><p class="nt">Escolha o modelo e toque em abrir para ver como as folhas correm.</p>
+ <div class="row">${CR.map(c=>`<button class="btn" data-crk="${c[0]}" aria-pressed="${c[0]===CRK}">${esc(c[1])}</button>`).join('')}</div>
+ <div class="grid2" style="margin-top:12px"><div class="fig" id="crFig">${correrSvg(CRK,CRA)}</div><div><h3>${esc(T[1])}</h3><p style="margin-top:6px">${esc(T[2])}</p><div class="row" style="margin-top:12px"><button class="btn pri" data-cra="1">${CRA?'⟲ Fechar':'↔ Abrir'}</button></div>
+ <p class="dica">💡 Na 4 folhas entra o montante central, onde as folhas do meio se encontram. O 3D das outras montagens chega nas próximas etapas.</p></div></div></div>`+
+ quiz([['Na janela 2 folhas, como as folhas correm?',['Uma passa por trás da outra, em trilhos separados','As duas abrem para fora','Uma fica fixa sempre'],0,'Cada folha corre no seu trilho, uma por trás da outra.'],
+  ['Na janela 4 folhas, quais folhas correm?',['As duas do meio, para as laterais','Só a da esquerda','Todas para o mesmo lado'],0,'Na 4 folhas comum, as folhas centrais correm para as laterais.'],
+  ['Na 4 folhas sequenciais, como as folhas correm?',['Todas para o mesmo lado, uma atrás da outra','Duas para cada lado','Nenhuma corre'],0,'Sequenciais: as folhas se empilham para um lado.'],
+  ['Qual perfil fica no topo do marco da janela 2 folhas?',['FC-101 · trilho superior','FC-108 · baguete','FC-104 · montante da folha'],0,'O FC-101 é o trilho superior; o FC-102 é o inferior.']])+foot(3);}
+function miniSec(c){const s=SEC[c];if(!s)return '';const xs=[],ys=[];s.s.forEach(sh=>sh.o.forEach(([a,b])=>{xs.push(a);ys.push(b)}));const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+ const d=s.s.map(sh=>{const r=ring=>'M'+ring.map(([a,b])=>a.toFixed(1)+' '+(-b).toFixed(1)).join('L')+'Z';return r(sh.o)+(sh.h||[]).map(r).join('');}).join('');
+ return `<svg viewBox="${x0-2} ${-y1-2} ${x1-x0+4} ${y1-y0+4}"><path d="${d}" fill="currentColor" fill-opacity=".75" fill-rule="evenodd"/></svg>`;}
+
+/* ---------- 3D ---------- */
+let L3=null;
+function carrega3(){if(window.THREE&&THREE.OrbitControls)return Promise.resolve();if(L3)return L3;
+ const sc=u=>new Promise((ok,er)=>{const s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=er;document.head.appendChild(s);});
+ L3=(window.THREE?Promise.resolve():sc('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js')).then(()=>THREE.OrbitControls?null:sc('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js'));return L3;}
+function janela3d(host){
+ const box=host.getBoundingClientRect(),R=new THREE.WebGLRenderer({antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(box.width,box.height);host.appendChild(R.domElement);
+ const SC=new THREE.Scene();SC.background=new THREE.Color('#0f1a19');
+ const CAM=new THREE.PerspectiveCamera(38,box.width/box.height,10,20000);
+ const CT=new THREE.OrbitControls(CAM,R.domElement);CT.enableDamping=true;CT.dampingFactor=.09;
+ SC.add(new THREE.HemisphereLight('#ffffff','#304040',.75));const DL=new THREE.DirectionalLight('#ffffff',.85);DL.position.set(800,1400,1600);SC.add(DL);const DL2=new THREE.DirectionalLight('#9fd8d1',.35);DL2.position.set(-1200,-300,-900);SC.add(DL2);
+ const MAT=new THREE.MeshStandardMaterial({color:'#c3c9cd',metalness:.55,roughness:.38,side:THREE.DoubleSide});
+ const MSEL=new THREE.MeshStandardMaterial({color:'#e8b04a',metalness:.3,roughness:.4,side:THREE.DoubleSide,emissive:'#4a3000'});
+ const MVID=new THREE.MeshStandardMaterial({color:'#9fd0e0',metalness:.1,roughness:.05,transparent:true,opacity:.28,side:THREE.DoubleSide,depthWrite:false});
+ const GEO={};
+ function geoDe(c,len){const k=c+'|'+Math.round(len);if(GEO[k])return GEO[k];
+  const shapes=SEC[c].s.map(sh=>{const S2=new THREE.Shape(sh.o.map(([a,b])=>new THREE.Vector2(a,b)));(sh.h||[]).forEach(hh=>S2.holes.push(new THREE.Path(hh.map(([a,b])=>new THREE.Vector2(a,b)))));return S2;});
+  const g=new THREE.ExtrudeGeometry(shapes,{depth:len,bevelEnabled:false,curveSegments:1});return GEO[k]=g;}
+ const v=(x,y,z)=>new THREE.Vector3(x,y,z);
+ let ROOT=null,PECAS=[],FOLHAS=[],ab=0,abA=0,ds=0,dsA=0,sel=null,W=1200,H=1000;
+ function membro(par,c,len,ea,eb,ec,t,ex,nm){const m=new THREE.Mesh(geoDe(c,len),MAT);const M=new THREE.Matrix4().makeBasis(ea,eb,ec);M.setPosition(t);m.matrixAutoUpdate=false;
+  const g=new THREE.Group();g.add(m);m.matrix.copy(M);g.userData={c,nm:nm||SEC[c].n,ex:ex||v(0,0,0)};par.add(g);PECAS.push(g);return g;}
+ function montar(){if(ROOT){SC.remove(ROOT);ROOT.traverse(o=>{if(o.geometry&&!Object.values(GEO).includes(o.geometry))o.geometry.dispose();});}
+  Object.values(GEO).forEach(g=>g.dispose());for(const k in GEO)delete GEO[k];
+  ROOT=new THREE.Group();PECAS=[];FOLHAS=[];SC.add(ROOT);
+  const PW=c=>SEC[c].w,PH=c=>SEC[c].h,FT=PH('FC-101'),FB=PH('FC-102'),FS=PH('FC-103');
+  const EDGE=14.4,OV=30,Wi=W-2*EDGE,sW=(Wi+OV)/2,sH=H-50,SDs=25,RW=PH('FC-107');
+  const mz=c=>c==='FC-105'?SDs/2-PH(c)/2:c==='FC-106'?-SDs/2+PH(c)/2:0;
+  const MAR=new THREE.Group();ROOT.add(MAR);
+  membro(MAR,'FC-101',W,v(0,0,1),v(0,1,0),v(1,0,0),v(-W/2,H/2-FT/2,0),v(0,160,0));
+  membro(MAR,'FC-102',W,v(0,0,1),v(0,1,0),v(1,0,0),v(-W/2,-H/2+FB/2,0),v(0,-160,0));
+  const hl=H-FT-FB;
+  membro(MAR,'FC-103',hl,v(0,0,1),v(1,0,0),v(0,1,0),v(-W/2+FS/2,-H/2+FB,0),v(-200,0,0));
+  membro(MAR,'FC-103',hl,v(0,0,-1),v(-1,0,0),v(0,1,0),v(W/2-FS/2,-H/2+FB,0),v(200,0,0));
+  [{z:17.5,L:'FC-104',R:'FC-105',nm:'Folha interna',i:0},{z:-17.5,L:'FC-106',R:'FC-104',nm:'Folha externa',i:1}].forEach(sd=>{
+   const F=new THREE.Group();ROOT.add(F);F.userData={i:sd.i,base:0,ex:v(0,0,sd.z>0?380:-380),abre:sd.i===0?(sW-OV-24):0};FOLHAS.push(F);
+   const x0=-Wi/2+sW/2+sd.i*(sW-OV),L=sd.L,Rr=sd.R,xLc=-sW/2+PW(L)/2,xRc=sW/2-PW(Rr)/2,xL=-sW/2+PW(L),xR=sW/2-PW(Rr),tx=(xL+xR)/2;
+   const sxL=L==='FC-106'?-1:1,syL=sd.i===0?-1:1,zL=sd.i===0?-mz(L):mz(L),sxR=Rr==='FC-106'?1:-1;
+   membro(F,L,sH,v(sxL,0,0),v(0,0,syL),v(0,1,0),v(x0+xLc,-sH/2,sd.z+zL),v(-110,0,0));
+   membro(F,Rr,sH,v(sxR,0,0),v(0,0,1),v(0,1,0),v(x0+xRc,-sH/2,sd.z+mz(Rr)),v(110,0,0));
+   membro(F,'FC-107',xR-xL,v(0,0,1),v(0,-1,0),v(1,0,0),v(x0+xL,sH/2-RW/2,sd.z),v(0,110,0));
+   membro(F,'FC-107',xR-xL,v(0,0,1),v(0,1,0),v(1,0,0),v(x0+xL,-sH/2+RW/2,sd.z),v(0,-110,0));
+   const gw=(xR-xL)+16,gh=sH-2*RW+16,gl=new THREE.Mesh(new THREE.BoxGeometry(gw,gh,6),MVID);gl.position.set(x0+tx,0,sd.z-3.5);
+   const gg=new THREE.Group();gg.add(gl);gg.userData={c:'VID',nm:'Vidro 6 mm',ex:v(0,0,sd.z>0?120:-120)};F.add(gg);PECAS.push(gg);});
+  aplica();
+ }
+ function aplica(){PECAS.forEach(p=>{const e=p.userData.ex;p.position.set(e.x*dsA,e.y*dsA,e.z*dsA);});
+  FOLHAS.forEach(F=>{F.position.set(F.userData.abre*abA+F.userData.ex.x*dsA,0,F.userData.ex.z*dsA);});}
+ function enquadra(){const d=Math.max(W,H)*1.75;CAM.position.set(W*.55,H*.25,d);CT.target.set(0,0,0);CT.update();}
+ let raf=0,vivo=true;
+ function loop(){if(!vivo)return;raf=requestAnimationFrame(loop);const k=.12;let mud=false;
+  if(Math.abs(abA-ab)>.001){abA+=(ab-abA)*k;mud=true;}if(Math.abs(dsA-ds)>.001){dsA+=(ds-dsA)*k;mud=true;}if(mud)aplica();CT.update();R.render(SC,CAM);}
+ function tam(){const b=host.getBoundingClientRect();if(!b.width)return;R.setSize(b.width,b.height);CAM.aspect=b.width/b.height;CAM.updateProjectionMatrix();}
+ const RO=new ResizeObserver(tam);RO.observe(host);
+ const RC=new THREE.Raycaster(),PT=new THREE.Vector2();let p0=null;
+ R.domElement.addEventListener('pointerdown',e=>{p0=[e.clientX,e.clientY];});
+ R.domElement.addEventListener('pointerup',e=>{if(!p0||Math.hypot(e.clientX-p0[0],e.clientY-p0[1])>6)return;const b=R.domElement.getBoundingClientRect();PT.set((e.clientX-b.left)/b.width*2-1,-(e.clientY-b.top)/b.height*2+1);RC.setFromCamera(PT,CAM);
+  const hit=RC.intersectObjects(PECAS,true)[0];if(!hit){api.marca(null);return;}let g=hit.object;while(g&&!g.userData.c)g=g.parent;api.marca(g?g.userData.c:null);});
+ const api={
+  abrir(on){ab=on?1:0;},desmontar(on){if((ds===1)!==!!on)CAM.position.sub(CT.target).multiplyScalar(on?1.5:1/1.5).add(CT.target);ds=on?1:0;},
+  voltar(){ab=0;ds=0;api.marca(null);enquadra();},
+  medidas(l,h){W=l;H=h;montar();enquadra();},
+  marca(c){sel=c;PECAS.forEach(p=>p.children.forEach(m=>{if(m.material!==MVID)m.material=c&&p.userData.c===c?MSEL:MAT;}));if(onSel)onSel(c);},
+  fim(){vivo=false;cancelAnimationFrame(raf);RO.disconnect();CT.dispose();Object.values(GEO).forEach(g=>g.dispose());R.dispose();host.innerHTML='';}};
+ let onSel=null;api.onSel=f=>onSel=f;
+ montar();enquadra();loop();return api;}
+function liga3d(){const host=$('#v3');if(!host)return;
+ const ok=()=>{if(!$('#v3')||AT!=='cor')return;$('#v3msg').hidden=true;V3=janela3d(host);
+  V3.onSel(c=>{const lb=$('#v3lb');SELC=c;document.querySelectorAll('[data-pf]').forEach(b=>b.classList.toggle('on',b.dataset.pf===c));
+   if(!c){lb.hidden=true;return;}lb.hidden=false;lb.innerHTML=c==='VID'?'<b>Vidro</b> · 6 mm (ilustrativo)':`<b>${c}</b> · ${esc(SEC[c].n)}${SEC[c].kg!=null?' · '+kg(SEC[c].kg)+' kg/m':''}`;});
+  const bA=$('#b3Ab'),bD=$('#b3Ds');
+  bA.onclick=()=>{const on=bA.getAttribute('aria-pressed')!=='true';bA.setAttribute('aria-pressed',on);bA.textContent=on?'⟲ Fechar folhas':'↔ Abrir folhas';V3.abrir(on);};
+  bD.onclick=()=>{const on=bD.getAttribute('aria-pressed')!=='true';bD.setAttribute('aria-pressed',on);bD.textContent=on?'✣ Montar':'✥ Desmontar';V3.desmontar(on);};
+  $('#b3Vt').onclick=()=>{bA.setAttribute('aria-pressed','false');bA.textContent='↔ Abrir folhas';bD.setAttribute('aria-pressed','false');bD.textContent='✥ Desmontar';V3.voltar();};
+  $('#b3Fs').onclick=()=>{const w=$('#v3w'),on=w.classList.toggle('fs');$('#b3Fs').textContent=on?'↙ Sair da tela cheia':'⛶ Tela cheia';};
+  let tm=0;const med=()=>{clearTimeout(tm);tm=setTimeout(()=>{const l=Math.min(2400,Math.max(600,+$('#i3L').value||1200)),h=Math.min(1800,Math.max(500,+$('#i3H').value||1000));V3.medidas(l,h);},350);};
+  $('#i3L').oninput=med;$('#i3H').oninput=med;};
+ Promise.all([carrega3(),SEC?null:fetch('../tecnico/secoes-jcr2.json?v=1').then(r=>r.json()).then(j=>{SEC=j;})]).then(()=>{
+   if(AT!=='cor')return;const pcs=document.querySelector('.pcs');if(pcs&&!pcs.querySelector('[data-pf]')){const y=scrollY;go('cor',true);scrollTo(0,y);return;}ok();})
+  .catch(()=>{const m=$('#v3msg');if(m)m.textContent='Não foi possível carregar o 3D. Confira a internet.';});}
+
+/* =========================== 05 · Maxim-ar =========================== */
+let MXA=30;
+function maxSvg(a){const r=a*Math.PI/180,hx=210,hy=50,L=170,ex=hx+Math.sin(r)*L,ey=hy+Math.cos(r)*L;const bx=hx+Math.sin(r)*L*.55,by=hy+Math.cos(r)*L*.55;
+ let s=`<svg viewBox="0 0 360 260" role="img" aria-label="Maxim-ar aberta ${a} graus, vista de lado">`;
+ s+=`<rect x="150" y="10" width="44" height="40" fill="var(--parede)" stroke="var(--parede2)"/><rect x="150" y="226" width="44" height="30" fill="var(--parede)" stroke="var(--parede2)"/>`;
+ s+=`<rect x="194" y="40" width="16" height="190" fill="none" stroke="var(--alu2)" stroke-width="3"/>`;
+ s+=`<line x1="${hx}" y1="${hy}" x2="${ex}" y2="${ey}" stroke="var(--alu2)" stroke-width="12" stroke-linecap="round"/><line x1="${hx}" y1="${hy}" x2="${ex}" y2="${ey}" stroke="var(--vid)" stroke-width="5"/>`;
+ s+=`<line x1="${206}" y1="${hy+95}" x2="${bx}" y2="${by}" stroke="var(--amber)" stroke-width="4" stroke-linecap="round"/><circle cx="206" cy="${hy+95}" r="4" fill="var(--amber)"/>`;
+ s+=`<circle cx="${hx}" cy="${hy}" r="5" fill="currentColor"/><text x="40" y="120" font-size="13" fill="currentColor">lado interno</text><text x="268" y="245" font-size="13" fill="currentColor">lado externo</text>`;
+ s+=`<text x="${bx+10}" y="${by-6}" font-size="12" fill="var(--amberInk)" font-weight="700">braço</text>`;
+ return s+'</svg>';}
+function mMax(){return head(4,'Janela Maxim-Ar · braço certo')+`<div class="sec"><h2>🪟 Como a maxim-ar abre</h2><p class="nt">A folha fica presa em cima e projeta para fora, sustentada pelos braços. Arraste para abrir.</p>
+ <div class="grid2"><div><div class="fig" id="mxFig">${maxSvg(MXA)}</div><label class="slider">Abertura <input type="range" min="0" max="45" value="${MXA}" id="mxR"> <span id="mxT">${MXA}°</span></label></div>
+ <div><h3>O braço é escolhido pela altura da folha</h3><p style="margin-top:6px">Braço curto em folha alta não abre direito; braço longo em folha baixa não fecha. Por isso a escolha do braço sempre parte da <b>altura da folha</b>.</p>
+ <p class="dica">💡 A tabela de braço por altura de folha vem do fornecedor de componentes da empresa. Na dúvida, confira antes de fechar o orçamento.</p>
+ <div class="fig" style="margin-top:12px">${desenho('mx1')}</div></div></div></div>`+
+ quiz([['O que define o tamanho do braço da maxim-ar?',['A altura da folha','A largura do vão','A cor do perfil'],0,'O braço é escolhido pela altura da folha.'],
+  ['Onde a folha da maxim-ar fica presa?',['Em cima, e projeta para fora','Na lateral, como porta','Embaixo, e abre para dentro'],0,'Presa em cima, projeta para fora sustentada pelos braços.']])+foot(4);}
+
+/* =========================== 06 · Padrão =========================== */
+function macarraoSvg(){return `<svg viewBox="0 0 360 230" role="img" aria-label="Roldana côncava sobre o trilho macarrão">
+ <rect x="0" y="170" width="360" height="60" fill="var(--parede)" fill-opacity=".45"/><rect x="0" y="166" width="360" height="8" fill="#b8b0a2"/>
+ <rect x="150" y="150" width="60" height="20" rx="3" fill="var(--alu)" stroke="var(--alu2)" stroke-width="2"/><circle cx="180" cy="146" r="10" fill="var(--alu)" stroke="var(--alu2)" stroke-width="2"/>
+ <circle cx="180" cy="114" r="30" fill="#2a3236"/><path d="M152 132 Q180 150 208 132" stroke="#6d7a80" stroke-width="5" fill="none"/><circle cx="180" cy="114" r="7" fill="#9aa6ab"/>
+ <rect x="120" y="20" width="120" height="68" fill="var(--alu)" stroke="var(--alu2)" stroke-width="2"/><rect x="132" y="20" width="96" height="40" fill="var(--vid)" fill-opacity=".8"/>
+ <text x="248" y="118" font-size="13" fill="currentColor">roldana côncava</text><text x="218" y="160" font-size="13" fill="currentColor">trilho no piso</text></svg>`;}
+const PADC=[['Roldana','Rodinha embaixo da folha de correr; carrega o peso da folha'],['Fecho / trinco','Trava a folha fechada'],['Escova de vedação','Fica no montante e na travessa, barra vento e poeira'],['Batedor','Onde a folha encosta ao fechar'],['Guia superior','Mantém a folha no trilho de cima'],['Parafusos e buchas','Fixação no contramarco ou na alvenaria']];
+function mPad(){return head(5,'Perfis e Componentes Padrão')+`<div class="sec"><h2>Perfis padrão</h2><p>São os perfis que se repetem em várias tipologias: <b>trilhos</b>, <b>marco lateral</b>, <b>montantes</b>, <b>travessas</b> e <b>baguete</b>. Conhecendo estes, o vendedor já conhece a maior parte da esquadria de correr.</p>
+ <div class="row" style="margin-top:10px"><button class="btn pri" data-go="cor">Ver os perfis FC-101 a FC-108 no 3D →</button></div></div>
+ <div class="sec"><h2>🔩 Componentes padrão</h2><div class="pcs">${PADC.map(p=>`<div class="pc"><span>${esc(p[0])}</span><small>${esc(p[1])}</small></div>`).join('')}</div>
+ <p class="aviso">Capacidade da roldana, modelo do fecho e da escova: confirme com o fornecedor de componentes da empresa.</p></div>
+ <div class="sec"><h2>🛤 Trilho macarrão</h2><div class="grid2"><div class="fig">${macarraoSvg()}</div><div><p>Na porta de correr com trilho macarrão, a <b>roldana côncava</b> da folha corre em cima de um trilho fino que fica no piso. O trilho macarrão aparece em duas versões:</p>
+ <p style="margin-top:8px">1️⃣ <b>Convencional:</b> é preciso cortar o piso ou o granito, fazendo um filete.<br>2️⃣ <b>Colado com PU:</b> vai colado direto sobre o piso.</p>
+ <p class="dica">💡 Bom argumento de venda: o piso fica quase contínuo entre a sala e a varanda.</p></div></div></div>`+
+ quiz([['Quais são as duas versões do trilho macarrão?',['Convencional (com filete no piso) e colado com PU','De alumínio e de plástico','Superior e inferior'],0,'Convencional exige cortar o piso; a outra é colada com PU.'],
+  ['Que roldana corre sobre o trilho macarrão?',['Roldana côncava','Roldana plana','Nenhuma'],0,'A roldana côncava encaixa no trilho redondo do piso.']])+foot(5);}
+
+/* =========================== 07 · Porta de giro =========================== */
+let GA=35;
+function giroSvg(a){const r=a*Math.PI/180,hx=60,hy=170,L=200,ex=hx+Math.cos(r)*L,ey=hy-Math.sin(r)*L;
+ let s=`<svg viewBox="0 0 320 210" role="img" aria-label="Porta de giro aberta ${a} graus, vista de cima">`;
+ s+=`<rect x="0" y="170" width="44" height="26" fill="var(--parede)" stroke="var(--parede2)"/><rect x="276" y="170" width="44" height="26" fill="var(--parede)" stroke="var(--parede2)"/>`;
+ s+=`<path d="M${hx} ${hy} L${hx+L} ${hy} A${L} ${L} 0 0 0 ${hx} ${hy-L}" fill="none" stroke="currentColor" stroke-opacity=".3" stroke-dasharray="5 5"/>`;
+ s+=`<line x1="${hx}" y1="${hy}" x2="${ex}" y2="${ey}" stroke="var(--alu2)" stroke-width="12" stroke-linecap="round"/><circle cx="${hx}" cy="${hy}" r="6" fill="currentColor"/>`;
+ s+=`<text x="${hx+8}" y="${hy+30}" font-size="12" fill="currentColor">dobradiça</text>`;
+ return s+'</svg>';}
+function cantoSvg(t){return t===90?`<svg viewBox="0 0 160 160" role="img" aria-label="Canto a 90 graus"><rect x="20" y="20" width="120" height="30" fill="var(--alu)" stroke="var(--alu2)" stroke-width="2"/><rect x="20" y="50" width="30" height="90" fill="var(--alu)" stroke="var(--alu2)" stroke-width="2"/><circle cx="35" cy="35" r="4" fill="currentColor"/><text x="80" y="100" font-size="13" fill="currentColor">corte reto</text></svg>`
+ :`<svg viewBox="0 0 160 160" role="img" aria-label="Canto a 45 graus"><path d="M20 20 H140 V50 H50 Z" fill="var(--alu)" stroke="var(--alu2)" stroke-width="2"/><path d="M20 20 L50 50 V140 H20 Z" fill="var(--alu)" stroke="var(--alu2)" stroke-width="2"/><path d="M28 34 h18 v-6 M34 28 v18" stroke="var(--amber)" stroke-width="4" fill="none"/><text x="66" y="100" font-size="13" fill="currentColor">meia-esquadria</text></svg>`;}
+function mGiro(){return head(6,'Porta de Giro')+`<div class="sec"><h2>🚪 Como a porta de giro abre</h2><p class="nt">A porta de giro abre girando nas dobradiças. Arraste para abrir.</p>
+ <div class="grid2"><div><div class="fig" id="grFig">${giroSvg(GA)}</div><label class="slider">Abertura <input type="range" min="0" max="90" value="${GA}" id="grR"> <span id="grT">${GA}°</span></label></div>
+ <div><h3>Montagem a 90° e a 45°</h3><div class="grid2" style="margin-top:10px"><div class="fig">${cantoSvg(90)}<b>90°</b><small class="mute">Corte reto, unido com parafuso</small></div><div class="fig">${cantoSvg(45)}<b>45°</b><small class="mute">Meia-esquadria, unida com cantoneira e cunha</small></div></div>
+ <p class="dica">💡 A folha pode ser toda de vidro, com lambril, com veneziana, ou vidro em cima e lambril ou veneziana embaixo.</p></div></div></div>`+
+ quiz([['Na porta de giro 45°, como os cantos são unidos?',['Meia-esquadria com cantoneira e cunha','Corte reto com parafuso','Só com a dobradiça'],0,'No 45° (meia-esquadria) entra cantoneira e cunha; no 90°, corte reto e parafuso.'],
+  ['Onde a porta de giro gira?',['Nas dobradiças','No trilho','Nos braços'],0,'A porta de giro abre girando nas dobradiças.']])+foot(6);}
+
+/* =========================== 08 · Diversos =========================== */
+function divSvg(t){return t==='lam'?`<svg viewBox="0 0 220 150" role="img" aria-label="Lambril, corte"><rect x="10" y="20" width="200" height="110" fill="var(--alu)" fill-opacity=".35" stroke="var(--alu2)" stroke-width="2"/>${[0,1,2,3,4].map(i=>`<rect x="${14+i*39}" y="24" width="36" height="102" fill="var(--alu)" stroke="var(--alu2)" stroke-width="1.5"/>`).join('')}<text x="110" y="146" text-anchor="middle" font-size="12" fill="currentColor">fechado: privacidade</text></svg>`
+ :`<svg viewBox="0 0 220 150" role="img" aria-label="Veneziana, corte"><rect x="10" y="10" width="200" height="120" fill="none" stroke="var(--alu2)" stroke-width="3"/>${[0,1,2,3,4,5].map(i=>`<path d="M14 ${22+i*18} L206 ${12+i*18}" stroke="var(--alu2)" stroke-width="7"/>`).join('')}<path d="M40 70 h50" stroke="var(--teal)" stroke-width="2.5" stroke-dasharray="4 4"/><path d="M90 70 l-8 -5 v10z" fill="var(--teal)"/><text x="110" y="146" text-anchor="middle" font-size="12" fill="currentColor">aletas: o ar passa</text></svg>`;}
+function mDiv(){return head(7,'Perfis Diversos · lambris e venezianas')+`<div class="sec"><h2>Lambris e venezianas</h2><p class="nt">Perfis que fecham a folha no lugar do vidro.</p>
+ <div class="grid2"><div class="fig">${divSvg('lam')}<b>Lambril</b><small class="mute">Fechamento liso, sem ventilação</small></div><div class="fig">${divSvg('ven')}<b>Veneziana</b><small class="mute">Aletas inclinadas que deixam o ar passar e seguram a chuva</small></div></div>
+ <p class="dica">💡 Veneziana é muito usada em área de serviço e casa de máquinas; lambril, onde se quer privacidade total.</p></div>`+
+ quiz([['Qual a diferença entre lambril e veneziana?',['Veneziana ventila; lambril é fechado','Lambril ventila; veneziana é fechada','São a mesma coisa'],0,'A veneziana tem aletas que deixam o ar passar.']])+foot(7);}
+
+/* =========================== 09 · Fachadas =========================== */
+function mFac(){return head(8,'Fachadas · Linha FC Fachadas')+`<div class="sec"><div class="grid2">
+ <div><div class="fig">${desenho('cor')}</div><h3 style="margin-top:10px">Fachada Cortina</h3><p style="margin-top:4px">Colunas e travessas aparentes, com o vidro preso por presilha e tampa externa. Do lado de fora, a grade de perfis aparece.</p><a class="btn pri" style="margin-top:10px" href="../obra/?t=cortina" target="_blank" rel="noopener">🧊 Abrir em 3D</a></div>
+ <div><div class="fig">${desenho('atl')}</div><h3 style="margin-top:10px">Pele de Vidro Atlanta</h3><p style="margin-top:4px">Quadros colados no vidro e presos nas colunas por presilha. Do lado de fora só aparece o vidro.</p><a class="btn pri" style="margin-top:10px" href="../obra/?t=atlanta" target="_blank" rel="noopener">🧊 Abrir em 3D</a></div></div>
+ <p class="dica">💡 No 3D das fachadas você digita as medidas da obra e monta a fachada na hora, para mostrar ao cliente. Os cálculos são uma simulação.</p></div>`+
+ quiz([['Na Pele de Vidro Atlanta, o que aparece do lado de fora?',['Só o vidro','A grade de colunas e travessas','A tampa externa'],0,'Na Atlanta os quadros são colados no vidro; o perfil não aparece por fora.'],
+  ['Na Fachada Cortina, como o vidro é preso?',['Por presilha e tampa externa','Só com silicone','Com braço'],0,'Na Cortina, presilha e tampa externa seguram o vidro.']])+foot(8);}
+
+/* =========================== Prova final =========================== */
+function mQuiz(){const Q=[
+ ['Quando a esquadria é instalada no contramarco?',['Depois que o contramarco está chumbado e a obra pronta','Antes de chumbar','Junto com o reboco'],0,'O contramarco vem primeiro; a esquadria entra com a obra acabada.'],
+ ['Para que serve o esquadro do contramarco?',['Manter o requadro em 90° durante a obra','Prender o vidro','Vedar a água'],0,'Sai depois que a argamassa cura.'],
+ ['Vidro mais grosso pede guarnição…',['Mais fina','Mais grossa','Igual'],0,'O canal é o mesmo; sobra menos folga.'],
+ ['Qual perfil é o trilho superior da janela de correr 2 folhas FC?',['FC-101','FC-102','FC-107'],0,'FC-101 superior; FC-102 inferior.'],
+ ['Na janela 4 folhas, quais folhas correm?',['As duas do meio, para as laterais','Só uma','Todas para o mesmo lado'],0,'As centrais correm para as laterais.'],
+ ['O que define o braço da maxim-ar?',['A altura da folha','A largura do vão','A cor'],0,'Braço é escolhido pela altura da folha.'],
+ ['Que roldana corre no trilho macarrão?',['Côncava','Plana','Nenhuma'],0,'A roldana côncava encaixa no trilho do piso.'],
+ ['Porta de giro a 45°: como os cantos são unidos?',['Meia-esquadria com cantoneira e cunha','Corte reto com parafuso','Só dobradiça'],0,'No 90° é corte reto e parafuso.'],
+ ['Qual perfil deixa o ar passar?',['Veneziana','Lambril','Baguete'],0,'A veneziana tem aletas.'],
+ ['Na Pele de Vidro Atlanta, o perfil aparece por fora?',['Não, só o vidro aparece','Sim, a grade inteira','Só as travessas'],0,'Quadros colados no vidro.']];
+ const r=LSg('pfc-ori-prova',null);
+ return `<div class="mh"><div class="ey">Encerramento</div><h1>✓ Prova final</h1><p>10 perguntas sobre todo o passo a passo.${r?` Último resultado: <b>${r.a}/10</b> em ${esc(r.d)}.`:''}</p></div>`+quiz(Q,'Prova final')+`<div class="foot"><button class="btn" data-go="fac">← Fachadas</button><button class="btn pri" id="qzRes">Ver meu resultado</button></div><div class="sec" id="qzOut" hidden></div>`;}
+
+/* ---------- navegação ---------- */
+function home(){const G=LSg('pfc-ori-prova',null);return `<div class="hero"><div class="ey">Plataforma FC 3D · Orientativo</div><h1>Orientativo 3D<br>Passo a passo</h1><p>Para a equipe aprender cada tipologia antes de apresentar: modelos, contramarco, guarnições, correr em 3D com os perfis FC, maxim-ar, componentes padrão, porta de giro, perfis diversos e fachadas. Cada módulo termina com um teste rápido.</p>
+ <div class="row" style="margin-top:16px"><button class="btn am" data-go="${(MOD.find(m=>!FEITO.has(m.id))||MOD[0]).id}">${FEITO.size?'▶ Continuar':'▶ Começar'}</button><button class="btn" data-go="quiz" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.5)">✓ Prova final${G?' · '+G.a+'/10':''}</button></div></div>
+ <div class="mg">${MOD.map((m,k)=>`<button class="mc ${FEITO.has(m.id)?'ok':''}" data-go="${m.id}"><span class="n">${FEITO.has(m.id)?'✓':String(k+1).padStart(2,'0')}</span><div><b>${esc(m.n)}</b><small>${esc(m.d)}</small></div></button>`).join('')}</div>
+ <p class="aviso">Conteúdo orientativo da FC Consultoria em Esquadria. Medidas, pesos e componentes devem ser confirmados com o fornecedor da empresa. Cálculos sempre como simulação.</p>`;}
+const RT={tip:mTip,cm:mCm,gua:mGua,cor:mCor,max:mMax,pad:mPad,giro:mGiro,div:mDiv,fac:mFac,quiz:mQuiz};
+function go(id,keep){if(V3){V3.fim();V3=null;}AT=id&&RT[id]?id:null;$('#main').innerHTML=AT?RT[AT]():home();navUI();
+ if(AT==='cor')liga3d();
+ if(!keep)scrollTo({top:0,behavior:'smooth'});try{history.replaceState(null,'',location.pathname+location.search+(AT?'#'+AT:''));}catch(_){}}
+function re(){const y=scrollY;go(AT,true);scrollTo(0,y);}
+
+function iniciar(){
+ document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]');if(g){e.preventDefault();go(g.dataset.go);return;}
+  const f=e.target.closest('[data-feito]');if(f){const id=f.dataset.feito;FEITO.has(id)?FEITO.delete(id):FEITO.add(id);LSs('pfc-ori-feito',[...FEITO]);
+   if(FEITO.has(id)){const k=MOD.findIndex(m=>m.id===id);go(MOD[k+1]?MOD[k+1].id:'quiz');}else re();return;}
+  const o=e.target.closest('.op [data-o]');if(o){const q=o.closest('.q'),r=+q.dataset.r;q.querySelectorAll('[data-o]').forEach(b=>{b.disabled=true;b.classList.remove('certo','errado');if(+b.dataset.o===r)b.classList.add('certo');});if(+o.dataset.o!==r)o.classList.add('errado');q.querySelector('.ex').hidden=false;q.dataset.ok=+o.dataset.o===r?'1':'0';return;}
+  const ts=e.target.closest('[data-tsel]');if(ts){TSEL=ts.dataset.tsel;re();return;}
+  const ck=e.target.closest('[data-cmk]');if(ck){CMK=+ck.dataset.cmk;re();return;}
+  const ge=e.target.closest('[data-ge]');if(ge){GE=+ge.dataset.ge;re();return;}
+  const cr=e.target.closest('[data-crk]');if(cr){CRK=cr.dataset.crk;CRA=false;const y=scrollY;const fig=$('#crFig');if(fig){/* troca só a parte das folhas, sem recarregar o 3D */
+    document.querySelectorAll('[data-crk]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.crk===CRK));const T=CR.find(c=>c[0]===CRK);fig.innerHTML=correrSvg(CRK,false);const tx=fig.nextElementSibling;tx.querySelector('h3').textContent=T[1];tx.querySelector('p').textContent=T[2];tx.querySelector('[data-cra]').textContent='↔ Abrir';}scrollTo(0,y);return;}
+  const ca=e.target.closest('[data-cra]');if(ca){CRA=!CRA;const fig=$('#crFig');fig.querySelectorAll('g.anim').forEach(()=>{});const ns=correrSvg(CRK,CRA);/* anima: aplica os transforms nas folhas existentes */
+    const tmp=document.createElement('div');tmp.innerHTML=ns;const novos=tmp.querySelectorAll('g.anim');fig.querySelectorAll('g.anim').forEach((gg,i)=>{if(novos[i])gg.style.transform=novos[i].style.transform;});const t=fig.querySelector('text');if(t)t.textContent=(CRA?'aberta':'fechada')+' · vista de dentro';ca.textContent=CRA?'⟲ Fechar':'↔ Abrir';return;}
+  const pf=e.target.closest('[data-pf]');if(pf&&V3){const c=pf.dataset.pf;V3.marca(SELC===c?null:c);return;}
+  if(e.target.id==='qzRes'){const qs=[...document.querySelectorAll('.q')],a=qs.filter(q=>q.dataset.ok==='1').length,fe=qs.filter(q=>q.dataset.ok!=null).length;const out=$('#qzOut');out.hidden=false;
+   if(fe<qs.length){out.innerHTML=`<p>Responda todas as perguntas: faltam <b>${qs.length-fe}</b>.</p>`;return;}
+   const d=new Date().toLocaleDateString('pt-BR');LSs('pfc-ori-prova',{a,d});out.innerHTML=`<div class="res">${a}/10</div><p>${a>=8?'Ótimo! A equipe está pronta para apresentar.':a>=6?'Bom resultado. Revise os módulos das perguntas que errou.':'Vale refazer os módulos e tentar de novo.'}</p>`;navUI();}
+ });
+ document.addEventListener('input',e=>{
+  if(e.target.id==='mxR'){MXA=+e.target.value;$('#mxFig').innerHTML=maxSvg(MXA);$('#mxT').textContent=MXA+'°';}
+  if(e.target.id==='grR'){GA=+e.target.value;$('#grFig').innerHTML=giroSvg(GA);$('#grT').textContent=GA+'°';}
+ });
+ addEventListener('keydown',e=>{if(e.key==='Escape'){const w=$('#v3w.fs');if(w){w.classList.remove('fs');$('#b3Fs').textContent='⛶ Tela cheia';}}});
+ $('#bHome').onclick=()=>go(null);
+ const h=location.hash.slice(1);go(RT[h]?h:null,true);
+ addEventListener('hashchange',()=>{const k=location.hash.slice(1);if((RT[k]?k:null)!==AT)go(RT[k]?k:null);});
+ fetch('../tecnico/secoes-jcr2.json?v=1').then(r=>r.json()).then(j=>{SEC=SEC||j;}).catch(()=>{});
+}
+})();
+</script>
+</body>
+</html>
