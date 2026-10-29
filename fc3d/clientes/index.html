@@ -174,7 +174,7 @@ a.card.tip{text-decoration:none;color:inherit}
       <p class="sub">A ferramenta da sua equipe para mostrar tipologias, ambientes e projetos ao cliente final, ao arquiteto e ao engenheiro.</p>
       <ul>
         <li><b>▦</b>Tipologias de mercado em 3D</li>
-        <li><b>⌂</b>Ambientes para montar a obra</li>
+        <li id="liAmb"><b>⌂</b>Ambientes para montar a obra</li>
         <li><b>▶</b>Modo apresentação para TV e telão</li>
         <li><b>✓</b>Orientativo 3D para a equipe</li>
       </ul>
@@ -261,7 +261,7 @@ const SETORES={gestor:'Gestor',compras:'Compras',vendas:'Vendas (Comercial)',est
 const MENU=[
   {k:'inicio',n:'Início',i:'⌂',p:['gestor','vendedor','arquiteto','demo']},
   {k:'tip',n:'Tipologias',i:'▦',p:['gestor','vendedor','arquiteto','demo']},
-  {k:'amb',n:'Ambientes',i:'◫',p:['gestor','vendedor','demo']},
+  {k:'amb',n:'Ambientes',i:'◫',p:['gestor','vendedor']},
   {k:'apr',n:'Apresentação',i:'▶',p:['gestor','vendedor','arquiteto','demo']},
   {k:'ges',n:'Gestão',i:'⚙',p:['gestor']}];
 /* Etapas de construção da plataforma (a etapa 1 está pronta) */
@@ -359,7 +359,7 @@ $('#entForm').addEventListener('submit',async e=>{
 /* ---------- demonstrativo (link único: ?demo=1 ou /demo/) ---------- */
 const ZAPDEMO='https://wa.me/5566999867984?text='+encodeURIComponent('Olá, FC! Testei o demonstrativo da Plataforma FC 3D e quero conhecer os planos.');
 let modoDemo=/[?&]demo=1/.test(location.search);
-function formDemo(on){modoDemo=on;$('#entForm').hidden=on;$('#demoForm').hidden=!on;}
+function formDemo(on){modoDemo=on;$('#liAmb').hidden=on;$('#entForm').hidden=on;$('#demoForm').hidden=!on;}
 $('#demoTroca').onclick=()=>formDemo(false);
 function demoFim(t){const f=$('#demoFim');f.hidden=false;f.innerHTML=h(t)+`<br><a class="btn pri" style="margin-top:10px;display:inline-block" href="${ZAPDEMO}" target="_blank" rel="noopener">Falar com a FC no WhatsApp</a>`;}
 $('#demoForm').addEventListener('submit',async e=>{
@@ -418,7 +418,7 @@ const vaiPara=k=>{tab=k;render();scrollTo(0,0);};
 
 function telaInicio(){
   const p=papel(),nome=S.matriz?'FC':(S.nome||'').split(' ')[0];
-  const txt={gestor:'Acompanhe a equipe e use a plataforma para apresentar as esquadrias aos seus clientes.',vendedor:'Escolha a tipologia, monte o ambiente e apresente ao seu cliente em 3D.',arquiteto:'Veja os projetos, as plantas e as esquadrias preparadas para a sua obra.',demo:'Conheça a plataforma: abra as tipologias em 3D, veja o desenho técnico e monte uma casa com as esquadrias.'}[p];
+  const txt={gestor:'Acompanhe a equipe e use a plataforma para apresentar as esquadrias aos seus clientes.',vendedor:'Escolha a tipologia, monte o ambiente e apresente ao seu cliente em 3D.',arquiteto:'Veja os projetos, as plantas e as esquadrias preparadas para a sua obra.',demo:'Conheça a plataforma: abra as tipologias em 3D e veja o desenho técnico de cada montagem.'}[p];
   const mods=itens().filter(m=>m.k!=='inicio');
   const desc={tip:'Janelas, portas e fachadas em 3D, com desenho técnico e o Orientativo da equipe.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ges:'Acessos da equipe, licença e contrato da empresa.'};
   return `<div class="hero"><div><h2>Olá, ${h(nome)}!</h2><p>${txt}</p></div><div class="bts"><button class="btn cl" data-ir="tip">Ver tipologias</button>${p!=='arquiteto'?'<button class="btn sec" style="border-color:rgba(255,255,255,.4);color:#fff" data-ir="apr">Modo apresentação</button>':''}</div></div>

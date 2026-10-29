@@ -120,7 +120,7 @@ function nega(t,p){document.getElementById('gateT').textContent=t;document.getEl
 let tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
 if(!tk){nega('Entre na Plataforma FC 3D','O Monte sua Casa abre pela plataforma, depois de entrar com o seu login.');return;}
 fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
- .then(r=>r.ok?r.json():null).then(d=>{if(!(d&&d.papel)){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}gate.remove();window.dispatchEvent(new Event('resize'));})
+ .then(r=>r.ok?r.json():null).then(d=>{if(!(d&&d.papel)){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}if(d.demo){nega('Módulo adicional','O Monte sua Casa é um módulo adicional da Plataforma FC 3D. Fale com a FC Consultoria pelo WhatsApp (66) 9 9986-7984.');return;}gate.remove();window.dispatchEvent(new Event('resize'));})
  .catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));
 })();
 </script>
