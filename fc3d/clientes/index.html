@@ -209,7 +209,7 @@ a.card.tip{text-decoration:none;color:inherit}
       <label class="f" for="dZap">WhatsApp com DDD</label><input class="in" id="dZap" name="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="(66) 9 9999-9999" maxlength="20">
       <div id="demoMsg" role="alert" style="min-height:22px;font-size:13.5px;color:#b3401a;margin:-4px 0 10px"></div>
       <button class="btn pri" style="width:100%" id="demoBt">Começar o demonstrativo</button>
-      <p class="mute" style="font-size:12.5px;margin-top:10px">Já entrou antes? Use o mesmo WhatsApp para continuar em outro aparelho. Os dados servem só para a FC Consultoria falar com você.</p>
+      <p class="mute" style="font-size:12.5px;margin-top:10px">Já entrou antes? Use o mesmo WhatsApp para continuar. O demonstrativo funciona em um aparelho por vez. Os dados servem só para a FC Consultoria falar com você.</p>
       <div class="demo-fim" id="demoFim" hidden></div>
       <div class="ent-alt"><span class="mute">Já é cliente?</span><button type="button" id="demoTroca">Entrar com login</button></div>
     </form>
@@ -381,7 +381,7 @@ const barraDemo=()=>S&&S.demo?`<div class="demo-bar"><span><b>Demonstrativo</b> 
 const escH=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function abrir(token){
   try{S=await rpc('pfc_sessao',{p_token:token});S.token=token;}
-  catch(err){ls.del(TK);ls.del('pfc-papel');S=null;const m=err.message||'';if(/demonstrativo/i.test(m)){formDemo(true);mostrarEntrada('');demoFim(m);return;}mostrarEntrada(/pausad/i.test(m)?m:'');return;}
+  catch(err){const eraDemo=ls.get('pfc-papel')==='demo';ls.del(TK);ls.del('pfc-papel');S=null;const m=err.message||'';if(/demonstrativo/i.test(m)){formDemo(true);mostrarEntrada('');demoFim(m);return;}if(eraDemo){formDemo(true);mostrarEntrada('');$('#demoMsg').textContent='O demonstrativo foi aberto em outro aparelho. Para usar aqui, entre de novo com o mesmo WhatsApp.';return;}mostrarEntrada(/pausad/i.test(m)?m:'');return;}
   if(S.demo)ls.set('pfc-papel','demo');else ls.del('pfc-papel');
   $('#entrada').hidden=true;$('#app').hidden=false;
   const dentro=S.matriz&&S.empresa;
