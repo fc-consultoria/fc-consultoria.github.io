@@ -38,6 +38,9 @@ s=s.replace(old,r"""if(ALUNO||ESTUDO)iniciar();else (function(){/* Plataforma FC
   .then(d=>{if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}if(!d.matriz){const g=$('#bGrav');if(g)g.hidden=true;}iniciar();})
   .catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));})();""")
 s=s.replace('<small>FC Consultoria · Matriz</small>','<small>Plataforma FC 3D</small>')
+# modo foco (?foco=1): abre só o módulo escolhido nas Tipologias, sem a sequência lateral
+s=s.replace('</style>','body.foco .nav,body.foco .foot [data-go],body.foco #bHome{display:none!important}body.foco .lay{grid-template-columns:1fr!important;max-width:1180px}\n</style>',1)
+s=s.replace('<body>','<body>\n<script>if(new URLSearchParams(location.search).get("foco")==="1")document.body.classList.add("foco");</script>',1)
 s=s.replace('<title>Esquadrias 3D · Passo a passo · FC Consultoria</title>','<title>Orientativo 3D · Plataforma FC 3D</title>')
 s=marcas(s)
 open(os.path.join(dst,'index.html'),'w',encoding='utf-8').write(s)

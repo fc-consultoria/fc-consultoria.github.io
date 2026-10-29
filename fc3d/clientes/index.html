@@ -359,9 +359,9 @@ function telaInicio(){
 }
 function faixaOri(){if(papel()==='arquiteto')return '';let F=[];try{F=JSON.parse(localStorage.getItem('fc_esq_feito'))||[]}catch(_){}
   const M=[['cat','Catálogo de Perfis'],['tip','Tipologias'],['cm','Contramarco'],['gua','Guarnições'],['max','Maxim-Ar'],['cor','Janelas de Correr'],['pad','Perfis e Componentes Padrão'],['giro','Porta de Giro'],['div','Perfis Diversos'],['per','Porta com Persiana']],n=M.filter(m=>F.includes(m[0])).length,prox=(M.find(m=>!F.includes(m[0]))||M[0])[0];
-  return `<div class="ori"><div class="ori-tx"><b>📘 Orientativo de Montagem 3D</b><span class="mute">O passo a passo completo para a equipe · ${n} de ${M.length} módulos estudados</span><i class="ori-bar"><s style="width:${n/M.length*100}%"></s></i></div>
-   <div class="ori-bt"><a class="btn pri" href="orientativo/#${prox}">${n?'▶ Continuar':'▶ Começar'}</a><a class="btn sec" href="mostruario/">🧊 Mostruário 3D</a><a class="btn sec" href="orientativo/#quiz">✓ Prova final</a></div>
-   <div class="ori-m">${M.map((m,i)=>`<a href="orientativo/#${m[0]}" class="${F.includes(m[0])?'ok':''}"><span>${F.includes(m[0])?'✓':String(i+1).padStart(2,'0')}</span>${m[1]}</a>`).join('')}</div></div>`;}
+  return `<div class="ori"><div class="ori-tx"><b>📘 Orientativo de Montagem 3D</b><span class="mute">${n} de ${M.length} módulos estudados · Começar abre o passo a passo completo; cada assunto abaixo abre só aquele módulo</span><i class="ori-bar"><s style="width:${n/M.length*100}%"></s></i></div>
+   <div class="ori-bt"><a class="btn pri" href="orientativo/#${prox}">${n?'▶ Continuar':'▶ Começar'}</a><a class="btn sec" href="orientativo/#quiz">✓ Prova final</a></div>
+   <div class="ori-m">${M.map((m,i)=>`<a href="orientativo/?foco=1#${m[0]}" title="Abrir só este módulo" class="${F.includes(m[0])?'ok':''}"><span>${F.includes(m[0])?'✓':String(i+1).padStart(2,'0')}</span>${m[1]}</a>`).join('')}</div></div>`;}
 function telaTip(){
   const L=TIPS.filter(t=>t.l==='res'&&(filtro==='todas'||t.g===filtro)),F=TIPS.filter(t=>t.l==='fac'&&(filtro==='todas'||filtro==='fac'));
   const card=t=>{const go=t.tec?`<a class="card tip" href="${t.tec}">`:t.obra?`<a class="card tip" href="${OBRA(t.obra)}" target="_blank" rel="noopener">`:`<button class="card tip" data-tip="${t.id}">`,fim=t.tec||t.obra?'</a>':'</button>';
@@ -395,7 +395,7 @@ function detalhe(id){
    ${t.tec?`<a class="btn pri" href="${t.tec}">📐 Desenho técnico interativo</a>`:''}
    ${t.obra?`<a class="btn pri" href="${OBRA(t.obra)}" target="_blank" rel="noopener">Abrir em 3D com as medidas da obra</a>`:''}
    ${!t.m3d&&!t.obra&&!t.mo?'<button class="btn sec" disabled title="Chega nas próximas etapas">Ver em 3D · em breve</button>':''}
-   ${papel()!=='arquiteto'&&t.est?`<a class="btn sec" href="orientativo/#${t.est}">📘 Estudar no Orientativo</a>`:''}
+   ${papel()!=='arquiteto'&&t.est?`<a class="btn sec" href="orientativo/?foco=1#${t.est}">📘 Estudar no Orientativo</a>`:''}
    <p class="aviso">Desenho esquemático, sem escala. Medidas, pesos e acabamentos devem ser confirmados com o fornecedor da empresa.</p>
    <button class="btn sec" id="detFecha">Fechar</button></div></div>`;
   d.hidden=false;$('#detFecha').focus();
