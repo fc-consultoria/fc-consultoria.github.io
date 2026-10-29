@@ -372,8 +372,7 @@ function telaTip(){
    ${filtro!=='fac'?`<div class="linha-tit"><h3>Desenho Técnico</h3></div>
    <div class="grid">${L.map(card).join('')}</div>`:''}
    ${F.length?`<div class="linha-tit"><h3>Fachadas</h3></div><div class="grid">${F.map(card).join('')}</div>`:''}
-   <div class="linha-tit"><h3>${LINHAS.pre.n}</h3><span class="chip a">${LINHAS.pre.s}</span></div>
-   <div class="vazio"><div class="ic">▦</div><h3>Novas tipologias chegam durante o ano</h3><p class="mute">Quem tem a licença ativa recebe as novas linhas automaticamente.</p></div>`;
+`;
 }
 const emBreve=(ic,tit,txt,itens)=>`<div class="vazio"><div class="ic">${ic}</div><h3>${tit}</h3><p class="mute" style="max-width:56ch;margin:0 auto">${txt}</p>${itens?`<div class="grid" style="margin-top:18px;text-align:left">${itens.map(([i,n,d])=>`<div class="card"><span class="ic">${i}</span><h3>${n}</h3><span class="d">${d}</span><span class="pe"><span class="chip a">Em construção</span></span></div>`).join('')}</div>`:''}</div>`;
 function telaAmb(){return `<div class="cab"><div><h2>Ambientes</h2><p class="mute">Monte a obra do seu cliente com as esquadrias escolhidas.</p></div></div>`+emBreve('◫','Ambientes em construção','O vendedor escolhe a tipologia, explica os detalhes e coloca na planta, trocando a cor dos perfis.',[['⌂','Residência','Casa térrea com garagem e quintal, sem esquadrias instaladas.'],['▤','Apartamento e varanda','Fechamento de varanda e janelas de apartamento.'],['▣','Comercial','Fachadas e vitrines de lojas e escritórios.'],['✎','Obra do cliente','A planta da obra do cliente, liberada a pedido.']]);}
