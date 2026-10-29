@@ -573,6 +573,25 @@ function modoAssistir(){
   setTimeout(mostra,60);
 }
 function liberar(d){if(d&&d.modo==='assistir')modoAssistir();document.querySelectorAll('iframe[data-src]').forEach(f=>{f.src=f.dataset.src;});$('lock').hidden=true;if(window.fcMostraAceite)window.fcMostraAceite();}
+/* Entrada pela Plataforma FC 3D (?p=fc3d): usa a sessão da plataforma, sem link de obra */
+const QP=new URLSearchParams(location.search);
+if(QP.get('p')==='fc3d'){
+  const SP='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/fc3d_cli_sessao',SPK='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs',tk=get('fc3d-cli-token');
+  if(!tk){msg('Entre na Plataforma FC 3D','Abra a Apresentação de Obra pela Plataforma FC 3D, depois de entrar com o seu login.',true);return;}
+  fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
+  .then(r=>r.ok?r.json():null).then(d=>{
+    if(!(d&&d.papel)){msg('Sessão encerrada','Entre de novo na Plataforma FC 3D e abra a Apresentação de Obra por lá.',true);return;}
+    document.querySelectorAll('iframe[data-src]').forEach(f=>{f.dataset.src+='?aberta=1';});
+    /* dentro da Plataforma FC 3D: textos da plataforma no lugar dos avisos do link pessoal */
+    const sm=document.querySelector('h1 small');if(sm)sm.textContent='Plataforma FC 3D · uma obra, duas tipologias, a mesma simulação';
+    const ft=document.querySelector('p.foot');if(ft)ft.textContent='© FC Consultoria em Esquadria · Plataforma FC 3D · apresentação comercial e simulação, valores demonstrativos · uso exclusivo da empresa licenciada';
+    const av=[...document.querySelectorAll('b')].find(x=>/Link pessoal e intransferível/.test(x.textContent));
+    if(av){const sp=av.parentElement;sp.innerHTML='<b>Uso exclusivo da empresa licenciada.</b> <span class="long">Apresentação e simulação criadas pela FC Consultoria em Esquadria. Medidas, pesos e cálculo final devem ser confirmados no sistema de cálculo e com o fornecedor da empresa.</span>';}
+    liberar({});
+    const t=QP.get('t');if(t){const b=document.querySelector('.tipo[data-t="'+t+'"]');if(b)b.click();}
+  }).catch(()=>msg('Sem conexão','Não foi possível verificar o acesso. Confira a internet e abra de novo.',true));
+  return;
+}
 if(!code){msg('Link incompleto','Abra a apresentação pelo link exato que a FC enviou para você.',true);return;}
 fetch(URL_,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({p_code:code,p_dev:dev})})
 .then(r=>r.json()).then(d=>{

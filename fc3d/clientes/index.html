@@ -229,8 +229,11 @@ const TIPS=[
   {id:'jcb',n:'Janela de correr 2 folhas com bandeira',g:'jan',l:'res',d:'Correr 2 folhas com uma bandeira fixa na parte de cima, para vãos mais altos.',uso:'Pé-direito alto, fachadas',f:'2 folhas + bandeira',ab:'Correr'},
   {id:'pc2',n:'Porta de correr 2 folhas',g:'por',l:'res',d:'Porta de duas folhas de correr para integrar ambientes e áreas externas.',uso:'Varandas, salas, área gourmet',f:'2 folhas móveis',ab:'Correr'},
   {id:'pg1',n:'Porta de giro 1 folha',g:'por',l:'res',d:'Porta de abrir com dobradiças, para entradas e passagens.',uso:'Entradas, áreas de serviço',f:'1 folha',ab:'Giro'},
-  {id:'mx1',n:'Maxim-ar 1 folha',g:'jan',l:'res',d:'Folha que se projeta para fora a partir do topo, ventilando mesmo com chuva leve.',uso:'Banheiros, cozinhas, lavanderias',f:'1 folha',ab:'Projetante'}];
-const LINHAS={res:{n:'Linha FC Residencial',s:'Disponível'},pre:{n:'Linha FC Premium',s:'Em breve'}};
+  {id:'mx1',n:'Maxim-ar 1 folha',g:'jan',l:'res',d:'Folha que se projeta para fora a partir do topo, ventilando mesmo com chuva leve.',uso:'Banheiros, cozinhas, lavanderias',f:'1 folha',ab:'Projetante'},
+  {id:'cor',n:'Fachada Cortina',g:'fac',l:'fac',d:'Fachada com colunas e travessas aparentes de 40 × 80, vidro preso por presilha e tampa externa. Montada a partir das medidas da obra.',uso:'Prédios comerciais, fachadas de loja',f:'Quadros fixos',ab:'Fixa',obra:'cortina'},
+  {id:'atl',n:'Pele de Vidro Atlanta',g:'fac',l:'fac',d:'Fachada com quadros colados no vidro, sem perfil aparente do lado de fora, presos nas colunas por presilha.',uso:'Edifícios, fachadas de alto padrão',f:'Quadros colados',ab:'Fixa',obra:'atlanta'}];
+const LINHAS={res:{n:'Linha FC Residencial',s:'Disponível'},fac:{n:'Linha FC Fachadas',s:'3D disponível'},pre:{n:'Linha FC Premium',s:'Em breve'}};
+const OBRA=(t)=>'../../obra/?p=fc3d'+(t?'&t='+t:'');
 
 /* Desenho de elevação simples de cada tipologia (esquema didático, sem escala) */
 function desenho(id){
@@ -243,6 +246,8 @@ function desenho(id){
   if(id==='pc2'){w=180;ht=240;b=`<rect x="4" y="4" width="172" height="232" ${S}/><rect x="12" y="12" width="84" height="224" ${S} ${V}/><rect x="84" y="16" width="84" height="220" ${S} ${V}/>${seta(34,124,70)}${seta(146,124,110)}`;}
   if(id==='pg1'){w=120;ht=240;b=`<rect x="4" y="4" width="112" height="232" ${S}/><rect x="14" y="14" width="92" height="222" ${S} ${V}/><path d="M106 14 L14 125 L106 236" stroke="currentColor" stroke-width="2" stroke-dasharray="6 5" fill="none"/><circle cx="92" cy="128" r="4" fill="currentColor"/>`;}
   if(id==='mx1'){w=170;ht=130;b=`<rect x="4" y="4" width="162" height="122" ${S}/><rect x="14" y="14" width="142" height="102" ${S} ${V}/><path d="M14 116 L85 14 L156 116" stroke="currentColor" stroke-width="2" stroke-dasharray="6 5" fill="none"/>`;}
+  if(id==='cor'){w=220;ht=200;b=`<rect x="4" y="4" width="212" height="192" ${S}/>`;for(let i=1;i<4;i++)b+=`<line x1="${4+i*53}" y1="4" x2="${4+i*53}" y2="196" stroke="currentColor" stroke-width="5"/>`;for(let j=1;j<3;j++)b+=`<line x1="4" y1="${4+j*64}" x2="216" y2="${4+j*64}" stroke="currentColor" stroke-width="5"/>`;b+=`<rect x="8" y="8" width="204" height="184" ${V}/>`;}
+  if(id==='atl'){w=220;ht=200;b=`<rect x="4" y="4" width="212" height="192" ${V} stroke="currentColor" stroke-width="2"/>`;for(let i=0;i<4;i++)for(let j=0;j<3;j++)b+=`<rect x="${8+i*52.5}" y="${8+j*63}" width="48" height="58" rx="1" fill="currentColor" fill-opacity=".08" stroke="currentColor" stroke-width="1.2" stroke-opacity=".6"/>`;b+=`<path d="M30 30 L70 18 M120 40 L170 24" stroke="currentColor" stroke-opacity=".35" stroke-width="2"/>`;}
   return `<svg viewBox="0 0 ${w} ${ht}" role="img" aria-label="Desenho esquemático">${b}</svg>`;
 }
 
@@ -301,24 +306,27 @@ function telaInicio(){
   const p=papel(),nome=S.matriz?'FC':(S.nome||'').split(' ')[0];
   const txt={gestor:'Acompanhe a equipe e use a plataforma para apresentar as esquadrias aos seus clientes.',vendedor:'Escolha a tipologia, monte o ambiente e apresente ao seu cliente em 3D.',arquiteto:'Consulte as tipologias e veja as propostas preparadas para a sua obra.'}[p];
   const mods=itens().filter(m=>m.k!=='inicio');
-  const desc={tip:'As esquadrias de mercado para escolher e mostrar ao cliente.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ges:'Acessos da equipe, licença e contrato da empresa.'};
+  const desc={tip:'Janelas, portas e fachadas de mercado para escolher e mostrar ao cliente.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ges:'Acessos da equipe, licença e contrato da empresa.'};
   return `<div class="hero"><div><h2>Olá, ${h(nome)}!</h2><p>${txt}</p></div><div class="bts"><button class="btn cl" data-ir="tip">Ver tipologias</button>${p!=='arquiteto'?'<button class="btn sec" style="border-color:rgba(255,255,255,.4);color:#fff" data-ir="apr">Modo apresentação</button>':''}</div></div>
-  <div class="grid">${mods.map(m=>`<button class="card" data-ir="${m.k}"><span class="ic" aria-hidden="true">${m.i}</span><h3>${m.n}</h3><span class="d">${desc[m.k]}</span><span class="pe">${m.k==='tip'?'<span class="chip o">Disponível</span>':'<span class="chip a">Em construção</span>'}</span></button>`).join('')}</div>
+  <div class="grid">${mods.map(m=>`<button class="card" data-ir="${m.k}"><span class="ic" aria-hidden="true">${m.i}</span><h3>${m.n}</h3><span class="d">${desc[m.k]}</span><span class="pe">${m.k==='tip'||m.k==='apr'?'<span class="chip o">Disponível</span>':'<span class="chip a">Em construção</span>'}</span></button>`).join('')}</div>
   ${S.matriz?`<div class="linha-tit"><h3>Etapas da plataforma</h3><span class="chip t">só a FC vê</span></div><div class="etapas">${ETAPAS.map(([n,t,d])=>`<div class="etp ${n==='1'?'on':''}"><span class="chip ${n==='1'?'o':''}">${n==='1'?'Pronta':'Etapa '+n}</span><b>${t}</b><span class="mute">${d}</span></div>`).join('')}</div>`:''}`;
 }
 function telaTip(){
-  const L=TIPS.filter(t=>filtro==='todas'||t.g===filtro);
-  const card=t=>`<button class="card tip" data-tip="${t.id}"><div class="des">${desenho(t.id)}</div><h3>${h(t.n)}</h3><span class="d">${h(t.uso)}</span><span class="pe"><span class="chip t">${LINHAS[t.l].n}</span><span class="chip">${t.ab}</span></span></button>`;
-  return `<div class="cab"><div><h2>Tipologias</h2><p class="mute">Esquadrias de mercado para escolher e apresentar ao cliente.</p></div>
-   <div class="filtros" role="group" aria-label="Filtrar">${[['todas','Todas'],['jan','Janelas'],['por','Portas']].map(([k,n])=>`<button type="button" data-f="${k}" aria-pressed="${filtro===k}">${n}</button>`).join('')}</div></div>
-   <div class="linha-tit"><h3>${LINHAS.res.n}</h3><span class="chip o">${LINHAS.res.s}</span></div>
-   <div class="grid">${L.map(card).join('')||'<p class="mute">Nenhuma tipologia neste filtro.</p>'}</div>
+  const L=TIPS.filter(t=>t.l==='res'&&(filtro==='todas'||t.g===filtro)),F=TIPS.filter(t=>t.l==='fac'&&(filtro==='todas'||filtro==='fac'));
+  const card=t=>`<button class="card tip" data-tip="${t.id}"><div class="des">${desenho(t.id)}</div><h3>${h(t.n)}</h3><span class="d">${h(t.uso)}</span><span class="pe"><span class="chip t">${LINHAS[t.l].n}</span><span class="chip">${t.ab}</span>${t.obra?'<span class="chip o">3D</span>':''}</span></button>`;
+  return `<div class="cab"><div><h2>Tipologias</h2><p class="mute">Janelas, portas e fachadas de mercado para escolher e apresentar ao cliente.</p></div>
+   <div class="filtros" role="group" aria-label="Filtrar">${[['todas','Todas'],['jan','Janelas'],['por','Portas'],['fac','Fachadas']].map(([k,n])=>`<button type="button" data-f="${k}" aria-pressed="${filtro===k}">${n}</button>`).join('')}</div></div>
+   ${filtro!=='fac'?`<div class="linha-tit"><h3>${LINHAS.res.n}</h3><span class="chip o">${LINHAS.res.s}</span></div>
+   <div class="grid">${L.map(card).join('')}</div>`:''}
+   ${F.length?`<div class="linha-tit"><h3>${LINHAS.fac.n}</h3><span class="chip o">${LINHAS.fac.s}</span></div><div class="grid">${F.map(card).join('')}</div>`:''}
    <div class="linha-tit"><h3>${LINHAS.pre.n}</h3><span class="chip a">${LINHAS.pre.s}</span></div>
    <div class="vazio"><div class="ic">▦</div><h3>Novas tipologias chegam durante o ano</h3><p class="mute">Quem tem a licença ativa recebe as novas linhas automaticamente.</p></div>`;
 }
 const emBreve=(ic,tit,txt,itens)=>`<div class="vazio"><div class="ic">${ic}</div><h3>${tit}</h3><p class="mute" style="max-width:56ch;margin:0 auto">${txt}</p>${itens?`<div class="grid" style="margin-top:18px;text-align:left">${itens.map(([i,n,d])=>`<div class="card"><span class="ic">${i}</span><h3>${n}</h3><span class="d">${d}</span><span class="pe"><span class="chip a">Em construção</span></span></div>`).join('')}</div>`:''}</div>`;
 function telaAmb(){return `<div class="cab"><div><h2>Ambientes</h2><p class="mute">Monte a obra do seu cliente com as esquadrias escolhidas.</p></div></div>`+emBreve('◫','Ambientes em construção','O vendedor escolhe a tipologia, explica os detalhes e coloca na planta, trocando a cor dos perfis.',[['⌂','Residência','Casa térrea com garagem e quintal, sem esquadrias instaladas.'],['▤','Apartamento e varanda','Fechamento de varanda e janelas de apartamento.'],['▣','Comercial','Fachadas e vitrines de lojas e escritórios.'],['✎','Obra do cliente','A planta da obra do cliente, liberada a pedido.']]);}
-function telaApr(){return `<div class="cab"><div><h2>Modo apresentação</h2><p class="mute">Tela cheia, sem menus, para mostrar na TV ou no telão.</p></div></div>`+emBreve('▶','Modo apresentação em construção','Abre a tipologia ou o ambiente em tela cheia, gira o 3D com o dedo ou o mouse e mostra os detalhes na hora da reunião com o cliente ou o arquiteto.');}
+function telaApr(){return `<div class="cab"><div><h2>Modo apresentação</h2><p class="mute">Tela cheia, sem menus, para mostrar na TV ou no telão.</p></div></div>
+  <div class="hero" style="margin-bottom:18px"><div><span class="chip" style="background:rgba(255,255,255,.15);color:#fff">Disponível</span><h2 style="margin-top:8px">Apresentação de Obra · Fachadas</h2><p>Coloque as medidas da obra e mostre ao arquiteto, ao engenheiro ou ao dono da obra a Fachada Cortina e a Pele de Vidro Atlanta em 3D, lado a lado, com o peso de alumínio e as peças de cada uma.</p></div><div class="bts"><a class="btn cl" href="${OBRA('')}" target="_blank" rel="noopener">Abrir a apresentação</a></div></div>
+  <p class="aviso" style="margin-bottom:18px">É uma apresentação e simulação. Medidas, pesos e cálculo final devem ser confirmados no sistema de cálculo e com o fornecedor da empresa.</p>`+emBreve('▶','Apresentação das janelas e portas em construção','Abre a tipologia ou o ambiente em tela cheia, gira o 3D com o dedo ou o mouse e mostra os detalhes na hora da reunião com o cliente ou o arquiteto.');}
 function telaEq(){return `<div class="cab"><div><h2>Equipe · Orientativo 3D</h2><p class="mute">Complemento da plataforma para a equipe conhecer cada tipologia antes de apresentar.</p></div></div>`+emBreve('✓','Orientativo 3D em construção','Cada tipologia montada e desmontada em 3D, com perfis, componentes e encaixes, para o vendedor novo aprender e vender na mesma ferramenta.');}
 function telaGes(){return `<div class="cab"><div><h2>Gestão</h2><p class="mute">Área do gestor da empresa.</p></div></div>`+emBreve('⚙','Gestão em construção','Aqui ficarão os acessos da equipe, o uso de cada pessoa e os dados da licença da empresa.',[['👥','Acessos da equipe','Vendedores e arquitetos com login próprio.'],['📊','Uso da plataforma','Quem acessou e o que apresentou.'],['📄','Licença','Prazo da licença e contrato.']]);}
 
@@ -332,7 +340,7 @@ function detalhe(id){
   d.innerHTML=`<div class="cx" role="dialog" aria-modal="true" aria-label="${h(t.n)}"><div class="des">${desenho(t.id)}</div><div class="tx">
    <span class="chip t" style="align-self:flex-start">${LINHAS[t.l].n}</span><h2 style="font-size:21px">${h(t.n)}</h2><p>${h(t.d)}</p>
    <dl><dt>Abertura</dt><dd>${t.ab}</dd><dt>Folhas</dt><dd>${t.f}</dd><dt>Indicada para</dt><dd>${h(t.uso)}</dd></dl>
-   <button class="btn pri" disabled title="Chega na próxima etapa">Ver em 3D · em breve</button>
+   ${t.obra?`<a class="btn pri" href="${OBRA(t.obra)}" target="_blank" rel="noopener">Abrir em 3D com as medidas da obra</a>`:'<button class="btn pri" disabled title="Chega na próxima etapa">Ver em 3D · em breve</button>'}
    <p class="aviso">Desenho esquemático, sem escala. Medidas, pesos e acabamentos devem ser confirmados com o fornecedor da empresa.</p>
    <button class="btn sec" id="detFecha">Fechar</button></div></div>`;
   d.hidden=false;$('#detFecha').focus();
