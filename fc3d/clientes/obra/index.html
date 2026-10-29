@@ -578,7 +578,7 @@ if(true){ /* cópia própria da Plataforma FC 3D Clientes: só entra com a sess�
   if(!tk){msg('Entre na Plataforma FC 3D','Abra a Apresentação de Obra pela Plataforma FC 3D, depois de entrar com o seu login.',true);return;}
   fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
   .then(r=>r.ok?r.json():null).then(d=>{
-    if(!(d&&d.papel)){msg('Sessão encerrada','Entre de novo na Plataforma FC 3D e abra a Apresentação de Obra por lá.',true);return;}
+    if(d&&d.demo){msg('Disponível nos planos','A Apresentação de Obra com os Perfis da obra faz parte dos planos da Plataforma FC 3D. No demonstrativo você conhece Tipologias, Ambientes e Apresentação.',true);return;}if(!(d&&d.papel)){msg('Sessão encerrada','Entre de novo na Plataforma FC 3D e abra a Apresentação de Obra por lá.',true);return;}
     document.querySelectorAll('iframe[data-src]').forEach(f=>{f.dataset.src+='?v=1';});
     /* dentro da Plataforma FC 3D: textos da plataforma no lugar dos avisos do link pessoal */
     const sm=document.querySelector('h1 small');if(sm)sm.textContent='Plataforma FC 3D · uma obra, duas tipologias, a mesma simulação';
