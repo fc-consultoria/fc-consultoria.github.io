@@ -46,7 +46,7 @@ s=re.sub(r"\bAlcoa\b","fabricante",s)
 s=s.replace('</style>','.guiabtn{display:none!important}\n</style>',1)
 s=s.replace('<title>FC Mostruário 3D</title>','<title>Mostruário 3D · Plataforma FC 3D</title>')
 # 5b) mover peças (todos) e ajuste técnico (Matriz)
-s+='\n<script src="ajustes.js?v=2"></script>\n'
+s+='\n<script src="ajustes.js?v=3"></script>\n'
 # 6) botão de voltar para a plataforma (some quando o Mostruário está dentro do Orientativo)
 s+='\n<script>if(window.top===window){const a=document.createElement("a");a.href="../#tip";a.textContent="← Plataforma FC 3D";a.style.cssText="position:fixed;right:14px;bottom:14px;z-index:9000;background:#0a4f4b;color:#fff;font:600 14px system-ui;padding:9px 14px;border-radius:11px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25)";document.body.appendChild(a);}</script>\n'
 os.makedirs(os.path.dirname(out),exist_ok=True)
