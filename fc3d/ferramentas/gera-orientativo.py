@@ -42,6 +42,13 @@ s=s.replace('<small>FC Consultoria · Matriz</small>','<small>Plataforma FC 3D</
 s=s.replace('</style>','body.foco .nav,body.foco .foot [data-go],body.foco #bHome{display:none!important}body.foco .lay{grid-template-columns:1fr!important;max-width:1180px}\n</style>',1)
 s=s.replace('<body>','<body>\n<script>if(new URLSearchParams(location.search).get("foco")==="1")document.body.classList.add("foco");</script>',1)
 s=s.replace('<title>Esquadrias 3D · Passo a passo · FC Consultoria</title>','<title>Orientativo 3D · Plataforma FC 3D</title>')
+# Tipologias: só os modelos que têm 3D
+s=s.replace("let TIPF='',TIPS=null;","let TIPF='',TIPS=null;\nMODELOS.forEach(f=>{f[1]=f[1].filter(m=>t3De(m));});for(let i=MODELOS.length-1;i>=0;i--)if(!MODELOS[i][1].length)MODELOS.splice(i,1);")
+s=s.replace("const sel=TIPS||MODELOS[1][1][0];","const sel=TIPS||(MODELOS.find(m=>/correr/i.test(m[0]))||MODELOS[0])[1][0];")
+s=s.replace("<p class=\"nt\">Os ${MODELOS.reduce((a,m)=>a+m[1].length,0)} modelos do passo a passo. Toque no desenho para ver o modelo grande e o que ele tem.</p>","<p class=\"nt\">Os ${MODELOS.reduce((a,m)=>a+m[1].length,0)} modelos com 3D. Toque no desenho para ver o modelo grande e girar em 3D.</p>")
+s=s.replace("[['','Todos'],['3d','🧊 Só com 3D ('+N3+')'],...MODELOS.map(m=>[m[0],m[0]])]","[['','Todos'],...MODELOS.map(m=>[m[0],m[0]])]")
+a=s.find('<p class="nt" style="margin:4px 0 8px"><b class="d3b" style="position:static;display:inline-block">🧊 3D</b>');b=s.find('</p>',a)+4
+if a>0:s=s[:a]+s[b:]
 s=marcas(s)
 open(os.path.join(dst,'index.html'),'w',encoding='utf-8').write(s)
 for w in ['Alcoa','Claiton','Ladore','Belmetal','Perfileve']:
