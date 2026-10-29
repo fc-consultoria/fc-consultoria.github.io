@@ -2,8 +2,8 @@
    Liga com ?loja=1 ou cat_clientes.vitrine.loja = true. Dados: RPCs loja_* (Supabase). */
 (function(){
   const esc=v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  const CORN={branco:'Branco',preto:'Preto fosco',bronze:'Bronze',natural:'Natural',champanhe:'Champanhe',amadeirado:'Amadeirado',fosco:'Fosco',brilhante:'Brilhante',cromado:'Cromado',inox:'Inox',zincado:'Zincado'};
-  const CORH={branco:'#f4f5f6',preto:'#2f3236',bronze:'#5a4632',natural:'#b9bec3',champanhe:'#cbb28a',amadeirado:'#8a5a36',fosco:'#aeb4b9',brilhante:'#e6e9ec',cromado:'#d5dade',inox:'#c3c8cc',zincado:'#9ea7ad'};
+  const CORN={branco:'Branco',preto:'Preto fosco',bronze:'Bronze',natural:'Natural',champanhe:'Champanhe',amadeirado:'Amadeirado',fosco:'Fosco',brilhante:'Brilhante',cromado:'Cromado',inox:'Inox',zincado:'Zincado',cerejeira:'Cerejeira real'};
+  const CORH={branco:'#f4f5f6',preto:'#2f3236',bronze:'#5a4632',natural:'#b9bec3',champanhe:'#cbb28a',amadeirado:'#8a5a36',fosco:'#aeb4b9',brilhante:'#e6e9ec',cromado:'#d5dade',inox:'#c3c8cc',zincado:'#9ea7ad',cerejeira:'#7a3424'};
   let O=null,K='',CART=[],TOK='',EU=null,CHAT=null,POLL=null,BG=null;
   const ls={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(_){return d;}},set(k,v){try{if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,JSON.stringify(v));}catch(_){}}};
   async function rpc(fn,args){const r=await fetch(O.sbu+'rpc/'+fn,{method:'POST',headers:{apikey:O.sbk,'Content-Type':'application/json'},body:JSON.stringify(args||{})});
