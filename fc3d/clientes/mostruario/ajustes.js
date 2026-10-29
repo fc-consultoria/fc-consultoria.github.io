@@ -12,29 +12,38 @@ window.PFC_AJ={carregar(){return rpc('pfc_ajustes_3d_ler',{p_token:tok()}).then(
 const V3=(x,y,z)=>new THREE.Vector3(x||0,y||0,z||0),R=Math.PI/180;
 const qDe=v=>new THREE.Quaternion().setFromEuler(new THREE.Euler(v.x*R,v.y*R,v.z*R,'XYZ'));
 
+/* peças selecionáveis: perfis e acessórios do EX + acessórios sem grupo (guardam a posição de origem aqui) */
+let XA=[];const todas=()=>EX.concat(XA);
 /* identificação estável de cada peça: tipologia | grupo | código | ordem */
-function chaves(){const n={};EX.forEach(x=>{const c=(x.o.userData&&(x.o.userData.code||x.o.userData.zone))||'peca',b=x.k+'|'+c;n[b]=(n[b]||0)+1;x.pid=b+'|'+n[b];});}
+function chaves(){const n={};const emEX=new Set(EX.map(x=>x.o));XA=(typeof compObjs!=='undefined'?compObjs:[]).filter(o=>o&&!emEX.has(o)&&o.parent).map(o=>({o,b:o.position.clone(),k:'C'}));todas().forEach(x=>{const u=x.o.userData||{},c=u.code||u.comp||u.zone||'peca',b=x.k+'|'+c;n[b]=(n[b]||0)+1;x.pid=b+'|'+n[b];});}
 const kAJ=x=>S.typo+'|'+x.pid;
 const testando=()=>S.mode==='test';
 
 /* depois de montar: guarda o giro de origem e aplica os ajustes técnicos salvos */
 const _build=build;
 build=function(){SEL=null;SELMAT=null;MV={};MR={};_build.apply(this,arguments);chaves();
-  EX.forEach(x=>{x.q0=x.o.quaternion.clone();const a=AJ[kAJ(x)];
-    x.aj=a?V3(a[0]/1000,a[1]/1000,a[2]/1000):V3();x.ar=a?V3(a[3],a[4],a[5]):V3();x.b.add(x.aj);});
+  todas().forEach(x=>{x.q0=x.o.quaternion.clone();const a=AJ[kAJ(x)];
+    x.aj=a?V3(a[0]/1000,a[1]/1000,a[2]/1000):V3();x.ar=a?V3(a[3],a[4],a[5]):V3();x.oc=!!(a&&a[6]);x.b.add(x.aj);if(x.k==='C')x.o.position.copy(x.b);});
   applyEx();painel();};
 /* depois de posicionar: soma o giro do ajuste e o que foi mexido à mão */
 let _tm=null;
 const _applyEx=applyEx;
 applyEx=function(){_applyEx.apply(this,arguments);if(_tm!==testando()){_tm=testando();painel();}
-  const t=testando();EX.forEach(x=>{if(!x.q0)return;const q=x.q0.clone();if(x.ar&&(x.ar.x||x.ar.y||x.ar.z))q.multiply(qDe(x.ar));
+  const t=testando();XA.forEach(x=>{if(x.b)x.o.position.copy(x.b);});todas().forEach(x=>{if(!x.q0)return;oculta(x);const q=x.q0.clone();if(x.ar&&(x.ar.x||x.ar.y||x.ar.z))q.multiply(qDe(x.ar));
     if(!t){const r=MR[x.pid];if(r)q.multiply(qDe(r));const v=MV[x.pid];if(v)x.o.position.add(v);}x.o.quaternion.copy(q);});};
 
+/* peça oculta na plataforma */
+const MOC=new THREE.MeshStandardMaterial({color:0xd04a3a,transparent:true,opacity:.18,depthWrite:false,side:THREE.DoubleSide});
+function oculta(x){if(!x.oc){if(x.o.userData.__ocm){x.o.traverse(m=>{if(m.isMesh&&m.userData.__m0){m.material=m.userData.__m0;delete m.userData.__m0;}});delete x.o.userData.__ocm;}if(!testando()&&x.o.userData.__ocv){x.o.visible=true;delete x.o.userData.__ocv;}return;}
+  if(MATRIZ){if(!x.o.userData.__ocm){x.o.traverse(m=>{if(m.isMesh&&m!==SEL?.o){m.userData.__m0=m.material;m.material=MOC;}});x.o.userData.__ocm=1;}}
+  else{x.o.visible=false;x.o.userData.__ocv=1;}}
 /* destaque da peça escolhida */
 const MSEL=new THREE.MeshStandardMaterial({color:0x2bb3a6,metalness:.25,roughness:.4,emissive:0x0b4f4a,emissiveIntensity:.55,side:THREE.DoubleSide});
-function marca(x){if(SEL&&SEL.o&&SELMAT)SEL.o.material=SELMAT;SEL=x;SELMAT=x?x.o.material:null;if(x)x.o.material=MSEL;MSG='';painel();}
-function acha(ev){setRay(ev.clientX,ev.clientY);const h=ray.intersectObjects(EX.map(x=>x.o).filter(o=>o.visible),true)[0];if(!h)return null;
-  let o=h.object;const set=new Map(EX.map(x=>[x.o,x]));while(o&&!set.has(o))o=o.parent;return o?{x:set.get(o),p:h.point}:null;}
+function marca(x){if(SEL&&SEL.o&&SELMAT){SEL.o.material=SELMAT;}const ant=SEL;SEL=x;SELMAT=null;if(ant){delete ant.o.userData.__ocm;ant.o.traverse(m=>{delete m.userData.__m0;});oculta(ant);}
+  if(x){if(x.o.isMesh){SELMAT=x.o.userData.__m0||x.o.material;x.o.material=MSEL;}else{x.o.traverse(m=>{if(m.isMesh){m.userData.__s0=m.material;m.material=MSEL;}});}}
+  if(ant&&ant!==x&&!ant.o.isMesh)ant.o.traverse(m=>{if(m.isMesh&&m.userData.__s0){m.material=m.userData.__s0;delete m.userData.__s0;}});MSG='';painel();}
+function acha(ev){setRay(ev.clientX,ev.clientY);const L=todas();const h=ray.intersectObjects(L.map(x=>x.o).filter(o=>o.visible),true)[0];if(!h)return null;
+  let o=h.object;const set=new Map(L.map(x=>[x.o,x]));while(o&&!set.has(o))o=o.parent;return o?{x:set.get(o),p:h.point}:null;}
 
 /* dois cliques escolhem a peça; segurar e arrastar move ou gira a peça escolhida */
 const el=document.getElementById('evl')||cv;
@@ -60,10 +69,10 @@ function ajGira(e,g){if(!SEL)return;let a=((SEL.ar[e]+g)%360+360)%360;if(a>180)a
 const r1=v=>Math.round(v*10)/10;
 function ajMM(){const a=SEL.aj;return [a.x,a.y,a.z].map(v=>r1(v*1000));}
 function ajG(){const a=SEL.ar;return [a.x,a.y,a.z].map(r1);}
-let PASSO=1,PASSOG=5,MSG='';
-function salvar(){if(!SEL)return;const [dx,dy,dz]=ajMM(),[rx,ry,rz]=ajG(),k=kAJ(SEL),i=k.indexOf('|');MSG='Salvando…';painel();
-  rpc('pfc_ajuste_3d_salvar',{p_token:tok(),p_tipologia:k.slice(0,i),p_peca:k.slice(i+1),p_dx:dx,p_dy:dy,p_dz:dz,p_rx:rx,p_ry:ry,p_rz:rz})
-   .then(()=>{if(dx||dy||dz||rx||ry||rz)AJ[k]=[dx,dy,dz,rx,ry,rz];else delete AJ[k];MSG='✓ Ajuste salvo para todas as empresas';painel();})
+let PASSO=1,PASSOG=5,MSG='',MSG2='';
+function salvar(oc){if(!SEL)return;if(oc!==undefined)SEL.oc=oc;const o=!!SEL.oc,[dx,dy,dz]=ajMM(),[rx,ry,rz]=ajG(),k=kAJ(SEL),i=k.indexOf('|');MSG='Salvando…';painel();
+  rpc('pfc_ajuste_3d_salvar',{p_token:tok(),p_tipologia:k.slice(0,i),p_peca:k.slice(i+1),p_dx:dx,p_dy:dy,p_dz:dz,p_rx:rx,p_ry:ry,p_rz:rz,p_oculto:o})
+   .then(()=>{if(dx||dy||dz||rx||ry||rz||o)AJ[k]=[dx,dy,dz,rx,ry,rz,o];else delete AJ[k];MSG=oc===true?'🙈 Peça oculta para todas as empresas':oc===false?'👁 Peça visível de novo para todas as empresas':'✓ Ajuste salvo para todas as empresas';const x=SEL;marca(null);applyEx();if(x&&x.oc)MSG2='Peça oculta: aparece transparente só para a Matriz. Dois cliques nela para mostrar de novo.';painel();})
    .catch(e=>{MSG='Não foi possível salvar: '+e.message;painel();});}
 function zerar(){if(!SEL)return;SEL.b.sub(SEL.aj);SEL.aj=V3();SEL.ar=V3();applyEx();MSG='Ajuste zerado: clique em Salvar para gravar';painel();}
 
@@ -81,9 +90,9 @@ const nf=v=>String(v).replace('.',',');
 function painel(soVal){const h=document.getElementById('stage');if(!h)return;if(!P.parentNode)h.appendChild(P);
   if(testando()){P.hidden=true;return;}P.hidden=false;
   const algum=Object.keys(MV).length||Object.keys(MR).length;
-  if(!SEL){P.innerHTML=`<span class="dica">🖐 <b>Dois cliques</b> numa peça para escolher, mover e girar.</span>${algum?'<div class="r"><button class="p" data-a="volta">↺ Voltar ao original</button></div>':''}`;return;}
+  if(!SEL){const noc=MATRIZ?todas().filter(x=>x.oc).length:0;P.innerHTML=`<span class="dica">🖐 <b>Dois cliques</b> numa peça ou acessório para escolher, mover e girar.</span>${noc?`<div class="m">🙈 ${noc} peça${noc>1?'s':''} oculta${noc>1?'s':''} nesta tipologia (transparentes, só a Matriz vê).</div>`:''}${MSG2?`<div class="m">${MSG2}</div>`:''}${algum?'<div class="r"><button class="p" data-a="volta">↺ Voltar ao original</button></div>':''}`;MSG2='';return;}
   if(soVal&&P.querySelector('[data-v="giro"]')){const r=MR[SEL.pid]||V3();P.querySelector('[data-v="giro"]').textContent=`${nf(r1(r.x))}° · ${nf(r1(r.y))}° · ${nf(r1(r.z))}°`;return;}
-  const u=SEL.o.userData||{},nome=(u.code||u.zone||'Peça'),r=MR[SEL.pid]||V3();
+  const u=SEL.o.userData||{},nome=(u.code||u.comp||u.zone||'Peça'),r=MR[SEL.pid]||V3();
   let s=`<div>Peça: <b>${nome}</b> · ${MODO==='girar'?'segure e arraste para girar 360°':'segure e arraste para mover'}</div>
    <div class="r"><button data-a="modo" data-m="mover" class="${MODO==='mover'?'on':''}">✥ Mover</button><button data-a="modo" data-m="girar" class="${MODO==='girar'?'on':''}">⟳ Girar</button>
    <span style="font-size:12px;color:#bfe3df">Giro: <span data-v="giro">${nf(r1(r.x))}° · ${nf(r1(r.y))}° · ${nf(r1(r.z))}°</span></span></div>
@@ -95,12 +104,12 @@ function painel(soVal){const h=document.getElementById('stage');if(!h)return;if(
       Giro <select data-a="passog">${[1,5,15,45,90].map(v=>`<option value="${v}" ${v===PASSOG?'selected':''}>${v}°</option>`).join('')}</select></div>
      <div class="g">${[['x','X (largura)',dx],['y','Y (altura)',dy],['z','Z (profundidade)',dz]].map(([e,t,v])=>`<span>${t}</span><button data-a="aj" data-e="${e}" data-s="-1">−</button><button data-a="aj" data-e="${e}" data-s="1">+</button><span>${nf(v)} mm</span>`).join('')}
       ${[['x','Giro X',rx],['y','Giro Y',ry],['z','Giro Z',rz]].map(([e,t,v])=>`<span>${t}</span><button data-a="ajg" data-e="${e}" data-s="-1">⟲</button><button data-a="ajg" data-e="${e}" data-s="1">⟳</button><span>${nf(v)}°</span>`).join('')}</div>
-     <div class="r"><button class="p" data-a="salvar">💾 Salvar ajuste</button><button data-a="zerar">Zerar ajuste</button></div>${MSG?`<div class="m">${MSG}</div>`:''}</div>`;}
+     <div class="r"><button class="p" data-a="salvar">💾 Salvar ajuste</button><button data-a="zerar">Zerar ajuste</button>${SEL.oc?'<button data-a="mostra">👁 Mostrar na plataforma</button>':'<button data-a="oculta">🙈 Ocultar na plataforma</button>'}</div>${MSG?`<div class="m">${MSG}</div>`:''}</div>`;}
   P.innerHTML=s;}
 P.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;e.stopPropagation();const a=b.dataset.a;
   if(a==='volta')voltar();if(a==='solta')marca(null);if(a==='modo'){MODO=b.dataset.m;painel();}if(a==='g90')gira90(b.dataset.e,1);
   if(a==='aj'){MSG='';ajusta(b.dataset.e,+b.dataset.s*PASSO);}if(a==='ajg'){MSG='';ajGira(b.dataset.e,+b.dataset.s*PASSOG);}
-  if(a==='salvar')salvar();if(a==='zerar')zerar();});
+  if(a==='salvar')salvar();if(a==='zerar')zerar();if(a==='oculta')salvar(true);if(a==='mostra')salvar(false);});
 P.addEventListener('change',e=>{if(e.target.dataset.a==='passo')PASSO=+e.target.value;if(e.target.dataset.a==='passog')PASSOG=+e.target.value;});
 ['pointerdown','dblclick','wheel'].forEach(t=>P.addEventListener(t,e=>e.stopPropagation()));
 })();
