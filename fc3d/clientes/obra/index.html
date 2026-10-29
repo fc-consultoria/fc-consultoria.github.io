@@ -270,10 +270,11 @@ body.watch #bMin,body.watch #bShow,body.watch #bPrint{display:none!important}
     <div class="obra-top"><h2>Comparativo na mesma obra</h2><span class="note" id="cmpArea"></span></div>
     <div class="tw"><table id="tCmp"></table></div>
     <details id="dList"><summary>Lista de materiais das duas tipologias</summary><div class="lists" id="lists"></div></details>
+    <div class="rbar" style="justify-content:flex-end"><button class="btn big" type="button" onclick="document.getElementById('bRep').click()">Relatório de materiais</button></div>
     <p class="note">Pesos e quantidades saem das fórmulas de cada tipologia com as medidas da obra. Valores demonstrativos; confirme com o fornecedor (matrizes diferentes mudam o peso).</p>
     <div class="wm">FC CONSULTORIA EM ESQUADRIA · uso exclusivo</div>
   </section>
-  <section class="cmp" aria-label="Respostas para o sistema de cálculo">
+  <section class="cmp" aria-label="Respostas para o sistema de cálculo" hidden><!-- oculto por enquanto -->
     <div class="rbar">
       <div><h2>Respostas para o sistema de cálculo</h2><p class="note" id="rSub"></p></div>
       <div class="seg" role="group" aria-label="Base do sistema">
@@ -288,7 +289,7 @@ body.watch #bMin,body.watch #bShow,body.watch #bPrint{display:none!important}
     </div>
   </section>
 
-  <section class="cmp" aria-label="Simulação de pressão de vento">
+  <section class="cmp" aria-label="Simulação de pressão de vento" hidden><!-- oculto por enquanto -->
     <div class="obra-top"><h2>Simulação de pressão de vento</h2><span class="chip">Simulação ilustrativa</span></div>
     <p class="warn"><b>Apresentação comercial e simulação.</b> Este quadro não é cálculo estrutural, laudo nem especificação. A velocidade do vento da cidade, os fatores S1, S2 e S3 e a pressão de projeto da esquadria devem ser definidos pelo engenheiro ou projetista responsável, conforme as normas técnicas vigentes (NBR 6123 e NBR 10821).</p>
     <div class="vgrid">
@@ -422,8 +423,7 @@ function openRep(){const r=R[cur];if(!r)return;const d=new Date(),fa=O.L*O.H/1e6
     <div class="sh-meta"><b>${esc(O.nome||'Obra sem nome')}</b><br>${O.cli?esc(O.cli)+'<br>':''}${d.toLocaleDateString('pt-BR')}</div></div>
   <div class="sh-grid"><div><span>Vão total</span><b>${nf(O.L,0)} × ${nf(O.H,0)} mm</b></div><div><span>Área de fachada</span><b>${nf(fa,2)} m²</b></div>
     <div><span>Vidro</span><b>${+O.ESP} mm · ${esc(vidN)}</b></div><div><span>Acabamento</span><b>${esc(corN)}</b></div></div>
-  <h3>Respostas das variáveis</h3>
-  <table><thead><tr><th>Variável</th><th>Pergunta</th><th>Resposta</th></tr></thead><tbody>${r.vars.filter(v=>v.show).map(v=>`<tr><td><b>${esc(v.k)}</b>${v.x?' (extra)':''}</td><td>${esc(v.lab)}</td><td><b>${esc(v.val)}</b>${String(v.txt)!==String(v.val)?' · '+esc(v.txt):''}</td></tr>`).join('')}</tbody></table>
+  <!-- respostas das variáveis ocultas por enquanto -->
   <h3>Perfis</h3>
   <table><thead><tr><th>Código</th><th>Descrição</th><th class="n">Corte</th><th class="n">Qtd</th><th class="n">Medida (mm)</th><th class="n">kg</th></tr></thead><tbody>
     ${r.perfis.map(p=>`<tr><td><b>${esc(p.c)}</b></td><td>${esc(p.d)}${p.ref?' · ref. '+esc(p.ref):''}${p.x?' (extra)':''}</td><td class="n">${esc(p.ct||'')}</td><td class="n">${qf(p.q)}</td><td class="n">${nf(p.m,0)}</td><td class="n">${nf(p.kg,2)}</td></tr>`).join('')}
@@ -492,10 +492,8 @@ const STEPS=[
  {el:'.palco',t:'Corte e materiais',p:'Na lateral do 3D ficam as abas Variáveis, Corte e Materiais. O corte mostra a seção em escala, e a lista de materiais é recalculada a cada mudança.',in:()=>cmd('cortina','.tabs button[data-t="mat"]'),out:()=>cmd('cortina','.tabs button[data-t="var"]')},
  {el:'#tCmp',t:'4. Comparativo na mesma obra',p:'O comparativo coloca as duas tipologias lado a lado: peso de alumínio, quilos por metro quadrado, vidro, peças e estrutura. O valor mais baixo aparece em verde.'},
  {el:'#dList',t:'Lista de materiais lado a lado',p:'Aqui abre a lista completa de perfis e acessórios das duas tipologias, para comparar item por item.',in:()=>{document.getElementById('dList').open=true;},out:()=>{document.getElementById('dList').open=false;}},
- {el:'#tVar',t:'5. Respostas para o sistema de cálculo',p:'Esta tabela mostra as respostas das variáveis da tipologia, na ordem do cadastro. Use o botão Copiar respostas para lançar o orçamento no sistema de cálculo com rapidez.'},
- {el:'#sheet',t:'6. Relatório de materiais',p:'O relatório reúne a obra, as variáveis, os perfis, os componentes e os vidros em uma folha A4, sempre com o aviso de simulação. Na plataforma da FC ele pode ser impresso.',in:()=>openRep(),out:()=>{document.getElementById('rep').hidden=true;}},
- {el:'#fVento',t:'7. Simulação de vento',p:'Escolha a velocidade do vento da região e veja a pressão e o esforço ilustrativo em cada vidro. Os fatores começam em um. É só uma simulação: o cálculo oficial é do engenheiro da obra.',in:()=>document.getElementById('fVento').closest('section').scrollIntoView({block:'center'})},
- {el:'#bShow',t:'8. Modo apresentação',p:'Antes de mostrar ao cliente, recolha a obra e entre no Modo apresentação. A tela fica cheia, só com o 3D e o comparativo.'},
+ {el:'#sheet',t:'5. Relatório de materiais',p:'O relatório reúne a obra, as variáveis, os perfis, os componentes e os vidros em uma folha A4, sempre com o aviso de simulação. Na plataforma da FC ele pode ser impresso.',in:()=>openRep(),out:()=>{document.getElementById('rep').hidden=true;}},
+ {el:'#bShow',t:'6. Modo apresentação',p:'Antes de mostrar ao cliente, recolha a obra e entre no Modo apresentação. A tela fica cheia, só com o 3D e o comparativo.'},
  {el:'header',t:'Pronto para apresentar',p:'Lembre sempre: esta é uma apresentação comercial e uma simulação. Medidas, pesos e quantidades são demonstrativos e devem ser confirmados com o fornecedor e com o projeto da obra.'}
 ];
 let ti=-1,timer=null,paused=false;const hl=document.getElementById('tourHl'),card=document.getElementById('tourCard');
