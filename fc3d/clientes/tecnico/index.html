@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Desenho Técnico FC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=Barlow+Condensed:wght@400;500;600&display=swap">
+<style>
+/* Desenho técnico interativo · Plataforma FC 3D Clientes
+   Cortes redesenhados pela FC a partir da geometria das seções (escala real, códigos FC).
+   © FC Consultoria em Esquadria · uso exclusivo da empresa licenciada. */
+:root{
+  --bg:#eef1f0;--panel:#fff;--soft:#eaf0ee;--ink:#10201f;--mute:#5a6b69;--line:#d5dfdc;
+  --teal:#0e6f6a;--teal2:#0a4f4b;--tealSoft:#dcefec;--amber:#c88a1c;--amberSoft:#fbefd6;
+  --paper:#ffffff;--tr:#1b1d1f;--sec:#d7dbde;--secHi:#9fd8d1;--vid:#cfe6ef;--cota:#1f4e8c;
+  --f-h:'Space Grotesk',system-ui,sans-serif;--f-b:'Inter',system-ui,sans-serif;--f-t:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.5 var(--f-b)}
+button,input{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--f-h);margin:0}
+[hidden]{display:none!important}
+.topo{background:var(--teal2);color:#fff;padding:10px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.topo a.volta{color:#fff;text-decoration:none;font-weight:600;font-size:14px;border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:7px 12px}
+.topo h1{font-size:17px}.topo span{font-size:12.5px;color:#bfe3df}
+.topo .dir{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.med{display:flex;gap:6px;align-items:center;font-size:13px;color:#dff3f0}
+.med input{width:78px;border:0;border-radius:8px;padding:6px 8px;color:var(--ink);text-align:right}
+.barra{background:var(--panel);border-bottom:1px solid var(--line);padding:8px 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bt{appearance:none;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 13px;font-weight:600;font-size:13.5px;cursor:pointer;min-height:38px;display:inline-flex;align-items:center;gap:6px}
+.bt:hover{border-color:var(--teal)}
+.bt.pri{background:var(--teal);color:#fff;border-color:var(--teal)}.bt.pri:hover{background:var(--teal2)}
+.bt.am{background:var(--amber);color:#fff;border-color:var(--amber)}
+.barra .dica{margin-left:auto;font-size:12.5px;color:var(--mute)}
+.wrap{display:grid;grid-template-columns:1fr 290px;gap:14px;padding:14px;max-width:1500px;margin:0 auto}
+/* folha técnica */
+.folha{background:var(--paper);border:1px solid #c9d1cf;border-radius:6px;padding:10px;position:relative;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+.folha .cab{display:flex;align-items:stretch;border:1.5px solid var(--tr);margin-bottom:10px;font-family:var(--f-t)}
+.folha .cab .mk{background:var(--tr);color:#fff;padding:6px 12px;font-weight:600;letter-spacing:.06em;display:flex;align-items:center;font-size:15px}
+.folha .cab .tt{flex:1;padding:4px 14px;font-size:24px;font-weight:600;display:flex;align-items:center;color:var(--tr)}
+.folha .cab .cd{padding:4px 14px;border-left:1.5px solid var(--tr);font-size:15px;display:flex;align-items:center;letter-spacing:.04em}
+.grade{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);grid-template-rows:auto auto;gap:10px}
+.vp{border:1px solid #e1e6e4;border-radius:4px;position:relative;background:#fff;overflow:hidden;touch-action:none}
+.vp .rot{position:absolute;left:8px;top:6px;font:500 13px var(--f-t);letter-spacing:.08em;color:var(--mute);pointer-events:none;text-transform:uppercase}
+.vp svg{display:block;width:100%;height:100%;cursor:grab;user-select:none}
+.vp svg.arr{cursor:grabbing}
+#vpEl{height:330px}#vpV{height:330px;grid-row:span 1}#vpH{height:300px;grid-column:1/-1}
+svg text{font-family:var(--f-t)}
+.pc path{fill:var(--sec);stroke:var(--tr);stroke-width:.35;vector-effect:non-scaling-stroke;stroke-linejoin:round;transition:fill .15s}
+.pc{cursor:move}
+.pc.hi path,.pc.sel path{fill:var(--secHi);stroke:var(--teal2)}
+.pc.vid rect{fill:var(--vid);stroke:#5f8ea3;stroke-width:.35;vector-effect:non-scaling-stroke}
+.pc.vid.hi rect{fill:#a9d6e6}
+.cota line,.cota path{stroke:var(--cota);stroke-width:.6;vector-effect:non-scaling-stroke;fill:none}
+.cota text{fill:var(--cota)}
+.lbl{fill:var(--tr)}
+.quebra{stroke:var(--tr);stroke-width:.6;vector-effect:non-scaling-stroke;fill:#fff}
+.lado{fill:var(--mute);letter-spacing:.12em}
+svg .cota,svg .lado,svg .lbl,svg .quebra,svg .qb{transition:opacity .3s}
+svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto .qb{opacity:0}
+#tip{position:fixed;pointer-events:none;background:var(--tr);color:#fff;font-size:12.5px;padding:6px 9px;border-radius:7px;z-index:20;max-width:240px;line-height:1.35}
+#tip b{font-family:var(--f-t);font-size:14px;letter-spacing:.04em;display:block}
+.marca{position:absolute;right:14px;bottom:10px;font:500 11px var(--f-t);letter-spacing:.1em;color:#9aa6a3;pointer-events:none}
+/* lateral */
+.lat{display:flex;flex-direction:column;gap:12px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.box h3{font-size:15px;margin-bottom:8px}
+.lista{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.lista button{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:grid;grid-template-columns:62px 1fr auto;gap:8px;align-items:center;padding:7px 8px;border-radius:9px;font-size:13px}
+.lista button:hover,.lista button.on{background:var(--tealSoft)}
+.lista .c{font:600 13.5px var(--f-t);letter-spacing:.04em;color:var(--teal2)}
+.lista .k{font-size:11.5px;color:var(--mute);white-space:nowrap}
+.aviso{font-size:12px;color:var(--mute);background:var(--soft);border-radius:10px;padding:10px 11px;line-height:1.45}
+.leg{display:flex;flex-direction:column;gap:6px;font-size:13px}
+.leg span{display:flex;gap:8px;align-items:center}
+.leg i{width:22px;height:12px;border:1px solid var(--tr);display:inline-block}
+#gate{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;z-index:50;padding:20px;text-align:center}
+#gate .box{max-width:380px}
+@media (max-width:980px){.wrap{grid-template-columns:1fr}.grade{grid-template-columns:1fr}#vpH{grid-column:auto}.barra .dica{display:none}}
+@media (max-width:560px){.folha .cab .tt{font-size:18px}.folha .cab .cd{display:none}#vpEl,#vpV{height:280px}#vpH{height:240px}}
+</style>
+</head>
+<body>
+<div id="gate"><div class="box"><h3 id="gateT">Abrindo o desenho técnico…</h3><p class="aviso" id="gateP" style="margin-top:8px">Conferindo o seu acesso à Plataforma FC 3D.</p></div></div>
+
+<header class="topo">
+  <a class="volta" href="../">← Plataforma</a>
+  <div><h1>Janela de correr 2 folhas</h1><span>Linha FC Residencial · desenho técnico interativo</span></div>
+  <div class="dir">
+    <label class="med">L <input id="inL" type="number" inputmode="numeric" value="1200" min="400" max="4000" step="10" aria-label="Largura em milímetros"> mm</label>
+    <label class="med">H <input id="inH" type="number" inputmode="numeric" value="1000" min="300" max="2600" step="10" aria-label="Altura em milímetros"> mm</label>
+  </div>
+</header>
+<div class="barra">
+  <button class="bt am" id="btDes">💥 Desmontar os cortes</button>
+  <button class="bt pri" id="btVolta">↺ Voltar ao original</button>
+  <button class="bt" id="btAjusta">⤢ Ajustar à tela</button>
+  <span class="dica">Passe o mouse num perfil para ver o código · arraste para tirar do lugar · roda do mouse aproxima</span>
+</div>
+
+<div class="wrap">
+  <section class="folha" aria-label="Folha do desenho técnico">
+    <div class="cab"><div class="mk">FC</div><div class="tt">Janela de correr 2 folhas</div><div class="cd">FC JC2 · 01</div></div>
+    <div class="grade">
+      <div class="vp" id="vpEl"><span class="rot">Elevação · vista externa</span></div>
+      <div class="vp" id="vpV"><span class="rot">Corte vertical · 03 / 04</span></div>
+      <div class="vp" id="vpH"><span class="rot">Corte horizontal · 01 / 02</span></div>
+    </div>
+    <div class="marca">FC CONSULTORIA EM ESQUADRIA · USO EXCLUSIVO · © FC Consultoria em Esquadria</div>
+  </section>
+  <aside class="lat">
+    <div class="box"><h3>Peças do corte</h3><ul class="lista" id="lista"></ul></div>
+    <div class="box"><h3>Legenda</h3><div class="leg">
+      <span><i style="background:var(--sec)"></i>Perfil de alumínio (seção)</span>
+      <span><i style="background:var(--vid);border-color:#5f8ea3"></i>Vidro 6 mm</span>
+      <span><i style="background:var(--secHi);border-color:var(--teal2)"></i>Peça selecionada</span>
+    </div></div>
+    <p class="aviso">Desenho orientativo redesenhado pela FC, seções em escala real e cortes com trecho do vidro interrompido. Medidas, pesos e acabamentos devem ser confirmados com o fornecedor da empresa e no sistema de cálculo.</p>
+  </aside>
+</div>
+<div id="tip" hidden></div>
+
+<script>
+(function(){
+/* ---------- acesso: só com a sessão da Plataforma FC 3D Clientes ---------- */
+const SP='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_sessao',SPK='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs';
+let tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
+const gate=document.getElementById('gate');
+function nega(t,p){document.getElementById('gateT').textContent=t;document.getElementById('gateP').innerHTML=p+' <br><br><a href="../">Ir para a Plataforma FC 3D</a>';}
+if(!tk){nega('Entre na Plataforma FC 3D','Este desenho abre pela plataforma, depois de entrar com o seu login.');return;}
+fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
+ .then(r=>r.ok?r.json():null).then(d=>{if(!(d&&d.papel)){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}gate.hidden=true;iniciar();})
+ .catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));
+
+function iniciar(){
+fetch('secoes-jcr2.json?v=1').then(r=>r.json()).then(montar).catch(()=>nega('Não foi possível abrir','Tente de novo em instantes.'));
+}
+
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;};
+const f1=v=>Math.round(v*100)/100;
+let S=null,PARTS=[],VPS={},sel=null;
+
+function montar(secs){S=secs;
+  /* vistas */
+  ['vpEl','vpV','vpH'].forEach(id=>{const box=document.getElementById(id);const svg=el('svg',{role:'img','aria-label':box.querySelector('.rot').textContent},box);
+    const g=el('g',{},svg);VPS[id]={box,svg,g,vb:null,base:null};panZoom(VPS[id]);});
+  desenhar();
+  lista();
+  document.getElementById('btDes').onclick=()=>animar(true);
+  document.getElementById('btVolta').onclick=()=>{animar(false);ajustar();};
+  document.getElementById('btAjusta').onclick=ajustar;
+  ['inL','inH'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{clearTimeout(window._t);window._t=setTimeout(desenhar,200);}));
+}
+
+/* ---------- geometria da montagem (mm) ----------
+   Cortes compactados (vidro interrompido), como nos catálogos: L e H reais aparecem nas cotas.
+   Eixo z: + lado interno, − lado externo. */
+const WD=460,HD=300;
+function geo(){
+  const W=WD,H=HD,P=c=>S[c],PW=c=>S[c].w,PH=c=>S[c].h;
+  const FT=PH('FC-101'),FB=PH('FC-102'),FS=PH('FC-103');
+  const EDGE=14.4,OV=30,Wi=W-2*EDGE,sW=(Wi+OV)/2,sH=H-50,SDs=25,gwC=(W-143.2)/2;
+  const mz=c=>c==='FC-105'?SDs/2-PH(c)/2:c==='FC-106'?-SDs/2+PH(c)/2:0;
+  const OB=S['FC-108'].offT||[2.98,18.02],oz=OB[0],RW=PH('FC-107'),inset=RW/2-OB[1];
+  const folhas=[{z:17.5,L:'FC-104',R:'FC-105',nm:'Folha interna',i:0},{z:-17.5,L:'FC-106',R:'FC-104',nm:'Folha externa',i:1}];
+  const H2=[],V2=[];/* peças: {c, nm, tf:(sx,sy)=>[X,Y], grp, ex:[dx,dy]} */
+  /* corte horizontal: X = largura, Y = -z (lado externo embaixo) */
+  H2.push({c:'FC-103',nm:'Marco lateral',tf:(a,b)=>[-W/2+FS/2+b,-a],grp:'mar',ex:[-70,0]});
+  H2.push({c:'FC-103',nm:'Marco lateral',tf:(a,b)=>[W/2-FS/2-b,a],grp:'mar',ex:[70,0]});
+  folhas.forEach(sd=>{
+    const x0=-Wi/2+sW/2+sd.i*(sW-OV),L=sd.L,R=sd.R,xLc=-sW/2+PW(L)/2,xRc=sW/2-PW(R)/2,xL=-sW/2+PW(L),xR=sW/2-PW(R),tx=(xL+xR)/2;
+    const sxL=L==='FC-106'?-1:1,syL=sd.i===0?-1:1,zL=sd.i===0?-mz(L):mz(L),sxR=R==='FC-106'?1:-1;
+    const fz=sd.z>0?-38:38;/* folha interna sobe, externa desce ao desmontar */
+    H2.push({c:L,nm:S[L].n,tf:(a,b)=>[x0+xLc+sxL*a,-(sd.z+zL+syL*b)],grp:sd.nm,ex:[-35,fz]});
+    H2.push({c:R,nm:S[R].n,tf:(a,b)=>[x0+xRc+sxR*a,-(sd.z+mz(R)+b)],grp:sd.nm,ex:[35,fz]});
+    const bxL=xL-inset,bxR=xR+inset;
+    H2.push({c:'FC-108',nm:'Baguete',tf:(a,b)=>[x0+bxL+b,-(sd.z+oz+a)],grp:sd.nm,ex:[14,fz-22]});
+    H2.push({c:'FC-108',nm:'Baguete',tf:(a,b)=>[x0+bxR-b,-(sd.z+oz+a)],grp:sd.nm,ex:[-14,fz-22]});
+    H2.push({vid:1,nm:'Vidro 6 mm',r:[x0+tx-gwC/2,-(sd.z-3.5)-3,gwC,6],grp:sd.nm,ex:[0,fz*.55],brk:x0+tx});
+  });
+  /* corte vertical: X = -z (lado externo à direita), Y = -y */
+  V2.push({c:'FC-101',nm:'Trilho superior',tf:(a,b)=>[-a,-(H/2-FT/2+b)],grp:'mar',ex:[0,-45]});
+  V2.push({c:'FC-102',nm:'Trilho inferior',tf:(a,b)=>[-a,-(-H/2+FB/2+b)],grp:'mar',ex:[0,45]});
+  folhas.forEach(sd=>{
+    const fx=sd.z>0?-30:30,yTi=sH/2-RW,yBi=-sH/2+RW,yT=yTi+inset,yB=yBi-inset;
+    V2.push({c:'FC-107',nm:'Travessa da folha',tf:(a,b)=>[-(sd.z+a),-(sH/2-RW/2-b)],grp:sd.nm,ex:[fx,-35]});
+    V2.push({c:'FC-107',nm:'Travessa da folha',tf:(a,b)=>[-(sd.z+a),-(-sH/2+RW/2+b)],grp:sd.nm,ex:[fx,35]});
+    V2.push({c:'FC-108',nm:'Baguete',tf:(a,b)=>[-(sd.z+oz+a),-(yT-b)],grp:sd.nm,ex:[fx-22,14]});
+    V2.push({c:'FC-108',nm:'Baguete',tf:(a,b)=>[-(sd.z+oz+a),-(yB+b)],grp:sd.nm,ex:[fx-22,-14]});
+    V2.push({vid:1,nm:'Vidro 6 mm',r:[-(sd.z-3.5)-3,-(yTi+6),6,(yTi-yBi)+12],grp:sd.nm,ex:[fx*.55,0],brkY:-(yTi+yBi)/2});
+  });
+  return {H2,V2,W,H};
+}
+const pathDe=(c,tf)=>S[c].s.map(sh=>{const ring=r=>'M'+r.map(([a,b])=>tf(a,b).map(f1).join(' ')).join('L')+'Z';return ring(sh.o)+(sh.h||[]).map(ring).join('');}).join('');
+
+/* ---------- desenho ---------- */
+function desenhar(){
+  const Lr=+document.getElementById('inL').value||1200,Hr=+document.getElementById('inH').value||1000;
+  PARTS=[];const G=geo();
+  /* corte horizontal */
+  const gh=VPS.vpH.g;gh.innerHTML='';
+  G.H2.forEach(p=>peca(gh,p,'vpH'));
+  /* quebras do vidro */
+  G.H2.filter(p=>p.brk!=null).forEach(p=>quebraV(gh,p.brk,-26,26));
+  cotaH(gh,-G.W/2,G.W/2,-62,'L = '+Lr);
+  ladoTxt(gh,0,62,'LADO EXTERNO');ladoTxt(gh,0,-84,'LADO INTERNO');
+  rotulo(gh,-G.W/2+40,54,'CORTE 01');rotulo(gh,G.W/2-40,54,'CORTE 02');
+  /* corte vertical */
+  const gv=VPS.vpV.g;gv.innerHTML='';
+  G.V2.forEach(p=>peca(gv,p,'vpV'));
+  G.V2.filter(p=>p.brkY!=null).slice(0,1).forEach(p=>quebraH(gv,p.brkY,-36,36));
+  cotaV(gv,-G.H/2,G.H/2,-62,'H = '+Hr);
+  ladoTxtV(gv,62,0,'LADO EXTERNO');ladoTxtV(gv,-92,0,'LADO INTERNO');
+  rotulo(gv,74,-G.H/2+20,'CORTE 03');rotulo(gv,74,G.H/2-14,'CORTE 04');
+  /* elevação */
+  elevacao(VPS.vpEl.g,Lr,Hr);
+  ajustar();
+}
+function peca(g,p,vp){
+  const gg=el('g',{class:'pc'+(p.vid?' vid':''),'data-c':p.c||'VID'},g);
+  if(p.vid)el('rect',{x:f1(p.r[0]),y:f1(p.r[1]),width:f1(p.r[2]),height:f1(p.r[3])},gg);
+  else el('path',{d:pathDe(p.c,p.tf),'fill-rule':'evenodd'},gg);
+  const P={g:gg,c:p.c||'VID',nm:p.nm,ex:p.ex,dx:0,dy:0,tx:0,ty:0,vp};PARTS.push(P);
+  ligaPeca(P);
+}
+function cotaH(g,x0,x1,y,t){const c=el('g',{class:'cota'},g);
+  el('line',{x1:x0,y1:y,x2:x1,y2:y},c);[x0,x1].forEach(x=>{el('line',{x1:x,y1:y-6,x2:x,y2:y+30},c);el('path',{d:`M${x-3} ${y+3}L${x+3} ${y-3}`},c);});
+  const tx=el('text',{x:(x0+x1)/2,y:y-4,'text-anchor':'middle','font-size':11},c);tx.textContent=t;}
+function cotaV(g,y0,y1,x,t){const c=el('g',{class:'cota'},g);
+  el('line',{x1:x,y1:y0,x2:x,y2:y1},c);[y0,y1].forEach(y=>{el('line',{x1:x-6,y1:y,x2:x+30,y2:y},c);el('path',{d:`M${x-3} ${y+3}L${x+3} ${y-3}`},c);});
+  const tx=el('text',{x:x-5,y:(y0+y1)/2,'text-anchor':'middle','font-size':11,transform:`rotate(-90 ${x-5} ${(y0+y1)/2})`},c);tx.textContent=t;}
+function ladoTxt(g,x,y,t){const e=el('text',{x,y,'text-anchor':'middle','font-size':9,class:'lado'},g);e.textContent=t;}
+function ladoTxtV(g,x,y,t){const e=el('text',{x,y,'text-anchor':'middle','font-size':9,class:'lado',transform:`rotate(90 ${x} ${y})`},g);e.textContent=t;}
+function rotulo(g,x,y,t){const e=el('text',{x,y,'text-anchor':'middle','font-size':9.5,class:'lbl','letter-spacing':'1'},g);e.textContent=t;}
+function quebraV(g,x,y0,y1){const d=`M${x-4} ${y0}L${x+4} ${y0}L${x-2} ${(y0+y1)/2-3}L${x+2} ${(y0+y1)/2+3}L${x-4} ${y1}L${x+4} ${y1}`;
+  el('rect',{x:x-3,y:y0,width:6,height:y1-y0,fill:'#fff',stroke:'none',class:'qb'},g);el('path',{d,class:'quebra',fill:'none'},g);}
+function quebraH(g,y,x0,x1){el('rect',{x:x0,y:y-3,width:x1-x0,height:6,fill:'#fff',stroke:'none',class:'qb'},g);
+  el('path',{d:`M${x0} ${y-4}L${x0} ${y+4}L${(x0+x1)/2-3} ${y-2}L${(x0+x1)/2+3} ${y+2}L${x1} ${y-4}L${x1} ${y+4}`,class:'quebra',fill:'none'},g);}
+function elevacao(g,L,H){g.innerHTML='';
+  const k=Math.min(300/L,230/H),w=L*k,h=H*k,x0=-w/2,y0=-h/2,m=6;
+  el('rect',{x:x0,y:y0,width:w,height:h,fill:'#fff',stroke:'#1b1d1f','stroke-width':1.4,'vector-effect':'non-scaling-stroke'},g);
+  el('rect',{x:x0+m,y:y0+m,width:w-2*m,height:h-2*m,fill:'none',stroke:'#1b1d1f','stroke-width':.6,'vector-effect':'non-scaling-stroke'},g);
+  const lw=(w-2*m)/2+5;[[x0+m,lw],[x0+w-m-lw,lw]].forEach(([x,ww],i)=>{
+    el('rect',{x,y:y0+m+2,width:ww,height:h-2*m-4,fill:'#eef6f9',stroke:'#1b1d1f','stroke-width':.8,'vector-effect':'non-scaling-stroke'},g);
+    el('rect',{x:x+7,y:y0+m+9,width:ww-14,height:h-2*m-18,fill:'#d9ecf3',stroke:'#1b1d1f','stroke-width':.4,'vector-effect':'non-scaling-stroke'},g);
+    const cx=x+ww/2,cy=y0+h/2,s=i?-1:1;el('path',{d:`M${cx-s*16} ${cy}L${cx+s*16} ${cy}M${cx+s*16} ${cy}l${-s*6} -4M${cx+s*16} ${cy}l${-s*6} 4`,stroke:'#1b1d1f','stroke-width':1,fill:'none','vector-effect':'non-scaling-stroke'},g);});
+  cotaH(g,x0,x0+w,y0+h+26,'L = '+L);g.lastChild.querySelectorAll('line').forEach((l,i)=>{if(i>0){l.setAttribute('y1',y0+h+30);l.setAttribute('y2',y0+h+4);}});
+  cotaV(g,y0,y0+h,x0+w+26,'H = '+H);g.lastChild.querySelectorAll('line').forEach((l,i)=>{if(i>0){l.setAttribute('x1',x0+w+30);l.setAttribute('x2',x0+w+4);}});
+  [['01',x0-14,y0+h/2],['03',0,y0-28]].forEach(([n,x,y])=>{});
+}
+
+/* ---------- interação: destacar, arrastar, desmontar, voltar ---------- */
+const tip=document.getElementById('tip');
+function info(P){const s=S[P.c];return `<b>${P.c==='VID'?'VIDRO':P.c}</b>${P.nm}${s&&s.kg?'<br>'+String(s.kg).replace('.',',')+' kg/m':''}`;}
+function ligaPeca(P){const g=P.g;
+  g.addEventListener('pointerenter',e=>{g.classList.add('hi');tip.innerHTML=info(P);tip.hidden=false;});
+  g.addEventListener('pointermove',e=>{tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY+12)+'px';});
+  g.addEventListener('pointerleave',()=>{g.classList.remove('hi');tip.hidden=true;});
+  g.addEventListener('pointerdown',e=>{e.stopPropagation();const V=VPS[P.vp];const p0=pt(V,e),d0=[P.dx,P.dy];g.setPointerCapture(e.pointerId);V.svg.classList.add('arr');marca(P.c);
+    const mv=ev=>{const p=pt(V,ev);P.dx=d0[0]+p[0]-p0[0];P.dy=d0[1]+p[1]-p0[1];P.tx=P.dx;P.ty=P.dy;pos(P);};
+    const up=()=>{g.removeEventListener('pointermove',mv);g.removeEventListener('pointerup',up);V.svg.classList.remove('arr');};
+    g.addEventListener('pointermove',mv);g.addEventListener('pointerup',up);});
+}
+const pos=P=>P.g.setAttribute('transform',`translate(${f1(P.dx)} ${f1(P.dy)})`);
+function animar(abrir){['vpV','vpH'].forEach(k=>VPS[k].svg.classList.toggle('aberto',abrir));PARTS.forEach(P=>{P.tx=abrir?P.ex[0]:0;P.ty=abrir?P.ex[1]:0;});
+  const t0=performance.now(),ini=PARTS.map(P=>[P.dx,P.dy]),D=650;
+  const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+  const step=now=>{const t=Math.min(1,(now-t0)/D),e=ease(t);PARTS.forEach((P,i)=>{P.dx=ini[i][0]+(P.tx-ini[i][0])*e;P.dy=ini[i][1]+(P.ty-ini[i][1])*e;pos(P);});if(t<1)requestAnimationFrame(step);else if(abrir)ajustar();};
+  requestAnimationFrame(step);}
+function marca(c){sel=c;document.querySelectorAll('.pc').forEach(g=>g.classList.toggle('sel',g.dataset.c===c));document.querySelectorAll('#lista button').forEach(b=>b.classList.toggle('on',b.dataset.c===c));}
+
+/* lista de peças */
+function lista(){const L=document.getElementById('lista');
+  const itens=Object.keys(S).map(c=>[c,S[c].n,S[c].kg]).concat([['VID','Vidro 6 mm (exemplo)',null]]);
+  L.innerHTML=itens.map(([c,n,kg])=>`<li><button type="button" data-c="${c}"><span class="c">${c==='VID'?'VIDRO':c}</span><span>${n}</span><span class="k">${kg?String(kg).replace('.',',')+' kg/m':''}</span></button></li>`).join('');
+  L.querySelectorAll('button').forEach(b=>b.onclick=()=>{marca(sel===b.dataset.c?null:b.dataset.c);});}
+
+/* ---------- zoom e arrastar a folha ---------- */
+function pt(V,e){const r=V.svg.getBoundingClientRect(),vb=V.vb;return [vb[0]+(e.clientX-r.left)/r.width*vb[2],vb[1]+(e.clientY-r.top)/r.height*vb[3]];}
+function setVB(V,vb){V.vb=vb;V.svg.setAttribute('viewBox',vb.map(f1).join(' '));}
+function ajustar(){Object.values(VPS).forEach(V=>{const b=V.g.getBBox(),r=V.svg.getBoundingClientRect(),pad=26;
+  let w=b.width+pad*2,h=b.height+pad*2;const ar=r.width/r.height;if(w/h>ar)h=w/ar;else w=h*ar;
+  setVB(V,[b.x+b.width/2-w/2,b.y+b.height/2-h/2+6,w,h]);});}
+function panZoom(V){const s=V.svg;
+  s.addEventListener('wheel',e=>{e.preventDefault();const p=pt(V,e),k=e.deltaY>0?1.15:1/1.15,vb=V.vb;setVB(V,[p[0]-(p[0]-vb[0])*k,p[1]-(p[1]-vb[1])*k,vb[2]*k,vb[3]*k]);},{passive:false});
+  s.addEventListener('pointerdown',e=>{if(e.target.closest('.pc'))return;const r=s.getBoundingClientRect(),vb0=V.vb.slice(),x0=e.clientX,y0=e.clientY;s.setPointerCapture(e.pointerId);s.classList.add('arr');
+    const mv=ev=>{setVB(V,[vb0[0]-(ev.clientX-x0)/r.width*vb0[2],vb0[1]-(ev.clientY-y0)/r.height*vb0[3],vb0[2],vb0[3]]);};
+    const up=()=>{s.removeEventListener('pointermove',mv);s.removeEventListener('pointerup',up);s.classList.remove('arr');};
+    s.addEventListener('pointermove',mv);s.addEventListener('pointerup',up);});
+  addEventListener('resize',()=>{clearTimeout(V._r);V._r=setTimeout(ajustar,150);});}
+})();
+</script>
+</body>
+</html>
