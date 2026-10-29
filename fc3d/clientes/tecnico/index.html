@@ -38,7 +38,7 @@ h1,h2,h3{font-family:var(--f-h);margin:0}
 .barra .dica{margin-left:auto;font-size:12.5px;color:var(--mute)}
 .wrap{display:grid;grid-template-columns:1fr 290px;gap:14px;padding:14px;max-width:1500px;margin:0 auto}
 /* folha técnica */
-.folha{background:var(--paper);border:1px solid #c9d1cf;border-radius:6px;padding:10px;position:relative;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+.folha{min-width:0;background:var(--paper);border:1px solid #c9d1cf;border-radius:6px;padding:10px;position:relative;box-shadow:0 1px 0 rgba(0,0,0,.03)}
 .folha .cab{display:flex;align-items:stretch;border:1.5px solid var(--tr);margin-bottom:10px;font-family:var(--f-t)}
 .folha .cab .mk{background:var(--tr);color:#fff;padding:6px 12px;font-weight:600;letter-spacing:.06em;display:flex;align-items:center;font-size:15px}
 .folha .cab .tt{flex:1;padding:4px 14px;font-size:24px;font-weight:600;display:flex;align-items:center;color:var(--tr)}
@@ -95,6 +95,17 @@ svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto 
 .fsbar{position:fixed;z-index:60;width:max-content;max-width:calc(100% - 20px);left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:6px;flex-wrap:wrap;justify-content:center;background:rgba(16,32,31,.92);padding:8px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 .fsbar button{border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;border-radius:10px;padding:8px 12px;font:600 13.5px var(--f-b);cursor:pointer}
 .fsbar button.on{background:#fff;color:var(--teal2)}
+.folha.mont{user-select:none;-webkit-user-select:none}.pc .hit{fill:transparent;stroke:none;pointer-events:all}.folha.mont .grade{display:block}.folha.mont .vp{display:none}.folha.mont .vp.um{display:block;height:calc(100vh - 300px)!important;min-height:440px}
+.folha.mont.fs .vp.um{height:calc(100vh - 170px)!important}
+.fant path{fill:none;stroke:#9aa8a6;stroke-width:.6;stroke-dasharray:3 2;vector-effect:non-scaling-stroke}
+.fant text{fill:#7b8c89;font:600 7px var(--f-t);letter-spacing:.04em;text-anchor:middle;dominant-baseline:middle}
+.pc .rotc{fill:#0a4f4b;font:700 7.5px var(--f-t);text-anchor:middle;letter-spacing:.04em;pointer-events:none}
+.pc.ok path{fill:#bfe8d4;stroke:#1f7a48}.pc.ok .rotc{display:none}.pc.ok{cursor:default}
+.pc.err path{fill:#f6c9c4;stroke:#b3261e}
+.mbar{position:sticky;bottom:10px;z-index:20;margin:10px auto 0;width:fit-content;max-width:100%;display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center;background:rgba(16,32,31,.94);color:#fff;padding:8px 10px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.25);font:600 13px var(--f-b)}
+.folha.fs .mbar{position:fixed;left:50%;transform:translateX(-50%);bottom:76px}
+.mbar button{border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;border-radius:10px;padding:7px 11px;font:600 13px var(--f-b);cursor:pointer}
+.mbar button.on{background:#fff;color:var(--teal2)}.mbar .pl{padding:0 6px;color:#f2c063}.mbar .msg{color:#bfe3df;font-weight:500;padding:0 4px}
 </style>
 </head>
 <body>
@@ -114,6 +125,7 @@ svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto 
   <button class="bt pri" id="btVolta">↺ Voltar ao original</button>
   <button class="bt" id="btAjusta">⤢ Ajustar à tela</button>
   <button class="bt" id="btFs">⛶ Tela cheia</button>
+  <button class="bt am" id="btMont">🧩 Montar o corte</button>
   <span class="dica">Passe o mouse num perfil para ver o código · arraste para tirar do lugar · roda do mouse aproxima</span>
 </div>
 
@@ -173,10 +185,12 @@ function montar(secs){S=secs;
     const g=el('g',{},svg);VPS[id]={box,svg,g,vb:null,base:null};panZoom(VPS[id]);});
   desenhar();
   lista();
+  if(new URLSearchParams(location.search).get('montar')==='1')setTimeout(()=>montarCorte(1),300);
   document.getElementById('btDes').onclick=()=>animar(true);
   document.getElementById('btVolta').onclick=()=>{animar(false);ajustar();};
   document.getElementById('btAjusta').onclick=ajustar;
   document.getElementById('btFs').onclick=()=>telaCheia(true,null);
+  document.getElementById('btMont').onclick=()=>MONT?sairMontar():montarCorte(1);
   [['vpEl','Elevação'],['vpV','Corte vertical'],['vpH','Corte horizontal']].forEach(([id])=>{const b=document.createElement('button');b.type='button';b.className='fsv';b.textContent='⛶';b.title='Ver este desenho em tela cheia';b.onclick=e=>{e.stopPropagation();telaCheia(true,id);};VPS[id].box.appendChild(b);});
   addEventListener('keydown',e=>{if(e.key==='Escape'&&document.querySelector('.folha.fs'))telaCheia(false);});
   document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&document.querySelector('.folha.fs'))telaCheia(false,null,true);});
@@ -187,6 +201,7 @@ function montar(secs){S=secs;
    Corte horizontal: X = largura, Y = −z (lado externo embaixo). Corte vertical: X = −z (lado externo à direita), Y = −altura. */
 const HD=300;
 function desenhar(){
+  if(MONT){clearInterval(MONT.tm);MONT=null;const b=document.querySelector('.mbar');if(b)b.remove();const F=document.querySelector('.folha');F.classList.remove('mont');document.querySelectorAll('.vp').forEach(v=>v.classList.remove('um'));}
   const Lr=+document.getElementById('inL').value||M.def[0],Hr=+document.getElementById('inH').value||M.def[1];
   PARTS=[];USADOS=[];const W=M.dw,R=FCM.pecas(S,M,W,HD),FD=S[M.fr.s].w/2,TD=S[M.fr.t].w/2;
   const off=o=>o.g>=0?R.folhas[o.g]:{ox:0,z:0},zs=z=>z>0.1?1:z<-0.1?-1:0;
@@ -255,14 +270,14 @@ function elevacao(g,L,H){g.innerHTML='';
 
 /* ---------- interação: destacar, arrastar, desmontar, voltar ---------- */
 const tip=document.getElementById('tip');document.addEventListener('fullscreenchange',()=>{const F=document.querySelector('.folha');(document.fullscreenElement?F:document.body).appendChild(tip);});
-function info(P){const s=S[P.c];return `<b>${P.c==='VID'?'VIDRO':P.c}</b>${P.nm}${s&&s.kg?'<br>'+String(s.kg).replace('.',',')+' kg/m':''}`;}
+function info(P){if(MONT&&MONT.n===2&&P.c!=='VID'&&!P.ok)return '<b>Qual é este perfil?</b>Leve até o lugar dele no desenho';const s=S[P.c];return `<b>${P.c==='VID'?'VIDRO':P.c}</b>${P.nm}${s&&s.kg?'<br>'+String(s.kg).replace('.',',')+' kg/m':''}`;}
 function ligaPeca(P){const g=P.g;
   g.addEventListener('pointerenter',e=>{g.classList.add('hi');tip.innerHTML=info(P);tip.hidden=false;});
   g.addEventListener('pointermove',e=>{tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY+12)+'px';});
   g.addEventListener('pointerleave',()=>{g.classList.remove('hi');tip.hidden=true;});
-  g.addEventListener('pointerdown',e=>{e.stopPropagation();const V=VPS[P.vp];const p0=pt(V,e),d0=[P.dx,P.dy];g.setPointerCapture(e.pointerId);V.svg.classList.add('arr');marca(P.c);
+  g.addEventListener('pointerdown',e=>{e.stopPropagation();if(MONT&&(P.ok||P.c==='VID'))return;const V=VPS[P.vp];const p0=pt(V,e),d0=[P.dx,P.dy];g.setPointerCapture(e.pointerId);V.svg.classList.add('arr');marca(P.c);
     const mv=ev=>{const p=pt(V,ev);P.dx=d0[0]+p[0]-p0[0];P.dy=d0[1]+p[1]-p0[1];P.tx=P.dx;P.ty=P.dy;pos(P);};
-    const up=()=>{g.removeEventListener('pointermove',mv);g.removeEventListener('pointerup',up);V.svg.classList.remove('arr');};
+    const up=()=>{g.removeEventListener('pointermove',mv);g.removeEventListener('pointerup',up);V.svg.classList.remove('arr');if(MONT)soltou(P);};
     g.addEventListener('pointermove',mv);g.addEventListener('pointerup',up);});
 }
 const pos=P=>P.g.setAttribute('transform',`translate(${f1(P.dx)} ${f1(P.dy)})`);
@@ -278,6 +293,51 @@ function lista(){const L=document.getElementById('lista');
   const itens=USADOS.slice().sort().map(c=>[c,S[c].n,S[c].kg]).concat([['VID','Vidro 6 mm (exemplo)',null]]);
   L.innerHTML=itens.map(([c,n,kg])=>`<li><button type="button" data-c="${c}"><span class="c">${c==='VID'?'VIDRO':c}</span><span>${n}</span><span class="k">${kg?String(kg).replace('.',',')+' kg/m':''}</span></button></li>`).join('');
   L.querySelectorAll('button').forEach(b=>b.onclick=()=>{marca(sel===b.dataset.c?null:b.dataset.c);});}
+
+/* ---------- Montar o corte: peças em fila na bandeja; o aluno leva cada uma até o contorno com o código ---------- */
+let MONT=null;
+function bbOf(P){const e=P.g.querySelector('path,rect');return e?e.getBBox():{x:0,y:0,width:0,height:0};}
+function montarCorte(n,vp){const vq=vp||(MONT&&MONT.vp)||'vpH';if(MONT){clearInterval(MONT.tm);MONT=null;desenhar();}const F=document.querySelector('.folha');
+  MONT={n:n||1,ac:0,er:0,t0:0,tot:0,tm:null,vp:vq};
+  document.querySelectorAll('.vp').forEach(v=>v.classList.toggle('um',v.id===vq));F.classList.add('mont');
+  [vq].forEach(vk=>{const V=VPS[vk],ps=PARTS.filter(P=>P.vp===vk&&P.c!=='VID');if(!ps.length)return;
+    const gb=V.g.getBBox();const fan=el('g',{class:'fant'});V.g.insertBefore(fan,V.g.firstChild);
+    ps.forEach(P=>{P.bb=bbOf(P);P.ok=false;const d=P.g.querySelector('path');P.d=d.getAttribute('d');
+      const f=el('g',{},fan);el('path',{d:P.d},f);if(MONT.n===1){const t=el('text',{x:P.bb.x+P.bb.width/2,y:P.bb.y+P.bb.height/2,'font-size':Math.max(3.2,Math.min(7,P.bb.width/4.2))},f);t.textContent=P.c;}P.fan=f;});
+    /* bandeja: fila embaixo do desenho, com folga entre as peças */
+    const gap=26,maxW=Math.max(gb.width,420);let x=gb.x,y=gb.y+gb.height+46,lh=0;
+    ps.slice().sort(()=>Math.random()-.5).forEach(P=>{if(x+P.bb.width>gb.x+maxW&&x>gb.x){x=gb.x;y+=lh+gap+10;lh=0;}
+      P.bx=x;P.by=y;P.tx=P.dx=x-P.bb.x;P.ty=P.dy=y-P.bb.y;x+=P.bb.width+gap;lh=Math.max(lh,P.bb.height);
+      el('rect',{class:'hit',x:P.bb.x-3,y:P.bb.y-12,width:P.bb.width+6,height:P.bb.height+15},P.g);
+      const t=el('text',{class:'rotc',x:P.bb.x+P.bb.width/2,y:P.bb.y-5},P.g);t.textContent=P.c;});
+    MONT.tot+=ps.length;});
+  PARTS.forEach(pos);ajustar();
+  let b=F.querySelector('.mbar');if(!b){b=document.createElement('div');b.className='mbar';F.appendChild(b);}placar('Arraste cada perfil da fila até o contorno com o mesmo código.');}
+function placar(msg){const b=document.querySelector('.mbar');if(!b||!MONT)return;const seg=MONT.t0?Math.round(((MONT.fim||Date.now())-MONT.t0)/1000):0;
+  b.innerHTML=`<span>🧩 Montar o corte</span><button data-n="1" class="${MONT.n===1?'on':''}">Nível 1 · com códigos</button><button data-n="2" class="${MONT.n===2?'on':''}">Nível 2 · só o formato</button>
+   <span class="pl">✓ ${MONT.ac}/${MONT.tot} · ✗ ${MONT.er} · ⏱ ${Math.floor(seg/60)}:${String(seg%60).padStart(2,'0')}</span>
+   <button data-vp="vpH" class="${MONT.vp==='vpH'?'on':''}">Corte horizontal</button><button data-vp="vpV" class="${MONT.vp==='vpV'?'on':''}">Corte vertical</button>
+   <button data-r="1">↻ Recomeçar</button><button data-v="1">👁 Ver resposta</button><button data-x="1">✕ Sair</button>${msg?`<span class="msg">${msg}</span>`:''}`;
+  b.onclick=e=>{const t=e.target.closest('button');if(!t)return;if(t.dataset.n)montarCorte(+t.dataset.n);if(t.dataset.vp)montarCorte(MONT.n,t.dataset.vp);if(t.dataset.r)montarCorte(MONT.n);if(t.dataset.x)sairMontar();
+    if(t.dataset.v){PARTS.forEach(P=>{if(P.c!=='VID'&&!P.ok){P.tx=0;P.ty=0;P.dx=0;P.dy=0;P.ok=true;P.g.classList.add('ok');pos(P);}});clearInterval(MONT.tm);placar('Esta é a montagem certa. Clique em Recomeçar para tentar.');}};}
+function centro(P){return [P.bb.x+P.bb.width/2+P.dx,P.bb.y+P.bb.height/2+P.dy];}
+function soltou(P){if(!MONT||P.ok||P.c==='VID')return;if(!MONT.t0){MONT.t0=Date.now();MONT.tm=setInterval(()=>placar(),1000);}
+  const [cx,cy]=centro(P),tol=Math.max(10,Math.min(P.bb.width,P.bb.height)*.6);
+  /* contornos ainda vazios do mesmo desenho que estão perto de onde a peça foi solta */
+  const vaga=PARTS.filter(S=>S.vp===P.vp&&S.c!=='VID'&&!S.ok&&S.bb).map(S=>[S,Math.hypot(S.bb.x+S.bb.width/2-cx,S.bb.y+S.bb.height/2-cy)]).filter(x=>x[1]<Math.max(tol,Math.min(x[0].bb.width,x[0].bb.height)*.6+6)).sort((a,b)=>a[1]-b[1])[0];
+  if(!vaga)return;/* solta em qualquer lugar livre: fica onde está */
+  const S=vaga[0];
+  if(S.c!==P.c){MONT.er++;P.g.classList.add('err');setTimeout(()=>{P.g.classList.remove('err');P.dx=P.tx=P.bx-P.bb.x;P.dy=P.ty=P.by-P.bb.y;pos(P);},450);placar(`${P.c} não vai aqui.`);return;}
+  if(S!==P){/* mesmo código em outro lugar (ex.: lateral esquerdo e direito): troca o desenho das duas peças */
+    const pP=P.g.querySelector('path'),pS=S.g.querySelector('path'),dP=pP.getAttribute('d'),dS=pS.getAttribute('d');
+    const bbS0=S.bb,bbP0=P.bb,sx=S.bx,sy=S.by,sdx=S.dx,sdy=S.dy;pP.setAttribute('d',dS);pS.setAttribute('d',dP);
+    /* S fica na bandeja com o desenho de P; P assume o lugar de S */
+    S.bb=bbP0;S.dx=S.tx=sx-bbP0.x;S.dy=S.ty=sy-bbP0.y;P.bb=bbS0;
+    const sr=S.g.querySelector('.rotc'),sh=S.g.querySelector('.hit');if(sr){sr.setAttribute('x',S.bb.x+S.bb.width/2);sr.setAttribute('y',S.bb.y-5);}if(sh){sh.setAttribute('x',S.bb.x-3);sh.setAttribute('y',S.bb.y-12);sh.setAttribute('width',S.bb.width+6);sh.setAttribute('height',S.bb.height+15);}const ph=P.g.querySelector('.hit');if(ph)ph.remove();
+    const fo=P.fan;P.fan=S.fan;S.fan=fo;const ex=P.ex;P.ex=S.ex;S.ex=ex;pos(S);}
+  P.dx=P.dy=P.tx=P.ty=0;P.ok=true;P.g.classList.add('ok');{const h=P.g.querySelector('.hit');if(h)h.remove();}pos(P);MONT.ac++;
+  if(MONT.ac>=MONT.tot){MONT.fim=Date.now();clearInterval(MONT.tm);placar(MONT.er?`Corte montado! ${MONT.er} erro${MONT.er>1?'s':''} no caminho.`:'Corte montado sem nenhum erro! 🏆');}else placar('Encaixou!');}
+function sairMontar(semRedesenho){if(!MONT)return;clearInterval(MONT.tm);MONT=null;const b=document.querySelector('.mbar');if(b)b.remove();const F=document.querySelector('.folha');F.classList.remove('mont');document.querySelectorAll('.vp').forEach(v=>v.classList.remove('um'));if(!semRedesenho)desenhar();}
 
 /* ---------- tela cheia: a folha inteira ou um corte só, para explicar os detalhes ---------- */
 function telaCheia(on,um,doNav){const F=document.querySelector('.folha');let bar=document.getElementById('fsbar');
@@ -299,7 +359,7 @@ function ajustar(){Object.values(VPS).forEach(V=>{const b=V.g.getBBox(),r=V.svg.
   setVB(V,[b.x+b.width/2-w/2,b.y+b.height/2-h/2+6,w,h]);});}
 function panZoom(V){const s=V.svg;
   s.addEventListener('wheel',e=>{e.preventDefault();const p=pt(V,e),k=e.deltaY>0?1.15:1/1.15,vb=V.vb;setVB(V,[p[0]-(p[0]-vb[0])*k,p[1]-(p[1]-vb[1])*k,vb[2]*k,vb[3]*k]);},{passive:false});
-  s.addEventListener('pointerdown',e=>{if(e.target.closest('.pc'))return;const r=s.getBoundingClientRect(),vb0=V.vb.slice(),x0=e.clientX,y0=e.clientY;s.setPointerCapture(e.pointerId);s.classList.add('arr');
+  s.addEventListener('pointerdown',e=>{if(e.target.closest('.pc')||MONT)return;const r=s.getBoundingClientRect(),vb0=V.vb.slice(),x0=e.clientX,y0=e.clientY;s.setPointerCapture(e.pointerId);s.classList.add('arr');
     const mv=ev=>{setVB(V,[vb0[0]-(ev.clientX-x0)/r.width*vb0[2],vb0[1]-(ev.clientY-y0)/r.height*vb0[3],vb0[2],vb0[3]]);};
     const up=()=>{s.removeEventListener('pointermove',mv);s.removeEventListener('pointerup',up);s.classList.remove('arr');};
     s.addEventListener('pointermove',mv);s.addEventListener('pointerup',up);});

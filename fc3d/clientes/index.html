@@ -142,6 +142,19 @@ footer{padding:16px 20px;text-align:center;font-size:11.5px;letter-spacing:.06em
 @media(max-width:700px){.ori{grid-template-columns:1fr}}
 a.card.tip{text-decoration:none;color:inherit}
 .tec-ok{font-size:13.5px;font-weight:700;color:var(--teal)}.tec-em{font-size:13px;color:var(--mute)}
+.gtec{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;align-items:start}
+.gtec-img{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}.gtec-img img{display:block;width:100%;height:auto}
+.gtec-pt{position:absolute;width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:var(--amber);color:#1b1205;font:700 14px var(--f-h);cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.3);z-index:2;transform:translate(-30%,-30%)}
+.gtec-pt.on{background:var(--teal);color:#fff}
+.gtec-box{position:absolute;border:2.5px solid var(--teal);border-radius:6px;background:rgba(14,111,106,.08);opacity:0;transition:opacity .2s;pointer-events:none}.gtec-box.on{opacity:1}
+.gtec-tx h3{font-size:19px}.gtec-tx ol{list-style:none;margin:12px 0;padding:0;display:grid;gap:6px}
+.gtec-tx li{display:grid;grid-template-columns:28px 1fr;gap:2px 10px;padding:8px;border-radius:10px;cursor:pointer;border:1px solid transparent}
+.gtec-tx li::before{content:attr(data-g);grid-row:span 2;width:26px;height:26px;border-radius:50%;background:var(--amberSoft);color:var(--amberInk);display:grid;place-items:center;font:700 13px var(--f-h)}
+.gtec-tx li b{font-size:14.5px}.gtec-tx li span{font-size:13.5px;color:var(--mute);grid-column:2}
+.gtec-tx li.on{border-color:var(--teal);background:var(--tealSoft)}.gtec-tx li.on::before{background:var(--teal);color:#fff}
+.dica-tec{font-size:13.5px;background:var(--amberSoft);color:var(--amberInk);border-radius:10px;padding:9px 11px}
+.gtec-bt{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+@media(max-width:860px){.gtec{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -359,9 +372,20 @@ function telaInicio(){
 }
 function faixaOri(){if(papel()==='arquiteto')return '';let F=[];try{F=JSON.parse(localStorage.getItem('fc_esq_feito'))||[]}catch(_){}
   const M=[['cat','Catálogo de Perfis'],['tip','Tipologias'],['cm','Contramarco'],['gua','Guarnições'],['max','Maxim-Ar'],['cor','Janelas de Correr'],['pad','Perfis e Componentes Padrão'],['giro','Porta de Giro'],['div','Perfis Diversos'],['per','Porta com Persiana']],n=M.filter(m=>F.includes(m[0])).length,prox=(M.find(m=>!F.includes(m[0]))||M[0])[0];
-  return `<div class="ori"><div class="ori-tx"><b>📘 Orientativo de Montagem 3D</b><span class="mute">${n} de ${M.length} módulos estudados · Começar abre o passo a passo completo; cada assunto abaixo abre só aquele módulo</span><i class="ori-bar"><s style="width:${n/M.length*100}%"></s></i></div>
-   <div class="ori-bt"><a class="btn pri" href="orientativo/#${prox}">${n?'▶ Continuar':'▶ Começar'}</a><a class="btn sec" href="orientativo/#quiz">✓ Prova final</a></div>
+  return `<div class="ori"><div class="ori-tx"><b>📘 Orientativo de Montagem 3D</b><span class="mute">${n} de ${M.length} módulos estudados · toque no assunto para abrir só aquele módulo</span><i class="ori-bar"><s style="width:${n/M.length*100}%"></s></i></div>
+   <div class="ori-bt"><a class="btn sec" href="orientativo/#quiz">✓ Prova final</a></div>
    <div class="ori-m">${M.map((m,i)=>`<a href="orientativo/?foco=1#${m[0]}" title="Abrir só este módulo" class="${F.includes(m[0])?'ok':''}"><span>${F.includes(m[0])?'✓':String(i+1).padStart(2,'0')}</span>${m[1]}</a>`).join('')}</div></div>`;}
+function guiaTec(){const I=[
+  ['1','Cabeçalho',1,1.5,98,6.4,'Nome da tipologia e o código da montagem no catálogo (ex.: SUP JCR 200). É por ele que a montagem é procurada no sistema.'],
+  ['2','Elevação · vista externa',1,9.4,44,46,'A janela vista de fora, como o cliente vai ver na parede. Mostra a largura (L) e a altura (H) do vão e as setas de quais folhas correm. "F" é folha fixa.'],
+  ['3','Corte vertical · 03 / 04',45.6,9.4,53.5,46,'A janela cortada em pé, de cima a baixo: trilho superior em cima, trilho inferior embaixo e as folhas no meio. Serve para entender a altura (H).'],
+  ['4','Corte horizontal · 01 / 02',1,56.8,98,41.8,'A janela cortada deitada, de um lado ao outro: marcos laterais nas pontas e o encontro das folhas no meio. Lado interno em cima, lado externo embaixo. Serve para entender a largura (L).'],
+  ['5','Vidro interrompido',40,80,22,12,'O traço em "Z" no vidro quer dizer que o desenho foi encurtado para caber na folha. As medidas reais estão nas cotas L e H.']];
+ return `<div class="gtec"><div class="gtec-img" id="gtImg"><img src="img/folha-tecnica.webp" alt="Exemplo de folha de desenho técnico" loading="lazy">${I.map(i=>`<button type="button" class="gtec-pt" data-g="${i[0]}" style="left:${i[2]+1}%;top:${i[3]+1}%" aria-label="${h(i[1])}">${i[0]}</button><span class="gtec-box" data-gb="${i[0]}" style="left:${i[2]}%;top:${i[3]}%;width:${i[4]}%;height:${i[5]}%"></span>`).join('')}</div>
+  <div class="gtec-tx"><h3>📐 Entenda o desenho técnico</h3><p class="mute">Toque nos números da folha para ver o que cada parte mostra.</p>
+   <ol>${I.map(i=>`<li data-g="${i[0]}"><b>${h(i[1])}</b><span>${h(i[6])}</span></li>`).join('')}</ol>
+   <p class="dica-tec">💡 No desenho técnico, passe o mouse num perfil para ver o código e o peso. Em <b>🧩 Montar o corte</b> você treina levando cada perfil até o lugar dele.</p>
+   <div class="gtec-bt"><a class="btn pri" href="tecnico/">📐 Abrir o exemplo</a><a class="btn sec" href="tecnico/?montar=1">🧩 Treinar montando o corte</a></div></div></div>`;}
 function telaTip(){
   const L=TIPS.filter(t=>t.l==='res'&&(filtro==='todas'||t.g===filtro)),F=TIPS.filter(t=>t.l==='fac'&&(filtro==='todas'||filtro==='fac'));
   const card=t=>{const go=t.tec?`<a class="card tip" href="${t.tec}">`:t.obra?`<a class="card tip" href="${OBRA(t.obra)}" target="_blank" rel="noopener">`:`<button class="card tip" data-tip="${t.id}">`,fim=t.tec||t.obra?'</a>':'</button>';
@@ -369,7 +393,7 @@ function telaTip(){
   return `<div class="cab"><div><h2>Tipologias</h2><p class="mute">Janelas, portas e fachadas de mercado para escolher e apresentar ao cliente.</p></div>
    <div class="filtros" role="group" aria-label="Filtrar">${[['todas','Todas'],['jan','Janelas'],['por','Portas'],['fac','Fachadas']].map(([k,n])=>`<button type="button" data-f="${k}" aria-pressed="${filtro===k}">${n}</button>`).join('')}</div></div>
    ${faixaOri()}
-   ${filtro!=='fac'?`<div class="linha-tit"><h3>Desenho Técnico</h3></div>
+   ${filtro!=='fac'?`<div class="linha-tit"><h3>Desenho Técnico</h3></div>${guiaTec()}
    <div class="grid">${L.map(card).join('')}</div>`:''}
    ${F.length?`<div class="linha-tit"><h3>Fachadas</h3></div><div class="grid">${F.map(card).join('')}</div>`:''}
 `;
@@ -382,6 +406,8 @@ function telaApr(){return `<div class="cab"><div><h2>Modo apresentação</h2><p 
 function telaGes(){return `<div class="cab"><div><h2>Gestão</h2><p class="mute">Área do gestor da empresa.</p></div></div>`+emBreve('⚙','Gestão em construção','Aqui ficarão os acessos da equipe, o uso de cada pessoa e os dados da licença da empresa.',[['👥','Acessos da equipe','Vendedores e arquitetos com login próprio.'],['📊','Uso da plataforma','Quem acessou e o que apresentou.'],['📄','Licença','Prazo da licença e contrato.']]);}
 
 function ligar(){
+  const gm=k=>{document.querySelectorAll('[data-g]').forEach(e=>e.classList.toggle('on',e.dataset.g===k));document.querySelectorAll('[data-gb]').forEach(e=>e.classList.toggle('on',e.dataset.gb===k));};
+  document.querySelectorAll('.gtec [data-g]').forEach(e=>{e.onclick=()=>gm(e.dataset.g);e.onmouseenter=()=>gm(e.dataset.g);});
   document.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>vaiPara(b.dataset.ir));
   document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{filtro=b.dataset.f;render();});
   document.querySelectorAll('[data-tip]').forEach(b=>b.onclick=()=>detalhe(b.dataset.tip));
