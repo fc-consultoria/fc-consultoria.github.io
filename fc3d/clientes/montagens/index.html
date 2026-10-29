@@ -12,18 +12,18 @@
    Mesmo modelo do Orientativo de Montagem 3D da FC, com linhas FC e códigos SU.
    © FC Consultoria em Esquadria · criação da FC, uso exclusivo de empresas licenciadas. */
 :root{
-  --bg:#f3f5f4;--panel:#ffffff;--soft:#eaf0ee;--ink:#10201f;--mute:#5a6b69;--line:#d5dfdc;
-  --teal:#0e6f6a;--teal2:#0a4f4b;--tealSoft:#dcefec;--amber:#c88a1c;--amberSoft:#fbefd6;--amberInk:#8a5a08;
+  --bg:#f2f4f6;--panel:#ffffff;--soft:#e8edf0;--ink:#14212a;--mute:#5a6872;--line:#d5dde2;
+  --teal:#02717d;--teal2:#025a67;--tealSoft:#d8f0f1;--amber:#c88a1c;--amberSoft:#fbefd6;--amberInk:#8a5a08;
   --ok:#1f7a48;--okSoft:#dff2e6;--bad:#b3261e;--badSoft:#fbe4e2;--vid:#bfe0ea;--alu:#c4cbcf;--alu2:#8e989d;--parede:#e6a57f;--parede2:#cf8a62;
   --f-h:'Space Grotesk',system-ui,sans-serif;--f-b:'Inter',system-ui,-apple-system,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0d1514;--panel:#142120;--soft:#1a2b29;--ink:#e6efed;--mute:#97aaa7;--line:#263936;
-  --teal:#3cc0b5;--teal2:#2a9d93;--tealSoft:#163a37;--amber:#e8b04a;--amberSoft:#3a2d12;--amberInk:#f0c87a;--ok:#6fd39a;--okSoft:#173523;--bad:#f28b82;--badSoft:#3b1a18;--vid:#2c5866;--alu:#7d8a90;--alu2:#a9b6bb;--parede:#8a5a43;--parede2:#a56c50;color-scheme:dark}}
+  --bg:#11181d;--panel:#182229;--soft:#1f2c34;--ink:#e6efed;--mute:#97aaa7;--line:#2a3943;
+  --teal:#22c3c9;--teal2:#0aa0a8;--tealSoft:#143a3e;--amber:#e8b04a;--amberSoft:#3a2d12;--amberInk:#f0c87a;--ok:#6fd39a;--okSoft:#173523;--bad:#f28b82;--badSoft:#3b1a18;--vid:#2c5866;--alu:#7d8a90;--alu2:#a9b6bb;--parede:#8a5a43;--parede2:#a56c50;color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0d1514;--panel:#142120;--soft:#1a2b29;--ink:#e6efed;--mute:#97aaa7;--line:#263936;
-  --teal:#3cc0b5;--teal2:#2a9d93;--tealSoft:#163a37;--amber:#e8b04a;--amberSoft:#3a2d12;--amberInk:#f0c87a;--ok:#6fd39a;--okSoft:#173523;--bad:#f28b82;--badSoft:#3b1a18;--vid:#2c5866;--alu:#7d8a90;--alu2:#a9b6bb;--parede:#8a5a43;--parede2:#a56c50;color-scheme:dark}
+  --bg:#11181d;--panel:#182229;--soft:#1f2c34;--ink:#e6efed;--mute:#97aaa7;--line:#2a3943;
+  --teal:#22c3c9;--teal2:#0aa0a8;--tealSoft:#143a3e;--amber:#e8b04a;--amberSoft:#3a2d12;--amberInk:#f0c87a;--ok:#6fd39a;--okSoft:#173523;--bad:#f28b82;--badSoft:#3b1a18;--vid:#2c5866;--alu:#7d8a90;--alu2:#a9b6bb;--parede:#8a5a43;--parede2:#a56c50;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
 body{background:var(--bg);color:var(--ink);font:400 15px/1.55 var(--f-b)}
@@ -47,7 +47,7 @@ a{color:var(--teal)}
 .gate h1{font-size:21px;margin-bottom:8px}
 
 /* topo */
-.topo{background:var(--teal2);color:#fff;position:sticky;top:0;z-index:50;box-shadow:0 3px 0 var(--amber)}
+.topo{background:linear-gradient(90deg,#1c262d,#2b3942);color:#fff;position:sticky;top:0;z-index:50;box-shadow:0 3px 0 var(--teal)}
 .topo .w{max-width:1280px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
 .topo a.volta{color:#fff;text-decoration:none;font-weight:600;font-size:14px;border:1px solid rgba(255,255,255,.35);border-radius:10px;padding:7px 12px;white-space:nowrap}
 .topo .tt b{display:block;font:700 18px/1.1 var(--f-h)}.topo .tt small{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:#f2d79a}
@@ -124,10 +124,10 @@ dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:10px 0}dt{col
 .v3bar .btn{min-height:36px;padding:6px 11px;font-size:13.5px;background:rgba(20,33,32,.86);color:#fff;border-color:rgba(255,255,255,.18)}
 .v3bar .btn[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
 .v3bar .med{display:flex;gap:6px;align-items:center;background:rgba(20,33,32,.86);border:1px solid rgba(255,255,255,.18);border-radius:11px;padding:4px 8px;color:#dff3f0;font-size:13px}
-.v3bar .med input{width:68px;border:0;border-radius:7px;padding:4px 6px;color:#10201f;text-align:right;background:#fff}
+.v3bar .med input{width:68px;border:0;border-radius:7px;padding:4px 6px;color:#14212a;text-align:right;background:#fff}
 .v3lb{position:absolute;left:10px;bottom:10px;right:10px;background:rgba(20,33,32,.9);color:#fff;border-radius:11px;padding:8px 12px;font-size:14px}
 .v3lb b{color:#f2c063}
-.v3w.v3cl .v3dica{color:#5a6b69}
+.v3w.v3cl .v3dica{color:#5a6872}
 .v3cor{position:absolute;right:10px;top:58px;width:min(300px,calc(100% - 20px));background:rgba(20,33,32,.94);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:10px 12px;color:#dff3f0;font-size:13px;display:grid;gap:8px;z-index:3}
 .v3cor b{font-weight:600;display:block;margin-bottom:4px}.v3cor .sw{display:flex;gap:6px;flex-wrap:wrap}
 .v3cor button{width:30px;height:30px;border-radius:9px;border:2px solid rgba(255,255,255,.25);cursor:pointer;padding:0}
@@ -258,7 +258,7 @@ const CMST=[['Monte o requadro','Corte o perfil de contramarco CM-200 nas medida
 const CMPC=[['CM-200','Perfil de contramarco','Requadro de alumínio natural chumbado no vão'],['CON063','Cantoneira de conexão','Une os cantos do requadro'],['ESQ160','Esquadro','Trava os cantos em 90° durante a obra'],['CHU-787','Grapa (chumbador)','Prende o contramarco na alvenaria'],['CL-011','Calço','Ajusta prumo e nível antes de chumbar']];
 let CMK=0;
 function vidroR(x,y,w,h){return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="var(--vid)" fill-opacity=".7" stroke="#5f8796" stroke-width="1"/>`;}
-function setaS(x,y,d){return `<path d="M${x} ${y} h${d*30} m${-d*8} -6 l${d*8} 6 l${-d*8} 6" stroke="#10201f" stroke-width="3" fill="none"/>`;}
+function setaS(x,y,d){return `<path d="M${x} ${y} h${d*30} m${-d*8} -6 l${d*8} 6 l${-d*8} 6" stroke="#14212a" stroke-width="3" fill="none"/>`;}
 function cmSvg(k){const on=s=>CMST.findIndex(x=>x[2]===s)<=k;let s=`<svg viewBox="0 0 360 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Passo ${k+1} da instalação do contramarco">`;
  for(let y=0;y<260;y+=20)for(let x=(y/20)%2?-20:0;x<360;x+=40)s+=`<rect x="${x}" y="${y}" width="38" height="18" fill="var(--parede)" stroke="var(--parede2)" stroke-width="1"/>`;
  s+=`<rect x="60" y="40" width="240" height="180" fill="#f4f1ec"/>`;

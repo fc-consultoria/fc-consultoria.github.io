@@ -6,12 +6,12 @@
 /* Layout: cabeçalho FC, palco 3D protagonista com resumo da obra embaixo, painel lateral em abas (Variáveis · Corte · Materiais) */
 :root{
   --bg:#edf2f2; --surface:#ffffff; --sunk:#f4f7f7; --fg:#13232e; --muted:#5a6b72; --line:#d3dfe0;
-  --teal:#0e6b6b; --tealInk:#ffffff; --amber:#f2a51e; --amberInk:#2a1b00; --stage:#dde6e7;
+  --teal:#02717d; --tealInk:#ffffff; --amber:#f2a51e; --amberInk:#2a1b00; --stage:#dde6e7;
   --al1:#f4f6f6; --al2:#b9c3c6; --gua:#16181a; --sil:#3b4247;
   --display:"Space Grotesk",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c161b;--surface:#13222a;--sunk:#0f1c23;--fg:#e6eef0;--muted:#93a5ab;--line:#24363e;--teal:#3fb3ad;--tealInk:#04201f;--stage:#0f1c22;--al1:#d9e0e2;--al2:#8d999d;--gua:#050606;--sil:#59636a;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0c161b;--surface:#13222a;--sunk:#0f1c23;--fg:#e6eef0;--muted:#93a5ab;--line:#24363e;--teal:#3fb3ad;--tealInk:#04201f;--stage:#0f1c22;--al1:#d9e0e2;--al2:#8d999d;--gua:#050606;--sil:#59636a;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c161b;--surface:#13222a;--sunk:#0f1c23;--fg:#e6eef0;--muted:#93a5ab;--line:#24363e;--teal:#22c3c9;--tealInk:#04201f;--stage:#0f1c22;--al1:#d9e0e2;--al2:#8d999d;--gua:#050606;--sil:#59636a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0c161b;--surface:#13222a;--sunk:#0f1c23;--fg:#e6eef0;--muted:#93a5ab;--line:#24363e;--teal:#22c3c9;--tealInk:#04201f;--stage:#0f1c22;--al1:#d9e0e2;--al2:#8d999d;--gua:#050606;--sil:#59636a;color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
 .wrap{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:12px}

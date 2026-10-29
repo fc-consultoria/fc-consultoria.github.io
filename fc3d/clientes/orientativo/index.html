@@ -10,7 +10,7 @@
 <link rel="icon" href="/img/logo-fc-160.jpg">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap">
 <style>
-:root{--tl:#0f6b70;--tl2:#13878d;--tlc:#e5f2f2;--or:#f2a51e;--or2:#e08a00;--ink:#13232e;--tx:#13232e;--tm:#5a6b75;--ln:#d8e2e6;--bg:#f2f6f7;--gd:#c8932f;--gdc:#fbf3e4;--sp:#2f7fb8;--spc:#e8f1fa;--ok:#16a34a;--f-d:'Barlow Condensed',system-ui,sans-serif;--f-b:'Barlow',system-ui,sans-serif}
+:root{--tl:#02717d;--tl2:#04969d;--tlc:#e5f2f2;--or:#f2a51e;--or2:#e08a00;--ink:#13232e;--tx:#13232e;--tm:#5a6b75;--ln:#d8e2e6;--bg:#f2f6f7;--gd:#c8932f;--gdc:#fbf3e4;--sp:#2f7fb8;--spc:#e8f1fa;--ok:#16a34a;--f-d:'Barlow Condensed',system-ui,sans-serif;--f-b:'Barlow',system-ui,sans-serif}
 *{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--tx);font:400 16px/1.5 var(--f-b)}
 button{font-family:inherit}a{color:var(--tl)}
 .rgate{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:#e9f0f0;padding:16px;font-family:system-ui,sans-serif}.rgate[hidden]{display:none}
@@ -761,7 +761,7 @@ async function iniciar(){try{const j=await fetch('perfis.json?v=1',{cache:'no-ca
  if(ALUNO){participar();return;}const h=location.hash.slice(1);go(R[h]?h:null);if(APRES.length>=10){try{localStorage.setItem('fc_esq_sala',APRES)}catch(_){}apresentar(APRES);}}
 marca();if(!ALUNO&&!ESTUDO){const g=$('#bGrav');if(g)g.hidden=false;}voltaBtn(!ALUNO&&!ESTUDO);if(ALUNO||ESTUDO)iniciar();else (function(){/* Plataforma FC 3D Clientes: entra com a sessão da plataforma */
  const SP='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_sessao',SPK='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs',G=$('#gate');
- const nega=(t,p)=>{G.hidden=false;G.innerHTML='<form><small>Plataforma FC 3D</small><h1>'+t+'</h1><p>'+p+'</p><a href="../" style="color:#0f6b70;font-weight:700">Ir para a Plataforma FC 3D</a></form>';};
+ const nega=(t,p)=>{G.hidden=false;G.innerHTML='<form><small>Plataforma FC 3D</small><h1>'+t+'</h1><p>'+p+'</p><a href="../" style="color:#02717d;font-weight:700">Ir para a Plataforma FC 3D</a></form>';};
  let tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
  if(!tk){nega('Entre na Plataforma FC 3D','O Orientativo abre pela plataforma, depois de entrar com o seu login.');return;}
  fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})}).then(r=>r.ok?r.json():null)

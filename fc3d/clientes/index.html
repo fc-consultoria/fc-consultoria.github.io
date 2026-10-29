@@ -11,18 +11,18 @@
 /* Plataforma FC 3D Clientes · etapa 1: entrada, painel da empresa e menu por papel.
    © FC Consultoria em Esquadria · criação da FC, uso exclusivo de empresas licenciadas. */
 :root{
-  --bg:#f3f5f4;--panel:#ffffff;--soft:#eaf0ee;--ink:#10201f;--mute:#5a6b69;--line:#d5dfdc;
-  --teal:#0e6f6a;--teal2:#0a4f4b;--tealSoft:#dcefec;--amber:#c88a1c;--amberSoft:#fbefd6;--amberInk:#8a5a08;
+  --bg:#f2f4f6;--panel:#ffffff;--soft:#e8edf0;--ink:#14212a;--mute:#5a6872;--line:#d5dde2;
+  --teal:#02717d;--teal2:#025a67;--tealSoft:#d8f0f1;--slate:#2b3942;--slate2:#1c262d;--prata:#c3ccd3;--amber:#c88a1c;--amberSoft:#fbefd6;--amberInk:#8a5a08;
   --ok:#1f7a48;--okSoft:#dff2e6;
   --f-h:'Space Grotesk',system-ui,sans-serif;--f-b:'Inter',system-ui,-apple-system,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0d1514;--panel:#142120;--soft:#1a2b29;--ink:#e6efed;--mute:#97aaa7;--line:#263936;
-  --teal:#3cc0b5;--teal2:#2a9d93;--tealSoft:#163a37;--amber:#e8b04a;--amberSoft:#3a2d12;--amberInk:#f0c87a;--ok:#6fd39a;--okSoft:#173523;color-scheme:dark}}
+  --bg:#11181d;--panel:#182229;--soft:#1f2c34;--ink:#e7edf0;--mute:#9aa9b3;--line:#2a3943;
+  --teal:#22c3c9;--teal2:#0aa0a8;--tealSoft:#143a3e;--slate:#1f2b33;--slate2:#141c21;--prata:#c3ccd3;--amber:#e8b04a;--amberSoft:#3a2d12;--amberInk:#f0c87a;--ok:#6fd39a;--okSoft:#173523;color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0d1514;--panel:#142120;--soft:#1a2b29;--ink:#e6efed;--mute:#97aaa7;--line:#263936;
-  --teal:#3cc0b5;--teal2:#2a9d93;--tealSoft:#163a37;--amber:#e8b04a;--amberSoft:#3a2d12;--amberInk:#f0c87a;--ok:#6fd39a;--okSoft:#173523;color-scheme:dark}
+  --bg:#11181d;--panel:#182229;--soft:#1f2c34;--ink:#e7edf0;--mute:#9aa9b3;--line:#2a3943;
+  --teal:#22c3c9;--teal2:#0aa0a8;--tealSoft:#143a3e;--slate:#1f2b33;--slate2:#141c21;--prata:#c3ccd3;--amber:#e8b04a;--amberSoft:#3a2d12;--amberInk:#f0c87a;--ok:#6fd39a;--okSoft:#173523;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
 body{background:var(--bg);color:var(--ink);font:400 15px/1.5 var(--f-b)}
@@ -32,7 +32,9 @@ p{margin:0}
 [hidden]{display:none!important}
 .mute{color:var(--mute)}
 .btn{appearance:none;border:0;border-radius:11px;padding:11px 18px;font-weight:600;cursor:pointer;min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
-.btn.pri{background:var(--teal);color:#fff}.btn.pri:hover{background:var(--teal2)}
+.btn.pri{background:var(--teal);color:#fff}
+:root[data-theme="dark"] .btn.pri{color:#0b1a1e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.pri{color:#0b1a1e}}.btn.pri:hover{background:var(--teal2)}
 .btn.sec{background:transparent;border:1px solid var(--line);color:var(--ink)}.btn.sec:hover{border-color:var(--teal)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--soft);color:var(--mute)}
@@ -40,16 +42,17 @@ p{margin:0}
 
 /* ---------- entrada ---------- */
 #entrada{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
-.ent-arte{background:radial-gradient(circle at 25% 15%,#1b8f87 0%,#0b4a46 48%,#06211f 100%);color:#fff;padding:48px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.ent-arte{background:radial-gradient(circle at 25% 15%,#0a8f98 0%,#2b3942 55%,#161f25 100%);color:#fff;padding:48px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
 .ent-arte .marca{display:flex;align-items:center;gap:12px;font-family:var(--f-h);font-weight:700;font-size:18px}
-.lg{width:44px;height:44px;border-radius:12px;background:#fff;color:var(--teal2);display:grid;place-items:center;font:700 16px var(--f-h)}
+.lg{width:44px;height:44px;border-radius:12px;background:#fff;color:var(--teal2);display:grid;place-items:center;font:700 16px var(--f-h);flex:none;overflow:hidden}
+.lg.img{background:#2b3942 url(img/logo-fc-marca.png) center/cover no-repeat;color:transparent;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
 .ent-arte h1{font-size:clamp(30px,4vw,46px);line-height:1.08;max-width:14ch}
-.ent-arte h1 em{font-style:normal;color:#f2c063}
-.ent-arte .sub{color:#bfe3df;max-width:42ch;margin-top:14px;font-size:16px}
-.ent-arte ul{list-style:none;padding:0;margin:26px 0 0;display:grid;gap:10px;color:#dff3f0}
+.ent-arte h1 em{font-style:normal;color:#3fd6db}
+.ent-arte .sub{color:#cdd6dc;max-width:42ch;margin-top:14px;font-size:16px}
+.ent-arte ul{list-style:none;padding:0;margin:26px 0 0;display:grid;gap:10px;color:#e3e9ed}
 .ent-arte li{display:flex;gap:10px;align-items:center}
 .ent-arte li b{width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:14px}
-.ent-arte .wm{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8fc2bd}
+.ent-arte .wm{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#a1adb6}
 .ent-arte svg.fundo{position:absolute;right:-60px;bottom:-40px;width:420px;opacity:.13}
 .ent-form{display:flex;align-items:center;justify-content:center;padding:32px 20px;background:var(--bg)}
 .ent-card{width:100%;max-width:380px}
@@ -69,21 +72,21 @@ input.in:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:tra
 
 /* ---------- app ---------- */
 #app{min-height:100vh;display:flex;flex-direction:column}
-.topo{background:var(--teal2);color:#fff;padding:12px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.topo{background:linear-gradient(90deg,var(--slate2),var(--slate));border-bottom:3px solid var(--teal);color:#fff;padding:12px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .topo .lg{width:38px;height:38px;font-size:14px}
 .topo .tt b{display:block;font-family:var(--f-h);font-size:16px;line-height:1.2}
-.topo .tt span{font-size:12.5px;color:#bfe3df}
+.topo .tt span{font-size:12.5px;color:#a9b5bd}
 .topo .dir{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.topo .eu{font-size:13px;color:#dff3f0;text-align:right;line-height:1.25}
-.topo .eu i{font-style:normal;color:#f2c063;font-size:12px}
+.topo .eu{font-size:13px;color:#e3e9ed;text-align:right;line-height:1.25}
+.topo .eu i{font-style:normal;color:#3fd6db;font-size:12px}
 .ic-bt{all:unset;cursor:pointer;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.25)}
 .ic-bt:hover{background:rgba(255,255,255,.1)}
 .vercomo{display:flex;gap:4px;background:rgba(0,0,0,.18);padding:4px;border-radius:10px}
-.vercomo button{all:unset;cursor:pointer;font-size:12.5px;font-weight:600;padding:5px 10px;border-radius:7px;color:#cfe9e5}
+.vercomo button{all:unset;cursor:pointer;font-size:12.5px;font-weight:600;padding:5px 10px;border-radius:7px;color:#d6dee3}
 .vercomo button[aria-pressed="true"]{background:#fff;color:var(--teal2)}
-.dentro{display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.18);padding:4px 4px 4px 10px;border-radius:10px;font-size:12px;color:#cfe9e5}
+.dentro{display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.18);padding:4px 4px 4px 10px;border-radius:10px;font-size:12px;color:#d6dee3}
 .dentro select{font:inherit;font-weight:600;font-size:12.5px;border:0;border-radius:7px;padding:5px 8px;background:#fff;color:var(--teal2);cursor:pointer;max-width:190px}
-.mestre{display:inline-block;margin-left:6px;font-size:10.5px;font-weight:700;letter-spacing:.3px;padding:2px 7px;border-radius:20px;background:#f3b23c;color:#3a2600;vertical-align:middle}
+.mestre{display:inline-block;margin-left:6px;font-size:10.5px;font-weight:700;letter-spacing:.3px;padding:2px 7px;border-radius:20px;background:linear-gradient(180deg,#e3e8ec,#a9b4bd);color:#1c262d;vertical-align:middle}
 nav.menu{background:var(--panel);border-bottom:1px solid var(--line);padding:0 14px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
 nav.menu button{all:unset;cursor:pointer;padding:14px 14px 12px;font-weight:600;font-size:14.5px;color:var(--mute);border-bottom:3px solid transparent;white-space:nowrap;display:flex;gap:7px;align-items:center}
 nav.menu button[aria-current="page"]{color:var(--teal);border-color:var(--teal)}
@@ -99,8 +102,8 @@ button.card:hover{border-color:var(--teal);transform:translateY(-1px)}
 .card h3{font-size:17px}
 .card .d{font-size:13.5px;color:var(--mute)}
 .card .pe{margin-top:auto;display:flex;gap:6px;flex-wrap:wrap;padding-top:6px}
-.hero{background:linear-gradient(135deg,var(--teal2),var(--teal));color:#fff;border-radius:18px;padding:24px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
-.hero h2{font-size:24px}.hero p{color:#d5efeb;margin-top:6px;max-width:60ch}
+.hero{background:linear-gradient(120deg,#2b3942 0%,#025a67 70%,#02717d 100%);color:#fff;border-radius:18px;padding:24px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+.hero h2{font-size:24px}.hero p{color:#dbe3e8;margin-top:6px;max-width:60ch}
 .hero .bts{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
 .hero .btn.cl{background:#fff;color:var(--teal2)}
 .etapas{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:18px}
@@ -169,7 +172,7 @@ a.card:hover{border-color:var(--teal);transform:translateY(-1px)}
 <!-- ============ ENTRADA ============ -->
 <section id="entrada" hidden>
   <div class="ent-arte">
-    <div class="marca"><div class="lg">FC</div>Plataforma FC 3D</div>
+    <div class="marca"><div class="lg img" role="img" aria-label="FC Consultoria">FC</div>Plataforma FC 3D</div>
     <div>
       <h1>Apresente esquadrias em <em>3D</em> para quem decide a obra.</h1>
       <p class="sub">A ferramenta da sua equipe para mostrar tipologias, ambientes e projetos ao cliente final, ao arquiteto e ao engenheiro.</p>
@@ -418,6 +421,7 @@ async function abrir(token){
   const dentro=S.matriz&&S.empresa;
   $('#empNome').innerHTML=S.matriz&&!dentro?'Visão da FC Consultoria':escH(S.empresa_nome)+(dentro?'<span class="mestre" title="Você está dentro desta empresa como FC Consultoria">FC · gestor mestre</span>':'');
   $('#sigla').textContent=S.matriz&&!dentro?'FC':(S.sigla||(S.empresa_nome||'FC').slice(0,2).toUpperCase());
+  {const sg=$('#sigla');sg.classList.toggle('img',sg.textContent==='FC');}
   const dd=$('#dentroDe');dd.hidden=!S.matriz;
   if(S.matriz){
     let E=[];try{E=await rpc('pfc_matriz_empresas',{p_token:token})||[];}catch(_){}

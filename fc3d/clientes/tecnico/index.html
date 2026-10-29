@@ -12,8 +12,8 @@
    Cortes redesenhados pela FC a partir da geometria das seções (escala real, códigos SU).
    © FC Consultoria em Esquadria · uso exclusivo da empresa licenciada. */
 :root{
-  --bg:#eef1f0;--panel:#fff;--soft:#eaf0ee;--ink:#10201f;--mute:#5a6b69;--line:#d5dfdc;
-  --teal:#0e6f6a;--teal2:#0a4f4b;--tealSoft:#dcefec;--amber:#c88a1c;--amberSoft:#fbefd6;
+  --bg:#eef1f0;--panel:#fff;--soft:#e8edf0;--ink:#14212a;--mute:#5a6872;--line:#d5dde2;
+  --teal:#02717d;--teal2:#025a67;--tealSoft:#d8f0f1;--amber:#c88a1c;--amberSoft:#fbefd6;
   --paper:#ffffff;--tr:#1b1d1f;--sec:#d7dbde;--secHi:#9fd8d1;--vid:#cfe6ef;--cota:#1f4e8c;
   --f-h:'Space Grotesk',system-ui,sans-serif;--f-b:'Inter',system-ui,sans-serif;--f-t:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
   color-scheme:light;
@@ -24,7 +24,7 @@ body{background:var(--bg);color:var(--ink);font:400 15px/1.5 var(--f-b)}
 button,input{font:inherit;color:inherit}
 h1,h2,h3{font-family:var(--f-h);margin:0}
 [hidden]{display:none!important}
-.topo{background:var(--teal2);color:#fff;padding:10px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.topo{background:linear-gradient(90deg,#1c262d,#2b3942);border-bottom:3px solid var(--teal);color:#fff;padding:10px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .topo a.volta{color:#fff;text-decoration:none;font-weight:600;font-size:14px;border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:7px 12px}
 .topo h1{font-size:17px}.topo span{font-size:12.5px;color:#bfe3df}
 .topo .dir{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -99,7 +99,7 @@ svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto 
 .folha.mont.fs .vp.um{height:calc(100vh - 170px)!important}
 .fant path{fill:none;stroke:#9aa8a6;stroke-width:.6;stroke-dasharray:3 2;vector-effect:non-scaling-stroke}
 .fant text{fill:#7b8c89;font:600 7px var(--f-t);letter-spacing:.04em;text-anchor:middle;dominant-baseline:middle}
-.pc .rotc{fill:#0a4f4b;font:700 7.5px var(--f-t);text-anchor:middle;letter-spacing:.04em;pointer-events:none}
+.pc .rotc{fill:#025a67;font:700 7.5px var(--f-t);text-anchor:middle;letter-spacing:.04em;pointer-events:none}
 .pc.ok path{fill:#bfe8d4;stroke:#1f7a48}.pc.ok .rotc{display:none}.pc.ok{cursor:default}
 .pc.err path{fill:#f6c9c4;stroke:#b3261e}
 .mbar{position:sticky;bottom:10px;z-index:20;margin:10px auto 0;width:fit-content;max-width:100%;display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center;background:rgba(16,32,31,.94);color:#fff;padding:8px 10px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.25);font:600 13px var(--f-b)}
@@ -341,7 +341,7 @@ function bip(tipo){try{const A=window._ac||(window._ac=new (window.AudioContext|
   o.frequency.value=tipo==='er'?180:tipo==='fim'?660:880;o.type=tipo==='er'?'square':'sine';g.gain.setValueAtTime(.08,A.currentTime);g.gain.exponentialRampToValueAtTime(.001,A.currentTime+(tipo==='fim'?.6:.18));o.start();o.stop(A.currentTime+(tipo==='fim'?.6:.2));
   if(tipo==='fim'){const o2=A.createOscillator(),g2=A.createGain();o2.connect(g2);g2.connect(A.destination);o2.frequency.value=990;g2.gain.setValueAtTime(.07,A.currentTime+.18);g2.gain.exponentialRampToValueAtTime(.001,A.currentTime+.8);o2.start(A.currentTime+.18);o2.stop(A.currentTime+.85);}}catch(_){}}
 function comemora(){const seg=Math.round((MONT.fim-MONT.t0)/1000),tempo=`${Math.floor(seg/60)}:${String(seg%60).padStart(2,'0')}`,perf=!MONT.er;
-  const m=document.createElement('div');m.className='mfim';const cores=['#0e6f6a','#c88a1c','#2bb3a6','#e8b04a','#1f7a48','#5f8ea3'];
+  const m=document.createElement('div');m.className='mfim';const cores=['#02717d','#c88a1c','#2bb3a6','#e8b04a','#1f7a48','#5f8ea3'];
   m.innerHTML=`<div class="cx">${Array.from({length:40},(_,i)=>`<i class="cft" style="left:${Math.random()*100}%;background:${cores[i%cores.length]};animation-delay:${Math.random()*.6}s"></i>`).join('')}
    <div class="tr">${perf?'🏆':'🎉'}</div><h2>${perf?'Perfeito! Corte montado sem erro':'Parabéns! Corte montado'}</h2>
    <p>${MONT.vp==='vpH'?'Corte horizontal':'Corte vertical'} · Nível ${MONT.n} ${MONT.n===1?'(com códigos)':'(só o formato)'}</p>
