@@ -161,7 +161,7 @@ svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto 
 </div>
 <div id="tip" hidden></div>
 
-<script src="montagens.js?v=2"></script>
+<script src="montagens.js?v=3"></script>
 <script>
 (function(){
 /* ---------- acesso: só com a sessão da Plataforma FC 3D Clientes ---------- */
@@ -179,12 +179,13 @@ function iniciar(){
   document.title='Desenho Técnico FC · '+M.n;
   document.getElementById('tTit').textContent=M.n;document.getElementById('fTit').textContent=M.n;document.getElementById('fCd').textContent=M.cd;
   document.getElementById('tSub').textContent=M.linha+' · desenho técnico interativo'+(M.aj?' · ⚠ oculto para os clientes — '+M.aj:'');
-  {const GR=[['Janelas de correr',['jc2','jc2a','jc3','jc4','jc4a','jcb','jc4p','jc4pa']],['Janelas com veneziana',['jvz3','jc4v','jvc7','jvz6']],['Portas de correr',['pc2','pc2a','pc3','pc4','pc4a','pvz3']],['Giro e maxim-ar',['pg1','pg2','mx1','mx2p']]];
+  {const GR=[['Janelas de correr',['jc2','jc2a','jc3','jc4','jc4a','jcb','jc4p','jc4pa']],['Janelas com veneziana',['jvz3','jc4v','jvc7','jvz6']],['Portas de correr',['pc2','pc2a','pc3','pc4','pc4a','pvz3']],['Giro e maxim-ar',['pg1','pg2','mx1','mx2p']],
+    ['Gold · janelas de correr',['g_jc2','g_jc4','g_jc6','g_jvz3','g_jcb']],['Gold · portas de correr',['g_pc2pe','g_pvz3','g_pc4b']],['Gold · giro',['g_pg1v','g_pg2']],['Gold · maxim-ar e conjugadas',['g_mxa','g_mxb','g_cju','g_cjp']]];
    const op=k=>FCM.MONT[k]&&(!FCM.MONT[k].aj||MATRIZ)?`<option value="${k}" ${k===KEY?'selected':''}>${FCM.MONT[k].aj?'⚠ ':''}${FCM.MONT[k].cd} · ${FCM.MONT[k].n}</option>`:'';
    document.getElementById('troca').innerHTML='<select aria-label="Escolher a montagem">'+GR.map(([g,ks])=>`<optgroup label="${g}">${ks.map(op).join('')}</optgroup>`).join('')+'</select>';
    document.querySelector('#troca select').onchange=e=>{location.search='?m='+e.target.value;};}
   document.getElementById('inL').value=M.def[0];document.getElementById('inH').value=M.def[1];
-  fetch('secoes.json?v=2').then(r=>r.json()).then(montar).catch(()=>nega('Não foi possível abrir','Tente de novo em instantes.'));
+  fetch('secoes.json?v=3').then(r=>r.json()).then(montar).catch(()=>nega('Não foi possível abrir','Tente de novo em instantes.'));
 }
 
 const NS='http://www.w3.org/2000/svg';
@@ -293,7 +294,8 @@ function elevG(g,L,H){g.innerHTML='';const R=FCM.pecas(S,M,L,H),k=Math.min(300/L
   R.folhas.forEach((f,i)=>{const e=f.el;if(!e)return;
     if(!f.fixo)A('rect',{x:X(e.x0),y:Y(e.y1),width:(e.x1-e.x0)*k,height:(e.y1-e.y0)*k,fill:'#eef6f9',stroke:'#1b1d1f','stroke-width':.8});
     R.P.filter(o=>o.vid&&o.g===i).forEach(o=>{const cx=(f.ox||0)+o.p[0]+(e.max||e.giro?0:0),cy=(f.oy||0)+o.p[1];
-      A('rect',{x:X(cx-o.w/2+6),y:Y(cy+o.h/2-6),width:(o.w-12)*k,height:(o.h-12)*k,fill:'#d9ecf3',stroke:'#1b1d1f','stroke-width':.4});
+      A('rect',{x:X(cx-o.w/2+6),y:Y(cy+o.h/2-6),width:(o.w-12)*k,height:(o.h-12)*k,fill:o.vz?'#eef1f2':'#d9ecf3',stroke:'#1b1d1f','stroke-width':.4});
+      if(o.vz&&f.inf!=='vz'&&f.inf!=='vzv')for(let yy=cy-o.h/2+30;yy<cy+o.h/2-20;yy+=40)A('line',{x1:X(cx-o.w/2+20),x2:X(cx+o.w/2-20),y1:Y(yy),y2:Y(yy),stroke:'#1b1d1f','stroke-width':.4});
       if(f.fixo){const t=el('text',{x:X(cx),y:Y(cy)+4,'text-anchor':'middle','font-size':10,'font-weight':700,fill:'#1b1d1f'},g);t.textContent='Fixo';}});
     if(f.inf==='vz'||f.inf==='vzv'){for(let y=e.y0+60;y<e.y1-50;y+=(f.inf==='vzv'?28:40))A('line',{x1:X(e.x0+40),x2:X(e.x1-40),y1:Y(y),y2:Y(y),stroke:'#1b1d1f','stroke-width':.4});}
     const cx=(e.x0+e.x1)/2,cy=(e.y0+e.y1)/2;

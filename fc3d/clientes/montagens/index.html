@@ -156,7 +156,7 @@ dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:10px 0}dt{col
 
 <header class="topo"><div class="w">
   <a class="volta" href="../#tip">← Tipologias</a>
-  <div class="tt"><small>Plataforma FC 3D · Tipologias</small><b>Montagens 3D · Linha Suprema</b></div>
+  <div class="tt"><small>Plataforma FC 3D · Tipologias</small><b>Montagens 3D · Linhas Suprema e Gold</b></div>
   <span class="sp"></span>
   <div class="prog" title="Módulos estudados"><i><s id="pgB" style="width:0"></s></i><span id="pgT">0/9</span></div>
   <button type="button" id="btTema" aria-label="Trocar fundo claro ou escuro" title="Claro / escuro"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg></button>
@@ -164,7 +164,7 @@ dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:10px 0}dt{col
 </div></header>
 <div class="lay"><nav class="nav" id="nav" aria-label="Módulos"></nav><main id="main"><p style="padding:30px">Carregando…</p></main></div>
 
-<script src="../tecnico/montagens.js?v=2"></script>
+<script src="../tecnico/montagens.js?v=3"></script>
 <script>
 (function(){
 /* ---------- acesso: só com a sessão da Plataforma FC 3D Clientes (todos os papéis) ---------- */
@@ -197,7 +197,7 @@ const MOD=[
  {id:'tip',n:'Tipologias',d:'Os modelos de janelas, portas e fachadas e como cada um abre'},
  {id:'cm',n:'Contramarco',d:'O que é, os componentes e a instalação passo a passo'},
  {id:'gua',n:'Guarnições',d:'Por que a guarnição muda com a espessura do vidro'},
- {id:'cor',n:'Montagens 3D',d:'As 22 montagens da Linha Suprema em 3D com os perfis reais: janelas, venezianas, portas, giro e maxim-ar'},
+ {id:'cor',n:'Montagens 3D',d:'As montagens das linhas Suprema e Gold em 3D com os perfis reais: janelas, venezianas, portas, giro e maxim-ar'},
  {id:'max',n:'Janela Maxim-Ar',d:'Como abre e como se escolhe o braço'},
  {id:'pad',n:'Perfis e Componentes Padrão',d:'O que se repete em janela e porta, e o trilho macarrão'},
  {id:'giro',n:'Porta de Giro',d:'Como abre e a montagem a 90° e a 45°'},
@@ -321,7 +321,7 @@ function correrSvg(k,aberto){const n=k==='4s'?4:+k,W=360,H=170,m=10,fw=(W-2*m)/n
  s+=`<text x="${W/2}" y="${H+22}" text-anchor="middle" font-size="13" fill="currentColor">${aberto?'aberta':'fechada'} · vista de dentro</text>`;
  return s+'</svg>';}
 function mCor(){const T=CR.find(c=>c[0]===CRK);
- return head(3,'Montagens da Linha Suprema em 3D')+`<div class="sec"><h2>🧊 ${esc(FCM.MONT[CR3].n)} em 3D</h2><div class="row" style="margin:6px 0 10px"><select class="btn" id="sel3" aria-label="Escolher a montagem" style="max-width:100%">${Object.entries(FCM.MONT).filter(([k,m])=>!m.aj||MATRIZ).map(([k,m])=>`<option value="${k}" ${k===CR3?'selected':''}>${esc((m.aj?'⚠ ':'')+m.cd+' · '+m.n)}</option>`).join('')}</select></div>${FCM.MONT[CR3].aj?`<p class="nt" style="color:#b45309"><b>⚠ Oculto para os clientes.</b> ${esc(FCM.MONT[CR3].aj)}.</p>`:''}<p class="nt">Gire com o dedo ou o mouse, abra as folhas, desmonte e toque na peça para ver o código. Os perfis são as seções reais da linha, em escala.</p>
+ return head(3,'Montagens da '+FCM.MONT[CR3].linha+' em 3D')+`<div class="sec"><h2>🧊 ${esc(FCM.MONT[CR3].n)} em 3D</h2><div class="row" style="margin:6px 0 10px"><select class="btn" id="sel3" aria-label="Escolher a montagem" style="max-width:100%">${['Linha Suprema','Linha Gold'].map(ln=>`<optgroup label="${ln}">`+Object.entries(FCM.MONT).filter(([k,m])=>m.linha===ln&&(!m.aj||MATRIZ)).map(([k,m])=>`<option value="${k}" ${k===CR3?'selected':''}>${esc((m.aj?'⚠ ':'')+m.cd+' · '+m.n)}</option>`).join('')+'</optgroup>').join('')}</select></div>${FCM.MONT[CR3].aj?`<p class="nt" style="color:#b45309"><b>⚠ Oculto para os clientes.</b> ${esc(FCM.MONT[CR3].aj)}.</p>`:''}<p class="nt">Gire com o dedo ou o mouse, abra as folhas, desmonte e toque na peça para ver o código. Os perfis são as seções reais da linha, em escala.</p>
  <div class="v3w" id="v3w"><div class="v3" id="v3"></div><div class="v3msg" id="v3msg">Carregando o 3D…</div>
   <div class="v3bar"><button class="btn" id="b3Ab" aria-pressed="false">↔ Abrir folhas</button><button class="btn" id="b3Ds" aria-pressed="false">✥ Desmontar</button><button class="btn" id="b3Vt">↺ Voltar ao original</button>
   <span class="med">L <input id="i3L" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[0]}" min="600" max="3000" step="10" aria-label="Largura em mm"> H <input id="i3H" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[1]}" min="500" max="1800" step="10" aria-label="Altura em mm"> mm</span>
@@ -414,7 +414,7 @@ function liga3d(){const host=$('#v3');if(!host)return;
   $('#b3Fs').onclick=()=>{const w=$('#v3w'),on=w.classList.toggle('fs');$('#b3Fs').textContent=on?'↙ Sair da tela cheia':'⛶ Tela cheia';};
   let tm=0;const med=()=>{clearTimeout(tm);tm=setTimeout(()=>{const l=Math.min(3000,Math.max(600,+$('#i3L').value||1200)),h=Math.min(1800,Math.max(500,+$('#i3H').value||1000));V3.medidas(l,h);},350);};
   $('#i3L').oninput=med;$('#i3H').oninput=med;};
- Promise.all([carrega3(),SEC?null:fetch('../tecnico/secoes.json?v=2').then(r=>r.json()).then(j=>{SEC=j;})]).then(()=>{
+ Promise.all([carrega3(),SEC?null:fetch('../tecnico/secoes.json?v=3').then(r=>r.json()).then(j=>{SEC=j;})]).then(()=>{
    if(AT!=='cor')return;const pcs=document.querySelector('.pcs');if(pcs&&!pcs.querySelector('[data-pf]')){const y=scrollY;go('cor',true);scrollTo(0,y);return;}ok();})
   .catch(()=>{const m=$('#v3msg');if(m)m.textContent='Não foi possível carregar o 3D. Confira a internet.';});}
 
@@ -543,7 +543,7 @@ function iniciar(){
  $('#bHome').onclick=()=>go(null);
  const h=location.hash.slice(1);go(RT[h]?h:null,true);
  addEventListener('hashchange',()=>{const k=location.hash.slice(1);if((RT[k]?k:null)!==AT)go(RT[k]?k:null);});
- fetch('../tecnico/secoes.json?v=2').then(r=>r.json()).then(j=>{SEC=SEC||j;}).catch(()=>{});
+ fetch('../tecnico/secoes.json?v=3').then(r=>r.json()).then(j=>{SEC=SEC||j;}).catch(()=>{});
 }
 })();
 </script>
