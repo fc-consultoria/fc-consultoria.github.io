@@ -196,7 +196,7 @@ const MOD=[
  {id:'tip',n:'Tipologias',d:'Os modelos de janelas, portas e fachadas e como cada um abre'},
  {id:'cm',n:'Contramarco',d:'O que é, os componentes e a instalação passo a passo'},
  {id:'gua',n:'Guarnições',d:'Por que a guarnição muda com a espessura do vidro'},
- {id:'cor',n:'Janelas de Correr',d:'A janela 2 folhas em 3D com os perfis reais, e as de 3, 4 e 6 folhas'},
+ {id:'cor',n:'Montagens 3D',d:'As 22 montagens da Linha Suprema em 3D com os perfis reais: janelas, venezianas, portas, giro e maxim-ar'},
  {id:'max',n:'Janela Maxim-Ar',d:'Como abre e como se escolhe o braço'},
  {id:'pad',n:'Perfis e Componentes Padrão',d:'O que se repete em janela e porta, e o trilho macarrão'},
  {id:'giro',n:'Porta de Giro',d:'Como abre e a montagem a 90° e a 45°'},
@@ -320,14 +320,14 @@ function correrSvg(k,aberto){const n=k==='4s'?4:+k,W=360,H=170,m=10,fw=(W-2*m)/n
  s+=`<text x="${W/2}" y="${H+22}" text-anchor="middle" font-size="13" fill="currentColor">${aberto?'aberta':'fechada'} · vista de dentro</text>`;
  return s+'</svg>';}
 function mCor(){const T=CR.find(c=>c[0]===CRK);
- return head(3,'Janelas de Correr · Linha Suprema')+`<div class="sec"><h2>🧊 Janela de correr em 3D</h2><div class="row" style="margin:6px 0 10px">${Object.entries(FCM.MONT).map(([k,m])=>`<button class="btn" data-cr3="${k}" aria-pressed="${k===CR3}">${esc(m.n.replace('Janela de correr ',''))}</button>`).join('')}</div><p class="nt">Gire com o dedo ou o mouse, abra as folhas, desmonte e toque na peça para ver o código. Os perfis são as seções reais da linha, em escala.</p>
+ return head(3,'Montagens da Linha Suprema em 3D')+`<div class="sec"><h2>🧊 ${esc(FCM.MONT[CR3].n)} em 3D</h2><div class="row" style="margin:6px 0 10px"><select class="btn" id="sel3" aria-label="Escolher a montagem" style="max-width:100%">${Object.entries(FCM.MONT).map(([k,m])=>`<option value="${k}" ${k===CR3?'selected':''}>${esc(m.cd+' · '+m.n)}</option>`).join('')}</select></div><p class="nt">Gire com o dedo ou o mouse, abra as folhas, desmonte e toque na peça para ver o código. Os perfis são as seções reais da linha, em escala.</p>
  <div class="v3w" id="v3w"><div class="v3" id="v3"></div><div class="v3msg" id="v3msg">Carregando o 3D…</div>
   <div class="v3bar"><button class="btn" id="b3Ab" aria-pressed="false">↔ Abrir folhas</button><button class="btn" id="b3Ds" aria-pressed="false">✥ Desmontar</button><button class="btn" id="b3Vt">↺ Voltar ao original</button>
   <span class="med">L <input id="i3L" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[0]}" min="600" max="3000" step="10" aria-label="Largura em mm"> H <input id="i3H" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[1]}" min="500" max="1800" step="10" aria-label="Altura em mm"> mm</span>
   <button class="btn" id="b3Fs">⛶ Tela cheia</button><button class="btn" id="b3Co" aria-pressed="false">🎨 Cores</button></div>
   <div class="v3cor" id="v3cor" hidden></div>
   <div class="v3lb" id="v3lb" hidden></div><span class="v3dica" id="v3dica">Arraste para girar · role para aproximar</span></div>
- <div class="row" style="margin-top:10px"><a class="btn pri" href="../mostruario/?t=${({jc2:'jcr200',jc2a:'jcr200a',jc3:'jcr300'})[CR3]||'jcr200'}">🧊 Abrir no Mostruário 3D (conhecer, montar, orientação em sistema)</a><a class="btn" href="../tecnico/?m=${CR3}">📐 Ver o desenho técnico com os cortes</a></div></div>
+ <div class="row" style="margin-top:10px">${({jc2:'jcr200',jc2a:'jcr200a',jc3:'jcr300',jcb:'jcr205',pc2:'pcr200',pvz3:'pvz300',pg1:'pgr100',mx1:'max800'})[CR3]?`<a class="btn pri" href="../mostruario/?t=${({jc2:'jcr200',jc2a:'jcr200a',jc3:'jcr300',jcb:'jcr205',pc2:'pcr200',pvz3:'pvz300',pg1:'pgr100',mx1:'max800'})[CR3]}">🧊 Abrir no Mostruário 3D (conhecer, montar, orientação em sistema)</a>`:''}<a class="btn" href="../tecnico/?m=${CR3}">📐 Ver o desenho técnico com os cortes</a></div></div>
  <div class="sec"><h2>📋 Perfis da ${esc(FCM.MONT[CR3].n.toLowerCase())}</h2><p class="nt">Toque no perfil para destacar a peça no 3D.</p><div class="pcs">${SEC?usados(CR3).map(c=>`<button type="button" class="pc ${SELC===c?'on':''}" data-pf="${c}"><span class="pcmini">${miniSec(c)}</span><b>${c}</b><span>${esc(SEC[c].n)}</span><small>${SEC[c].kg!=null?kg(SEC[c].kg)+' kg/m · ':''}${String(SEC[c].w).replace('.',',')} × ${String(SEC[c].h).replace('.',',')} mm</small></button>`).join(''):'<p class="mute">Carregando os perfis…</p>'}</div>
  <p class="aviso">Pesos e medidas orientativos: confirme com o fornecedor da empresa e no sistema de cálculo.</p></div>
  <div class="sec"><h2>🔀 2, 3, 4 e 6 folhas</h2><p class="nt">Escolha o modelo e toque em abrir para ver como as folhas correm.</p>
@@ -369,14 +369,15 @@ function janela3d(host,key){
  function montar(){if(ROOT)SC.remove(ROOT);GEO.forEach(g=>g.dispose());GEO.length=0;
   ROOT=new THREE.Group();PECAS=[];FOLHAS=[];SC.add(ROOT);
   const R=FCM.pecas(SEC,M,W,H),GR=[ROOT];
-  R.folhas.forEach(f=>{const F=new THREE.Group();ROOT.add(F);F.userData={ox:f.ox,z:f.z,ex:v(0,0,f.z>1?380:f.z<-1?-380:0),abre:f.dir*f.curso};FOLHAS.push(F);GR.push(F);});
-  R.P.forEach(o=>{const par=GR[o.g+1],m=o.vid?new THREE.Mesh(new THREE.BoxGeometry(o.w,o.h,o.d),MVID):new THREE.Mesh(geoDe(o),MAT);if(o.vid)GEO.push(m.geometry);
+  R.folhas.forEach(f=>{const F=new THREE.Group();ROOT.add(F);F.userData={ox:f.ox,oy:f.oy||0,z:f.z,ex:v(0,0,f.z>1?380:f.z<-1?-380:(f.rot?-260:0)),abre:f.dir*f.curso,rot:f.rot||null};FOLHAS.push(F);GR.push(F);});
+  R.P.forEach(o=>{if(o.vz)return;const par=GR[o.g+1],m=o.vid?new THREE.Mesh(new THREE.BoxGeometry(o.w,o.h,o.d),MVID):new THREE.Mesh(geoDe(o),MAT);if(o.vid)GEO.push(m.geometry);
    m.position.set(o.p[0],o.p[1],o.p[2]);const g=new THREE.Group();g.add(m);const k=o.g<0?190:110;
    g.userData={c:o.vid?'VID':o.c,ex:v(o.x[0]*k,o.x[1]*k,o.x[2]*k)};par.add(g);PECAS.push(g);});
   aplica();
  }
  function aplica(){PECAS.forEach(p=>{const e=p.userData.ex;p.position.set(e.x*dsA,e.y*dsA,e.z*dsA);});
-  FOLHAS.forEach(F=>{F.position.set(F.userData.ox+F.userData.abre*abA,0,F.userData.z+F.userData.ex.z*dsA);});}
+  FOLHAS.forEach(F=>{const u=F.userData;F.position.set(u.ox+u.abre*abA,u.oy,u.z+u.ex.z*dsA);
+   if(u.rot){const r=u.rot,an=r.ang*abA,pv=v(r.px||0,r.py||0,r.pz||0);F.rotation.set(r.eixo==='x'?an:0,r.eixo==='y'?an:0,0);const q=pv.clone().applyEuler(F.rotation);F.position.add(pv.sub(q));if(r.ch){const t=Math.abs(r.ang)*abA;F.position.x+=r.ch.sx*r.ch.w*(Math.cos(t)-1);F.position.z+=-r.ch.w*Math.sin(t);}}});}
  function enquadra(){const d=Math.max(W,H)*1.75;CAM.position.set(W*.55,H*.25,d);CT.target.set(0,0,0);CT.update();}
  let raf=0,vivo=true;
  function loop(){if(!vivo)return;raf=requestAnimationFrame(loop);const k=.12;let mud=false;
@@ -527,6 +528,7 @@ function iniciar(){
   const ca=e.target.closest('[data-cra]');if(ca){CRA=!CRA;const fig=$('#crFig');fig.querySelectorAll('g.anim').forEach(()=>{});const ns=correrSvg(CRK,CRA);/* anima: aplica os transforms nas folhas existentes */
     const tmp=document.createElement('div');tmp.innerHTML=ns;const novos=tmp.querySelectorAll('g.anim');fig.querySelectorAll('g.anim').forEach((gg,i)=>{if(novos[i])gg.style.transform=novos[i].style.transform;});const t=fig.querySelector('text');if(t)t.textContent=(CRA?'aberta':'fechada')+' · vista de dentro';ca.textContent=CRA?'⟲ Fechar':'↔ Abrir';return;}
   const c3=e.target.closest('[data-cr3]');if(c3){CR3=c3.dataset.cr3;SELC=null;re();return;}
+  if(!window._sel3){window._sel3=1;document.addEventListener('change',ev=>{if(ev.target.id==='sel3'){CR3=ev.target.value;SELC=null;re();}});}
   const pf=e.target.closest('[data-pf]');if(pf&&V3){const c=pf.dataset.pf;V3.marca(SELC===c?null:c);return;}
   if(e.target.id==='qzRes'){const qs=[...document.querySelectorAll('.q')],a=qs.filter(q=>q.dataset.ok==='1').length,fe=qs.filter(q=>q.dataset.ok!=null).length;const out=$('#qzOut');out.hidden=false;
    if(fe<qs.length){out.innerHTML=`<p>Responda todas as perguntas: faltam <b>${qs.length-fe}</b>.</p>`;return;}

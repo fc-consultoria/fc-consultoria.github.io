@@ -268,13 +268,28 @@ const MENU=[
 const ETAPAS=[['1','Estrutura','Entrada, painel e menu'],['2','Tipologias 3D','Modelos de mercado'],['3','Ambiente residência','Montar a casa'],['4','Modo apresentação','TV e telão'],['5','Equipe','Orientativo 3D'],['6','Gestão','Acessos e contrato']];
 /* Tipologias de mercado: nomes genéricos, sem marca de fabricante */
 const TIPS=[
-  {id:'jc2',mo:'jcr200',tec:'tecnico/',m3d:'jc2',est:'cor',n:'Janela de correr 2 folhas',g:'jan',l:'res',d:'A janela mais usada em residências: duas folhas que correm sobre trilho, uma passando pela outra.',uso:'Quartos, salas e cozinhas',f:'2 folhas móveis',ab:'Correr'},
-  {id:'jc3',mo:'jcr300',tec:'tecnico/?m=jc3',m3d:'jc3',est:'cor',n:'Janela de correr 3 folhas',g:'jan',l:'res',d:'Três folhas em trilhos paralelos: duas correm e se juntam sobre a folha fixa, abrindo até 2/3 do vão.',uso:'Vãos largos, salas',f:'2 folhas móveis + 1 fixa',ab:'Correr'},
-  {id:'jc4',tec:'tecnico/?m=jc4',m3d:'jc4',est:'cor',n:'Janela de correr 4 folhas',g:'jan',l:'res',d:'Duas folhas fixas nas laterais e duas móveis no centro, que correm sobre as fixas.',uso:'Salas, vãos largos',f:'2 móveis + 2 fixas',ab:'Correr'},
-  {id:'jcb',mo:'jcr205',est:'cor',n:'Janela de correr 2 folhas com bandeira',g:'jan',l:'res',d:'Correr 2 folhas com uma bandeira fixa na parte de cima, para vãos mais altos.',uso:'Pé-direito alto, fachadas',f:'2 folhas + bandeira',ab:'Correr'},
-  {id:'pc2',mo:'pcr200',est:'pad',n:'Porta de correr 2 folhas',g:'por',l:'res',d:'Porta de duas folhas de correr para integrar ambientes e áreas externas.',uso:'Varandas, salas, área gourmet',f:'2 folhas móveis',ab:'Correr'},
-  {id:'pg1',mo:'pgr100',est:'giro',n:'Porta de giro 1 folha',g:'por',l:'res',d:'Porta de abrir com dobradiças, para entradas e passagens.',uso:'Entradas, áreas de serviço',f:'1 folha',ab:'Giro'},
-  {id:'mx1',mo:'max800',est:'max',n:'Maxim-ar 1 folha',g:'jan',l:'res',d:'Folha que se projeta para fora a partir do topo, ventilando mesmo com chuva leve.',uso:'Banheiros, cozinhas, lavanderias',f:'1 folha',ab:'Projetante'},
+  {id:'jc2',mo:'jcr200',tec:'tecnico/',m3d:'jc2',est:'cor',n:'Janela de correr 2 folhas',cd:'SUP JCR 200',g:'jan',l:'res',d:'A janela mais usada em residências: duas folhas que correm sobre trilho, uma passando pela outra.',uso:'Quartos, salas e cozinhas',f:'2 folhas móveis',ab:'Correr'},
+  {id:'jc2a',mo:'jcr200a',tec:'tecnico/?m=jc2a',m3d:'jc2a',est:'cor',n:'Janela de correr 2 folhas (marco com contrafecho)',cd:'SUP JCR 200A',g:'jan',l:'res',d:'Correr 2 folhas com marco de contrafecho, que reforça a vedação no fechamento.',uso:'Quartos, salas e cozinhas',f:'2 folhas móveis',ab:'Correr'},
+  {id:'jc3',mo:'jcr300',tec:'tecnico/?m=jc3',m3d:'jc3',est:'cor',n:'Janela de correr 3 folhas',cd:'SUP JCR 300',g:'jan',l:'res',d:'Três folhas em trilhos paralelos: duas correm e se juntam sobre a folha fixa, abrindo até 2/3 do vão.',uso:'Vãos largos, salas',f:'2 folhas móveis + 1 fixa',ab:'Correr'},
+  {id:'jc4',tec:'tecnico/?m=jc4',m3d:'jc4',est:'cor',n:'Janela de correr 4 folhas',cd:'SUP JCR 400',g:'jan',l:'res',d:'Duas folhas fixas nas laterais e duas móveis no centro, que correm sobre as fixas.',uso:'Salas, vãos largos',f:'2 móveis + 2 fixas',ab:'Correr'},
+  {id:'jc4a',tec:'tecnico/?m=jc4a',m3d:'jc4a',est:'cor',n:'Janela de correr 4 folhas (marco liso)',cd:'SUP JCR 400A',g:'jan',l:'res',d:'Correr 4 folhas com marco liso: duas fixas nas laterais e duas móveis no centro.',uso:'Salas, vãos largos',f:'2 móveis + 2 fixas',ab:'Correr'},
+  {id:'jcb',mo:'jcr205',tec:'tecnico/?m=jcb',m3d:'jcb',est:'cor',n:'Janela de correr 2 folhas com bandeira móvel',cd:'SUP JCR 205',g:'jan',l:'res',d:'Correr 2 folhas com bandeira em cima de duas folhas maxim-ar, que ventilam mesmo com a janela fechada.',uso:'Pé-direito alto, fachadas',f:'2 folhas + 2 maxim-ar',ab:'Correr e projetante'},
+  {id:'jc4p',tec:'tecnico/?m=jc4p',m3d:'jc4p',est:'cor',n:'Janela de correr 4 folhas com peitoril fixo',cd:'SUP JCR 402',g:'jan',l:'res',d:'Correr 4 folhas sobre um peitoril de vidro fixo, para janelas altas que descem perto do piso.',uso:'Salas, fachadas',f:'4 folhas + peitoril fixo',ab:'Correr'},
+  {id:'jc4pa',tec:'tecnico/?m=jc4pa',m3d:'jc4pa',est:'cor',n:'Janela de correr 4 folhas com peitoril fixo (marco com contrafecho)',cd:'SUP JCR 402A',g:'jan',l:'res',d:'Mesma composição da 4 folhas com peitoril, com marco de contrafecho.',uso:'Salas, fachadas',f:'4 folhas + peitoril fixo',ab:'Correr'},
+  {id:'jvz3',tec:'tecnico/?m=jvz3',m3d:'jvz3',est:'cor',n:'Janela de correr 3 folhas com veneziana',cd:'SUP JVZ 300',g:'jan',l:'res',d:'Uma folha de vidro e duas de veneziana (cega e ventilada) em trilhos paralelos: escurece e ventila o quarto.',uso:'Quartos',f:'1 vidro + 2 venezianas',ab:'Correr'},
+  {id:'jc4v',tec:'tecnico/?m=jc4v',m3d:'jc4v',est:'cor',n:'Janela de correr 4 folhas com veneziana',cd:'SUP JCR 204',g:'jan',l:'res',d:'Duas folhas de vidro por dentro e duas de veneziana ventilada por fora, cada par correndo para o seu lado.',uso:'Quartos',f:'2 vidros + 2 venezianas',ab:'Correr'},
+  {id:'jvc7',tec:'tecnico/?m=jvc7',m3d:'jvc7',est:'cor',n:'Janela de correr 2 folhas com veneziana camarão',cd:'SUP JVC 701',g:'jan',l:'res',d:'Duas folhas de vidro de correr e, por fora, veneziana camarão que dobra nas laterais e libera o vão.',uso:'Quartos',f:'2 vidros + camarão',ab:'Correr e camarão'},
+  {id:'jvz6',tec:'tecnico/?m=jvz6',m3d:'jvz6',est:'cor',n:'Janela de correr 6 folhas com veneziana',cd:'SUP JVZ 600',g:'jan',l:'res',d:'Seis folhas em três trilhos: duas de vidro, duas de veneziana cega e duas de veneziana ventilada.',uso:'Quartos amplos',f:'2 vidros + 4 venezianas',ab:'Correr'},
+  {id:'pc2',mo:'pcr200',tec:'tecnico/?m=pc2',m3d:'pc2',est:'pad',n:'Porta de correr 2 folhas',cd:'SUP PCR 200',g:'por',l:'res',d:'Porta de duas folhas de correr para integrar ambientes e áreas externas.',uso:'Varandas, salas, área gourmet',f:'2 folhas móveis',ab:'Correr'},
+  {id:'pc2a',tec:'tecnico/?m=pc2a',m3d:'pc2a',est:'pad',n:'Porta de correr 2 folhas (marco com contrafecho)',cd:'SUP PCR 200A',g:'por',l:'res',d:'Porta de correr 2 folhas com marco de contrafecho.',uso:'Varandas, salas, área gourmet',f:'2 folhas móveis',ab:'Correr'},
+  {id:'pc3',tec:'tecnico/?m=pc3',m3d:'pc3',est:'pad',n:'Porta de correr 3 folhas',cd:'SUP PCR 300',g:'por',l:'res',d:'Três folhas em trilhos paralelos: duas correm sobre a fixa e abrem 2/3 do vão.',uso:'Vãos largos, varandas',f:'2 móveis + 1 fixa',ab:'Correr'},
+  {id:'pc4',tec:'tecnico/?m=pc4',m3d:'pc4',est:'pad',n:'Porta de correr 4 folhas',cd:'SUP PCR 400',g:'por',l:'res',d:'Duas folhas fixas nas laterais e duas móveis no centro, para vãos largos.',uso:'Varandas, salas amplas',f:'2 móveis + 2 fixas',ab:'Correr'},
+  {id:'pc4a',tec:'tecnico/?m=pc4a',m3d:'pc4a',est:'pad',n:'Porta de correr 4 folhas (marco com contrafecho)',cd:'SUP PCR 400A',g:'por',l:'res',d:'Porta de correr 4 folhas com marco de contrafecho.',uso:'Varandas, salas amplas',f:'2 móveis + 2 fixas',ab:'Correr'},
+  {id:'pvz3',mo:'pvz300',tec:'tecnico/?m=pvz3',m3d:'pvz3',est:'pad',n:'Porta de correr 3 folhas com veneziana',cd:'SUP PVZ 300',g:'por',l:'res',d:'Uma folha de vidro e duas de veneziana em trilhos paralelos, para quartos com saída para a varanda.',uso:'Quartos com varanda',f:'1 vidro + 2 venezianas',ab:'Correr'},
+  {id:'pg1',mo:'pgr100',tec:'tecnico/?m=pg1',m3d:'pg1',est:'giro',n:'Porta de giro 1 folha',cd:'SUP PGR 100',g:'por',l:'res',d:'Porta de abrir com dobradiças, com travessa no meio da folha.',uso:'Entradas, áreas de serviço',f:'1 folha',ab:'Giro'},
+  {id:'pg2',tec:'tecnico/?m=pg2',m3d:'pg2',est:'giro',n:'Porta de giro 2 folhas',cd:'SUP PGR 200',g:'por',l:'res',d:'Duas folhas de abrir, cada uma com a sua dobradiça, para passagens largas.',uso:'Entradas amplas',f:'2 folhas',ab:'Giro'},
+  {id:'mx1',mo:'max800',tec:'tecnico/?m=mx1',m3d:'mx1',est:'max',n:'Janela maxim-ar 1 folha',cd:'SUP MAX 800',g:'jan',l:'res',d:'Folha que se projeta para fora a partir do topo, ventilando mesmo com chuva leve.',uso:'Banheiros, cozinhas, lavanderias',f:'1 folha',ab:'Projetante'},
+  {id:'mx2p',tec:'tecnico/?m=mx2p',m3d:'mx2p',est:'max',n:'Janela maxim-ar 2 folhas com peitoril fixo',cd:'SUP MAX 801',g:'jan',l:'res',d:'Duas folhas maxim-ar em cima de um peitoril de vidro fixo.',uso:'Cozinhas, áreas de serviço',f:'2 maxim-ar + peitoril fixo',ab:'Projetante'},
   {id:'cor',est:'tip',n:'Fachada Cortina',g:'fac',l:'fac',d:'Fachada com colunas e travessas aparentes de 40 × 80, vidro preso por presilha e tampa externa. Montada a partir das medidas da obra.',uso:'Prédios comerciais, fachadas de loja',f:'Quadros fixos',ab:'Fixa',obra:'cortina'},
   {id:'atl',est:'tip',n:'Pele de Vidro Atlanta',g:'fac',l:'fac',d:'Fachada com quadros colados no vidro, sem perfil aparente do lado de fora, presos nas colunas por presilha.',uso:'Edifícios, fachadas de alto padrão',f:'Quadros colados',ab:'Fixa',obra:'atlanta'}];
 const LINHAS={res:{n:'Linha Suprema',s:'Disponível'},fac:{n:'Linha FC Fachadas',s:'3D disponível'},pre:{n:'Linha Gold',s:'Em breve'}};
@@ -285,12 +300,27 @@ const OBRA=(t)=>'obra/'+(t?'?t='+t:'');
    F nos fixos, maxim-ar, veneziana e giro. Uma especificação por tipologia monta o desenho (vista externa, sem escala). */
 const ELEV={
   jc2:{w:200,h:150,linhas:[{h:1,c:[{t:'m',d:1},{t:'m',d:-1}]}]},
+  jc2a:{w:200,h:150,linhas:[{h:1,c:[{t:'m',d:1},{t:'m',d:-1}]}]},
   jc3:{w:270,h:150,linhas:[{h:1,c:[{t:'m',d:1},{t:'m',d:1},{t:'f'}]}]},
   jc4:{w:320,h:150,linhas:[{h:1,c:[{t:'f'},{t:'m',d:-1},{t:'m',d:1},{t:'f'}]}]},
-  jcb:{w:200,h:210,linhas:[{h:.3,c:[{t:'f',b:1},{t:'f',b:1}]},{h:.7,c:[{t:'m',d:1},{t:'m',d:-1}]}]},
+  jc4a:{w:320,h:150,linhas:[{h:1,c:[{t:'f'},{t:'m',d:-1},{t:'m',d:1},{t:'f'}]}]},
+  jcb:{w:200,h:210,linhas:[{h:.3,c:[{t:'x'},{t:'x'}]},{h:.7,c:[{t:'m',d:1},{t:'m',d:-1}]}]},
+  jc4p:{w:320,h:210,linhas:[{h:.7,c:[{t:'f'},{t:'m',d:-1},{t:'m',d:1},{t:'f'}]},{h:.3,c:[{t:'f',b:1},{t:'f',b:1},{t:'f',b:1},{t:'f',b:1}]}]},
+  jc4pa:{w:320,h:210,linhas:[{h:.7,c:[{t:'f'},{t:'m',d:-1},{t:'m',d:1},{t:'f'}]},{h:.3,c:[{t:'f',b:1},{t:'f',b:1},{t:'f',b:1},{t:'f',b:1}]}]},
+  jvz3:{w:270,h:150,linhas:[{h:1,c:[{t:'m',d:1},{t:'v'},{t:'v'}]}]},
+  jc4v:{w:220,h:150,linhas:[{h:1,c:[{t:'v'},{t:'v'}]}]},
+  jvc7:{w:240,h:150,linhas:[{h:1,c:[{t:'v'},{t:'v'},{t:'v'},{t:'v'}]}]},
+  jvz6:{w:320,h:150,linhas:[{h:1,c:[{t:'v'},{t:'v'}]}]},
   pc2:{w:170,h:250,linhas:[{h:1,c:[{t:'m',d:1,tr:.5},{t:'m',d:-1,tr:.5}]}]},
-  pg1:{w:120,h:250,linhas:[{h:1,c:[{t:'g'}]}]},
-  mx1:{w:180,h:130,linhas:[{h:1,c:[{t:'x'}]}]}};
+  pc2a:{w:170,h:250,linhas:[{h:1,c:[{t:'m',d:1,tr:.5},{t:'m',d:-1,tr:.5}]}]},
+  pc3:{w:240,h:250,linhas:[{h:1,c:[{t:'m',d:1,tr:.5},{t:'m',d:1,tr:.5},{t:'f',tr:.5}]}]},
+  pc4:{w:300,h:250,linhas:[{h:1,c:[{t:'f',tr:.5},{t:'m',d:-1,tr:.5},{t:'m',d:1,tr:.5},{t:'f',tr:.5}]}]},
+  pc4a:{w:300,h:250,linhas:[{h:1,c:[{t:'f',tr:.5},{t:'m',d:-1,tr:.5},{t:'m',d:1,tr:.5},{t:'f',tr:.5}]}]},
+  pvz3:{w:240,h:250,linhas:[{h:1,c:[{t:'m',d:1,tr:.5},{t:'v'},{t:'v'}]}]},
+  pg1:{w:120,h:250,linhas:[{h:1,c:[{t:'g',tr:.5}]}]},
+  pg2:{w:200,h:250,linhas:[{h:1,c:[{t:'g',tr:.5},{t:'g',tr:.5}]}]},
+  mx1:{w:180,h:130,linhas:[{h:1,c:[{t:'x'}]}]},
+  mx2p:{w:200,h:220,linhas:[{h:.6,c:[{t:'x'},{t:'x'}]},{h:.4,c:[{t:'f',b:1},{t:'f',b:1}]}]}};
 function desenho(id){
   const E=ELEV[id];
   if(E){const W=E.w,H=E.h,M=7,AL='#c3c9cd',AD='#7d878c',VD='#bfe3f0',VE='#8fc3d6';let b='';
@@ -443,8 +473,8 @@ function guiaTec(){const I=[
    <div class="gtec-bt"><a class="btn pri" href="tecnico/">📐 Abrir o exemplo</a><a class="btn sec" href="tecnico/?montar=1">🧩 Treinar montando o corte</a></div></div></div>`;}
 function telaTip(){
   const L=TIPS.filter(t=>t.l==='res'&&(filtro==='todas'||t.g===filtro)),F=TIPS.filter(t=>t.l==='fac'&&(filtro==='todas'||filtro==='fac'));
-  const card=t=>{const go=t.tec?`<a class="card tip" href="${t.tec}">`:t.obra?`<a class="card tip" href="${OBRA(t.obra)}" target="_blank" rel="noopener">`:`<button class="card tip" data-tip="${t.id}">`,fim=t.tec||t.obra?'</a>':'</button>';
-   return `${go}<div class="des">${desenho(t.id)}</div><h3>${h(t.n)}</h3><span class="d">${h(t.uso)}</span><span class="pe">${t.tec?'<span class="tec-ok">📐 Abrir desenho técnico →</span>':t.obra?'<span class="tec-ok">🧊 Abrir em 3D com as medidas da obra →</span>':'<span class="tec-em">Desenho técnico em breve</span>'}</span>${fim}`;};
+  const card=t=>{const go=t.obra&&!t.tec?`<a class="card tip" href="${OBRA(t.obra)}" target="_blank" rel="noopener">`:`<button class="card tip" data-tip="${t.id}">`,fim=t.obra?'</a>':'</button>';
+   return `${go}<div class="des">${desenho(t.id)}</div><h3>${h(t.n)}</h3><span class="d">${t.cd?'<b style="font-weight:600">'+h(t.cd)+'</b> · ':''}${h(t.uso)}</span><span class="pe">${t.tec?'<span class="tec-ok">🧊 3D e 📐 desenho técnico →</span>':t.obra?'<span class="tec-ok">🧊 Abrir em 3D com as medidas da obra →</span>':'<span class="tec-em">Desenho técnico em breve</span>'}</span>${fim}`;};
   return `<div class="cab"><div><h2>Tipologias</h2><p class="mute">Janelas, portas e fachadas de mercado para escolher e apresentar ao cliente.</p></div>
    <div class="filtros" role="group" aria-label="Filtrar">${[['todas','Todas'],['jan','Janelas'],['por','Portas'],['fac','Fachadas']].map(([k,n])=>`<button type="button" data-f="${k}" aria-pressed="${filtro===k}">${n}</button>`).join('')}</div></div>
    ${faixaOri()}
@@ -474,7 +504,7 @@ function ligar(){
 function detalhe(id){
   const t=TIPS.find(x=>x.id===id),d=$('#det');
   d.innerHTML=`<div class="cx" role="dialog" aria-modal="true" aria-label="${h(t.n)}"><div class="des">${desenho(t.id)}</div><div class="tx">
-   <span class="chip t" style="align-self:flex-start">${LINHAS[t.l].n}</span><h2 style="font-size:21px">${h(t.n)}</h2><p>${h(t.d)}</p>
+   <span class="chip t" style="align-self:flex-start">${LINHAS[t.l].n}${t.cd?' · '+h(t.cd):''}</span><h2 style="font-size:21px">${h(t.n)}</h2><p>${h(t.d)}</p>
    <dl><dt>Abertura</dt><dd>${t.ab}</dd><dt>Folhas</dt><dd>${t.f}</dd><dt>Indicada para</dt><dd>${h(t.uso)}</dd></dl>
    ${t.mo?`<a class="btn pri" href="mostruario/?t=${t.mo}">🧊 Mostruário 3D · conhecer e montar</a>`:t.m3d?`<a class="btn pri" href="montagens/?m=${t.m3d}#cor">🧊 Ver em 3D</a>`:''}
    ${t.tec?`<a class="btn pri" href="${t.tec}">📐 Desenho técnico interativo</a>`:''}
