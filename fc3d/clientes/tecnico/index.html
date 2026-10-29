@@ -84,6 +84,17 @@ svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto 
 @media (max-width:560px){.folha .cab .tt{font-size:18px}.folha .cab .cd{display:none}#vpEl,#vpV{height:280px}#vpH{height:240px}}
 .trocam{display:flex;gap:6px}.trocam a{color:#fff;text-decoration:none;font-weight:600;font-size:13px;border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:6px 10px}.trocam a[aria-current="page"]{background:#fff;color:var(--teal2)}
 .vidtx{font-size:13px;color:var(--mute);margin-top:6px}
+.vp .fsv{position:absolute;right:6px;top:4px;z-index:3;border:1px solid var(--line);background:#fff;border-radius:8px;padding:3px 8px;font:600 12px var(--f-b);cursor:pointer;color:var(--ink)}
+.vp .fsv:hover{border-color:var(--teal)}
+/* tela cheia da folha inteira */
+.folha.fs{position:fixed;inset:0;z-index:40;border-radius:0;overflow:auto;padding:14px 18px 60px}
+.folha.fs .grade{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
+.folha.fs #vpEl,.folha.fs #vpV{height:calc(50vh - 70px)}.folha.fs #vpH{height:calc(50vh - 40px)}
+/* tela cheia de um corte só */
+.folha.fs1 .grade{display:block}.folha.fs1 .vp{display:none}.folha.fs1 .vp.um{display:block;height:calc(100vh - 110px)!important}
+.fsbar{position:fixed;z-index:60;width:max-content;max-width:calc(100% - 20px);left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:6px;flex-wrap:wrap;justify-content:center;background:rgba(16,32,31,.92);padding:8px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.fsbar button{border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;border-radius:10px;padding:8px 12px;font:600 13.5px var(--f-b);cursor:pointer}
+.fsbar button.on{background:#fff;color:var(--teal2)}
 </style>
 </head>
 <body>
@@ -102,6 +113,7 @@ svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto 
   <button class="bt am" id="btDes">💥 Desmontar os cortes</button>
   <button class="bt pri" id="btVolta">↺ Voltar ao original</button>
   <button class="bt" id="btAjusta">⤢ Ajustar à tela</button>
+  <button class="bt" id="btFs">⛶ Tela cheia</button>
   <span class="dica">Passe o mouse num perfil para ver o código · arraste para tirar do lugar · roda do mouse aproxima</span>
 </div>
 
@@ -164,6 +176,10 @@ function montar(secs){S=secs;
   document.getElementById('btDes').onclick=()=>animar(true);
   document.getElementById('btVolta').onclick=()=>{animar(false);ajustar();};
   document.getElementById('btAjusta').onclick=ajustar;
+  document.getElementById('btFs').onclick=()=>telaCheia(true,null);
+  [['vpEl','Elevação'],['vpV','Corte vertical'],['vpH','Corte horizontal']].forEach(([id])=>{const b=document.createElement('button');b.type='button';b.className='fsv';b.textContent='⛶';b.title='Ver este desenho em tela cheia';b.onclick=e=>{e.stopPropagation();telaCheia(true,id);};VPS[id].box.appendChild(b);});
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&document.querySelector('.folha.fs'))telaCheia(false);});
+  document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&document.querySelector('.folha.fs'))telaCheia(false,null,true);});
   ['inL','inH'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{clearTimeout(window._t);window._t=setTimeout(desenhar,200);}));
 }
 
@@ -238,7 +254,7 @@ function elevacao(g,L,H){g.innerHTML='';
 }
 
 /* ---------- interação: destacar, arrastar, desmontar, voltar ---------- */
-const tip=document.getElementById('tip');
+const tip=document.getElementById('tip');document.addEventListener('fullscreenchange',()=>{const F=document.querySelector('.folha');(document.fullscreenElement?F:document.body).appendChild(tip);});
 function info(P){const s=S[P.c];return `<b>${P.c==='VID'?'VIDRO':P.c}</b>${P.nm}${s&&s.kg?'<br>'+String(s.kg).replace('.',',')+' kg/m':''}`;}
 function ligaPeca(P){const g=P.g;
   g.addEventListener('pointerenter',e=>{g.classList.add('hi');tip.innerHTML=info(P);tip.hidden=false;});
@@ -262,6 +278,18 @@ function lista(){const L=document.getElementById('lista');
   const itens=USADOS.slice().sort().map(c=>[c,S[c].n,S[c].kg]).concat([['VID','Vidro 6 mm (exemplo)',null]]);
   L.innerHTML=itens.map(([c,n,kg])=>`<li><button type="button" data-c="${c}"><span class="c">${c==='VID'?'VIDRO':c}</span><span>${n}</span><span class="k">${kg?String(kg).replace('.',',')+' kg/m':''}</span></button></li>`).join('');
   L.querySelectorAll('button').forEach(b=>b.onclick=()=>{marca(sel===b.dataset.c?null:b.dataset.c);});}
+
+/* ---------- tela cheia: a folha inteira ou um corte só, para explicar os detalhes ---------- */
+function telaCheia(on,um,doNav){const F=document.querySelector('.folha');let bar=document.getElementById('fsbar');
+  document.querySelectorAll('.vp').forEach(v=>v.classList.remove('um'));F.classList.remove('fs1');
+  if(!on){F.classList.remove('fs');if(bar)bar.remove();if(!doNav&&document.fullscreenElement)document.exitFullscreen().catch(()=>{});setTimeout(ajustar,60);return;}
+  F.classList.add('fs');if(um){F.classList.add('fs1');document.getElementById(um).classList.add('um');}
+  if(!document.fullscreenElement&&F.requestFullscreen)F.requestFullscreen().catch(()=>{});
+  if(!bar){bar=document.createElement('div');bar.id='fsbar';bar.className='fsbar';F.appendChild(bar);}
+  const op=[[null,'Folha inteira'],['vpEl','Elevação'],['vpV','Corte vertical'],['vpH','Corte horizontal']];
+  bar.innerHTML=op.map(([k,n])=>`<button type="button" data-fs="${k||''}" class="${(um||'')===(k||'')?'on':''}">${n}</button>`).join('')+'<button type="button" data-des="1">💥 Desmontar</button><button type="button" data-vol="1">↺ Voltar ao original</button><button type="button" data-sair="1">✕ Sair da tela cheia</button>';
+  bar.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.sair){telaCheia(false);return;}if(b.dataset.des){animar(true);return;}if(b.dataset.vol){animar(false);ajustar();return;}telaCheia(true,b.dataset.fs||null);};
+  setTimeout(ajustar,80);setTimeout(ajustar,400);}
 
 /* ---------- zoom e arrastar a folha ---------- */
 function pt(V,e){const r=V.svg.getBoundingClientRect(),vb=V.vb;return [vb[0]+(e.clientX-r.left)/r.width*vb[2],vb[1]+(e.clientY-r.top)/r.height*vb[3]];}
