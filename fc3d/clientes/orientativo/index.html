@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
 <style>
 /* Orientativo 3D · passo a passo · Plataforma FC 3D Clientes
-   Mesmo modelo do Orientativo de Montagem 3D da FC, com linhas FC e códigos FC.
+   Mesmo modelo do Orientativo de Montagem 3D da FC, com linhas FC e códigos SU.
    © FC Consultoria em Esquadria · criação da FC, uso exclusivo de empresas licenciadas. */
 :root{
   --bg:#f3f5f4;--panel:#ffffff;--soft:#eaf0ee;--ink:#10201f;--mute:#5a6b69;--line:#d5dfdc;
@@ -191,7 +191,7 @@ const MOD=[
  {id:'tip',n:'Tipologias',d:'Os modelos de janelas, portas e fachadas e como cada um abre'},
  {id:'cm',n:'Contramarco',d:'O que é, os componentes e a instalação passo a passo'},
  {id:'gua',n:'Guarnições',d:'Por que a guarnição muda com a espessura do vidro'},
- {id:'cor',n:'Janelas de Correr',d:'A janela 2 folhas em 3D com os perfis FC, e as de 3, 4 e 6 folhas'},
+ {id:'cor',n:'Janelas de Correr',d:'A janela 2 folhas em 3D com os perfis reais, e as de 3, 4 e 6 folhas'},
  {id:'max',n:'Janela Maxim-Ar',d:'Como abre e como se escolhe o braço'},
  {id:'pad',n:'Perfis e Componentes Padrão',d:'O que se repete em janela e porta, e o trilho macarrão'},
  {id:'giro',n:'Porta de Giro',d:'Como abre e a montagem a 90° e a 45°'},
@@ -243,13 +243,13 @@ function mTip(){const t=TIPS.find(x=>x.id===TSEL);
   ['Qual tipologia é indicada para banheiro e cozinha, ventilando mesmo com chuva leve?',['Maxim-ar','Porta de giro','Fachada Cortina'],0,'A maxim-ar projeta a folha para fora e protege da chuva leve.']])+foot(0);}
 
 /* =========================== 02 · Contramarco =========================== */
-const CMST=[['Monte o requadro','Corte o perfil de contramarco FC-201 nas medidas do vão e una os cantos com a cantoneira de conexão FC-901.','req'],
- ['Coloque os esquadros','Prenda os esquadros FC-902 nos cantos para o requadro não sair do esquadro durante a obra.','esq'],
- ['Fixe os chumbadores','As grapas FC-903 vão nas laterais, espaçadas conforme a orientação do fornecedor do chumbador.','chu'],
- ['Posicione no vão','Ajuste no prumo e no nível e calce com os calços FC-904.','niv'],
+const CMST=[['Monte o requadro','Corte o perfil de contramarco CM-200 nas medidas do vão e una os cantos com a cantoneira de conexão CON063.','req'],
+ ['Coloque os esquadros','Prenda os esquadros ESQ160 nos cantos para o requadro não sair do esquadro durante a obra.','esq'],
+ ['Fixe os chumbadores','As grapas CHU-787 vão nas laterais, espaçadas conforme a orientação do fornecedor do chumbador.','chu'],
+ ['Posicione no vão','Ajuste no prumo e no nível e calce com os calços CL-011.','niv'],
  ['Chumbe na alvenaria','Encha com argamassa em volta dos chumbadores. Depois de curado, tire os esquadros.','arg'],
  ['Instale a esquadria','Com o contramarco pronto, a esquadria de alumínio entra depois, com a obra acabada.','esd']];
-const CMPC=[['FC-201','Perfil de contramarco','Requadro de alumínio natural chumbado no vão'],['FC-901','Cantoneira de conexão','Une os cantos do requadro'],['FC-902','Esquadro','Trava os cantos em 90° durante a obra'],['FC-903','Grapa (chumbador)','Prende o contramarco na alvenaria'],['FC-904','Calço','Ajusta prumo e nível antes de chumbar']];
+const CMPC=[['CM-200','Perfil de contramarco','Requadro de alumínio natural chumbado no vão'],['CON063','Cantoneira de conexão','Une os cantos do requadro'],['ESQ160','Esquadro','Trava os cantos em 90° durante a obra'],['CHU-787','Grapa (chumbador)','Prende o contramarco na alvenaria'],['CL-011','Calço','Ajusta prumo e nível antes de chumbar']];
 let CMK=0;
 function vidroR(x,y,w,h){return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="var(--vid)" fill-opacity=".7" stroke="#5f8796" stroke-width="1"/>`;}
 function setaS(x,y,d){return `<path d="M${x} ${y} h${d*30} m${-d*8} -6 l${d*8} 6 l${-d*8} 6" stroke="#10201f" stroke-width="3" fill="none"/>`;}
@@ -270,7 +270,7 @@ function mCm(){return head(1,'Contramarco · instalação e componentes')+`<div 
  <div class="grid2"><div class="fig" id="cmFig">${cmSvg(CMK)}</div><div><div class="passos">${CMST.map((x,k)=>`<button type="button" class="ps ${k===CMK?'on':k<CMK?'feito':''}" data-cmk="${k}"><span>${k<CMK?'✓':k+1}</span>${esc(x[0])}</button>`).join('')}</div>
  <p class="pstx"><b>Passo ${CMK+1} de ${CMST.length}:</b> ${esc(CMST[CMK][1])}</p>
  <div class="row" style="margin-top:10px"><button class="btn" data-cmk="${Math.max(0,CMK-1)}">← Anterior</button><button class="btn pri" data-cmk="${Math.min(CMST.length-1,CMK+1)}">Próximo passo →</button></div></div></div></div>
- <div class="sec"><h2>🧩 Componentes</h2><p class="nt">As peças do contramarco com o código FC.</p><div class="pcs">${CMPC.map(p=>`<div class="pc"><b>${p[0]}</b><span>${esc(p[1])}</span><small>${esc(p[2])}</small></div>`).join('')}</div>
+ <div class="sec"><h2>🧩 Componentes</h2><p class="nt">As peças do contramarco com o código.</p><div class="pcs">${CMPC.map(p=>`<div class="pc"><b>${p[0]}</b><span>${esc(p[1])}</span><small>${esc(p[2])}</small></div>`).join('')}</div>
  <p class="aviso">Espaçamento das grapas, argamassa e tempo de cura: siga a orientação do fornecedor da empresa.</p></div>`+
  quiz([['Quando a esquadria de alumínio é instalada?',['Depois que o contramarco está chumbado e a obra pronta','Antes de chumbar o contramarco','Junto com o reboco'],0,'O contramarco é chumbado primeiro; a esquadria entra depois, com a obra acabada.'],
   ['Para que serve o esquadro do contramarco?',['Manter o requadro no esquadro durante a obra','Fixar o vidro','Vedar a água'],0,'Ele trava os cantos em 90° e sai depois da cura da argamassa.'],
@@ -315,7 +315,7 @@ function correrSvg(k,aberto){const n=k==='4s'?4:+k,W=360,H=170,m=10,fw=(W-2*m)/n
  s+=`<text x="${W/2}" y="${H+22}" text-anchor="middle" font-size="13" fill="currentColor">${aberto?'aberta':'fechada'} · vista de dentro</text>`;
  return s+'</svg>';}
 function mCor(){const T=CR.find(c=>c[0]===CRK);
- return head(3,'Janelas de Correr · Linha FC Residencial')+`<div class="sec"><h2>🧊 Janela de correr em 3D</h2><div class="row" style="margin:6px 0 10px">${Object.entries(FCM.MONT).map(([k,m])=>`<button class="btn" data-cr3="${k}" aria-pressed="${k===CR3}">${esc(m.n.replace('Janela de correr ',''))}</button>`).join('')}</div><p class="nt">Gire com o dedo ou o mouse, abra as folhas, desmonte e toque na peça para ver o código FC. Os perfis são as seções reais da linha, em escala.</p>
+ return head(3,'Janelas de Correr · Linha FC Residencial')+`<div class="sec"><h2>🧊 Janela de correr em 3D</h2><div class="row" style="margin:6px 0 10px">${Object.entries(FCM.MONT).map(([k,m])=>`<button class="btn" data-cr3="${k}" aria-pressed="${k===CR3}">${esc(m.n.replace('Janela de correr ',''))}</button>`).join('')}</div><p class="nt">Gire com o dedo ou o mouse, abra as folhas, desmonte e toque na peça para ver o código. Os perfis são as seções reais da linha, em escala.</p>
  <div class="v3w" id="v3w"><div class="v3" id="v3"></div><div class="v3msg" id="v3msg">Carregando o 3D…</div>
   <div class="v3bar"><button class="btn" id="b3Ab" aria-pressed="false">↔ Abrir folhas</button><button class="btn" id="b3Ds" aria-pressed="false">✥ Desmontar</button><button class="btn" id="b3Vt">↺ Voltar ao original</button>
   <span class="med">L <input id="i3L" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[0]}" min="600" max="3000" step="10" aria-label="Largura em mm"> H <input id="i3H" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[1]}" min="500" max="1800" step="10" aria-label="Altura em mm"> mm</span>
@@ -331,7 +331,7 @@ function mCor(){const T=CR.find(c=>c[0]===CRK);
  quiz([['Na janela 2 folhas, como as folhas correm?',['Uma passa por trás da outra, em trilhos separados','As duas abrem para fora','Uma fica fixa sempre'],0,'Cada folha corre no seu trilho, uma por trás da outra.'],
   ['Na janela 4 folhas, quais folhas correm?',['As duas do meio, para as laterais','Só a da esquerda','Todas para o mesmo lado'],0,'Na 4 folhas comum, as folhas centrais correm para as laterais.'],
   ['Na 4 folhas sequenciais, como as folhas correm?',['Todas para o mesmo lado, uma atrás da outra','Duas para cada lado','Nenhuma corre'],0,'Sequenciais: as folhas se empilham para um lado.'],
-  ['Qual perfil fica no topo do marco da janela 2 folhas?',['FC-101 · trilho superior','FC-108 · baguete','FC-104 · montante da folha'],0,'O FC-101 é o trilho superior; o FC-102 é o inferior.']])+foot(3);}
+  ['Qual perfil fica no topo do marco da janela 2 folhas?',['SU-001 · trilho superior','SU-102 · baguete','SU-039 · montante da folha'],0,'O SU-001 é o trilho superior; o SU-002 é o inferior.']])+foot(3);}
 function miniSec(c){const s=SEC[c];if(!s)return '';const xs=[],ys=[];s.s.forEach(sh=>sh.o.forEach(([a,b])=>{xs.push(a);ys.push(b)}));const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
  const d=s.s.map(sh=>{const r=ring=>'M'+ring.map(([a,b])=>a.toFixed(1)+' '+(-b).toFixed(1)).join('L')+'Z';return r(sh.o)+(sh.h||[]).map(r).join('');}).join('');
  return `<svg viewBox="${x0-2} ${-y1-2} ${x1-x0+4} ${y1-y0+4}"><path d="${d}" fill="currentColor" fill-opacity=".75" fill-rule="evenodd"/></svg>`;}
@@ -428,7 +428,7 @@ function macarraoSvg(){return `<svg viewBox="0 0 360 230" role="img" aria-label=
  <text x="248" y="118" font-size="13" fill="currentColor">roldana côncava</text><text x="218" y="160" font-size="13" fill="currentColor">trilho no piso</text></svg>`;}
 const PADC=[['Roldana','Rodinha embaixo da folha de correr; carrega o peso da folha'],['Fecho / trinco','Trava a folha fechada'],['Escova de vedação','Fica no montante e na travessa, barra vento e poeira'],['Batedor','Onde a folha encosta ao fechar'],['Guia superior','Mantém a folha no trilho de cima'],['Parafusos e buchas','Fixação no contramarco ou na alvenaria']];
 function mPad(){return head(5,'Perfis e Componentes Padrão')+`<div class="sec"><h2>Perfis padrão</h2><p>São os perfis que se repetem em várias tipologias: <b>trilhos</b>, <b>marco lateral</b>, <b>montantes</b>, <b>travessas</b> e <b>baguete</b>. Conhecendo estes, o vendedor já conhece a maior parte da esquadria de correr.</p>
- <div class="row" style="margin-top:10px"><button class="btn pri" data-go="cor">Ver os perfis FC-101 a FC-108 no 3D →</button></div></div>
+ <div class="row" style="margin-top:10px"><button class="btn pri" data-go="cor">Ver os perfis SU-001 a SU-102 no 3D →</button></div></div>
  <div class="sec"><h2>🔩 Componentes padrão</h2><div class="pcs">${PADC.map(p=>`<div class="pc"><span>${esc(p[0])}</span><small>${esc(p[1])}</small></div>`).join('')}</div>
  <p class="aviso">Capacidade da roldana, modelo do fecho e da escova: confirme com o fornecedor de componentes da empresa.</p></div>
  <div class="sec"><h2>🛤 Trilho macarrão</h2><div class="grid2"><div class="fig">${macarraoSvg()}</div><div><p>Na porta de correr com trilho macarrão, a <b>roldana côncava</b> da folha corre em cima de um trilho fino que fica no piso. O trilho macarrão aparece em duas versões:</p>
@@ -476,7 +476,7 @@ function mQuiz(){const Q=[
  ['Quando a esquadria é instalada no contramarco?',['Depois que o contramarco está chumbado e a obra pronta','Antes de chumbar','Junto com o reboco'],0,'O contramarco vem primeiro; a esquadria entra com a obra acabada.'],
  ['Para que serve o esquadro do contramarco?',['Manter o requadro em 90° durante a obra','Prender o vidro','Vedar a água'],0,'Sai depois que a argamassa cura.'],
  ['Vidro mais grosso pede guarnição…',['Mais fina','Mais grossa','Igual'],0,'O canal é o mesmo; sobra menos folga.'],
- ['Qual perfil é o trilho superior da janela de correr 2 folhas FC?',['FC-101','FC-102','FC-107'],0,'FC-101 superior; FC-102 inferior.'],
+ ['Qual perfil é o trilho superior da janela de correr 2 folhas FC?',['SU-001','SU-002','SU-053'],0,'SU-001 superior; SU-002 inferior.'],
  ['Na janela 4 folhas, quais folhas correm?',['As duas do meio, para as laterais','Só uma','Todas para o mesmo lado'],0,'As centrais correm para as laterais.'],
  ['O que define o braço da maxim-ar?',['A altura da folha','A largura do vão','A cor'],0,'Braço é escolhido pela altura da folha.'],
  ['Que roldana corre no trilho macarrão?',['Côncava','Plana','Nenhuma'],0,'A roldana côncava encaixa no trilho do piso.'],
@@ -487,7 +487,7 @@ function mQuiz(){const Q=[
  return `<div class="mh"><div class="ey">Encerramento</div><h1>✓ Prova final</h1><p>10 perguntas sobre todo o passo a passo.${r?` Último resultado: <b>${r.a}/10</b> em ${esc(r.d)}.`:''}</p></div>`+quiz(Q,'Prova final')+`<div class="foot"><button class="btn" data-go="fac">← Fachadas</button><button class="btn pri" id="qzRes">Ver meu resultado</button></div><div class="sec" id="qzOut" hidden></div>`;}
 
 /* ---------- navegação ---------- */
-function home(){const G=LSg('pfc-ori-prova',null);return `<div class="hero"><div class="ey">Plataforma FC 3D · Orientativo</div><h1>Orientativo 3D<br>Passo a passo</h1><p>Para a equipe aprender cada tipologia antes de apresentar: modelos, contramarco, guarnições, correr em 3D com os perfis FC, maxim-ar, componentes padrão, porta de giro, perfis diversos e fachadas. Cada módulo termina com um teste rápido.</p>
+function home(){const G=LSg('pfc-ori-prova',null);return `<div class="hero"><div class="ey">Plataforma FC 3D · Orientativo</div><h1>Orientativo 3D<br>Passo a passo</h1><p>Para a equipe aprender cada tipologia antes de apresentar: modelos, contramarco, guarnições, correr em 3D com os perfis reais, maxim-ar, componentes padrão, porta de giro, perfis diversos e fachadas. Cada módulo termina com um teste rápido.</p>
  <div class="row" style="margin-top:16px"><button class="btn am" data-go="${(MOD.find(m=>!FEITO.has(m.id))||MOD[0]).id}">${FEITO.size?'▶ Continuar':'▶ Começar'}</button><button class="btn" data-go="quiz" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.5)">✓ Prova final${G?' · '+G.a+'/10':''}</button></div></div>
  <div class="mg">${MOD.map((m,k)=>`<button class="mc ${FEITO.has(m.id)?'ok':''}" data-go="${m.id}"><span class="n">${FEITO.has(m.id)?'✓':String(k+1).padStart(2,'0')}</span><div><b>${esc(m.n)}</b><small>${esc(m.d)}</small></div></button>`).join('')}</div>
  <p class="aviso">Conteúdo orientativo da FC Consultoria em Esquadria. Medidas, pesos e componentes devem ser confirmados com o fornecedor da empresa. Cálculos sempre como simulação.</p>`;}

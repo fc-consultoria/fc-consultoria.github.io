@@ -4,19 +4,19 @@
 (function(){
 const MONT={
  jc2:{n:'Janela de correr 2 folhas',cd:'FC JC2 · 01',linha:'Linha FC Residencial',def:[1200,1000],
-  fr:{t:'FC-101',b:'FC-102',s:'FC-103'},edge:14.4,rotLat:true,
-  folhas:[{n:'Folha interna',z:17.5,L:'FC-104',R:'FC-105',dir:1},{n:'Folha externa',z:-17.5,L:'FC-106',R:'FC-104',dir:-1}],
+  fr:{t:'SU-001',b:'SU-002',s:'SU-003'},edge:14.4,rotLat:true,
+  folhas:[{n:'Folha interna',z:17.5,L:'SU-039',R:'SU-040',dir:1},{n:'Folha externa',z:-17.5,L:'SU-041',R:'SU-039',dir:-1}],
   vidro:(L,H)=>[(L-143.2)/2,H-134],vtx:'(L − 143,2) / 2 × (H − 134)',dw:460},
  jc3:{n:'Janela de correr 3 folhas',cd:'FC JC3 · 01',linha:'Linha FC Residencial',def:[1800,1200],
-  fr:{t:'FC-111',b:'FC-112',s:'FC-113'},edge:19,contra:'FC-114',contra2:true,web0:13,
-  folhas:[{n:'Folha interna',z:35,L:'FC-104',R:'FC-105',dir:1},{n:'Folha central',z:0,L:'FC-106',R:'FC-105',dir:1},{n:'Folha fixa',z:-35,L:'FC-106',R:'FC-104',fixa:true}],
+  fr:{t:'SU-010',b:'SU-011',s:'SU-012'},edge:19,contra:'SU-291',contra2:true,web0:13,
+  folhas:[{n:'Folha interna',z:35,L:'SU-039',R:'SU-040',dir:1},{n:'Folha central',z:0,L:'SU-041',R:'SU-040',dir:1},{n:'Folha fixa',z:-35,L:'SU-041',R:'SU-039',fixa:true}],
   vidro:(L,H)=>[(L-174)/3,H-134],vtx:'(L − 174) / 3 × (H − 134)',dw:660}
 };
 /* montante que espelha o lado (perfil de encontro da folha externa) */
-const ESPELHA={'FC-106':1};
+const ESPELHA={'SU-041':1};
 const SDS=25,OV=30,WEB=13;
 /* afastamento do perfil de encontro em relação ao plano da folha */
-function mz(S,c){if(c==='FC-105')return SDS/2-S[c].h/2;if(c==='FC-106')return -SDS/2+S[c].h/2;return 0;}
+function mz(S,c){if(c==='SU-040')return SDS/2-S[c].h/2;if(c==='SU-041')return -SDS/2+S[c].h/2;return 0;}
 
 /* Gera as peças: cada perfil é a seção (a,b) levada aos eixos ex, ey e extrudada em ez, centrada em p.
    Peças de folha usam coordenadas locais; a folha fica em (ox, 0, z). */
@@ -35,20 +35,20 @@ function pecas(S,m,W,H){
   add({c:m.contra,len:Hf,ex:Z,ey:N(X),ez:Y,p:[W/2-FS-7.5+WO,yc,F[NS-1].z],g:-1,x:[.6,0,0],sc});
   if(m.contra2)add({c:m.contra,len:Hf,ex:Z,ey:X,ez:Y,p:[-W/2+FS+7.5-WO,yc,F[0].z],g:-1,x:[-.6,0,0],sc});}
  const Wi=W-2*m.edge,sW=(Wi+(NS-1)*OV)/NS,step=sW-OV,sH=H-50,[gw]=m.vidro(W,H);
- const OB=S['FC-108'].offT||[2.98,18.02],oz=OB[0],inset=PH('FC-107')/2-OB[1],RW=PH('FC-107');
+ const OB=S['SU-102'].offT||[2.98,18.02],oz=OB[0],inset=PH('SU-053')/2-OB[1],RW=PH('SU-053');
  const folhas=F.map((sd,i)=>{
   const L=sd.L,R=sd.R,xL=-sW/2+PW(L),xR=sW/2-PW(R),xLc=-sW/2+PW(L)/2,xRc=sW/2-PW(R)/2,tx=(xL+xR)/2,tl=xR-xL+4;
-  const lfz=rot&&i===0&&L==='FC-104';
+  const lfz=rot&&i===0&&L==='SU-039';
   add({c:L,len:sH,ex:ESPELHA[L]?N(X):X,ey:lfz?N(Z):Z,ez:Y,p:[xLc,0,lfz?-mz(S,L):mz(S,L)],g:i,x:[-1,0,0]});
   add({c:R,len:sH,ex:ESPELHA[R]?X:N(X),ey:Z,ez:Y,p:[xRc,0,mz(S,R)],g:i,x:[1,0,0]});
-  add({c:'FC-107',len:tl,ex:Z,ey:N(Y),ez:X,p:[tx,sH/2-RW/2,0],g:i,x:[0,1,0]});
-  add({c:'FC-107',len:tl,ex:Z,ey:Y,ez:X,p:[tx,-sH/2+RW/2,0],g:i,x:[0,-1,0]});
+  add({c:'SU-053',len:tl,ex:Z,ey:N(Y),ez:X,p:[tx,sH/2-RW/2,0],g:i,x:[0,1,0]});
+  add({c:'SU-053',len:tl,ex:Z,ey:Y,ez:X,p:[tx,-sH/2+RW/2,0],g:i,x:[0,-1,0]});
   const hi=sH/2-RW,lo=-sH/2+RW,bxL=xL-inset,bxR=xR+inset,blen=bxR-bxL,yT=hi+inset,yB=lo-inset,bhl=yT-yB,yc2=(yT+yB)/2;
   add({vid:1,w:gw,h:hi-lo+12,d:6,p:[tx,(lo+hi)/2,-3.5],g:i,x:[0,0,0],nm:'Vidro 6 mm'});
-  add({c:'FC-108',len:blen,ex:Z,ey:N(Y),ez:X,p:[tx,yT,oz],g:i,x:[0,.45,.4]});
-  add({c:'FC-108',len:blen,ex:Z,ey:Y,ez:X,p:[tx,yB,oz],g:i,x:[0,-.45,.4]});
-  add({c:'FC-108',len:bhl,ex:Z,ey:X,ez:Y,p:[bxL,yc2,oz],g:i,x:[-.45,0,.4]});
-  add({c:'FC-108',len:bhl,ex:Z,ey:N(X),ez:Y,p:[bxR,yc2,oz],g:i,x:[.45,0,.4]});
+  add({c:'SU-102',len:blen,ex:Z,ey:N(Y),ez:X,p:[tx,yT,oz],g:i,x:[0,.45,.4]});
+  add({c:'SU-102',len:blen,ex:Z,ey:Y,ez:X,p:[tx,yB,oz],g:i,x:[0,-.45,.4]});
+  add({c:'SU-102',len:bhl,ex:Z,ey:X,ez:Y,p:[bxL,yc2,oz],g:i,x:[-.45,0,.4]});
+  add({c:'SU-102',len:bhl,ex:Z,ey:N(X),ez:Y,p:[bxR,yc2,oz],g:i,x:[.45,0,.4]});
   const ox=-Wi/2+sW/2+i*step;
   return {n:sd.n,ox,z:sd.z,fixa:!!sd.fixa,dir:sd.dir||0,curso:sd.fixa?0:(sd.dir>0?(NS-1-i)*step:i*step),gx:tx};
  });
