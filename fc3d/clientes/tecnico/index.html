@@ -106,6 +106,15 @@ svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto 
 .folha.fs .mbar{position:fixed;left:50%;transform:translateX(-50%);bottom:76px}
 .mbar button{border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;border-radius:10px;padding:7px 11px;font:600 13px var(--f-b);cursor:pointer}
 .mbar button.on{background:#fff;color:var(--teal2)}.mbar .pl{padding:0 6px;color:#f2c063}.mbar .msg{color:#bfe3df;font-weight:500;padding:0 4px}
+.mtoast{position:fixed;left:50%;top:22%;transform:translate(-50%,-10px);z-index:80;padding:14px 22px;border-radius:16px;font:700 18px var(--f-h);color:#fff;box-shadow:0 12px 30px rgba(0,0,0,.28);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;text-align:center}
+.mtoast.on{opacity:1;transform:translate(-50%,0)}.mtoast.ok{background:#1f7a48}.mtoast.er{background:#b3261e}.mtoast small{display:block;font:500 13.5px var(--f-b);opacity:.9;margin-top:2px}
+.mfim{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:rgba(10,30,28,.55)}
+.mfim .cx{position:relative;background:#fff;border-radius:20px;padding:26px 28px;max-width:420px;width:calc(100% - 32px);text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.35);overflow:hidden}
+.mfim .tr{font-size:56px;line-height:1}.mfim h2{font-size:24px;margin:8px 0 4px}.mfim p{color:var(--mute);margin:0 0 14px}
+.mfim .st{display:flex;justify-content:center;gap:14px;margin-bottom:16px;font:700 15px var(--f-b)}.mfim .st span{background:var(--soft);border-radius:10px;padding:8px 12px}
+.mfim .bts{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.cft{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;animation:cai 2.4s ease-in forwards}
+@keyframes cai{to{transform:translateY(520px) rotate(720deg);opacity:.2}}
 </style>
 </head>
 <body>
@@ -294,6 +303,24 @@ function lista(){const L=document.getElementById('lista');
   L.innerHTML=itens.map(([c,n,kg])=>`<li><button type="button" data-c="${c}"><span class="c">${c==='VID'?'VIDRO':c}</span><span>${n}</span><span class="k">${kg?String(kg).replace('.',',')+' kg/m':''}</span></button></li>`).join('');
   L.querySelectorAll('button').forEach(b=>b.onclick=()=>{marca(sel===b.dataset.c?null:b.dataset.c);});}
 
+/* ---------- avisos de acerto e erro ---------- */
+let _mt=null;
+function aviso(tipo,tit,sub){let t=document.querySelector('.mtoast');if(!t){t=document.createElement('div');t.className='mtoast';(document.fullscreenElement||document.body).appendChild(t);}
+  t.className='mtoast '+tipo;t.innerHTML=tit+(sub?`<small>${sub}</small>`:'');requestAnimationFrame(()=>t.classList.add('on'));clearTimeout(_mt);_mt=setTimeout(()=>t.classList.remove('on'),tipo==='er'?1600:1000);bip(tipo);}
+function bip(tipo){try{const A=window._ac||(window._ac=new (window.AudioContext||window.webkitAudioContext)());const o=A.createOscillator(),g=A.createGain();o.connect(g);g.connect(A.destination);
+  o.frequency.value=tipo==='er'?180:tipo==='fim'?660:880;o.type=tipo==='er'?'square':'sine';g.gain.setValueAtTime(.08,A.currentTime);g.gain.exponentialRampToValueAtTime(.001,A.currentTime+(tipo==='fim'?.6:.18));o.start();o.stop(A.currentTime+(tipo==='fim'?.6:.2));
+  if(tipo==='fim'){const o2=A.createOscillator(),g2=A.createGain();o2.connect(g2);g2.connect(A.destination);o2.frequency.value=990;g2.gain.setValueAtTime(.07,A.currentTime+.18);g2.gain.exponentialRampToValueAtTime(.001,A.currentTime+.8);o2.start(A.currentTime+.18);o2.stop(A.currentTime+.85);}}catch(_){}}
+function comemora(){const seg=Math.round((MONT.fim-MONT.t0)/1000),tempo=`${Math.floor(seg/60)}:${String(seg%60).padStart(2,'0')}`,perf=!MONT.er;
+  const m=document.createElement('div');m.className='mfim';const cores=['#0e6f6a','#c88a1c','#2bb3a6','#e8b04a','#1f7a48','#5f8ea3'];
+  m.innerHTML=`<div class="cx">${Array.from({length:40},(_,i)=>`<i class="cft" style="left:${Math.random()*100}%;background:${cores[i%cores.length]};animation-delay:${Math.random()*.6}s"></i>`).join('')}
+   <div class="tr">${perf?'🏆':'🎉'}</div><h2>${perf?'Perfeito! Corte montado sem erro':'Parabéns! Corte montado'}</h2>
+   <p>${MONT.vp==='vpH'?'Corte horizontal':'Corte vertical'} · Nível ${MONT.n} ${MONT.n===1?'(com códigos)':'(só o formato)'}</p>
+   <div class="st"><span>✓ ${MONT.ac} peças</span><span>✗ ${MONT.er} erro${MONT.er===1?'':'s'}</span><span>⏱ ${tempo}</span></div>
+   <div class="bts">${MONT.n===1?'<button class="bt pri" data-f="n2">Próximo: Nível 2 →</button>':''}${MONT.vp==='vpH'?'<button class="bt" data-f="vv">Montar o corte vertical</button>':'<button class="bt" data-f="vh">Montar o corte horizontal</button>'}<button class="bt" data-f="r">↻ Montar de novo</button><button class="bt" data-f="x">Fechar</button></div></div>`;
+  (document.fullscreenElement||document.body).appendChild(m);bip('fim');
+  m.onclick=e=>{const b=e.target.closest('[data-f]');if(!b&&e.target!==m)return;const f=b?b.dataset.f:'x';m.remove();
+    if(f==='n2')montarCorte(2);if(f==='vv')montarCorte(MONT.n,'vpV');if(f==='vh')montarCorte(MONT.n,'vpH');if(f==='r')montarCorte(MONT.n);};}
+
 /* ---------- Montar o corte: peças em fila na bandeja; o aluno leva cada uma até o contorno com o código ---------- */
 let MONT=null;
 function bbOf(P){const e=P.g.querySelector('path,rect');return e?e.getBBox():{x:0,y:0,width:0,height:0};}
@@ -327,7 +354,7 @@ function soltou(P){if(!MONT||P.ok||P.c==='VID')return;if(!MONT.t0){MONT.t0=Date.
   const vaga=PARTS.filter(S=>S.vp===P.vp&&S.c!=='VID'&&!S.ok&&S.bb).map(S=>[S,Math.hypot(S.bb.x+S.bb.width/2-cx,S.bb.y+S.bb.height/2-cy)]).filter(x=>x[1]<Math.max(tol,Math.min(x[0].bb.width,x[0].bb.height)*.6+6)).sort((a,b)=>a[1]-b[1])[0];
   if(!vaga)return;/* solta em qualquer lugar livre: fica onde está */
   const S=vaga[0];
-  if(S.c!==P.c){MONT.er++;P.g.classList.add('err');setTimeout(()=>{P.g.classList.remove('err');P.dx=P.tx=P.bx-P.bb.x;P.dy=P.ty=P.by-P.bb.y;pos(P);},450);placar(`${P.c} não vai aqui.`);return;}
+  if(S.c!==P.c){MONT.er++;P.g.classList.add('err');setTimeout(()=>{P.g.classList.remove('err');P.dx=P.tx=P.bx-P.bb.x;P.dy=P.ty=P.by-P.bb.y;pos(P);},450);placar(`${P.c} não vai aqui. Tente novamente.`);aviso('er','✗ Tente novamente',`${P.c} não vai neste lugar`);return;}
   if(S!==P){/* mesmo código em outro lugar (ex.: lateral esquerdo e direito): troca o desenho das duas peças */
     const pP=P.g.querySelector('path'),pS=S.g.querySelector('path'),dP=pP.getAttribute('d'),dS=pS.getAttribute('d');
     const bbS0=S.bb,bbP0=P.bb,sx=S.bx,sy=S.by,sdx=S.dx,sdy=S.dy;pP.setAttribute('d',dS);pS.setAttribute('d',dP);
@@ -336,7 +363,7 @@ function soltou(P){if(!MONT||P.ok||P.c==='VID')return;if(!MONT.t0){MONT.t0=Date.
     const sr=S.g.querySelector('.rotc'),sh=S.g.querySelector('.hit');if(sr){sr.setAttribute('x',S.bb.x+S.bb.width/2);sr.setAttribute('y',S.bb.y-5);}if(sh){sh.setAttribute('x',S.bb.x-3);sh.setAttribute('y',S.bb.y-12);sh.setAttribute('width',S.bb.width+6);sh.setAttribute('height',S.bb.height+15);}const ph=P.g.querySelector('.hit');if(ph)ph.remove();
     const fo=P.fan;P.fan=S.fan;S.fan=fo;const ex=P.ex;P.ex=S.ex;S.ex=ex;pos(S);}
   P.dx=P.dy=P.tx=P.ty=0;P.ok=true;P.g.classList.add('ok');{const h=P.g.querySelector('.hit');if(h)h.remove();}pos(P);MONT.ac++;
-  if(MONT.ac>=MONT.tot){MONT.fim=Date.now();clearInterval(MONT.tm);placar(MONT.er?`Corte montado! ${MONT.er} erro${MONT.er>1?'s':''} no caminho.`:'Corte montado sem nenhum erro! 🏆');}else placar('Encaixou!');}
+  if(MONT.ac>=MONT.tot){MONT.fim=Date.now();clearInterval(MONT.tm);placar(MONT.er?`Corte montado! ${MONT.er} erro${MONT.er>1?'s':''} no caminho.`:'Corte montado sem nenhum erro! 🏆');setTimeout(comemora,350);}else{placar('Encaixou!');const fr=['Acertou!','Muito bem!','Isso aí!','Encaixou certinho!','Boa!'];aviso('ok','✓ '+fr[MONT.ac%fr.length],`${P.c} no lugar · faltam ${MONT.tot-MONT.ac}`);}}
 function sairMontar(semRedesenho){if(!MONT)return;clearInterval(MONT.tm);MONT=null;const b=document.querySelector('.mbar');if(b)b.remove();const F=document.querySelector('.folha');F.classList.remove('mont');document.querySelectorAll('.vp').forEach(v=>v.classList.remove('um'));if(!semRedesenho)desenhar();}
 
 /* ---------- tela cheia: a folha inteira ou um corte só, para explicar os detalhes ---------- */
