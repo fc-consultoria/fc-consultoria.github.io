@@ -150,8 +150,8 @@ dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:10px 0}dt{col
 <div class="gate" id="gate"><div><h1 id="gateT">Abrindo o Orientativo…</h1><p class="mute" id="gateP">Conferindo o seu acesso.</p></div></div>
 
 <header class="topo"><div class="w">
-  <a class="volta" href="../">← Plataforma</a>
-  <div class="tt"><small>Plataforma FC 3D · Equipe</small><b>Orientativo 3D · Passo a passo</b></div>
+  <a class="volta" href="../#tip">← Tipologias</a>
+  <div class="tt"><small>Plataforma FC 3D · Tipologias</small><b>Orientativo 3D · Passo a passo</b></div>
   <span class="sp"></span>
   <div class="prog" title="Módulos estudados"><i><s id="pgB" style="width:0"></s></i><span id="pgT">0/9</span></div>
   <button type="button" id="btTema" aria-label="Trocar fundo claro ou escuro" title="Claro / escuro"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg></button>
@@ -171,7 +171,7 @@ if(!tk){nega('Entre na Plataforma FC 3D','O Orientativo abre pela plataforma, de
 fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
  .then(r=>r.ok?r.json():null).then(d=>{
    if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}
-   if(!d.matriz&&!['gestor','vendedor'].includes(d.papel)){nega('Orientativo da equipe','O Orientativo 3D é para o gestor e os vendedores da empresa.');return;}
+   
    document.getElementById('gate').hidden=true;iniciar();})
  .catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));
 
@@ -211,7 +211,7 @@ const S='stroke="currentColor" fill="none" stroke-width="3" stroke-linejoin="rou
 const seta=(x1,y,x2)=>`<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="currentColor" stroke-width="2.5"/><path d="M${x2} ${y} l${x2>x1?-8:8} -6 v12z" fill="currentColor"/>`;
 function desenho(id){let w=200,ht=150,b='';
  if(id==='jc2'){b=`<rect x="4" y="4" width="192" height="142" ${S}/><rect x="14" y="14" width="92" height="122" ${S} ${VV}/><rect x="94" y="18" width="92" height="114" ${S} ${VV}/>${seta(40,75,80)}${seta(160,75,120)}`;}
- if(id==='jc3'){w=260;b=`<rect x="4" y="4" width="252" height="142" ${S}/><rect x="14" y="14" width="84" height="122" ${S} ${VV}/><rect x="88" y="18" width="84" height="114" ${S} ${VV}/><rect x="162" y="14" width="84" height="122" ${S} ${VV}/>${seta(36,75,72)}${seta(224,75,188)}`;}
+ if(id==='jc3'){w=260;b=`<rect x="4" y="4" width="252" height="142" ${S}/><rect x="14" y="14" width="84" height="122" ${S} ${VV}/><rect x="88" y="18" width="84" height="114" ${S} ${VV}/><rect x="162" y="14" width="84" height="122" ${S} ${VV}/>${seta(36,75,72)}${seta(112,75,148)}<text x="204" y="81" text-anchor="middle" font-size="16" font-weight="700" fill="currentColor">F</text>`;}
  if(id==='jcb'){ht=200;b=`<rect x="4" y="4" width="192" height="192" ${S}/><line x1="4" y1="54" x2="196" y2="54" stroke="currentColor" stroke-width="3"/><rect x="14" y="14" width="172" height="30" ${S} ${VV}/><text x="100" y="35" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">F</text><rect x="14" y="64" width="92" height="122" ${S} ${VV}/><rect x="94" y="68" width="92" height="114" ${S} ${VV}/>${seta(40,125,80)}${seta(160,125,120)}`;}
  if(id==='pc2'){w=180;ht=240;b=`<rect x="4" y="4" width="172" height="232" ${S}/><rect x="12" y="12" width="84" height="224" ${S} ${VV}/><rect x="84" y="16" width="84" height="220" ${S} ${VV}/>${seta(34,124,70)}${seta(146,124,110)}`;}
  if(id==='pg1'){w=120;ht=240;b=`<rect x="4" y="4" width="112" height="232" ${S}/><rect x="14" y="14" width="92" height="222" ${S} ${VV}/><path d="M106 14 L14 125 L106 236" stroke="currentColor" stroke-width="2" stroke-dasharray="6 5" fill="none"/><circle cx="92" cy="128" r="4" fill="currentColor"/>`;}
@@ -223,7 +223,7 @@ function desenho(id){let w=200,ht=150,b='';
 /* =========================== 01 · Tipologias =========================== */
 const TIPS=[
  {id:'jc2',n:'Janela de correr 2 folhas',l:'Linha FC Residencial',d:'Duas folhas que correm sobre trilho, uma passando pela outra. É a janela mais usada em residências.',ab:'Correr',f:'2 folhas móveis',uso:'Quartos, salas e cozinhas',go:'cor'},
- {id:'jc3',n:'Janela de correr 3 folhas',l:'Linha FC Residencial',d:'Três folhas em trilhos paralelos: abre uma parte maior do vão.',ab:'Correr',f:'3 folhas móveis',uso:'Vãos largos, salas',go:'cor'},
+ {id:'jc3',n:'Janela de correr 3 folhas',l:'Linha FC Residencial',d:'Três folhas em trilhos paralelos: duas correm e se juntam sobre a folha fixa.',ab:'Correr',f:'2 folhas móveis + 1 fixa',uso:'Vãos largos, salas',go:'cor'},
  {id:'jcb',n:'Correr 2 folhas com bandeira',l:'Linha FC Residencial',d:'Correr 2 folhas com uma bandeira em cima. Quando a bandeira é fixa, aparece com "F" no desenho.',ab:'Correr',f:'2 folhas + bandeira',uso:'Pé-direito alto',go:'cor'},
  {id:'pc2',n:'Porta de correr 2 folhas',l:'Linha FC Residencial',d:'Duas folhas de correr para integrar a sala com a varanda ou a área externa.',ab:'Correr',f:'2 folhas móveis',uso:'Varandas, área gourmet',go:'pad'},
  {id:'pg1',n:'Porta de giro 1 folha',l:'Linha FC Residencial',d:'Porta de abrir, girando nas dobradiças. O tracejado mostra o lado da dobradiça.',ab:'Giro',f:'1 folha',uso:'Entradas, área de serviço',go:'giro'},
@@ -297,7 +297,7 @@ function mGua(){return head(2,'Guarnições · vidro bem preso')+`<div class="se
 
 /* =========================== 04 · Correr (3D com seções FC) =========================== */
 const CR=[['2','Janela 2 folhas','As duas folhas correm uma por trás da outra, em dois trilhos.'],['3','Janela 3 folhas','Três trilhos: duas folhas correm e se juntam sobre a folha fixa, abrindo até 2/3 do vão.'],['4','Janela 4 folhas','As duas folhas do meio correm para as laterais.'],['4s','4 folhas sequenciais','Todas correm para o mesmo lado, uma atrás da outra.'],['6','6 folhas fechamento central','Três folhas de cada lado, que se juntam nas laterais.']];
-let CRK='2',CRA=false,SELC=null,CR3='jc2';
+let CRK='2',CRA=false,SELC=null,CR3=(['jc2','jc3'].includes(new URLSearchParams(location.search).get('m'))?new URLSearchParams(location.search).get('m'):'jc2');
 const usados=k=>{const R=FCM.pecas(SEC,FCM.MONT[k],FCM.MONT[k].def[0],FCM.MONT[k].def[1]),u=[];R.P.forEach(o=>{if(!o.vid&&u.indexOf(o.c)<0)u.push(o.c);});return u.sort();};
 function correrSvg(k,aberto){const n=k==='4s'?4:+k,W=360,H=170,m=10,fw=(W-2*m)/n+(n>1?8:0),pos=[],mv=[];
  for(let i=0;i<n;i++)pos.push(m+i*((W-2*m)/n)-(i?4:0));

@@ -132,6 +132,14 @@ footer{padding:16px 20px;text-align:center;font-size:11.5px;letter-spacing:.06em
   .topo .eu{display:none}
   main{padding:18px 16px 30px}
 }
+.ori{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin:14px 0 6px;display:grid;grid-template-columns:1fr auto;gap:12px 16px;align-items:center}
+.ori-tx{display:flex;flex-direction:column;gap:3px}.ori-tx b{font-family:var(--f-h);font-size:17px}.ori-tx .mute{font-size:13.5px}
+.ori-bar{display:block;height:6px;border-radius:9px;background:var(--soft);overflow:hidden;margin-top:6px;max-width:360px}.ori-bar s{display:block;height:100%;background:var(--amber)}
+.ori-bt{display:flex;gap:8px;flex-wrap:wrap}
+.ori-m{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.ori-m a{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;font-size:13px;font-weight:600;color:var(--ink);text-decoration:none}
+.ori-m a:hover{border-color:var(--teal)}.ori-m a span{font-size:11.5px;color:var(--teal)}.ori-m a.ok{background:var(--okSoft);border-color:transparent}.ori-m a.ok span{color:var(--ok)}
+@media(max-width:700px){.ori{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -218,20 +226,19 @@ const MENU=[
   {k:'tip',n:'Tipologias',i:'▦',p:['gestor','vendedor','arquiteto']},
   {k:'amb',n:'Ambientes',i:'◫',p:['gestor','vendedor']},
   {k:'apr',n:'Apresentação',i:'▶',p:['gestor','vendedor','arquiteto']},
-  {k:'eq',n:'Equipe · Orientativo 3D',i:'✓',p:['gestor','vendedor']},
   {k:'ges',n:'Gestão',i:'⚙',p:['gestor']}];
 /* Etapas de construção da plataforma (a etapa 1 está pronta) */
 const ETAPAS=[['1','Estrutura','Entrada, painel e menu'],['2','Tipologias 3D','Modelos de mercado'],['3','Ambiente residência','Montar a casa'],['4','Modo apresentação','TV e telão'],['5','Equipe','Orientativo 3D'],['6','Gestão','Acessos e contrato']];
 /* Tipologias de mercado: nomes genéricos, sem marca de fabricante */
 const TIPS=[
-  {id:'jc2',tec:'tecnico/',n:'Janela de correr 2 folhas',g:'jan',l:'res',d:'A janela mais usada em residências: duas folhas que correm sobre trilho, uma passando pela outra.',uso:'Quartos, salas e cozinhas',f:'2 folhas móveis',ab:'Correr'},
-  {id:'jc3',tec:'tecnico/?m=jc3',n:'Janela de correr 3 folhas',g:'jan',l:'res',d:'Três folhas que correm em trilhos paralelos, ampliando o vão de ventilação.',uso:'Vãos largos, salas',f:'3 folhas móveis',ab:'Correr'},
-  {id:'jcb',n:'Janela de correr 2 folhas com bandeira',g:'jan',l:'res',d:'Correr 2 folhas com uma bandeira fixa na parte de cima, para vãos mais altos.',uso:'Pé-direito alto, fachadas',f:'2 folhas + bandeira',ab:'Correr'},
-  {id:'pc2',n:'Porta de correr 2 folhas',g:'por',l:'res',d:'Porta de duas folhas de correr para integrar ambientes e áreas externas.',uso:'Varandas, salas, área gourmet',f:'2 folhas móveis',ab:'Correr'},
-  {id:'pg1',n:'Porta de giro 1 folha',g:'por',l:'res',d:'Porta de abrir com dobradiças, para entradas e passagens.',uso:'Entradas, áreas de serviço',f:'1 folha',ab:'Giro'},
-  {id:'mx1',n:'Maxim-ar 1 folha',g:'jan',l:'res',d:'Folha que se projeta para fora a partir do topo, ventilando mesmo com chuva leve.',uso:'Banheiros, cozinhas, lavanderias',f:'1 folha',ab:'Projetante'},
-  {id:'cor',n:'Fachada Cortina',g:'fac',l:'fac',d:'Fachada com colunas e travessas aparentes de 40 × 80, vidro preso por presilha e tampa externa. Montada a partir das medidas da obra.',uso:'Prédios comerciais, fachadas de loja',f:'Quadros fixos',ab:'Fixa',obra:'cortina'},
-  {id:'atl',n:'Pele de Vidro Atlanta',g:'fac',l:'fac',d:'Fachada com quadros colados no vidro, sem perfil aparente do lado de fora, presos nas colunas por presilha.',uso:'Edifícios, fachadas de alto padrão',f:'Quadros colados',ab:'Fixa',obra:'atlanta'}];
+  {id:'jc2',tec:'tecnico/',m3d:'jc2',est:'cor',n:'Janela de correr 2 folhas',g:'jan',l:'res',d:'A janela mais usada em residências: duas folhas que correm sobre trilho, uma passando pela outra.',uso:'Quartos, salas e cozinhas',f:'2 folhas móveis',ab:'Correr'},
+  {id:'jc3',tec:'tecnico/?m=jc3',m3d:'jc3',est:'cor',n:'Janela de correr 3 folhas',g:'jan',l:'res',d:'Três folhas em trilhos paralelos: duas correm e se juntam sobre a folha fixa, abrindo até 2/3 do vão.',uso:'Vãos largos, salas',f:'2 folhas móveis + 1 fixa',ab:'Correr'},
+  {id:'jcb',est:'cor',n:'Janela de correr 2 folhas com bandeira',g:'jan',l:'res',d:'Correr 2 folhas com uma bandeira fixa na parte de cima, para vãos mais altos.',uso:'Pé-direito alto, fachadas',f:'2 folhas + bandeira',ab:'Correr'},
+  {id:'pc2',est:'pad',n:'Porta de correr 2 folhas',g:'por',l:'res',d:'Porta de duas folhas de correr para integrar ambientes e áreas externas.',uso:'Varandas, salas, área gourmet',f:'2 folhas móveis',ab:'Correr'},
+  {id:'pg1',est:'giro',n:'Porta de giro 1 folha',g:'por',l:'res',d:'Porta de abrir com dobradiças, para entradas e passagens.',uso:'Entradas, áreas de serviço',f:'1 folha',ab:'Giro'},
+  {id:'mx1',est:'max',n:'Maxim-ar 1 folha',g:'jan',l:'res',d:'Folha que se projeta para fora a partir do topo, ventilando mesmo com chuva leve.',uso:'Banheiros, cozinhas, lavanderias',f:'1 folha',ab:'Projetante'},
+  {id:'cor',est:'fac',n:'Fachada Cortina',g:'fac',l:'fac',d:'Fachada com colunas e travessas aparentes de 40 × 80, vidro preso por presilha e tampa externa. Montada a partir das medidas da obra.',uso:'Prédios comerciais, fachadas de loja',f:'Quadros fixos',ab:'Fixa',obra:'cortina'},
+  {id:'atl',est:'fac',n:'Pele de Vidro Atlanta',g:'fac',l:'fac',d:'Fachada com quadros colados no vidro, sem perfil aparente do lado de fora, presos nas colunas por presilha.',uso:'Edifícios, fachadas de alto padrão',f:'Quadros colados',ab:'Fixa',obra:'atlanta'}];
 const LINHAS={res:{n:'Linha FC Residencial',s:'Disponível'},fac:{n:'Linha FC Fachadas',s:'3D disponível'},pre:{n:'Linha FC Premium',s:'Em breve'}};
 const OBRA=(t)=>'obra/'+(t?'?t='+t:'');
 
@@ -241,7 +248,7 @@ function desenho(id){
   const seta=(x1,y,x2)=>`<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="currentColor" stroke-width="2.5"/><path d="M${x2} ${y} l${x2>x1?-8:8} -6 v12z" fill="currentColor"/>`;
   let w=200,ht=150,b='';
   if(id==='jc2'){b=`<rect x="4" y="4" width="192" height="142" ${S}/><rect x="14" y="14" width="92" height="122" ${S} ${V}/><rect x="94" y="18" width="92" height="114" ${S} ${V}/>${seta(40,75,80)}${seta(160,75,120)}`;}
-  if(id==='jc3'){w=260;b=`<rect x="4" y="4" width="252" height="142" ${S}/><rect x="14" y="14" width="84" height="122" ${S} ${V}/><rect x="88" y="18" width="84" height="114" ${S} ${V}/><rect x="162" y="14" width="84" height="122" ${S} ${V}/>${seta(36,75,72)}${seta(224,75,188)}`;}
+  if(id==='jc3'){w=260;b=`<rect x="4" y="4" width="252" height="142" ${S}/><rect x="14" y="14" width="84" height="122" ${S} ${V}/><rect x="88" y="18" width="84" height="114" ${S} ${V}/><rect x="162" y="14" width="84" height="122" ${S} ${V}/>${seta(36,75,72)}${seta(112,75,148)}<text x="204" y="81" text-anchor="middle" font-size="16" font-weight="700" fill="currentColor">F</text>`;}
   if(id==='jcb'){ht=200;b=`<rect x="4" y="4" width="192" height="192" ${S}/><line x1="4" y1="54" x2="196" y2="54" stroke="currentColor" stroke-width="3"/><rect x="14" y="14" width="172" height="30" ${S} ${V}/><rect x="14" y="64" width="92" height="122" ${S} ${V}/><rect x="94" y="68" width="92" height="114" ${S} ${V}/>${seta(40,125,80)}${seta(160,125,120)}`;}
   if(id==='pc2'){w=180;ht=240;b=`<rect x="4" y="4" width="172" height="232" ${S}/><rect x="12" y="12" width="84" height="224" ${S} ${V}/><rect x="84" y="16" width="84" height="220" ${S} ${V}/>${seta(34,124,70)}${seta(146,124,110)}`;}
   if(id==='pg1'){w=120;ht=240;b=`<rect x="4" y="4" width="112" height="232" ${S}/><rect x="14" y="14" width="92" height="222" ${S} ${V}/><path d="M106 14 L14 125 L106 236" stroke="currentColor" stroke-width="2" stroke-dasharray="6 5" fill="none"/><circle cx="92" cy="128" r="4" fill="currentColor"/>`;}
@@ -252,7 +259,7 @@ function desenho(id){
 }
 
 /* ---------- sessão ---------- */
-let S=null,papelVer=null,tab='inicio',filtro='todas';
+let S=null,papelVer=null,tab=(['tip','amb','apr','ges'].includes(location.hash.slice(1))?location.hash.slice(1):'inicio'),filtro='todas';
 const papel=()=>S&&S.matriz?(papelVer||'gestor'):S&&S.papel;
 
 async function rpc(fn,args){const r=await sb.rpc(fn,args);if(r.error)throw new Error(r.error.message);return r.data;}
@@ -295,10 +302,11 @@ $('#btSair').onclick=async()=>{const t=S&&S.token;S=null;ls.del(TK);try{if(t)awa
 /* ---------- telas ---------- */
 const itens=()=>MENU.filter(m=>m.p.includes(papel()));
 function render(){
+  if(!itens().some(m=>m.k===tab))tab='inicio';
   $('#euPapel').textContent=S.matriz?'vendo como '+PAPEIS[papel()].split(' /')[0].toLowerCase():PAPEIS[S.papel]||S.papel;
   $('#menu').innerHTML=itens().map(m=>`<button type="button" data-tab="${m.k}" ${m.k===tab?'aria-current="page"':''}><span aria-hidden="true">${m.i}</span>${m.n}</button>`).join('');
   $('#menu').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();scrollTo(0,0);});
-  $('#tela').innerHTML=({inicio:telaInicio,tip:telaTip,amb:telaAmb,apr:telaApr,eq:telaEq,ges:telaGes}[tab]||telaInicio)();
+  $('#tela').innerHTML=({inicio:telaInicio,tip:telaTip,amb:telaAmb,apr:telaApr,ges:telaGes}[tab]||telaInicio)();
   ligar();
 }
 const vaiPara=k=>{tab=k;render();scrollTo(0,0);};
@@ -307,16 +315,22 @@ function telaInicio(){
   const p=papel(),nome=S.matriz?'FC':(S.nome||'').split(' ')[0];
   const txt={gestor:'Acompanhe a equipe e use a plataforma para apresentar as esquadrias aos seus clientes.',vendedor:'Escolha a tipologia, monte o ambiente e apresente ao seu cliente em 3D.',arquiteto:'Consulte as tipologias e veja as propostas preparadas para a sua obra.'}[p];
   const mods=itens().filter(m=>m.k!=='inicio');
-  const desc={tip:'Janelas, portas e fachadas de mercado para escolher e mostrar ao cliente.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ges:'Acessos da equipe, licença e contrato da empresa.'};
+  const desc={tip:'Janelas, portas e fachadas em 3D, com desenho técnico e o Orientativo da equipe.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ges:'Acessos da equipe, licença e contrato da empresa.'};
   return `<div class="hero"><div><h2>Olá, ${h(nome)}!</h2><p>${txt}</p></div><div class="bts"><button class="btn cl" data-ir="tip">Ver tipologias</button>${p!=='arquiteto'?'<button class="btn sec" style="border-color:rgba(255,255,255,.4);color:#fff" data-ir="apr">Modo apresentação</button>':''}</div></div>
   <div class="grid">${mods.map(m=>`<button class="card" data-ir="${m.k}"><span class="ic" aria-hidden="true">${m.i}</span><h3>${m.n}</h3><span class="d">${desc[m.k]}</span><span class="pe">${m.k==='tip'||m.k==='apr'?'<span class="chip o">Disponível</span>':'<span class="chip a">Em construção</span>'}</span></button>`).join('')}</div>
   ${S.matriz?`<div class="linha-tit"><h3>Etapas da plataforma</h3><span class="chip t">só a FC vê</span></div><div class="etapas">${ETAPAS.map(([n,t,d])=>`<div class="etp ${n==='1'?'on':''}"><span class="chip ${n==='1'?'o':''}">${n==='1'?'Pronta':'Etapa '+n}</span><b>${t}</b><span class="mute">${d}</span></div>`).join('')}</div>`:''}`;
 }
+function faixaOri(){if(papel()==='arquiteto')return '';let F=[];try{F=JSON.parse(localStorage.getItem('pfc-ori-feito'))||[]}catch(_){}
+  const M=[['tip','Tipologias'],['cm','Contramarco'],['gua','Guarnições'],['cor','Correr em 3D'],['max','Maxim-ar'],['pad','Componentes padrão'],['giro','Porta de giro'],['div','Perfis diversos'],['fac','Fachadas']],n=M.filter(m=>F.includes(m[0])).length,prox=(M.find(m=>!F.includes(m[0]))||M[0])[0];
+  return `<div class="ori"><div class="ori-tx"><b>📘 Orientativo 3D da equipe</b><span class="mute">Aprenda cada tipologia antes de apresentar · ${n} de ${M.length} módulos estudados</span><i class="ori-bar"><s style="width:${n/M.length*100}%"></s></i></div>
+   <div class="ori-bt"><a class="btn pri" href="orientativo/#${prox}">${n?'▶ Continuar':'▶ Começar'}</a><a class="btn sec" href="orientativo/#quiz">✓ Prova final</a></div>
+   <div class="ori-m">${M.map((m,i)=>`<a href="orientativo/#${m[0]}" class="${F.includes(m[0])?'ok':''}"><span>${F.includes(m[0])?'✓':String(i+1).padStart(2,'0')}</span>${m[1]}</a>`).join('')}</div></div>`;}
 function telaTip(){
   const L=TIPS.filter(t=>t.l==='res'&&(filtro==='todas'||t.g===filtro)),F=TIPS.filter(t=>t.l==='fac'&&(filtro==='todas'||filtro==='fac'));
-  const card=t=>`<button class="card tip" data-tip="${t.id}"><div class="des">${desenho(t.id)}</div><h3>${h(t.n)}</h3><span class="d">${h(t.uso)}</span><span class="pe"><span class="chip t">${LINHAS[t.l].n}</span><span class="chip">${t.ab}</span>${t.obra?'<span class="chip o">3D</span>':''}${t.tec?'<span class="chip o">Desenho técnico</span>':''}</span></button>`;
+  const card=t=>`<button class="card tip" data-tip="${t.id}"><div class="des">${desenho(t.id)}</div><h3>${h(t.n)}</h3><span class="d">${h(t.uso)}</span><span class="pe"><span class="chip t">${LINHAS[t.l].n}</span><span class="chip">${t.ab}</span>${t.obra||t.m3d?'<span class="chip o">3D</span>':''}${t.tec?'<span class="chip o">Desenho técnico</span>':''}</span></button>`;
   return `<div class="cab"><div><h2>Tipologias</h2><p class="mute">Janelas, portas e fachadas de mercado para escolher e apresentar ao cliente.</p></div>
    <div class="filtros" role="group" aria-label="Filtrar">${[['todas','Todas'],['jan','Janelas'],['por','Portas'],['fac','Fachadas']].map(([k,n])=>`<button type="button" data-f="${k}" aria-pressed="${filtro===k}">${n}</button>`).join('')}</div></div>
+   ${faixaOri()}
    ${filtro!=='fac'?`<div class="linha-tit"><h3>${LINHAS.res.n}</h3><span class="chip o">${LINHAS.res.s}</span></div>
    <div class="grid">${L.map(card).join('')}</div>`:''}
    ${F.length?`<div class="linha-tit"><h3>${LINHAS.fac.n}</h3><span class="chip o">${LINHAS.fac.s}</span></div><div class="grid">${F.map(card).join('')}</div>`:''}
@@ -328,9 +342,6 @@ function telaAmb(){return `<div class="cab"><div><h2>Ambientes</h2><p class="mut
 function telaApr(){return `<div class="cab"><div><h2>Modo apresentação</h2><p class="mute">Tela cheia, sem menus, para mostrar na TV ou no telão.</p></div></div>
   <div class="hero" style="margin-bottom:18px"><div><span class="chip" style="background:rgba(255,255,255,.15);color:#fff">Disponível</span><h2 style="margin-top:8px">Apresentação de Obra · Fachadas</h2><p>Coloque as medidas da obra e mostre ao arquiteto, ao engenheiro ou ao dono da obra a Fachada Cortina e a Pele de Vidro Atlanta em 3D, lado a lado, com o peso de alumínio e as peças de cada uma.</p></div><div class="bts"><a class="btn cl" href="${OBRA('')}" target="_blank" rel="noopener">Abrir a apresentação</a></div></div>
   <p class="aviso" style="margin-bottom:18px">É uma apresentação e simulação. Medidas, pesos e cálculo final devem ser confirmados no sistema de cálculo e com o fornecedor da empresa.</p>`+emBreve('▶','Apresentação das janelas e portas em construção','Abre a tipologia ou o ambiente em tela cheia, gira o 3D com o dedo ou o mouse e mostra os detalhes na hora da reunião com o cliente ou o arquiteto.');}
-function telaEq(){const M=[['01','Tipologias'],['02','Contramarco'],['03','Guarnições'],['04','Janelas de Correr em 3D'],['05','Janela Maxim-Ar'],['06','Perfis e Componentes Padrão'],['07','Porta de Giro'],['08','Perfis Diversos'],['09','Fachadas'],['✓','Prova final']];
-  return `<div class="cab"><div><h2>Equipe · Orientativo 3D</h2><p class="mute">O passo a passo para a equipe conhecer cada tipologia antes de apresentar, com teste rápido em cada módulo e prova final.</p></div><a class="btn pri" href="orientativo/">▶ Abrir o Orientativo 3D</a></div>
-  <div class="eqm" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:14px">${M.map(m=>`<a href="orientativo/#${['tip','cm','gua','cor','max','pad','giro','div','fac','quiz'][M.indexOf(m)]}" style="display:flex;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);text-decoration:none;font-weight:600"><span style="width:30px;height:30px;border-radius:9px;background:var(--tealSoft);color:var(--teal);display:grid;place-items:center;font-size:13px">${m[0]}</span>${h(m[1])}</a>`).join('')}</div>`;}
 function telaGes(){return `<div class="cab"><div><h2>Gestão</h2><p class="mute">Área do gestor da empresa.</p></div></div>`+emBreve('⚙','Gestão em construção','Aqui ficarão os acessos da equipe, o uso de cada pessoa e os dados da licença da empresa.',[['👥','Acessos da equipe','Vendedores e arquitetos com login próprio.'],['📊','Uso da plataforma','Quem acessou e o que apresentou.'],['📄','Licença','Prazo da licença e contrato.']]);}
 
 function ligar(){
@@ -343,8 +354,11 @@ function detalhe(id){
   d.innerHTML=`<div class="cx" role="dialog" aria-modal="true" aria-label="${h(t.n)}"><div class="des">${desenho(t.id)}</div><div class="tx">
    <span class="chip t" style="align-self:flex-start">${LINHAS[t.l].n}</span><h2 style="font-size:21px">${h(t.n)}</h2><p>${h(t.d)}</p>
    <dl><dt>Abertura</dt><dd>${t.ab}</dd><dt>Folhas</dt><dd>${t.f}</dd><dt>Indicada para</dt><dd>${h(t.uso)}</dd></dl>
+   ${t.m3d?`<a class="btn pri" href="orientativo/?m=${t.m3d}#cor">🧊 Ver em 3D</a>`:''}
    ${t.tec?`<a class="btn pri" href="${t.tec}">📐 Desenho técnico interativo</a>`:''}
-   ${t.obra?`<a class="btn pri" href="${OBRA(t.obra)}" target="_blank" rel="noopener">Abrir em 3D com as medidas da obra</a>`:'<button class="btn sec" disabled title="Chega na próxima etapa">Ver em 3D · em breve</button>'}
+   ${t.obra?`<a class="btn pri" href="${OBRA(t.obra)}" target="_blank" rel="noopener">Abrir em 3D com as medidas da obra</a>`:''}
+   ${!t.m3d&&!t.obra?'<button class="btn sec" disabled title="Chega nas próximas etapas">Ver em 3D · em breve</button>':''}
+   ${papel()!=='arquiteto'&&t.est?`<a class="btn sec" href="orientativo/#${t.est}">📘 Estudar no Orientativo</a>`:''}
    <p class="aviso">Desenho esquemático, sem escala. Medidas, pesos e acabamentos devem ser confirmados com o fornecedor da empresa.</p>
    <button class="btn sec" id="detFecha">Fechar</button></div></div>`;
   d.hidden=false;$('#detFecha').focus();
