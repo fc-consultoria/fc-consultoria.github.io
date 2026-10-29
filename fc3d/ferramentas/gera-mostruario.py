@@ -25,7 +25,7 @@ gate=r'''/* ===== Plataforma FC 3D Clientes: entrada com a sessão da plataforma
  if(!tk){nega('Entre na Plataforma FC 3D','O Mostruário 3D abre pela plataforma, depois de entrar com o seu login.');return;}
  fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})}).then(r=>r.ok?r.json():null).then(d=>{
   if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}
-  g.remove();const t=new URLSearchParams(location.search).get('t');setTypo(TYPOS[t]?t:'jcr200');
+  const t=new URLSearchParams(location.search).get('t');const A=window.PFC_AJ;if(A)A.matriz(d.matriz);(A?A.carregar():Promise.resolve()).then(()=>{g.remove();setTypo(TYPOS[t]?t:'jcr200');});
  }).catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));})();
 '''
 s=s[:a]+gate+s[b+len('if(window.FC_DEMO===2)demo2Init();else if(window.FC_DEMO)demoInit();'):]
@@ -45,8 +45,10 @@ s=re.sub(r"\bAlcoa\b","fabricante",s)
 # 5) esconde o guia do aluno do Orientativo
 s=s.replace('</style>','.guiabtn{display:none!important}\n</style>',1)
 s=s.replace('<title>FC Mostruário 3D</title>','<title>Mostruário 3D · Plataforma FC 3D</title>')
+# 5b) mover peças (todos) e ajuste técnico (Matriz)
+s+='\n<script src="ajustes.js?v=1"></script>\n'
 # 6) botão de voltar para a plataforma (some quando o Mostruário está dentro do Orientativo)
-s+='\n<script>if(window.top===window){const a=document.createElement("a");a.href="../#tip";a.textContent="← Plataforma FC 3D";a.style.cssText="position:fixed;left:14px;bottom:14px;z-index:9000;background:#0a4f4b;color:#fff;font:600 14px system-ui;padding:9px 14px;border-radius:11px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25)";document.body.appendChild(a);}</script>\n'
+s+='\n<script>if(window.top===window){const a=document.createElement("a");a.href="../#tip";a.textContent="← Plataforma FC 3D";a.style.cssText="position:fixed;right:14px;bottom:14px;z-index:9000;background:#0a4f4b;color:#fff;font:600 14px system-ui;padding:9px 14px;border-radius:11px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25)";document.body.appendChild(a);}</script>\n'
 os.makedirs(os.path.dirname(out),exist_ok=True)
 open(out,'w',encoding='utf-8').write(s)
 for w in ['Alcoa','ALCOA','Claiton','Ladore','Belmetal','Perfileve']:

@@ -2835,11 +2835,13 @@ applyTypo();build();renderParts();renderCuts();renderUs();renderSliders();render
  if(!tk){nega('Entre na Plataforma FC 3D','O Mostruário 3D abre pela plataforma, depois de entrar com o seu login.');return;}
  fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})}).then(r=>r.ok?r.json():null).then(d=>{
   if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}
-  g.remove();const t=new URLSearchParams(location.search).get('t');setTypo(TYPOS[t]?t:'jcr200');
+  const t=new URLSearchParams(location.search).get('t');const A=window.PFC_AJ;if(A)A.matriz(d.matriz);(A?A.carregar():Promise.resolve()).then(()=>{g.remove();setTypo(TYPOS[t]?t:'jcr200');});
  }).catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));})();
 
 </script>
 
 
 
-<script>if(window.top===window){const a=document.createElement("a");a.href="../#tip";a.textContent="← Plataforma FC 3D";a.style.cssText="position:fixed;left:14px;bottom:14px;z-index:9000;background:#0a4f4b;color:#fff;font:600 14px system-ui;padding:9px 14px;border-radius:11px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25)";document.body.appendChild(a);}</script>
+<script src="ajustes.js?v=1"></script>
+
+<script>if(window.top===window){const a=document.createElement("a");a.href="../#tip";a.textContent="← Plataforma FC 3D";a.style.cssText="position:fixed;right:14px;bottom:14px;z-index:9000;background:#0a4f4b;color:#fff;font:600 14px system-ui;padding:9px 14px;border-radius:11px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25)";document.body.appendChild(a);}</script>
