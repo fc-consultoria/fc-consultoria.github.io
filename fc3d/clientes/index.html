@@ -549,9 +549,7 @@ function detalhe(id){
    ${(()=>{const ori=papel()!=='arquiteto'&&papel()!=='demo'&&t.est;return ori?`<a class="btn pri" href="orientativo/?foco=1#${t.est}">🧊 Orientativo 3D · conhecer e montar</a>`:t.m3d?`<a class="btn pri" href="montagens/?m=${t.m3d}#cor">🧊 Ver em 3D</a>`:'';})()}
    ${t.tec?`<a class="btn pri" href="${t.tec}">📐 Desenho técnico interativo</a>`:''}
    ${t.obra?`<a class="btn pri" href="${OBRA(t.obra)}" target="_blank" rel="noopener">Abrir em 3D com as medidas da obra</a>`:''}
-   ${!t.m3d&&!t.obra&&!(papel()!=='arquiteto'&&papel()!=='demo'&&t.est)?'<button class="btn sec" disabled title="Chega nas próximas etapas">Ver em 3D · em breve</button>':''}
-   ${S.matriz&&t.mo?`<a class="btn sec" href="mostruario/?t=${t.mo}" title="Oculto para os clientes — visível só no Acesso FC">🧊 Mostruário 3D (antigo) · só FC</a>`:''}
-   <p class="aviso">Desenho esquemático, sem escala. Medidas, pesos e acabamentos devem ser confirmados com o fornecedor da empresa.</p>
+   ${!t.m3d&&!t.obra&&!(papel()!=='arquiteto'&&papel()!=='demo'&&t.est)?'<button class="btn sec" disabled title="Chega nas próximas etapas">Ver em 3D · em breve</button>':''}   <p class="aviso">Desenho esquemático, sem escala. Medidas, pesos e acabamentos devem ser confirmados com o fornecedor da empresa.</p>
    <button class="btn sec" id="detFecha">Fechar</button></div></div>`;
   d.hidden=false;$('#detFecha').focus();
   const fecha=()=>{d.hidden=true;d.innerHTML='';document.removeEventListener('keydown',esc);};
