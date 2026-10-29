@@ -231,13 +231,13 @@ const MENU=[
 const ETAPAS=[['1','Estrutura','Entrada, painel e menu'],['2','Tipologias 3D','Modelos de mercado'],['3','Ambiente residência','Montar a casa'],['4','Modo apresentação','TV e telão'],['5','Equipe','Orientativo 3D'],['6','Gestão','Acessos e contrato']];
 /* Tipologias de mercado: nomes genéricos, sem marca de fabricante */
 const TIPS=[
-  {id:'jc2',tec:'tecnico/',m3d:'jc2',est:'cor',n:'Janela de correr 2 folhas',g:'jan',l:'res',d:'A janela mais usada em residências: duas folhas que correm sobre trilho, uma passando pela outra.',uso:'Quartos, salas e cozinhas',f:'2 folhas móveis',ab:'Correr'},
-  {id:'jc3',tec:'tecnico/?m=jc3',m3d:'jc3',est:'cor',n:'Janela de correr 3 folhas',g:'jan',l:'res',d:'Três folhas em trilhos paralelos: duas correm e se juntam sobre a folha fixa, abrindo até 2/3 do vão.',uso:'Vãos largos, salas',f:'2 folhas móveis + 1 fixa',ab:'Correr'},
+  {id:'jc2',mo:'jcr200',tec:'tecnico/',m3d:'jc2',est:'cor',n:'Janela de correr 2 folhas',g:'jan',l:'res',d:'A janela mais usada em residências: duas folhas que correm sobre trilho, uma passando pela outra.',uso:'Quartos, salas e cozinhas',f:'2 folhas móveis',ab:'Correr'},
+  {id:'jc3',mo:'jcr300',tec:'tecnico/?m=jc3',m3d:'jc3',est:'cor',n:'Janela de correr 3 folhas',g:'jan',l:'res',d:'Três folhas em trilhos paralelos: duas correm e se juntam sobre a folha fixa, abrindo até 2/3 do vão.',uso:'Vãos largos, salas',f:'2 folhas móveis + 1 fixa',ab:'Correr'},
   {id:'jc4',tec:'tecnico/?m=jc4',m3d:'jc4',est:'cor',n:'Janela de correr 4 folhas',g:'jan',l:'res',d:'Duas folhas fixas nas laterais e duas móveis no centro, que correm sobre as fixas.',uso:'Salas, vãos largos',f:'2 móveis + 2 fixas',ab:'Correr'},
-  {id:'jcb',est:'cor',n:'Janela de correr 2 folhas com bandeira',g:'jan',l:'res',d:'Correr 2 folhas com uma bandeira fixa na parte de cima, para vãos mais altos.',uso:'Pé-direito alto, fachadas',f:'2 folhas + bandeira',ab:'Correr'},
-  {id:'pc2',est:'pad',n:'Porta de correr 2 folhas',g:'por',l:'res',d:'Porta de duas folhas de correr para integrar ambientes e áreas externas.',uso:'Varandas, salas, área gourmet',f:'2 folhas móveis',ab:'Correr'},
-  {id:'pg1',est:'giro',n:'Porta de giro 1 folha',g:'por',l:'res',d:'Porta de abrir com dobradiças, para entradas e passagens.',uso:'Entradas, áreas de serviço',f:'1 folha',ab:'Giro'},
-  {id:'mx1',est:'max',n:'Maxim-ar 1 folha',g:'jan',l:'res',d:'Folha que se projeta para fora a partir do topo, ventilando mesmo com chuva leve.',uso:'Banheiros, cozinhas, lavanderias',f:'1 folha',ab:'Projetante'},
+  {id:'jcb',mo:'jcr205',est:'cor',n:'Janela de correr 2 folhas com bandeira',g:'jan',l:'res',d:'Correr 2 folhas com uma bandeira fixa na parte de cima, para vãos mais altos.',uso:'Pé-direito alto, fachadas',f:'2 folhas + bandeira',ab:'Correr'},
+  {id:'pc2',mo:'pcr200',est:'pad',n:'Porta de correr 2 folhas',g:'por',l:'res',d:'Porta de duas folhas de correr para integrar ambientes e áreas externas.',uso:'Varandas, salas, área gourmet',f:'2 folhas móveis',ab:'Correr'},
+  {id:'pg1',mo:'pgr100',est:'giro',n:'Porta de giro 1 folha',g:'por',l:'res',d:'Porta de abrir com dobradiças, para entradas e passagens.',uso:'Entradas, áreas de serviço',f:'1 folha',ab:'Giro'},
+  {id:'mx1',mo:'max800',est:'max',n:'Maxim-ar 1 folha',g:'jan',l:'res',d:'Folha que se projeta para fora a partir do topo, ventilando mesmo com chuva leve.',uso:'Banheiros, cozinhas, lavanderias',f:'1 folha',ab:'Projetante'},
   {id:'cor',est:'fac',n:'Fachada Cortina',g:'fac',l:'fac',d:'Fachada com colunas e travessas aparentes de 40 × 80, vidro preso por presilha e tampa externa. Montada a partir das medidas da obra.',uso:'Prédios comerciais, fachadas de loja',f:'Quadros fixos',ab:'Fixa',obra:'cortina'},
   {id:'atl',est:'fac',n:'Pele de Vidro Atlanta',g:'fac',l:'fac',d:'Fachada com quadros colados no vidro, sem perfil aparente do lado de fora, presos nas colunas por presilha.',uso:'Edifícios, fachadas de alto padrão',f:'Quadros colados',ab:'Fixa',obra:'atlanta'}];
 const LINHAS={res:{n:'Linha FC Residencial',s:'Disponível'},fac:{n:'Linha FC Fachadas',s:'3D disponível'},pre:{n:'Linha FC Premium',s:'Em breve'}};
@@ -329,7 +329,7 @@ function faixaOri(){if(papel()==='arquiteto')return '';let F=[];try{F=JSON.parse
    <div class="ori-m">${M.map((m,i)=>`<a href="orientativo/#${m[0]}" class="${F.includes(m[0])?'ok':''}"><span>${F.includes(m[0])?'✓':String(i+1).padStart(2,'0')}</span>${m[1]}</a>`).join('')}</div></div>`;}
 function telaTip(){
   const L=TIPS.filter(t=>t.l==='res'&&(filtro==='todas'||t.g===filtro)),F=TIPS.filter(t=>t.l==='fac'&&(filtro==='todas'||filtro==='fac'));
-  const card=t=>`<button class="card tip" data-tip="${t.id}"><div class="des">${desenho(t.id)}</div><h3>${h(t.n)}</h3><span class="d">${h(t.uso)}</span><span class="pe"><span class="chip t">${LINHAS[t.l].n}</span><span class="chip">${t.ab}</span>${t.obra||t.m3d?'<span class="chip o">3D</span>':''}${t.tec?'<span class="chip o">Desenho técnico</span>':''}</span></button>`;
+  const card=t=>`<button class="card tip" data-tip="${t.id}"><div class="des">${desenho(t.id)}</div><h3>${h(t.n)}</h3><span class="d">${h(t.uso)}</span><span class="pe"><span class="chip t">${LINHAS[t.l].n}</span><span class="chip">${t.ab}</span>${t.obra||t.m3d||t.mo?'<span class="chip o">3D</span>':''}${t.tec?'<span class="chip o">Desenho técnico</span>':''}</span></button>`;
   return `<div class="cab"><div><h2>Tipologias</h2><p class="mute">Janelas, portas e fachadas de mercado para escolher e apresentar ao cliente.</p></div>
    <div class="filtros" role="group" aria-label="Filtrar">${[['todas','Todas'],['jan','Janelas'],['por','Portas'],['fac','Fachadas']].map(([k,n])=>`<button type="button" data-f="${k}" aria-pressed="${filtro===k}">${n}</button>`).join('')}</div></div>
    ${faixaOri()}
@@ -356,11 +356,11 @@ function detalhe(id){
   d.innerHTML=`<div class="cx" role="dialog" aria-modal="true" aria-label="${h(t.n)}"><div class="des">${desenho(t.id)}</div><div class="tx">
    <span class="chip t" style="align-self:flex-start">${LINHAS[t.l].n}</span><h2 style="font-size:21px">${h(t.n)}</h2><p>${h(t.d)}</p>
    <dl><dt>Abertura</dt><dd>${t.ab}</dd><dt>Folhas</dt><dd>${t.f}</dd><dt>Indicada para</dt><dd>${h(t.uso)}</dd></dl>
-   ${t.m3d?`<a class="btn pri" href="orientativo/?m=${t.m3d}#cor">🧊 Ver em 3D</a>`:''}
+   ${t.mo?`<a class="btn pri" href="mostruario/?t=${t.mo}">🧊 Mostruário 3D · conhecer e montar</a>`:t.m3d?`<a class="btn pri" href="orientativo/?m=${t.m3d}#cor">🧊 Ver em 3D</a>`:''}
    ${t.tec?`<a class="btn pri" href="${t.tec}">📐 Desenho técnico interativo</a>`:''}
    ${t.obra?`<a class="btn pri" href="${OBRA(t.obra)}" target="_blank" rel="noopener">Abrir em 3D com as medidas da obra</a>`:''}
-   ${!t.m3d&&!t.obra?'<button class="btn sec" disabled title="Chega nas próximas etapas">Ver em 3D · em breve</button>':''}
-   ${papel()!=='arquiteto'&&t.est&&!t.m3d?`<a class="btn sec" href="orientativo/#${t.est}">📘 Estudar no Orientativo</a>`:''}
+   ${!t.m3d&&!t.obra&&!t.mo?'<button class="btn sec" disabled title="Chega nas próximas etapas">Ver em 3D · em breve</button>':''}
+   ${papel()!=='arquiteto'&&t.est&&!t.m3d&&!t.mo?`<a class="btn sec" href="orientativo/#${t.est}">📘 Estudar no Orientativo</a>`:''}
    <p class="aviso">Desenho esquemático, sem escala. Medidas, pesos e acabamentos devem ser confirmados com o fornecedor da empresa.</p>
    <button class="btn sec" id="detFecha">Fechar</button></div></div>`;
   d.hidden=false;$('#detFecha').focus();

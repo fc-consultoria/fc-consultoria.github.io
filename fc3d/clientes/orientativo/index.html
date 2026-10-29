@@ -327,7 +327,7 @@ function mCor(){const T=CR.find(c=>c[0]===CRK);
   <button class="btn" id="b3Fs">⛶ Tela cheia</button><button class="btn" id="b3Co" aria-pressed="false">🎨 Cores</button></div>
   <div class="v3cor" id="v3cor" hidden></div>
   <div class="v3lb" id="v3lb" hidden></div><span class="v3dica" id="v3dica">Arraste para girar · role para aproximar</span></div>
- <div class="row" style="margin-top:10px"><a class="btn" href="../tecnico/?m=${CR3}">📐 Ver o desenho técnico com os cortes</a></div></div>
+ <div class="row" style="margin-top:10px"><a class="btn pri" href="../mostruario/?t=${({jc2:'jcr200',jc2a:'jcr200a',jc3:'jcr300'})[CR3]||'jcr200'}">🧊 Abrir no Mostruário 3D (conhecer, montar, orientação em sistema)</a><a class="btn" href="../tecnico/?m=${CR3}">📐 Ver o desenho técnico com os cortes</a></div></div>
  <div class="sec"><h2>📋 Perfis da ${esc(FCM.MONT[CR3].n.toLowerCase())}</h2><p class="nt">Toque no perfil para destacar a peça no 3D.</p><div class="pcs">${SEC?usados(CR3).map(c=>`<button type="button" class="pc ${SELC===c?'on':''}" data-pf="${c}"><span class="pcmini">${miniSec(c)}</span><b>${c}</b><span>${esc(SEC[c].n)}</span><small>${SEC[c].kg!=null?kg(SEC[c].kg)+' kg/m · ':''}${String(SEC[c].w).replace('.',',')} × ${String(SEC[c].h).replace('.',',')} mm</small></button>`).join(''):'<p class="mute">Carregando os perfis…</p>'}</div>
  <p class="aviso">Pesos e medidas orientativos: confirme com o fornecedor da empresa e no sistema de cálculo.</p></div>
  <div class="sec"><h2>🔀 2, 3, 4 e 6 folhas</h2><p class="nt">Escolha o modelo e toque em abrir para ver como as folhas correm.</p>
