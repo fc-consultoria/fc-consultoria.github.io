@@ -167,7 +167,7 @@ dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:10px 0}dt{col
 <script src="../tecnico/montagens.js?v=1"></script>
 <script>
 (function(){
-/* ---------- acesso: só com a sessão da Plataforma FC 3D Clientes (gestor e vendedor) ---------- */
+/* ---------- acesso: só com a sessão da Plataforma FC 3D Clientes (todos os papéis) ---------- */
 const SP='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_sessao',SPK='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs';
 const LSg=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(_){return d}},LSs=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}};
 let tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}

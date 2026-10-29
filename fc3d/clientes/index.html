@@ -165,7 +165,7 @@ a.card.tip{text-decoration:none;color:inherit}
     <div class="marca"><div class="lg">FC</div>Plataforma FC 3D</div>
     <div>
       <h1>Apresente esquadrias em <em>3D</em> para quem decide a obra.</h1>
-      <p class="sub">A ferramenta da sua equipe de vendas para mostrar tipologias, ambientes e propostas ao cliente final, ao arquiteto e ao engenheiro.</p>
+      <p class="sub">A ferramenta da sua equipe para mostrar tipologias, ambientes e projetos ao cliente final, ao arquiteto e ao engenheiro.</p>
       <ul>
         <li><b>▦</b>Tipologias de mercado em 3D</li>
         <li><b>⌂</b>Ambientes para montar a obra</li>
@@ -235,7 +235,8 @@ tema(ls.get(TM));
 $('#btTema').onclick=()=>{const atual=document.documentElement.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');const n=atual==='dark'?'light':'dark';tema(n);ls.set(TM,n);};
 
 /* ---------- conteúdo ---------- */
-const PAPEIS={gestor:'Gestor',vendedor:'Vendedor',arquiteto:'Arquiteto / Engenheiro',fc:'FC Consultoria'};
+/* nomes na tela (as chaves internas continuam gestor, vendedor e arquiteto) */
+const PAPEIS={gestor:'Gestor',vendedor:'Colaborador',arquiteto:'Portal do Cliente',fc:'FC Consultoria'};
 const MENU=[
   {k:'inicio',n:'Início',i:'⌂',p:['gestor','vendedor','arquiteto']},
   {k:'tip',n:'Tipologias',i:'▦',p:['gestor','vendedor','arquiteto']},
@@ -342,7 +343,7 @@ async function abrir(token){
   $('#sigla').textContent=S.matriz?'FC':(S.sigla||(S.empresa_nome||'FC').slice(0,2).toUpperCase());
   $('#euNome').textContent=S.nome;
   const vc=$('#verComo');vc.hidden=!S.matriz;
-  if(S.matriz){vc.innerHTML=['gestor','vendedor','arquiteto'].map(p=>`<button type="button" data-ver="${p}" aria-pressed="${papel()===p}">${p==='arquiteto'?'Arquiteto':PAPEIS[p]}</button>`).join('');
+  if(S.matriz){vc.innerHTML=['gestor','vendedor','arquiteto'].map(p=>`<button type="button" data-ver="${p}" aria-pressed="${papel()===p}">${PAPEIS[p]}</button>`).join('');
     vc.querySelectorAll('[data-ver]').forEach(b=>b.onclick=()=>{papelVer=b.dataset.ver;vc.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));if(!itens().some(m=>m.k===tab))tab='inicio';render();});}
   render();
 }
@@ -353,7 +354,7 @@ $('#btSair').onclick=async()=>{const t=S&&S.token;S=null;ls.del(TK);try{if(t)awa
 const itens=()=>MENU.filter(m=>m.p.includes(papel()));
 function render(){
   if(!itens().some(m=>m.k===tab))tab='inicio';
-  $('#euPapel').textContent=S.matriz?'vendo como '+PAPEIS[papel()].split(' /')[0].toLowerCase():PAPEIS[S.papel]||S.papel;
+  $('#euPapel').textContent=S.matriz?'vendo como '+PAPEIS[papel()]:PAPEIS[S.papel]||S.papel;
   $('#menu').innerHTML=itens().map(m=>`<button type="button" data-tab="${m.k}" ${m.k===tab?'aria-current="page"':''}><span aria-hidden="true">${m.i}</span>${m.n}</button>`).join('');
   $('#menu').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();scrollTo(0,0);});
   $('#tela').innerHTML=({inicio:telaInicio,tip:telaTip,amb:telaAmb,apr:telaApr,ges:telaGes}[tab]||telaInicio)();
@@ -363,7 +364,7 @@ const vaiPara=k=>{tab=k;render();scrollTo(0,0);};
 
 function telaInicio(){
   const p=papel(),nome=S.matriz?'FC':(S.nome||'').split(' ')[0];
-  const txt={gestor:'Acompanhe a equipe e use a plataforma para apresentar as esquadrias aos seus clientes.',vendedor:'Escolha a tipologia, monte o ambiente e apresente ao seu cliente em 3D.',arquiteto:'Consulte as tipologias e veja as propostas preparadas para a sua obra.'}[p];
+  const txt={gestor:'Acompanhe a equipe e use a plataforma para apresentar as esquadrias aos seus clientes.',vendedor:'Escolha a tipologia, monte o ambiente e apresente ao seu cliente em 3D.',arquiteto:'Veja os projetos, as plantas e as esquadrias preparadas para a sua obra.'}[p];
   const mods=itens().filter(m=>m.k!=='inicio');
   const desc={tip:'Janelas, portas e fachadas em 3D, com desenho técnico e o Orientativo da equipe.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ges:'Acessos da equipe, licença e contrato da empresa.'};
   return `<div class="hero"><div><h2>Olá, ${h(nome)}!</h2><p>${txt}</p></div><div class="bts"><button class="btn cl" data-ir="tip">Ver tipologias</button>${p!=='arquiteto'?'<button class="btn sec" style="border-color:rgba(255,255,255,.4);color:#fff" data-ir="apr">Modo apresentação</button>':''}</div></div>
