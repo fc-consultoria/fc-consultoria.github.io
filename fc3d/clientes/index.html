@@ -479,8 +479,11 @@ function render(){
   $('#menu').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();scrollTo(0,0);});
   $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaAmb,apr:telaApr,ges:telaGes}[tab]||telaInicio)();
   ligar();
+  if(window.PFCtut)PFCtut.atualiza();
 }
 const vaiPara=k=>{tab=k;render();scrollTo(0,0);};
+/* ponte para o guia Como usar (tutorial.js) */
+window.PFC={papel:()=>papel(),tab:()=>tab,ir:k=>vaiPara(k),matriz:()=>!!(S&&S.matriz),nome:()=>(S&&S.nome)||''};
 
 function telaInicio(){
   const p=papel(),nome=S.matriz?'FC':(S.nome||'').split(' ')[0];
@@ -562,5 +565,6 @@ if(tk)abrir(tk);else mostrarEntrada('');
 })();
 </script>
 <script src="toque.js?v=1"></script>
+<script src="tutorial.js?v=1"></script>
 </body>
 </html>
