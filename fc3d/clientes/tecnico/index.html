@@ -161,7 +161,7 @@ svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto 
 </div>
 <div id="tip" hidden></div>
 
-<script src="montagens.js?v=1"></script>
+<script src="montagens.js?v=2"></script>
 <script>
 (function(){
 /* ---------- acesso: só com a sessão da Plataforma FC 3D Clientes ---------- */
@@ -171,16 +171,16 @@ const gate=document.getElementById('gate');
 function nega(t,p){document.getElementById('gateT').textContent=t;document.getElementById('gateP').innerHTML=p+' <br><br><a href="../">Ir para a Plataforma FC 3D</a>';}
 if(!tk){nega('Entre na Plataforma FC 3D','Este desenho abre pela plataforma, depois de entrar com o seu login.');return;}
 fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
- .then(r=>r.ok?r.json():null).then(d=>{if(!(d&&d.papel)){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}gate.hidden=true;iniciar();})
+ .then(r=>r.ok?r.json():null).then(d=>{if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}MATRIZ=!!d.matriz;if(M.aj&&!MATRIZ){nega('Em ajuste','Esta montagem está em revisão pela FC Consultoria e volta em breve.');return;}gate.hidden=true;iniciar();})
  .catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));
 
-const KEY=(new URLSearchParams(location.search).get('m')||'jc2'),M=FCM.MONT[KEY]||FCM.MONT.jc2;
+var MATRIZ=false;const KEY=(new URLSearchParams(location.search).get('m')||'jc2'),M=FCM.MONT[KEY]||FCM.MONT.jc2;
 function iniciar(){
   document.title='Desenho Técnico FC · '+M.n;
   document.getElementById('tTit').textContent=M.n;document.getElementById('fTit').textContent=M.n;document.getElementById('fCd').textContent=M.cd;
-  document.getElementById('tSub').textContent=M.linha+' · desenho técnico interativo';
+  document.getElementById('tSub').textContent=M.linha+' · desenho técnico interativo'+(M.aj?' · ⚠ oculto para os clientes — '+M.aj:'');
   {const GR=[['Janelas de correr',['jc2','jc2a','jc3','jc4','jc4a','jcb','jc4p','jc4pa']],['Janelas com veneziana',['jvz3','jc4v','jvc7','jvz6']],['Portas de correr',['pc2','pc2a','pc3','pc4','pc4a','pvz3']],['Giro e maxim-ar',['pg1','pg2','mx1','mx2p']]];
-   const op=k=>FCM.MONT[k]?`<option value="${k}" ${k===KEY?'selected':''}>${FCM.MONT[k].cd} · ${FCM.MONT[k].n}</option>`:'';
+   const op=k=>FCM.MONT[k]&&(!FCM.MONT[k].aj||MATRIZ)?`<option value="${k}" ${k===KEY?'selected':''}>${FCM.MONT[k].aj?'⚠ ':''}${FCM.MONT[k].cd} · ${FCM.MONT[k].n}</option>`:'';
    document.getElementById('troca').innerHTML='<select aria-label="Escolher a montagem">'+GR.map(([g,ks])=>`<optgroup label="${g}">${ks.map(op).join('')}</optgroup>`).join('')+'</select>';
    document.querySelector('#troca select').onchange=e=>{location.search='?m='+e.target.value;};}
   document.getElementById('inL').value=M.def[0];document.getElementById('inH').value=M.def[1];

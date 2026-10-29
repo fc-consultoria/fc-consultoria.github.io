@@ -164,7 +164,7 @@ dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:10px 0}dt{col
 </div></header>
 <div class="lay"><nav class="nav" id="nav" aria-label="Módulos"></nav><main id="main"><p style="padding:30px">Carregando…</p></main></div>
 
-<script src="../tecnico/montagens.js?v=1"></script>
+<script src="../tecnico/montagens.js?v=2"></script>
 <script>
 (function(){
 /* ---------- acesso: só com a sessão da Plataforma FC 3D Clientes (todos os papéis) ---------- */
@@ -176,6 +176,7 @@ if(!tk){nega('Entre na Plataforma FC 3D','O Orientativo abre pela plataforma, de
 fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
  .then(r=>r.ok?r.json():null).then(d=>{
    if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}
+   MATRIZ=!!d.matriz;if(!MATRIZ&&FCM.MONT[CR3]&&FCM.MONT[CR3].aj)CR3='jc2';
    
    document.getElementById('gate').hidden=true;iniciar();})
  .catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));
@@ -302,7 +303,7 @@ function mGua(){return head(2,'Guarnições · vidro bem preso')+`<div class="se
 
 /* =========================== 04 · Correr (3D com seções FC) =========================== */
 const CR=[['2','Janela 2 folhas','As duas folhas correm uma por trás da outra, em dois trilhos.'],['3','Janela 3 folhas','Três trilhos: duas folhas correm e se juntam sobre a folha fixa, abrindo até 2/3 do vão.'],['4','Janela 4 folhas','As duas folhas do meio correm para as laterais.'],['4s','4 folhas sequenciais','Todas correm para o mesmo lado, uma atrás da outra.'],['6','6 folhas fechamento central','Três folhas de cada lado, que se juntam nas laterais.']];
-let CRK='2',CRA=false,SELC=null,CR3=(FCM.MONT[new URLSearchParams(location.search).get('m')]?new URLSearchParams(location.search).get('m'):'jc2');
+var MATRIZ=false;let CRK='2',CRA=false,SELC=null,CR3=(FCM.MONT[new URLSearchParams(location.search).get('m')]?new URLSearchParams(location.search).get('m'):'jc2');
 const usados=k=>{const R=FCM.pecas(SEC,FCM.MONT[k],FCM.MONT[k].def[0],FCM.MONT[k].def[1]),u=[];R.P.forEach(o=>{if(!o.vid&&u.indexOf(o.c)<0)u.push(o.c);});return u.sort();};
 function correrSvg(k,aberto){const n=k==='4s'?4:+k,W=360,H=170,m=10,fw=(W-2*m)/n+(n>1?8:0),pos=[],mv=[];
  for(let i=0;i<n;i++)pos.push(m+i*((W-2*m)/n)-(i?4:0));
@@ -320,7 +321,7 @@ function correrSvg(k,aberto){const n=k==='4s'?4:+k,W=360,H=170,m=10,fw=(W-2*m)/n
  s+=`<text x="${W/2}" y="${H+22}" text-anchor="middle" font-size="13" fill="currentColor">${aberto?'aberta':'fechada'} · vista de dentro</text>`;
  return s+'</svg>';}
 function mCor(){const T=CR.find(c=>c[0]===CRK);
- return head(3,'Montagens da Linha Suprema em 3D')+`<div class="sec"><h2>🧊 ${esc(FCM.MONT[CR3].n)} em 3D</h2><div class="row" style="margin:6px 0 10px"><select class="btn" id="sel3" aria-label="Escolher a montagem" style="max-width:100%">${Object.entries(FCM.MONT).map(([k,m])=>`<option value="${k}" ${k===CR3?'selected':''}>${esc(m.cd+' · '+m.n)}</option>`).join('')}</select></div><p class="nt">Gire com o dedo ou o mouse, abra as folhas, desmonte e toque na peça para ver o código. Os perfis são as seções reais da linha, em escala.</p>
+ return head(3,'Montagens da Linha Suprema em 3D')+`<div class="sec"><h2>🧊 ${esc(FCM.MONT[CR3].n)} em 3D</h2><div class="row" style="margin:6px 0 10px"><select class="btn" id="sel3" aria-label="Escolher a montagem" style="max-width:100%">${Object.entries(FCM.MONT).filter(([k,m])=>!m.aj||MATRIZ).map(([k,m])=>`<option value="${k}" ${k===CR3?'selected':''}>${esc((m.aj?'⚠ ':'')+m.cd+' · '+m.n)}</option>`).join('')}</select></div>${FCM.MONT[CR3].aj?`<p class="nt" style="color:#b45309"><b>⚠ Oculto para os clientes.</b> ${esc(FCM.MONT[CR3].aj)}.</p>`:''}<p class="nt">Gire com o dedo ou o mouse, abra as folhas, desmonte e toque na peça para ver o código. Os perfis são as seções reais da linha, em escala.</p>
  <div class="v3w" id="v3w"><div class="v3" id="v3"></div><div class="v3msg" id="v3msg">Carregando o 3D…</div>
   <div class="v3bar"><button class="btn" id="b3Ab" aria-pressed="false">↔ Abrir folhas</button><button class="btn" id="b3Ds" aria-pressed="false">✥ Desmontar</button><button class="btn" id="b3Vt">↺ Voltar ao original</button>
   <span class="med">L <input id="i3L" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[0]}" min="600" max="3000" step="10" aria-label="Largura em mm"> H <input id="i3H" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[1]}" min="500" max="1800" step="10" aria-label="Altura em mm"> mm</span>
