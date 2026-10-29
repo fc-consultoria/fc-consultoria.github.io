@@ -324,7 +324,7 @@ function mCor(){const T=CR.find(c=>c[0]===CRK);
  return head(3,'Montagens da '+FCM.MONT[CR3].linha+' em 3D')+`<div class="sec"><h2>🧊 ${esc(FCM.MONT[CR3].n)} em 3D</h2><div class="row" style="margin:6px 0 10px"><select class="btn" id="sel3" aria-label="Escolher a montagem" style="max-width:100%">${['Linha Suprema','Linha Gold'].map(ln=>`<optgroup label="${ln}">`+Object.entries(FCM.MONT).filter(([k,m])=>m.linha===ln&&(!m.aj||MATRIZ)).map(([k,m])=>`<option value="${k}" ${k===CR3?'selected':''}>${esc((m.aj?'⚠ ':'')+m.cd+' · '+m.n)}</option>`).join('')+'</optgroup>').join('')}</select></div>${FCM.MONT[CR3].aj?`<p class="nt" style="color:#b45309"><b>⚠ Oculto para os clientes.</b> ${esc(FCM.MONT[CR3].aj)}.</p>`:''}<p class="nt">Gire com o dedo ou o mouse, abra as folhas, desmonte e toque na peça para ver o código. Os perfis são as seções reais da linha, em escala.</p>
  <div class="v3w" id="v3w"><div class="v3" id="v3"></div><div class="v3msg" id="v3msg">Carregando o 3D…</div>
   <div class="v3bar"><button class="btn" id="b3Ab" aria-pressed="false">↔ Abrir folhas</button><button class="btn" id="b3Ds" aria-pressed="false">✥ Desmontar</button><button class="btn" id="b3Vt">↺ Voltar ao original</button>
-  <span class="med">L <input id="i3L" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[0]}" min="600" max="3000" step="10" aria-label="Largura em mm"> H <input id="i3H" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[1]}" min="500" max="1800" step="10" aria-label="Altura em mm"> mm</span>
+  <span class="med">L <input id="i3L" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[0]}" min="600" max="3000" step="10" aria-label="Largura em mm"> H <input id="i3H" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[1]}" min="500" max="3000" step="10" aria-label="Altura em mm"> mm</span>
   <button class="btn" id="b3Fs">⛶ Tela cheia</button><button class="btn" id="b3Co" aria-pressed="false">🎨 Cores</button></div>
   <div class="v3cor" id="v3cor" hidden></div>
   <div class="v3lb" id="v3lb" hidden></div><span class="v3dica" id="v3dica">Arraste para girar · role para aproximar</span></div>
@@ -371,7 +371,7 @@ function janela3d(host,key){
   ROOT=new THREE.Group();PECAS=[];FOLHAS=[];SC.add(ROOT);
   const R=FCM.pecas(SEC,M,W,H),GR=[ROOT];
   R.folhas.forEach(f=>{const F=new THREE.Group();ROOT.add(F);F.userData={ox:f.ox,oy:f.oy||0,z:f.z,ex:v(0,0,f.z>1?380:f.z<-1?-380:(f.rot?-260:0)),abre:f.dir*f.curso,rot:f.rot||null};FOLHAS.push(F);GR.push(F);});
-  R.P.forEach(o=>{if(o.vz)return;const par=GR[o.g+1],m=o.vid?new THREE.Mesh(new THREE.BoxGeometry(o.w,o.h,o.d),MVID):new THREE.Mesh(geoDe(o),MAT);if(o.vid)GEO.push(m.geometry);
+  R.P.forEach(o=>{if(o.vz||o.oc)return;const par=GR[o.g+1],m=o.vid?new THREE.Mesh(new THREE.BoxGeometry(o.w,o.h,o.d),MVID):new THREE.Mesh(geoDe(o),MAT);if(o.vid)GEO.push(m.geometry);
    m.position.set(o.p[0],o.p[1],o.p[2]);const g=new THREE.Group();g.add(m);const k=o.g<0?190:110;
    g.userData={c:o.vid?'VID':o.c,ex:v(o.x[0]*k,o.x[1]*k,o.x[2]*k)};par.add(g);PECAS.push(g);});
   aplica();
@@ -412,9 +412,9 @@ function liga3d(){const host=$('#v3');if(!host)return;
   $('#b3Co').onclick=()=>{const p=$('#v3cor'),on=p.hidden;p.hidden=!on;$('#b3Co').setAttribute('aria-pressed',on);if(on)pintaCor();};
   $('#v3cor').onclick=e=>{const b=e.target.closest('[data-cor]');if(!b)return;const [k,v]=b.dataset.cor.split(':');COR[k]=v;LSs('pfc-ori-cores',COR);V3.cores(COR);pintaCor();};
   $('#b3Fs').onclick=()=>{const w=$('#v3w'),on=w.classList.toggle('fs');$('#b3Fs').textContent=on?'↙ Sair da tela cheia':'⛶ Tela cheia';};
-  let tm=0;const med=()=>{clearTimeout(tm);tm=setTimeout(()=>{const l=Math.min(3000,Math.max(600,+$('#i3L').value||1200)),h=Math.min(1800,Math.max(500,+$('#i3H').value||1000));V3.medidas(l,h);},350);};
+  let tm=0;const med=()=>{clearTimeout(tm);tm=setTimeout(()=>{const l=Math.min(3000,Math.max(600,+$('#i3L').value||1200)),h=Math.min(3000,Math.max(500,+$('#i3H').value||1000));V3.medidas(l,h);},350);};
   $('#i3L').oninput=med;$('#i3H').oninput=med;};
- Promise.all([carrega3(),SEC?null:fetch('../tecnico/secoes.json?v=3').then(r=>r.json()).then(j=>{SEC=j;})]).then(()=>{
+ Promise.all([carrega3(),FCM.carregarAjustes(),SEC?null:fetch('../tecnico/secoes.json?v=3').then(r=>r.json()).then(j=>{SEC=j;})]).then(()=>{
    if(AT!=='cor')return;const pcs=document.querySelector('.pcs');if(pcs&&!pcs.querySelector('[data-pf]')){const y=scrollY;go('cor',true);scrollTo(0,y);return;}ok();})
   .catch(()=>{const m=$('#v3msg');if(m)m.textContent='Não foi possível carregar o 3D. Confira a internet.';});}
 

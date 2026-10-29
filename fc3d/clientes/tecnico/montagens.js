@@ -393,6 +393,31 @@ function gpecas(S,m,W,H){
 
 /* ponto da seção (a,b) no espaço */
 function ponto(o,a,b,ox,oz,oy){const k=o.sc||[1,1];a*=k[0];b*=k[1];return [o.p[0]+a*o.ex[0]+b*o.ey[0]+(ox||0),o.p[1]+a*o.ex[1]+b*o.ey[1]+(oy||0),o.p[2]+a*o.ex[2]+b*o.ey[2]+(oz||0)];}
-function pecasX(S,m,W,H){return m.zonas?gpecas(S,m,W,H):pecas(S,m,W,H);}
-window.FCM={MONT,pecas:pecasX,ponto,secOf:(S,c)=>secOf(S,c)};
+/* ---------- Ajuste técnico das montagens (só a Matriz grava; vale para todas as empresas) ----------
+   Chave no banco: tipologia 'mont:<montagem>', peça '<código>#<n>' (só aquela) ou '<código>#*' (todas daquele perfil na montagem).
+   Valores: dx (para a direita), dy (para cima), dz (para o lado interno) em mm; rz = giro da seção (graus); ry = 180 espelha; oculto. */
+Object.keys(MONT).forEach(k=>{MONT[k].k=k;});
+/* Linha Gold em conferência: oculta para os clientes até a FC liberar (troque para true ao liberar) */
+const GOLD_LIBERADA=false;
+Object.values(MONT).forEach(m=>{if(m.linha==='Linha Gold'&&!GOLD_LIBERADA&&!m.aj)m.aj='Linha Gold em conferência pela FC; liberar depois da revisão';});
+let AJ={};
+function ajDe(m,id,c){return AJ['mont:'+m.k+'|'+id]||AJ['mont:'+m.k+'|'+c+'#*']||null;}
+function aplicaAj(m,R){const cnt={};R.P.forEach(o=>{if(o.vid)return;cnt[o.c]=(cnt[o.c]||0)+1;o.id=o.c+'#'+cnt[o.c];
+  const a=ajDe(m,o.id,o.c);if(!a)return;const [dx,dy,dz,rx,ry,rz,oc]=a.map((v,i)=>i<6?+v||0:!!v);
+  if(oc)o.oc=1;
+  if(ry%360===180)o.ex=o.ex.map(v=>-v);
+  if(rz%360){const t=rz*Math.PI/180,c=Math.cos(t),s=Math.sin(t),ex=o.ex,ey=o.ey;o.ex=ex.map((v,i)=>c*v+s*ey[i]);o.ey=ey.map((v,i)=>-s*ex[i]+c*v);}
+  if(dx||dy||dz)o.p=[o.p[0]+dx,o.p[1]+dy,o.p[2]+dz];});return R;}
+function pecasX(S,m,W,H){return aplicaAj(m,m.zonas?gpecas(S,m,W,H):pecas(S,m,W,H));}
+function carregarAjustes(){let tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
+ if(!tk)return Promise.resolve();
+ return fetch('https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_ajustes_3d_ler',{method:'POST',headers:{apikey:'sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs','Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
+  .then(r=>r.ok?r.json():{}).then(j=>{AJ={};Object.keys(j||{}).forEach(k=>{if(k.indexOf('mont:')===0)AJ[k]=j[k];});}).catch(()=>{});}
+function salvarAjuste(m,peca,v){let tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
+ const k='mont:'+m.k+'|'+peca,zero=!v||(!v[0]&&!v[1]&&!v[2]&&!v[4]&&!v[5]&&!v[6]);
+ return fetch('https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_ajuste_3d_salvar',{method:'POST',headers:{apikey:'sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs','Content-Type':'application/json'},
+  body:JSON.stringify({p_token:tk,p_tipologia:'mont:'+m.k,p_peca:peca,p_dx:zero?0:v[0],p_dy:zero?0:v[1],p_dz:zero?0:v[2],p_rx:0,p_ry:zero?0:v[4],p_rz:zero?0:v[5],p_oculto:zero?false:!!v[6]})})
+  .then(async r=>{const j=await r.json().catch(()=>null);if(!r.ok)throw new Error(j&&j.message||'Não foi possível salvar.');if(zero)delete AJ[k];else AJ[k]=v.slice();return j;});}
+window.FCM={MONT,pecas:pecasX,ponto,secOf:(S,c)=>secOf(S,c),carregarAjustes,salvarAjuste,ajuste:(m,peca)=>AJ['mont:'+m.k+'|'+peca]||null,ajusteDe:(m,id,c)=>ajDe(m,id,c),
+ previa:(m,peca,v)=>{const k='mont:'+m.k+'|'+peca;if(v)AJ[k]=v.slice();else delete AJ[k];}};
 })();
