@@ -159,6 +159,7 @@ dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:10px 0}dt{col
 </div></header>
 <div class="lay"><nav class="nav" id="nav" aria-label="Módulos"></nav><main id="main"><p style="padding:30px">Carregando…</p></main></div>
 
+<script src="../tecnico/montagens.js?v=1"></script>
 <script>
 (function(){
 /* ---------- acesso: só com a sessão da Plataforma FC 3D Clientes (gestor e vendedor) ---------- */
@@ -295,8 +296,9 @@ function mGua(){return head(2,'Guarnições · vidro bem preso')+`<div class="se
   ['Vidro mais grosso pede guarnição…',['Mais fina','Mais grossa','Igual'],0,'O canal é o mesmo; sobrando menos folga, a guarnição fica mais fina.']])+foot(2);}
 
 /* =========================== 04 · Correr (3D com seções FC) =========================== */
-const CR=[['2','Janela 2 folhas','As duas folhas correm uma por trás da outra, em dois trilhos.'],['3','Janela 3 folhas','Três trilhos: as folhas se juntam de um lado e abrem até 2/3 do vão.'],['4','Janela 4 folhas','As duas folhas do meio correm para as laterais.'],['4s','4 folhas sequenciais','Todas correm para o mesmo lado, uma atrás da outra.'],['6','6 folhas fechamento central','Três folhas de cada lado, que se juntam nas laterais.']];
-let CRK='2',CRA=false,SELC=null;
+const CR=[['2','Janela 2 folhas','As duas folhas correm uma por trás da outra, em dois trilhos.'],['3','Janela 3 folhas','Três trilhos: duas folhas correm e se juntam sobre a folha fixa, abrindo até 2/3 do vão.'],['4','Janela 4 folhas','As duas folhas do meio correm para as laterais.'],['4s','4 folhas sequenciais','Todas correm para o mesmo lado, uma atrás da outra.'],['6','6 folhas fechamento central','Três folhas de cada lado, que se juntam nas laterais.']];
+let CRK='2',CRA=false,SELC=null,CR3='jc2';
+const usados=k=>{const R=FCM.pecas(SEC,FCM.MONT[k],FCM.MONT[k].def[0],FCM.MONT[k].def[1]),u=[];R.P.forEach(o=>{if(!o.vid&&u.indexOf(o.c)<0)u.push(o.c);});return u.sort();};
 function correrSvg(k,aberto){const n=k==='4s'?4:+k,W=360,H=170,m=10,fw=(W-2*m)/n+(n>1?8:0),pos=[],mv=[];
  for(let i=0;i<n;i++)pos.push(m+i*((W-2*m)/n)-(i?4:0));
  const st=(W-2*m)/n;
@@ -313,19 +315,19 @@ function correrSvg(k,aberto){const n=k==='4s'?4:+k,W=360,H=170,m=10,fw=(W-2*m)/n
  s+=`<text x="${W/2}" y="${H+22}" text-anchor="middle" font-size="13" fill="currentColor">${aberto?'aberta':'fechada'} · vista de dentro</text>`;
  return s+'</svg>';}
 function mCor(){const T=CR.find(c=>c[0]===CRK);
- return head(3,'Janelas de Correr · Linha FC Residencial')+`<div class="sec"><h2>🧊 Janela de correr 2 folhas em 3D</h2><p class="nt">Gire com o dedo ou o mouse, abra as folhas, desmonte e toque na peça para ver o código FC. Os perfis são as seções reais da linha, em escala.</p>
+ return head(3,'Janelas de Correr · Linha FC Residencial')+`<div class="sec"><h2>🧊 Janela de correr em 3D</h2><div class="row" style="margin:6px 0 10px">${Object.entries(FCM.MONT).map(([k,m])=>`<button class="btn" data-cr3="${k}" aria-pressed="${k===CR3}">${esc(m.n.replace('Janela de correr ',''))}</button>`).join('')}</div><p class="nt">Gire com o dedo ou o mouse, abra as folhas, desmonte e toque na peça para ver o código FC. Os perfis são as seções reais da linha, em escala.</p>
  <div class="v3w" id="v3w"><div class="v3" id="v3"></div><div class="v3msg" id="v3msg">Carregando o 3D…</div>
   <div class="v3bar"><button class="btn" id="b3Ab" aria-pressed="false">↔ Abrir folhas</button><button class="btn" id="b3Ds" aria-pressed="false">✥ Desmontar</button><button class="btn" id="b3Vt">↺ Voltar ao original</button>
-  <span class="med">L <input id="i3L" type="number" inputmode="numeric" value="1200" min="600" max="2400" step="10" aria-label="Largura em mm"> H <input id="i3H" type="number" inputmode="numeric" value="1000" min="500" max="1800" step="10" aria-label="Altura em mm"> mm</span>
+  <span class="med">L <input id="i3L" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[0]}" min="600" max="3000" step="10" aria-label="Largura em mm"> H <input id="i3H" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[1]}" min="500" max="1800" step="10" aria-label="Altura em mm"> mm</span>
   <button class="btn" id="b3Fs">⛶ Tela cheia</button></div>
   <div class="v3lb" id="v3lb" hidden></div><span class="v3dica" id="v3dica">Arraste para girar · role para aproximar</span></div>
- <div class="row" style="margin-top:10px"><a class="btn" href="../tecnico/">📐 Ver o desenho técnico com os cortes</a></div></div>
- <div class="sec"><h2>📋 Perfis da janela 2 folhas</h2><p class="nt">Toque no perfil para destacar a peça no 3D.</p><div class="pcs">${SEC?Object.keys(SEC).map(c=>`<button type="button" class="pc ${SELC===c?'on':''}" data-pf="${c}"><span class="pcmini">${miniSec(c)}</span><b>${c}</b><span>${esc(SEC[c].n)}</span><small>${SEC[c].kg!=null?kg(SEC[c].kg)+' kg/m · ':''}${String(SEC[c].w).replace('.',',')} × ${String(SEC[c].h).replace('.',',')} mm</small></button>`).join(''):'<p class="mute">Carregando os perfis…</p>'}</div>
+ <div class="row" style="margin-top:10px"><a class="btn" href="../tecnico/?m=${CR3}">📐 Ver o desenho técnico com os cortes</a></div></div>
+ <div class="sec"><h2>📋 Perfis da ${esc(FCM.MONT[CR3].n.toLowerCase())}</h2><p class="nt">Toque no perfil para destacar a peça no 3D.</p><div class="pcs">${SEC?usados(CR3).map(c=>`<button type="button" class="pc ${SELC===c?'on':''}" data-pf="${c}"><span class="pcmini">${miniSec(c)}</span><b>${c}</b><span>${esc(SEC[c].n)}</span><small>${SEC[c].kg!=null?kg(SEC[c].kg)+' kg/m · ':''}${String(SEC[c].w).replace('.',',')} × ${String(SEC[c].h).replace('.',',')} mm</small></button>`).join(''):'<p class="mute">Carregando os perfis…</p>'}</div>
  <p class="aviso">Pesos e medidas orientativos: confirme com o fornecedor da empresa e no sistema de cálculo.</p></div>
  <div class="sec"><h2>🔀 2, 3, 4 e 6 folhas</h2><p class="nt">Escolha o modelo e toque em abrir para ver como as folhas correm.</p>
  <div class="row">${CR.map(c=>`<button class="btn" data-crk="${c[0]}" aria-pressed="${c[0]===CRK}">${esc(c[1])}</button>`).join('')}</div>
  <div class="grid2" style="margin-top:12px"><div class="fig" id="crFig">${correrSvg(CRK,CRA)}</div><div><h3>${esc(T[1])}</h3><p style="margin-top:6px">${esc(T[2])}</p><div class="row" style="margin-top:12px"><button class="btn pri" data-cra="1">${CRA?'⟲ Fechar':'↔ Abrir'}</button></div>
- <p class="dica">💡 Na 4 folhas entra o montante central, onde as folhas do meio se encontram. O 3D das outras montagens chega nas próximas etapas.</p></div></div></div>`+
+ <p class="dica">💡 Na 4 folhas entra o montante central, onde as folhas do meio se encontram. As de 2 e 3 folhas já estão em 3D aqui em cima; as outras chegam nas próximas etapas.</p></div></div></div>`+
  quiz([['Na janela 2 folhas, como as folhas correm?',['Uma passa por trás da outra, em trilhos separados','As duas abrem para fora','Uma fica fixa sempre'],0,'Cada folha corre no seu trilho, uma por trás da outra.'],
   ['Na janela 4 folhas, quais folhas correm?',['As duas do meio, para as laterais','Só a da esquerda','Todas para o mesmo lado'],0,'Na 4 folhas comum, as folhas centrais correm para as laterais.'],
   ['Na 4 folhas sequenciais, como as folhas correm?',['Todas para o mesmo lado, uma atrás da outra','Duas para cada lado','Nenhuma corre'],0,'Sequenciais: as folhas se empilham para um lado.'],
@@ -339,7 +341,7 @@ let L3=null;
 function carrega3(){if(window.THREE&&THREE.OrbitControls)return Promise.resolve();if(L3)return L3;
  const sc=u=>new Promise((ok,er)=>{const s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=er;document.head.appendChild(s);});
  L3=(window.THREE?Promise.resolve():sc('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js')).then(()=>THREE.OrbitControls?null:sc('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js'));return L3;}
-function janela3d(host){
+function janela3d(host,key){
  const box=host.getBoundingClientRect(),R=new THREE.WebGLRenderer({antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(box.width,box.height);host.appendChild(R.domElement);
  const SC=new THREE.Scene();SC.background=new THREE.Color('#0f1a19');
  const CAM=new THREE.PerspectiveCamera(38,box.width/box.height,10,20000);
@@ -348,40 +350,23 @@ function janela3d(host){
  const MAT=new THREE.MeshStandardMaterial({color:'#c3c9cd',metalness:.55,roughness:.38,side:THREE.DoubleSide});
  const MSEL=new THREE.MeshStandardMaterial({color:'#e8b04a',metalness:.3,roughness:.4,side:THREE.DoubleSide,emissive:'#4a3000'});
  const MVID=new THREE.MeshStandardMaterial({color:'#9fd0e0',metalness:.1,roughness:.05,transparent:true,opacity:.28,side:THREE.DoubleSide,depthWrite:false});
- const GEO={};
- function geoDe(c,len){const k=c+'|'+Math.round(len);if(GEO[k])return GEO[k];
-  const shapes=SEC[c].s.map(sh=>{const S2=new THREE.Shape(sh.o.map(([a,b])=>new THREE.Vector2(a,b)));(sh.h||[]).forEach(hh=>S2.holes.push(new THREE.Path(hh.map(([a,b])=>new THREE.Vector2(a,b)))));return S2;});
-  const g=new THREE.ExtrudeGeometry(shapes,{depth:len,bevelEnabled:false,curveSegments:1});return GEO[k]=g;}
- const v=(x,y,z)=>new THREE.Vector3(x,y,z);
- let ROOT=null,PECAS=[],FOLHAS=[],ab=0,abA=0,ds=0,dsA=0,sel=null,W=1200,H=1000;
- function membro(par,c,len,ea,eb,ec,t,ex,nm){const m=new THREE.Mesh(geoDe(c,len),MAT);const M=new THREE.Matrix4().makeBasis(ea,eb,ec);M.setPosition(t);m.matrixAutoUpdate=false;
-  const g=new THREE.Group();g.add(m);m.matrix.copy(M);g.userData={c,nm:nm||SEC[c].n,ex:ex||v(0,0,0)};par.add(g);PECAS.push(g);return g;}
- function montar(){if(ROOT){SC.remove(ROOT);ROOT.traverse(o=>{if(o.geometry&&!Object.values(GEO).includes(o.geometry))o.geometry.dispose();});}
-  Object.values(GEO).forEach(g=>g.dispose());for(const k in GEO)delete GEO[k];
+ const GEO=[];
+ const v=(x,y,z)=>new THREE.Vector3(x,y,z),V=a=>new THREE.Vector3(a[0],a[1],a[2]);
+ let ROOT=null,PECAS=[],FOLHAS=[],ab=0,abA=0,ds=0,dsA=0,sel=null,MK=key,M=FCM.MONT[MK],W=M.def[0],H=M.def[1];
+ function geoDe(o){const k=o.sc||[1,1];
+  const shapes=SEC[o.c].s.map(sh=>{const S2=new THREE.Shape(sh.o.map(([a,b])=>new THREE.Vector2(a*k[0],b*k[1])));(sh.h||[]).forEach(hh=>S2.holes.push(new THREE.Path(hh.map(([a,b])=>new THREE.Vector2(a*k[0],b*k[1])))));return S2;});
+  const g=new THREE.ExtrudeGeometry(shapes,{depth:o.len,bevelEnabled:false,curveSegments:1});g.translate(0,0,-o.len/2);g.applyMatrix4(new THREE.Matrix4().makeBasis(V(o.ex),V(o.ey),V(o.ez)));g.computeVertexNormals();GEO.push(g);return g;}
+ function montar(){if(ROOT)SC.remove(ROOT);GEO.forEach(g=>g.dispose());GEO.length=0;
   ROOT=new THREE.Group();PECAS=[];FOLHAS=[];SC.add(ROOT);
-  const PW=c=>SEC[c].w,PH=c=>SEC[c].h,FT=PH('FC-101'),FB=PH('FC-102'),FS=PH('FC-103');
-  const EDGE=14.4,OV=30,Wi=W-2*EDGE,sW=(Wi+OV)/2,sH=H-50,SDs=25,RW=PH('FC-107');
-  const mz=c=>c==='FC-105'?SDs/2-PH(c)/2:c==='FC-106'?-SDs/2+PH(c)/2:0;
-  const MAR=new THREE.Group();ROOT.add(MAR);
-  membro(MAR,'FC-101',W,v(0,0,1),v(0,1,0),v(1,0,0),v(-W/2,H/2-FT/2,0),v(0,160,0));
-  membro(MAR,'FC-102',W,v(0,0,1),v(0,1,0),v(1,0,0),v(-W/2,-H/2+FB/2,0),v(0,-160,0));
-  const hl=H-FT-FB;
-  membro(MAR,'FC-103',hl,v(0,0,1),v(1,0,0),v(0,1,0),v(-W/2+FS/2,-H/2+FB,0),v(-200,0,0));
-  membro(MAR,'FC-103',hl,v(0,0,-1),v(-1,0,0),v(0,1,0),v(W/2-FS/2,-H/2+FB,0),v(200,0,0));
-  [{z:17.5,L:'FC-104',R:'FC-105',nm:'Folha interna',i:0},{z:-17.5,L:'FC-106',R:'FC-104',nm:'Folha externa',i:1}].forEach(sd=>{
-   const F=new THREE.Group();ROOT.add(F);F.userData={i:sd.i,base:0,ex:v(0,0,sd.z>0?380:-380),abre:sd.i===0?(sW-OV-24):0};FOLHAS.push(F);
-   const x0=-Wi/2+sW/2+sd.i*(sW-OV),L=sd.L,Rr=sd.R,xLc=-sW/2+PW(L)/2,xRc=sW/2-PW(Rr)/2,xL=-sW/2+PW(L),xR=sW/2-PW(Rr),tx=(xL+xR)/2;
-   const sxL=L==='FC-106'?-1:1,syL=sd.i===0?-1:1,zL=sd.i===0?-mz(L):mz(L),sxR=Rr==='FC-106'?1:-1;
-   membro(F,L,sH,v(sxL,0,0),v(0,0,syL),v(0,1,0),v(x0+xLc,-sH/2,sd.z+zL),v(-110,0,0));
-   membro(F,Rr,sH,v(sxR,0,0),v(0,0,1),v(0,1,0),v(x0+xRc,-sH/2,sd.z+mz(Rr)),v(110,0,0));
-   membro(F,'FC-107',xR-xL,v(0,0,1),v(0,-1,0),v(1,0,0),v(x0+xL,sH/2-RW/2,sd.z),v(0,110,0));
-   membro(F,'FC-107',xR-xL,v(0,0,1),v(0,1,0),v(1,0,0),v(x0+xL,-sH/2+RW/2,sd.z),v(0,-110,0));
-   const gw=(xR-xL)+16,gh=sH-2*RW+16,gl=new THREE.Mesh(new THREE.BoxGeometry(gw,gh,6),MVID);gl.position.set(x0+tx,0,sd.z-3.5);
-   const gg=new THREE.Group();gg.add(gl);gg.userData={c:'VID',nm:'Vidro 6 mm',ex:v(0,0,sd.z>0?120:-120)};F.add(gg);PECAS.push(gg);});
+  const R=FCM.pecas(SEC,M,W,H),GR=[ROOT];
+  R.folhas.forEach(f=>{const F=new THREE.Group();ROOT.add(F);F.userData={ox:f.ox,z:f.z,ex:v(0,0,f.z>1?380:f.z<-1?-380:0),abre:f.dir*f.curso};FOLHAS.push(F);GR.push(F);});
+  R.P.forEach(o=>{const par=GR[o.g+1],m=o.vid?new THREE.Mesh(new THREE.BoxGeometry(o.w,o.h,o.d),MVID):new THREE.Mesh(geoDe(o),MAT);if(o.vid)GEO.push(m.geometry);
+   m.position.set(o.p[0],o.p[1],o.p[2]);const g=new THREE.Group();g.add(m);const k=o.g<0?190:110;
+   g.userData={c:o.vid?'VID':o.c,ex:v(o.x[0]*k,o.x[1]*k,o.x[2]*k)};par.add(g);PECAS.push(g);});
   aplica();
  }
  function aplica(){PECAS.forEach(p=>{const e=p.userData.ex;p.position.set(e.x*dsA,e.y*dsA,e.z*dsA);});
-  FOLHAS.forEach(F=>{F.position.set(F.userData.abre*abA+F.userData.ex.x*dsA,0,F.userData.ex.z*dsA);});}
+  FOLHAS.forEach(F=>{F.position.set(F.userData.ox+F.userData.abre*abA,0,F.userData.z+F.userData.ex.z*dsA);});}
  function enquadra(){const d=Math.max(W,H)*1.75;CAM.position.set(W*.55,H*.25,d);CT.target.set(0,0,0);CT.update();}
  let raf=0,vivo=true;
  function loop(){if(!vivo)return;raf=requestAnimationFrame(loop);const k=.12;let mud=false;
@@ -397,11 +382,11 @@ function janela3d(host){
   voltar(){ab=0;ds=0;api.marca(null);enquadra();},
   medidas(l,h){W=l;H=h;montar();enquadra();},
   marca(c){sel=c;PECAS.forEach(p=>p.children.forEach(m=>{if(m.material!==MVID)m.material=c&&p.userData.c===c?MSEL:MAT;}));if(onSel)onSel(c);},
-  fim(){vivo=false;cancelAnimationFrame(raf);RO.disconnect();CT.dispose();Object.values(GEO).forEach(g=>g.dispose());R.dispose();host.innerHTML='';}};
+  fim(){vivo=false;cancelAnimationFrame(raf);RO.disconnect();CT.dispose();GEO.forEach(g=>g.dispose());R.dispose();host.innerHTML='';}};
  let onSel=null;api.onSel=f=>onSel=f;
  montar();enquadra();loop();return api;}
 function liga3d(){const host=$('#v3');if(!host)return;
- const ok=()=>{if(!$('#v3')||AT!=='cor')return;$('#v3msg').hidden=true;V3=janela3d(host);
+ const ok=()=>{if(!$('#v3')||AT!=='cor')return;$('#v3msg').hidden=true;V3=janela3d(host,CR3);
   V3.onSel(c=>{const lb=$('#v3lb');SELC=c;document.querySelectorAll('[data-pf]').forEach(b=>b.classList.toggle('on',b.dataset.pf===c));
    if(!c){lb.hidden=true;return;}lb.hidden=false;lb.innerHTML=c==='VID'?'<b>Vidro</b> · 6 mm (ilustrativo)':`<b>${c}</b> · ${esc(SEC[c].n)}${SEC[c].kg!=null?' · '+kg(SEC[c].kg)+' kg/m':''}`;});
   const bA=$('#b3Ab'),bD=$('#b3Ds');
@@ -409,9 +394,9 @@ function liga3d(){const host=$('#v3');if(!host)return;
   bD.onclick=()=>{const on=bD.getAttribute('aria-pressed')!=='true';bD.setAttribute('aria-pressed',on);bD.textContent=on?'✣ Montar':'✥ Desmontar';V3.desmontar(on);};
   $('#b3Vt').onclick=()=>{bA.setAttribute('aria-pressed','false');bA.textContent='↔ Abrir folhas';bD.setAttribute('aria-pressed','false');bD.textContent='✥ Desmontar';V3.voltar();};
   $('#b3Fs').onclick=()=>{const w=$('#v3w'),on=w.classList.toggle('fs');$('#b3Fs').textContent=on?'↙ Sair da tela cheia':'⛶ Tela cheia';};
-  let tm=0;const med=()=>{clearTimeout(tm);tm=setTimeout(()=>{const l=Math.min(2400,Math.max(600,+$('#i3L').value||1200)),h=Math.min(1800,Math.max(500,+$('#i3H').value||1000));V3.medidas(l,h);},350);};
+  let tm=0;const med=()=>{clearTimeout(tm);tm=setTimeout(()=>{const l=Math.min(3000,Math.max(600,+$('#i3L').value||1200)),h=Math.min(1800,Math.max(500,+$('#i3H').value||1000));V3.medidas(l,h);},350);};
   $('#i3L').oninput=med;$('#i3H').oninput=med;};
- Promise.all([carrega3(),SEC?null:fetch('../tecnico/secoes-jcr2.json?v=1').then(r=>r.json()).then(j=>{SEC=j;})]).then(()=>{
+ Promise.all([carrega3(),SEC?null:fetch('../tecnico/secoes.json?v=2').then(r=>r.json()).then(j=>{SEC=j;})]).then(()=>{
    if(AT!=='cor')return;const pcs=document.querySelector('.pcs');if(pcs&&!pcs.querySelector('[data-pf]')){const y=scrollY;go('cor',true);scrollTo(0,y);return;}ok();})
   .catch(()=>{const m=$('#v3msg');if(m)m.textContent='Não foi possível carregar o 3D. Confira a internet.';});}
 
@@ -525,6 +510,7 @@ function iniciar(){
     document.querySelectorAll('[data-crk]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.crk===CRK));const T=CR.find(c=>c[0]===CRK);fig.innerHTML=correrSvg(CRK,false);const tx=fig.nextElementSibling;tx.querySelector('h3').textContent=T[1];tx.querySelector('p').textContent=T[2];tx.querySelector('[data-cra]').textContent='↔ Abrir';}scrollTo(0,y);return;}
   const ca=e.target.closest('[data-cra]');if(ca){CRA=!CRA;const fig=$('#crFig');fig.querySelectorAll('g.anim').forEach(()=>{});const ns=correrSvg(CRK,CRA);/* anima: aplica os transforms nas folhas existentes */
     const tmp=document.createElement('div');tmp.innerHTML=ns;const novos=tmp.querySelectorAll('g.anim');fig.querySelectorAll('g.anim').forEach((gg,i)=>{if(novos[i])gg.style.transform=novos[i].style.transform;});const t=fig.querySelector('text');if(t)t.textContent=(CRA?'aberta':'fechada')+' · vista de dentro';ca.textContent=CRA?'⟲ Fechar':'↔ Abrir';return;}
+  const c3=e.target.closest('[data-cr3]');if(c3){CR3=c3.dataset.cr3;SELC=null;re();return;}
   const pf=e.target.closest('[data-pf]');if(pf&&V3){const c=pf.dataset.pf;V3.marca(SELC===c?null:c);return;}
   if(e.target.id==='qzRes'){const qs=[...document.querySelectorAll('.q')],a=qs.filter(q=>q.dataset.ok==='1').length,fe=qs.filter(q=>q.dataset.ok!=null).length;const out=$('#qzOut');out.hidden=false;
    if(fe<qs.length){out.innerHTML=`<p>Responda todas as perguntas: faltam <b>${qs.length-fe}</b>.</p>`;return;}
@@ -538,7 +524,7 @@ function iniciar(){
  $('#bHome').onclick=()=>go(null);
  const h=location.hash.slice(1);go(RT[h]?h:null,true);
  addEventListener('hashchange',()=>{const k=location.hash.slice(1);if((RT[k]?k:null)!==AT)go(RT[k]?k:null);});
- fetch('../tecnico/secoes-jcr2.json?v=1').then(r=>r.json()).then(j=>{SEC=SEC||j;}).catch(()=>{});
+ fetch('../tecnico/secoes.json?v=2').then(r=>r.json()).then(j=>{SEC=SEC||j;}).catch(()=>{});
 }
 })();
 </script>

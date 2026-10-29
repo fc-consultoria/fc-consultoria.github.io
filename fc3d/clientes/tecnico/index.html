@@ -82,6 +82,8 @@ svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto 
 #gate .box{max-width:380px}
 @media (max-width:980px){.wrap{grid-template-columns:1fr}.grade{grid-template-columns:1fr}#vpH{grid-column:auto}.barra .dica{display:none}}
 @media (max-width:560px){.folha .cab .tt{font-size:18px}.folha .cab .cd{display:none}#vpEl,#vpV{height:280px}#vpH{height:240px}}
+.trocam{display:flex;gap:6px}.trocam a{color:#fff;text-decoration:none;font-weight:600;font-size:13px;border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:6px 10px}.trocam a[aria-current="page"]{background:#fff;color:var(--teal2)}
+.vidtx{font-size:13px;color:var(--mute);margin-top:6px}
 </style>
 </head>
 <body>
@@ -89,7 +91,8 @@ svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto 
 
 <header class="topo">
   <a class="volta" href="../">← Plataforma</a>
-  <div><h1>Janela de correr 2 folhas</h1><span>Linha FC Residencial · desenho técnico interativo</span></div>
+  <div><h1 id="tTit">Janela de correr 2 folhas</h1><span id="tSub">Linha FC Residencial · desenho técnico interativo</span></div>
+  <div class="trocam" id="troca" role="group" aria-label="Montagem"></div>
   <div class="dir">
     <label class="med">L <input id="inL" type="number" inputmode="numeric" value="1200" min="400" max="4000" step="10" aria-label="Largura em milímetros"> mm</label>
     <label class="med">H <input id="inH" type="number" inputmode="numeric" value="1000" min="300" max="2600" step="10" aria-label="Altura em milímetros"> mm</label>
@@ -104,7 +107,7 @@ svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto 
 
 <div class="wrap">
   <section class="folha" aria-label="Folha do desenho técnico">
-    <div class="cab"><div class="mk">FC</div><div class="tt">Janela de correr 2 folhas</div><div class="cd">FC JC2 · 01</div></div>
+    <div class="cab"><div class="mk">FC</div><div class="tt" id="fTit">Janela de correr 2 folhas</div><div class="cd" id="fCd">FC JC2 · 01</div></div>
     <div class="grade">
       <div class="vp" id="vpEl"><span class="rot">Elevação · vista externa</span></div>
       <div class="vp" id="vpV"><span class="rot">Corte vertical · 03 / 04</span></div>
@@ -119,11 +122,13 @@ svg.aberto .cota,svg.aberto .lado,svg.aberto .lbl,svg.aberto .quebra,svg.aberto 
       <span><i style="background:var(--vid);border-color:#5f8ea3"></i>Vidro 6 mm</span>
       <span><i style="background:var(--secHi);border-color:var(--teal2)"></i>Peça selecionada</span>
     </div></div>
+    <div class="box"><h3>Vidro</h3><p class="vidtx" id="vidTx"></p></div>
     <p class="aviso">Desenho orientativo redesenhado pela FC, seções em escala real e cortes com trecho do vidro interrompido. Medidas, pesos e acabamentos devem ser confirmados com o fornecedor da empresa e no sistema de cálculo.</p>
   </aside>
 </div>
 <div id="tip" hidden></div>
 
+<script src="montagens.js?v=1"></script>
 <script>
 (function(){
 /* ---------- acesso: só com a sessão da Plataforma FC 3D Clientes ---------- */
@@ -136,17 +141,22 @@ fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},b
  .then(r=>r.ok?r.json():null).then(d=>{if(!(d&&d.papel)){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}gate.hidden=true;iniciar();})
  .catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));
 
+const KEY=(new URLSearchParams(location.search).get('m')||'jc2'),M=FCM.MONT[KEY]||FCM.MONT.jc2;
 function iniciar(){
-fetch('secoes-jcr2.json?v=1').then(r=>r.json()).then(montar).catch(()=>nega('Não foi possível abrir','Tente de novo em instantes.'));
+  document.title='Desenho Técnico FC · '+M.n;
+  document.getElementById('tTit').textContent=M.n;document.getElementById('fTit').textContent=M.n;document.getElementById('fCd').textContent=M.cd;
+  document.getElementById('tSub').textContent=M.linha+' · desenho técnico interativo';
+  document.getElementById('troca').innerHTML=Object.entries(FCM.MONT).map(([k,m])=>`<a href="?m=${k}" ${k===KEY?'aria-current="page"':''}>${m.n.replace('Janela de correr ','Correr ')}</a>`).join('');
+  document.getElementById('inL').value=M.def[0];document.getElementById('inH').value=M.def[1];
+  fetch('secoes.json?v=2').then(r=>r.json()).then(montar).catch(()=>nega('Não foi possível abrir','Tente de novo em instantes.'));
 }
 
 const NS='http://www.w3.org/2000/svg';
 const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;};
 const f1=v=>Math.round(v*100)/100;
-let S=null,PARTS=[],VPS={},sel=null;
+let S=null,PARTS=[],VPS={},sel=null,USADOS=[];
 
 function montar(secs){S=secs;
-  /* vistas */
   ['vpEl','vpV','vpH'].forEach(id=>{const box=document.getElementById(id);const svg=el('svg',{role:'img','aria-label':box.querySelector('.rot').textContent},box);
     const g=el('g',{},svg);VPS[id]={box,svg,g,vb:null,base:null};panZoom(VPS[id]);});
   desenhar();
@@ -157,75 +167,46 @@ function montar(secs){S=secs;
   ['inL','inH'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{clearTimeout(window._t);window._t=setTimeout(desenhar,200);}));
 }
 
-/* ---------- geometria da montagem (mm) ----------
-   Cortes compactados (vidro interrompido), como nos catálogos: L e H reais aparecem nas cotas.
-   Eixo z: + lado interno, − lado externo. */
-const WD=460,HD=300;
-function geo(){
-  const W=WD,H=HD,P=c=>S[c],PW=c=>S[c].w,PH=c=>S[c].h;
-  const FT=PH('FC-101'),FB=PH('FC-102'),FS=PH('FC-103');
-  const EDGE=14.4,OV=30,Wi=W-2*EDGE,sW=(Wi+OV)/2,sH=H-50,SDs=25,gwC=(W-143.2)/2;
-  const mz=c=>c==='FC-105'?SDs/2-PH(c)/2:c==='FC-106'?-SDs/2+PH(c)/2:0;
-  const OB=S['FC-108'].offT||[2.98,18.02],oz=OB[0],RW=PH('FC-107'),inset=RW/2-OB[1];
-  const folhas=[{z:17.5,L:'FC-104',R:'FC-105',nm:'Folha interna',i:0},{z:-17.5,L:'FC-106',R:'FC-104',nm:'Folha externa',i:1}];
-  const H2=[],V2=[];/* peças: {c, nm, tf:(sx,sy)=>[X,Y], grp, ex:[dx,dy]} */
-  /* corte horizontal: X = largura, Y = -z (lado externo embaixo) */
-  H2.push({c:'FC-103',nm:'Marco lateral',tf:(a,b)=>[-W/2+FS/2+b,-a],grp:'mar',ex:[-70,0]});
-  H2.push({c:'FC-103',nm:'Marco lateral',tf:(a,b)=>[W/2-FS/2-b,a],grp:'mar',ex:[70,0]});
-  folhas.forEach(sd=>{
-    const x0=-Wi/2+sW/2+sd.i*(sW-OV),L=sd.L,R=sd.R,xLc=-sW/2+PW(L)/2,xRc=sW/2-PW(R)/2,xL=-sW/2+PW(L),xR=sW/2-PW(R),tx=(xL+xR)/2;
-    const sxL=L==='FC-106'?-1:1,syL=sd.i===0?-1:1,zL=sd.i===0?-mz(L):mz(L),sxR=R==='FC-106'?1:-1;
-    const fz=sd.z>0?-38:38;/* folha interna sobe, externa desce ao desmontar */
-    H2.push({c:L,nm:S[L].n,tf:(a,b)=>[x0+xLc+sxL*a,-(sd.z+zL+syL*b)],grp:sd.nm,ex:[-35,fz]});
-    H2.push({c:R,nm:S[R].n,tf:(a,b)=>[x0+xRc+sxR*a,-(sd.z+mz(R)+b)],grp:sd.nm,ex:[35,fz]});
-    const bxL=xL-inset,bxR=xR+inset;
-    H2.push({c:'FC-108',nm:'Baguete',tf:(a,b)=>[x0+bxL+b,-(sd.z+oz+a)],grp:sd.nm,ex:[14,fz-22]});
-    H2.push({c:'FC-108',nm:'Baguete',tf:(a,b)=>[x0+bxR-b,-(sd.z+oz+a)],grp:sd.nm,ex:[-14,fz-22]});
-    H2.push({vid:1,nm:'Vidro 6 mm',r:[x0+tx-gwC/2,-(sd.z-3.5)-3,gwC,6],grp:sd.nm,ex:[0,fz*.55],brk:x0+tx});
-  });
-  /* corte vertical: X = -z (lado externo à direita), Y = -y */
-  V2.push({c:'FC-101',nm:'Trilho superior',tf:(a,b)=>[-a,-(H/2-FT/2+b)],grp:'mar',ex:[0,-45]});
-  V2.push({c:'FC-102',nm:'Trilho inferior',tf:(a,b)=>[-a,-(-H/2+FB/2+b)],grp:'mar',ex:[0,45]});
-  folhas.forEach(sd=>{
-    const fx=sd.z>0?-30:30,yTi=sH/2-RW,yBi=-sH/2+RW,yT=yTi+inset,yB=yBi-inset;
-    V2.push({c:'FC-107',nm:'Travessa da folha',tf:(a,b)=>[-(sd.z+a),-(sH/2-RW/2-b)],grp:sd.nm,ex:[fx,-35]});
-    V2.push({c:'FC-107',nm:'Travessa da folha',tf:(a,b)=>[-(sd.z+a),-(-sH/2+RW/2+b)],grp:sd.nm,ex:[fx,35]});
-    V2.push({c:'FC-108',nm:'Baguete',tf:(a,b)=>[-(sd.z+oz+a),-(yT-b)],grp:sd.nm,ex:[fx-22,14]});
-    V2.push({c:'FC-108',nm:'Baguete',tf:(a,b)=>[-(sd.z+oz+a),-(yB+b)],grp:sd.nm,ex:[fx-22,-14]});
-    V2.push({vid:1,nm:'Vidro 6 mm',r:[-(sd.z-3.5)-3,-(yTi+6),6,(yTi-yBi)+12],grp:sd.nm,ex:[fx*.55,0],brkY:-(yTi+yBi)/2});
-  });
-  return {H2,V2,W,H};
-}
-const pathDe=(c,tf)=>S[c].s.map(sh=>{const ring=r=>'M'+r.map(([a,b])=>tf(a,b).map(f1).join(' ')).join('L')+'Z';return ring(sh.o)+(sh.h||[]).map(ring).join('');}).join('');
-
-/* ---------- desenho ---------- */
+/* ---------- desenho: cortes gerados das mesmas peças do 3D, com o vidro interrompido ----------
+   Corte horizontal: X = largura, Y = −z (lado externo embaixo). Corte vertical: X = −z (lado externo à direita), Y = −altura. */
+const HD=300;
 function desenhar(){
-  const Lr=+document.getElementById('inL').value||1200,Hr=+document.getElementById('inH').value||1000;
-  PARTS=[];const G=geo();
-  /* corte horizontal */
-  const gh=VPS.vpH.g;gh.innerHTML='';
-  G.H2.forEach(p=>peca(gh,p,'vpH'));
-  /* quebras do vidro */
-  G.H2.filter(p=>p.brk!=null).forEach(p=>quebraV(gh,p.brk,-26,26));
-  cotaH(gh,-G.W/2,G.W/2,-62,'L = '+Lr);
-  ladoTxt(gh,0,62,'LADO EXTERNO');ladoTxt(gh,0,-84,'LADO INTERNO');
-  rotulo(gh,-G.W/2+40,54,'CORTE 01');rotulo(gh,G.W/2-40,54,'CORTE 02');
-  /* corte vertical */
-  const gv=VPS.vpV.g;gv.innerHTML='';
-  G.V2.forEach(p=>peca(gv,p,'vpV'));
-  G.V2.filter(p=>p.brkY!=null).slice(0,1).forEach(p=>quebraH(gv,p.brkY,-36,36));
-  cotaV(gv,-G.H/2,G.H/2,-62,'H = '+Hr);
-  ladoTxtV(gv,62,0,'LADO EXTERNO');ladoTxtV(gv,-92,0,'LADO INTERNO');
-  rotulo(gv,74,-G.H/2+20,'CORTE 03');rotulo(gv,74,G.H/2-14,'CORTE 04');
-  /* elevação */
+  const Lr=+document.getElementById('inL').value||M.def[0],Hr=+document.getElementById('inH').value||M.def[1];
+  PARTS=[];USADOS=[];const W=M.dw,R=FCM.pecas(S,M,W,HD),FD=S[M.fr.s].w/2,TD=S[M.fr.t].w/2;
+  const off=o=>o.g>=0?R.folhas[o.g]:{ox:0,z:0},zs=z=>z>0.1?1:z<-0.1?-1:0;
+  const gh=VPS.vpH.g;gh.innerHTML='';const gv=VPS.vpV.g;gv.innerHTML='';
+  R.P.forEach(o=>{const f=off(o),fz=o.g>=0?zs(f.z):0;
+    if(o.vid){
+      peca(gh,{vid:1,nm:o.nm,r:[f.ox+o.p[0]-o.w/2,-(f.z+o.p[2])-3,o.w,6],ex:[0,-fz*24],brk:f.ox+o.p[0],brkC:-(f.z+o.p[2])},'vpH');
+      if(o.g===0)peca(gv,{vid:1,nm:o.nm,r:[-(f.z+o.p[2])-3,-(o.p[1]+o.h/2),6,o.h],ex:[fz*-20,0],brkY:-o.p[1]},'vpV');
+      else peca(gv,{vid:1,nm:o.nm,r:[-(f.z+o.p[2])-3,-(o.p[1]+o.h/2),6,o.h],ex:[fz*-20,0]},'vpV');
+      return;}
+    if(USADOS.indexOf(o.c)<0)USADOS.push(o.c);
+    const ring=(r,map)=>'M'+r.map(([a,b])=>map(FCM.ponto(o,a,b,f.ox,f.z)).map(f1).join(' ')).join('L')+'Z';
+    const d=map=>S[o.c].s.map(sh=>ring(sh.o,map)+(sh.h||[]).map(h=>ring(h,map)).join('')).join('');
+    if(Math.abs(o.ez[1])===1){/* peça vertical: aparece no corte horizontal */
+      peca(gh,{c:o.c,nm:S[o.c].n,d:d(q=>[q[0],-q[2]]),ex:[o.x[0]*(o.g<0?70:35),-(fz*38+o.x[2]*14)]},'vpH');}
+    else if(Math.abs(o.ez[0])===1){/* peça horizontal: aparece no corte vertical */
+      peca(gv,{c:o.c,nm:S[o.c].n,d:d(q=>[-q[2],-q[1]]),ex:[-(fz*30+o.x[2]*14),-(o.x[1]*(o.g<0?45:35))]},'vpV');}
+  });
+  PARTS.filter(P=>P.brk!=null).forEach(P=>quebraV(gh,P.brk,P.brkC-9,P.brkC+9));
+  PARTS.filter(P=>P.brkY!=null).forEach(P=>quebraH(gv,P.brkY,-TD-6,TD+6));
+  cotaH(gh,-W/2,W/2,-(FD+27),'L = '+Lr);
+  ladoTxt(gh,0,FD+27,'LADO EXTERNO');ladoTxt(gh,0,-(FD+49),'LADO INTERNO');
+  rotulo(gh,-W/2+40,FD+19,'CORTE 01');rotulo(gh,W/2-40,FD+19,'CORTE 02');
+  cotaV(gv,-HD/2,HD/2,-(TD+27),'H = '+Hr);
+  ladoTxtV(gv,TD+27,0,'LADO EXTERNO');ladoTxtV(gv,-(TD+57),0,'LADO INTERNO');
+  rotulo(gv,TD+39,-HD/2+20,'CORTE 03');rotulo(gv,TD+39,HD/2-14,'CORTE 04');
   elevacao(VPS.vpEl.g,Lr,Hr);
+  const [gw,ghh]=M.vidro(Lr,Hr);document.getElementById('vidTx').innerHTML=`${M.vtx}<br><b>${Math.round(gw)} × ${Math.round(ghh)} mm</b> por folha (simulação)`;
   ajustar();
+  if(document.getElementById('lista').children.length)lista();
 }
 function peca(g,p,vp){
   const gg=el('g',{class:'pc'+(p.vid?' vid':''),'data-c':p.c||'VID'},g);
   if(p.vid)el('rect',{x:f1(p.r[0]),y:f1(p.r[1]),width:f1(p.r[2]),height:f1(p.r[3])},gg);
-  else el('path',{d:pathDe(p.c,p.tf),'fill-rule':'evenodd'},gg);
-  const P={g:gg,c:p.c||'VID',nm:p.nm,ex:p.ex,dx:0,dy:0,tx:0,ty:0,vp};PARTS.push(P);
+  else el('path',{d:p.d,'fill-rule':'evenodd'},gg);
+  const P={g:gg,c:p.c||'VID',nm:p.nm,ex:p.ex,dx:0,dy:0,tx:0,ty:0,vp,brk:p.brk,brkC:p.brkC,brkY:p.brkY};PARTS.push(P);
   ligaPeca(P);
 }
 function cotaH(g,x0,x1,y,t){const c=el('g',{class:'cota'},g);
@@ -242,16 +223,18 @@ function quebraV(g,x,y0,y1){const d=`M${x-4} ${y0}L${x+4} ${y0}L${x-2} ${(y0+y1)
 function quebraH(g,y,x0,x1){el('rect',{x:x0,y:y-3,width:x1-x0,height:6,fill:'#fff',stroke:'none',class:'qb'},g);
   el('path',{d:`M${x0} ${y-4}L${x0} ${y+4}L${(x0+x1)/2-3} ${y-2}L${(x0+x1)/2+3} ${y+2}L${x1} ${y-4}L${x1} ${y+4}`,class:'quebra',fill:'none'},g);}
 function elevacao(g,L,H){g.innerHTML='';
-  const k=Math.min(300/L,230/H),w=L*k,h=H*k,x0=-w/2,y0=-h/2,m=6;
+  const k=Math.min(300/L,230/H),w=L*k,h=H*k,x0=-w/2,y0=-h/2,m=6,n=M.folhas.length;
   el('rect',{x:x0,y:y0,width:w,height:h,fill:'#fff',stroke:'#1b1d1f','stroke-width':1.4,'vector-effect':'non-scaling-stroke'},g);
   el('rect',{x:x0+m,y:y0+m,width:w-2*m,height:h-2*m,fill:'none',stroke:'#1b1d1f','stroke-width':.6,'vector-effect':'non-scaling-stroke'},g);
-  const lw=(w-2*m)/2+5;[[x0+m,lw],[x0+w-m-lw,lw]].forEach(([x,ww],i)=>{
-    el('rect',{x,y:y0+m+2,width:ww,height:h-2*m-4,fill:'#eef6f9',stroke:'#1b1d1f','stroke-width':.8,'vector-effect':'non-scaling-stroke'},g);
-    el('rect',{x:x+7,y:y0+m+9,width:ww-14,height:h-2*m-18,fill:'#d9ecf3',stroke:'#1b1d1f','stroke-width':.4,'vector-effect':'non-scaling-stroke'},g);
-    const cx=x+ww/2,cy=y0+h/2,s=i?-1:1;el('path',{d:`M${cx-s*16} ${cy}L${cx+s*16} ${cy}M${cx+s*16} ${cy}l${-s*6} -4M${cx+s*16} ${cy}l${-s*6} 4`,stroke:'#1b1d1f','stroke-width':1,fill:'none','vector-effect':'non-scaling-stroke'},g);});
+  const lw=(w-2*m+(n-1)*10)/n;
+  M.folhas.forEach((f,i)=>{const x=x0+m+i*(lw-10);
+    el('rect',{x,y:y0+m+2,width:lw,height:h-2*m-4,fill:'#eef6f9',stroke:'#1b1d1f','stroke-width':.8,'vector-effect':'non-scaling-stroke'},g);
+    el('rect',{x:x+7,y:y0+m+9,width:lw-14,height:h-2*m-18,fill:'#d9ecf3',stroke:'#1b1d1f','stroke-width':.4,'vector-effect':'non-scaling-stroke'},g);
+    const cx=x+lw/2,cy=y0+h/2;
+    if(f.fixa){const t=el('text',{x:cx,y:cy+5,'text-anchor':'middle','font-size':14,'font-weight':700,fill:'#1b1d1f'},g);t.textContent='F';}
+    else{const s=f.dir>0?1:-1;el('path',{d:`M${cx-s*16} ${cy}L${cx+s*16} ${cy}M${cx+s*16} ${cy}l${-s*6} -4M${cx+s*16} ${cy}l${-s*6} 4`,stroke:'#1b1d1f','stroke-width':1,fill:'none','vector-effect':'non-scaling-stroke'},g);}});
   cotaH(g,x0,x0+w,y0+h+26,'L = '+L);g.lastChild.querySelectorAll('line').forEach((l,i)=>{if(i>0){l.setAttribute('y1',y0+h+30);l.setAttribute('y2',y0+h+4);}});
   cotaV(g,y0,y0+h,x0+w+26,'H = '+H);g.lastChild.querySelectorAll('line').forEach((l,i)=>{if(i>0){l.setAttribute('x1',x0+w+30);l.setAttribute('x2',x0+w+4);}});
-  [['01',x0-14,y0+h/2],['03',0,y0-28]].forEach(([n,x,y])=>{});
 }
 
 /* ---------- interação: destacar, arrastar, desmontar, voltar ---------- */
@@ -276,7 +259,7 @@ function marca(c){sel=c;document.querySelectorAll('.pc').forEach(g=>g.classList.
 
 /* lista de peças */
 function lista(){const L=document.getElementById('lista');
-  const itens=Object.keys(S).map(c=>[c,S[c].n,S[c].kg]).concat([['VID','Vidro 6 mm (exemplo)',null]]);
+  const itens=USADOS.slice().sort().map(c=>[c,S[c].n,S[c].kg]).concat([['VID','Vidro 6 mm (exemplo)',null]]);
   L.innerHTML=itens.map(([c,n,kg])=>`<li><button type="button" data-c="${c}"><span class="c">${c==='VID'?'VIDRO':c}</span><span>${n}</span><span class="k">${kg?String(kg).replace('.',',')+' kg/m':''}</span></button></li>`).join('');
   L.querySelectorAll('button').forEach(b=>b.onclick=()=>{marca(sel===b.dataset.c?null:b.dataset.c);});}
 
