@@ -1,27 +1,27 @@
-/* Montagens da Linha FC Residencial · Plataforma FC 3D Clientes
+/* Montagens da Linha Suprema · Plataforma FC 3D Clientes
    Uma definição por montagem gera o 3D e os cortes do desenho técnico (seções em escala real, mm).
    © FC Consultoria em Esquadria · criação da FC, uso exclusivo de empresas licenciadas. */
 (function(){
 const MONT={
- jc2:{n:'Janela de correr 2 folhas',cd:'FC JC2 · 01',linha:'Linha FC Residencial',def:[1200,1000],
+ jc2:{n:'Janela de correr 2 folhas',cd:'SUP JCR 200',linha:'Linha Suprema',def:[1200,1000],
   fr:{t:'SU-001',b:'SU-002',s:'SU-003'},edge:14.4,rotLat:true,
   folhas:[{n:'Folha interna',z:17.5,L:'SU-039',R:'SU-040',dir:1},{n:'Folha externa',z:-17.5,L:'SU-041',R:'SU-039',dir:-1}],
   vidro:(L,H)=>[(L-143.2)/2,H-134],vtx:'(L − 143,2) / 2 × (H − 134)',dw:460},
- jc3:{n:'Janela de correr 3 folhas',cd:'FC JC3 · 01',linha:'Linha FC Residencial',def:[1800,1200],
+ jc3:{n:'Janela de correr 3 folhas',cd:'SUP JCR 300',linha:'Linha Suprema',def:[1800,1200],
   fr:{t:'SU-010',b:'SU-011',s:'SU-012'},edge:19,contra:'SU-291',contra2:true,web0:13,
   folhas:[{n:'Folha interna',z:35,L:'SU-039',R:'SU-040',dir:1},{n:'Folha central',z:0,L:'SU-041',R:'SU-040',dir:1},{n:'Folha fixa',z:-35,L:'SU-041',R:'SU-039',fixa:true}],
   vidro:(L,H)=>[(L-174)/3,H-134],vtx:'(L − 174) / 3 × (H − 134)',dw:660}
 ,
- jc2a:{n:'Janela de correr 2 folhas (marco com contrafecho)',cd:'FC JC2A · 01',linha:'Linha FC Residencial',def:[1200,1000],
+ jc2a:{n:'Janela de correr 2 folhas (marco com contrafecho)',cd:'SUP JCR 200A',linha:'Linha Suprema',def:[1200,1000],
   fr:{t:'SU-026',b:'SU-251',s:'SU-028'},edge:35,contra:'SU-291',contra2:true,web0:7,
   folhas:[{n:'Folha interna',z:17.5,L:'SU-039',R:'SU-040',dir:1},{n:'Folha externa',z:-17.5,L:'SU-041',R:'SU-039',dir:-1}],
   vidro:(L,H)=>[(L-181.4)/2,H-167],vtx:'(L − 181,4) / 2 × (H − 167)',dw:500},
- jc4:{n:'Janela de correr 4 folhas',cd:'FC JC4 · 01',linha:'Linha FC Residencial',def:[2000,1200],
+ jc4:{n:'Janela de correr 4 folhas',cd:'SUP JCR 400',linha:'Linha Suprema',def:[2000,1200],
   fr:{t:'SU-026',b:'SU-251',s:'SU-028'},edge:35,contra:'SU-291',contra2:true,web0:7,ovs:[30,0,30],
   folhas:[{n:'Folha fixa esquerda',z:-17.5,L:'SU-039',R:'SU-041',fixa:true},{n:'Folha móvel esquerda',z:17.5,L:'SU-040',R:'SU-039',dir:-1,curso:'passo'},
           {n:'Folha móvel direita',z:17.5,L:'SU-039',R:'SU-040',dir:1,curso:'passo'},{n:'Folha fixa direita',z:-17.5,L:'SU-041',R:'SU-039',fixa:true}],
   vidro:(L,H)=>[(L-295.7)/4,H-167],vtx:'(L − 295,7) / 4 × (H − 167)',dw:880},
- jc4a:{n:'Janela de correr 4 folhas (marco liso)',cd:'FC JC4A · 01',linha:'Linha FC Residencial',def:[2000,1200],
+ jc4a:{n:'Janela de correr 4 folhas (marco liso)',cd:'SUP JCR 400A',linha:'Linha Suprema',def:[2000,1200],
   fr:{t:'SU-001',b:'SU-002',s:'SU-003'},edge:14.4,ovs:[30,0,30],
   folhas:[{n:'Folha fixa esquerda',z:-17.5,L:'SU-039',R:'SU-041',fixa:true},{n:'Folha móvel esquerda',z:17.5,L:'SU-040',R:'SU-039',dir:-1,curso:'passo'},
           {n:'Folha móvel direita',z:17.5,L:'SU-039',R:'SU-040',dir:1,curso:'passo'},{n:'Folha fixa direita',z:-17.5,L:'SU-041',R:'SU-039',fixa:true}],

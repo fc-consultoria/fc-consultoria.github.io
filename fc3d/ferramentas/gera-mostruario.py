@@ -1,7 +1,7 @@
 """Gera fc3d/clientes/mostruario/index.html a partir do Mostruário 3D do Orientativo
 (treinamento/demo/index.html), para a Plataforma FC 3D Clientes:
 - entrada só com a sessão da plataforma (pfc_sessao), sem o modo demonstrativo;
-- só a Linha FC Residencial (linha Premium fica para depois);
+- Suprema e Gold com os nomes delas; sem o nome do fabricante;
 - nomes de marca trocados pelos nomes das linhas FC.
 Uso: python3 gera-mostruario.py <caminho do treinamento/demo/index.html>"""
 import re,sys,os
@@ -29,27 +29,27 @@ gate=r'''/* ===== Plataforma FC 3D Clientes: entrada com a sessão da plataforma
  }).catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));})();
 '''
 s=s[:a]+gate+s[b+len('if(window.FC_DEMO===2)demo2Init();else if(window.FC_DEMO)demoInit();'):]
-# 3) só a Linha FC Residencial
-# (a Linha FC Premium fica, para o Orientativo abrir o 3D das duas linhas)
+# 3) linhas
+# (as duas linhas ficam, para o Orientativo abrir o 3D de cada uma)
 # 4) nomes das linhas
-REP=[("catálogo técnico Suprema","catálogo técnico da linha"),("catálogo Suprema","catálogo da linha"),
- ("catálogos MettallFleck e Alcoa","catálogos dos fabricantes"),("Linha Suprema","Linha FC Residencial"),("LINHA SUPREMA","LINHA FC RESIDENCIAL"),
- ("| SUPREMA","| FC RESIDENCIAL"),("(Gold)","(Premium)"),("Linha Gold","Linha FC Premium"),
- ("?'Gold':'Suprema'","?'FC Premium':'FC Residencial'"),("'Gold':'Suprema'","'FC Premium':'FC Residencial'"),
- ("<strong>Suprema</strong>","<strong>FC Residencial</strong>"),("<strong>Gold</strong>","<strong>FC Premium</strong>"),
- ("JCR 200 Suprema","JCR 200"),("2 folhas, Suprema)","2 folhas)"),("da JCR 200 (Suprema)","da JCR 200")]
+REP=[
+ ("catálogos MettallFleck e Alcoa","catálogos dos fabricantes"),
+ 
+ 
+ 
+ ]
 for x,y in REP:s=s.replace(x,y)
-s=re.sub(r"\bSuprema\b","FC Residencial",s);s=re.sub(r"\bGold\b","FC Premium",s);s=re.sub(r"\bAlcoa\b","fabricante",s)
-s=re.sub(r"code:'SUP ","code:'FC ",s);s=s.replace(".replace('SUP ','')",".replace('FC ','')").replace(".replace('GOLD ','G ')",".replace('GOLD ','G ')")
-s=s.replace('(SUP JCR 200)','(FC JCR 200)')
-# 5) esconde a linha Premium no diagrama e o guia do aluno do Orientativo
+s=re.sub(r"\bAlcoa\b","fabricante",s)
+
+
+# 5) esconde o guia do aluno do Orientativo
 s=s.replace('</style>','.guiabtn{display:none!important}\n</style>',1)
 s=s.replace('<title>FC Mostruário 3D</title>','<title>Mostruário 3D · Plataforma FC 3D</title>')
 # 6) botão de voltar para a plataforma (some quando o Mostruário está dentro do Orientativo)
 s+='\n<script>if(window.top===window){const a=document.createElement("a");a.href="../#tip";a.textContent="← Plataforma FC 3D";a.style.cssText="position:fixed;left:14px;bottom:14px;z-index:9000;background:#0a4f4b;color:#fff;font:600 14px system-ui;padding:9px 14px;border-radius:11px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25)";document.body.appendChild(a);}</script>\n'
 os.makedirs(os.path.dirname(out),exist_ok=True)
 open(out,'w',encoding='utf-8').write(s)
-for w in ['Suprema','SUPREMA','Alcoa','ALCOA','Gold','Claiton','Ladore','Belmetal','Perfileve']:
+for w in ['Alcoa','ALCOA','Claiton','Ladore','Belmetal','Perfileve']:
     n=len(re.findall(w,s))
     if n:print('ainda tem',w,n)
 print('ok',out,len(s))

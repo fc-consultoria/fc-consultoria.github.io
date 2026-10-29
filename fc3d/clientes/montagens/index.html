@@ -156,7 +156,7 @@ dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:10px 0}dt{col
 
 <header class="topo"><div class="w">
   <a class="volta" href="../#tip">← Tipologias</a>
-  <div class="tt"><small>Plataforma FC 3D · Tipologias</small><b>Montagens 3D · Linha FC Residencial</b></div>
+  <div class="tt"><small>Plataforma FC 3D · Tipologias</small><b>Montagens 3D · Linha Suprema</b></div>
   <span class="sp"></span>
   <div class="prog" title="Módulos estudados"><i><s id="pgB" style="width:0"></s></i><span id="pgT">0/9</span></div>
   <button type="button" id="btTema" aria-label="Trocar fundo claro ou escuro" title="Claro / escuro"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg></button>
@@ -227,12 +227,12 @@ function desenho(id){let w=200,ht=150,b='';
 
 /* =========================== 01 · Tipologias =========================== */
 const TIPS=[
- {id:'jc2',n:'Janela de correr 2 folhas',l:'Linha FC Residencial',d:'Duas folhas que correm sobre trilho, uma passando pela outra. É a janela mais usada em residências.',ab:'Correr',f:'2 folhas móveis',uso:'Quartos, salas e cozinhas',go:'cor'},
- {id:'jc3',n:'Janela de correr 3 folhas',l:'Linha FC Residencial',d:'Três folhas em trilhos paralelos: duas correm e se juntam sobre a folha fixa.',ab:'Correr',f:'2 folhas móveis + 1 fixa',uso:'Vãos largos, salas',go:'cor'},
- {id:'jcb',n:'Correr 2 folhas com bandeira',l:'Linha FC Residencial',d:'Correr 2 folhas com uma bandeira em cima. Quando a bandeira é fixa, aparece com "F" no desenho.',ab:'Correr',f:'2 folhas + bandeira',uso:'Pé-direito alto',go:'cor'},
- {id:'pc2',n:'Porta de correr 2 folhas',l:'Linha FC Residencial',d:'Duas folhas de correr para integrar a sala com a varanda ou a área externa.',ab:'Correr',f:'2 folhas móveis',uso:'Varandas, área gourmet',go:'pad'},
- {id:'pg1',n:'Porta de giro 1 folha',l:'Linha FC Residencial',d:'Porta de abrir, girando nas dobradiças. O tracejado mostra o lado da dobradiça.',ab:'Giro',f:'1 folha',uso:'Entradas, área de serviço',go:'giro'},
- {id:'mx1',n:'Maxim-ar 1 folha',l:'Linha FC Residencial',d:'A folha fica presa em cima e projeta para fora. O tracejado em "V" mostra a abertura.',ab:'Projetante',f:'1 folha',uso:'Banheiros, cozinhas',go:'max'},
+ {id:'jc2',n:'Janela de correr 2 folhas',l:'Linha Suprema',d:'Duas folhas que correm sobre trilho, uma passando pela outra. É a janela mais usada em residências.',ab:'Correr',f:'2 folhas móveis',uso:'Quartos, salas e cozinhas',go:'cor'},
+ {id:'jc3',n:'Janela de correr 3 folhas',l:'Linha Suprema',d:'Três folhas em trilhos paralelos: duas correm e se juntam sobre a folha fixa.',ab:'Correr',f:'2 folhas móveis + 1 fixa',uso:'Vãos largos, salas',go:'cor'},
+ {id:'jcb',n:'Correr 2 folhas com bandeira',l:'Linha Suprema',d:'Correr 2 folhas com uma bandeira em cima. Quando a bandeira é fixa, aparece com "F" no desenho.',ab:'Correr',f:'2 folhas + bandeira',uso:'Pé-direito alto',go:'cor'},
+ {id:'pc2',n:'Porta de correr 2 folhas',l:'Linha Suprema',d:'Duas folhas de correr para integrar a sala com a varanda ou a área externa.',ab:'Correr',f:'2 folhas móveis',uso:'Varandas, área gourmet',go:'pad'},
+ {id:'pg1',n:'Porta de giro 1 folha',l:'Linha Suprema',d:'Porta de abrir, girando nas dobradiças. O tracejado mostra o lado da dobradiça.',ab:'Giro',f:'1 folha',uso:'Entradas, área de serviço',go:'giro'},
+ {id:'mx1',n:'Maxim-ar 1 folha',l:'Linha Suprema',d:'A folha fica presa em cima e projeta para fora. O tracejado em "V" mostra a abertura.',ab:'Projetante',f:'1 folha',uso:'Banheiros, cozinhas',go:'max'},
  {id:'cor',n:'Fachada Cortina',l:'Linha FC Fachadas',d:'Colunas e travessas aparentes, vidro preso por presilha e tampa externa.',ab:'Fixa',f:'Quadros fixos',uso:'Prédios comerciais, lojas',go:'fac'},
  {id:'atl',n:'Pele de Vidro Atlanta',l:'Linha FC Fachadas',d:'Quadros colados no vidro: do lado de fora só aparece o vidro.',ab:'Fixa',f:'Quadros colados',uso:'Edifícios de alto padrão',go:'fac'}];
 let TSEL='jc2';
@@ -320,7 +320,7 @@ function correrSvg(k,aberto){const n=k==='4s'?4:+k,W=360,H=170,m=10,fw=(W-2*m)/n
  s+=`<text x="${W/2}" y="${H+22}" text-anchor="middle" font-size="13" fill="currentColor">${aberto?'aberta':'fechada'} · vista de dentro</text>`;
  return s+'</svg>';}
 function mCor(){const T=CR.find(c=>c[0]===CRK);
- return head(3,'Janelas de Correr · Linha FC Residencial')+`<div class="sec"><h2>🧊 Janela de correr em 3D</h2><div class="row" style="margin:6px 0 10px">${Object.entries(FCM.MONT).map(([k,m])=>`<button class="btn" data-cr3="${k}" aria-pressed="${k===CR3}">${esc(m.n.replace('Janela de correr ',''))}</button>`).join('')}</div><p class="nt">Gire com o dedo ou o mouse, abra as folhas, desmonte e toque na peça para ver o código. Os perfis são as seções reais da linha, em escala.</p>
+ return head(3,'Janelas de Correr · Linha Suprema')+`<div class="sec"><h2>🧊 Janela de correr em 3D</h2><div class="row" style="margin:6px 0 10px">${Object.entries(FCM.MONT).map(([k,m])=>`<button class="btn" data-cr3="${k}" aria-pressed="${k===CR3}">${esc(m.n.replace('Janela de correr ',''))}</button>`).join('')}</div><p class="nt">Gire com o dedo ou o mouse, abra as folhas, desmonte e toque na peça para ver o código. Os perfis são as seções reais da linha, em escala.</p>
  <div class="v3w" id="v3w"><div class="v3" id="v3"></div><div class="v3msg" id="v3msg">Carregando o 3D…</div>
   <div class="v3bar"><button class="btn" id="b3Ab" aria-pressed="false">↔ Abrir folhas</button><button class="btn" id="b3Ds" aria-pressed="false">✥ Desmontar</button><button class="btn" id="b3Vt">↺ Voltar ao original</button>
   <span class="med">L <input id="i3L" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[0]}" min="600" max="3000" step="10" aria-label="Largura em mm"> H <input id="i3H" type="number" inputmode="numeric" value="${FCM.MONT[CR3].def[1]}" min="500" max="1800" step="10" aria-label="Altura em mm"> mm</span>

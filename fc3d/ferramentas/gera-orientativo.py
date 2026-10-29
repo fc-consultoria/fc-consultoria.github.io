@@ -2,18 +2,17 @@
 (treinamento/esquadrias/), inteiro, para a Plataforma FC 3D Clientes:
 - entrada só com a sessão da plataforma (pfc_sessao), sem o login da Matriz do treinamento;
 - o 3D abre no Mostruário da plataforma (../mostruario/);
-- nomes de marca trocados pelos nomes das linhas FC (Residencial e Premium).
+- nomes de marca trocados pelos Suprema e Gold com os nomes delas; sem o nome do fabricante.
 Uso: python3 gera-orientativo.py <caminho do treinamento/esquadrias>"""
 import re,sys,os,shutil
 src=sys.argv[1];base=os.path.dirname(os.path.abspath(__file__))
 dst=os.path.join(base,'..','clientes','orientativo');os.makedirs(dst,exist_ok=True)
 def marcas(s):
-    for x,y in [("Gold x Suprema","Premium x Residencial"),("Suprema x Gold","Residencial x Premium"),("Linha Suprema","Linha FC Residencial"),("Linha Gold","Linha FC Premium"),
-                ("catálogos técnicos Gold e Suprema","catálogos técnicos das linhas"),("catálogo técnico Suprema","catálogo técnico da linha"),("catálogo técnico Gold","catálogo técnico da linha"),
+    for x,y in [
+                ("catálogos técnicos Gold e Suprema","catálogos técnicos das linhas"),
                 ("(Alcoa, 2004)","(2004)"),("Alcoa, 2004","2004")]:s=s.replace(x,y)
-    s=re.sub(r"\bSUPREMA\b","FC RESIDENCIAL",s);s=re.sub(r"\bGOLD\b","FC PREMIUM",s)
-    s=re.sub(r"\bSuprema\b","FC Residencial",s);s=re.sub(r"\bGold\b","FC Premium",s);s=re.sub(r"\bAlcoa\b","fabricante",s)
-    s=re.sub(r"\bSUP ([A-Z]{3} \d)",r"FC \1",s)
+    
+    s=re.sub(r"\bAlcoa\b","fabricante",s)
     return s
 # arquivos de apoio
 for f in ['cm3d.js','perfis.json','perfis_extra.json','jan_shapes.json']:
@@ -42,7 +41,7 @@ s=s.replace('<small>FC Consultoria · Matriz</small>','<small>Plataforma FC 3D</
 s=s.replace('<title>Esquadrias 3D · Passo a passo · FC Consultoria</title>','<title>Orientativo 3D · Plataforma FC 3D</title>')
 s=marcas(s)
 open(os.path.join(dst,'index.html'),'w',encoding='utf-8').write(s)
-for w in ['Suprema','SUPREMA','Alcoa','Gold','Claiton','Ladore','Belmetal','Perfileve']:
+for w in ['Alcoa','Claiton','Ladore','Belmetal','Perfileve']:
     n=len(re.findall(r'\b'+w+r'\b',s))
     if n:print('ainda tem',w,n)
 print('ok',dst)
