@@ -238,8 +238,8 @@ const TIPS=[
   {id:'pc2',mo:'pcr200',est:'pad',n:'Porta de correr 2 folhas',g:'por',l:'res',d:'Porta de duas folhas de correr para integrar ambientes e áreas externas.',uso:'Varandas, salas, área gourmet',f:'2 folhas móveis',ab:'Correr'},
   {id:'pg1',mo:'pgr100',est:'giro',n:'Porta de giro 1 folha',g:'por',l:'res',d:'Porta de abrir com dobradiças, para entradas e passagens.',uso:'Entradas, áreas de serviço',f:'1 folha',ab:'Giro'},
   {id:'mx1',mo:'max800',est:'max',n:'Maxim-ar 1 folha',g:'jan',l:'res',d:'Folha que se projeta para fora a partir do topo, ventilando mesmo com chuva leve.',uso:'Banheiros, cozinhas, lavanderias',f:'1 folha',ab:'Projetante'},
-  {id:'cor',est:'fac',n:'Fachada Cortina',g:'fac',l:'fac',d:'Fachada com colunas e travessas aparentes de 40 × 80, vidro preso por presilha e tampa externa. Montada a partir das medidas da obra.',uso:'Prédios comerciais, fachadas de loja',f:'Quadros fixos',ab:'Fixa',obra:'cortina'},
-  {id:'atl',est:'fac',n:'Pele de Vidro Atlanta',g:'fac',l:'fac',d:'Fachada com quadros colados no vidro, sem perfil aparente do lado de fora, presos nas colunas por presilha.',uso:'Edifícios, fachadas de alto padrão',f:'Quadros colados',ab:'Fixa',obra:'atlanta'}];
+  {id:'cor',est:'tip',n:'Fachada Cortina',g:'fac',l:'fac',d:'Fachada com colunas e travessas aparentes de 40 × 80, vidro preso por presilha e tampa externa. Montada a partir das medidas da obra.',uso:'Prédios comerciais, fachadas de loja',f:'Quadros fixos',ab:'Fixa',obra:'cortina'},
+  {id:'atl',est:'tip',n:'Pele de Vidro Atlanta',g:'fac',l:'fac',d:'Fachada com quadros colados no vidro, sem perfil aparente do lado de fora, presos nas colunas por presilha.',uso:'Edifícios, fachadas de alto padrão',f:'Quadros colados',ab:'Fixa',obra:'atlanta'}];
 const LINHAS={res:{n:'Linha FC Residencial',s:'Disponível'},fac:{n:'Linha FC Fachadas',s:'3D disponível'},pre:{n:'Linha FC Premium',s:'Em breve'}};
 const OBRA=(t)=>'obra/'+(t?'?t='+t:'');
 
@@ -322,10 +322,10 @@ function telaInicio(){
   <div class="grid">${mods.map(m=>`<button class="card" data-ir="${m.k}"><span class="ic" aria-hidden="true">${m.i}</span><h3>${m.n}</h3><span class="d">${desc[m.k]}</span><span class="pe">${m.k==='tip'||m.k==='apr'?'<span class="chip o">Disponível</span>':'<span class="chip a">Em construção</span>'}</span></button>`).join('')}</div>
   ${S.matriz?`<div class="linha-tit"><h3>Etapas da plataforma</h3><span class="chip t">só a FC vê</span></div><div class="etapas">${ETAPAS.map(([n,t,d])=>`<div class="etp ${n==='1'?'on':''}"><span class="chip ${n==='1'?'o':''}">${n==='1'?'Pronta':'Etapa '+n}</span><b>${t}</b><span class="mute">${d}</span></div>`).join('')}</div>`:''}`;
 }
-function faixaOri(){if(papel()==='arquiteto')return '';let F=[];try{F=JSON.parse(localStorage.getItem('pfc-ori-feito'))||[]}catch(_){}
-  const M=[['tip','Tipologias'],['cm','Contramarco'],['gua','Guarnições'],['cor','Correr em 3D'],['max','Maxim-ar'],['pad','Componentes padrão'],['giro','Porta de giro'],['div','Perfis diversos'],['fac','Fachadas']],n=M.filter(m=>F.includes(m[0])).length,prox=(M.find(m=>!F.includes(m[0]))||M[0])[0];
-  return `<div class="ori"><div class="ori-tx"><b>📘 Orientativo 3D da equipe</b><span class="mute">Aprenda cada tipologia antes de apresentar · ${n} de ${M.length} módulos estudados</span><i class="ori-bar"><s style="width:${n/M.length*100}%"></s></i></div>
-   <div class="ori-bt"><a class="btn pri" href="orientativo/#${prox}">${n?'▶ Continuar':'▶ Começar'}</a><a class="btn sec" href="orientativo/#quiz">✓ Prova final</a></div>
+function faixaOri(){if(papel()==='arquiteto')return '';let F=[];try{F=JSON.parse(localStorage.getItem('fc_esq_feito'))||[]}catch(_){}
+  const M=[['cat','Catálogo de Perfis'],['tip','Tipologias'],['cm','Contramarco'],['gua','Guarnições'],['max','Maxim-Ar'],['cor','Janelas de Correr'],['pad','Perfis e Componentes Padrão'],['giro','Porta de Giro'],['div','Perfis Diversos'],['per','Porta com Persiana']],n=M.filter(m=>F.includes(m[0])).length,prox=(M.find(m=>!F.includes(m[0]))||M[0])[0];
+  return `<div class="ori"><div class="ori-tx"><b>📘 Orientativo de Montagem 3D</b><span class="mute">O passo a passo completo para a equipe · ${n} de ${M.length} módulos estudados</span><i class="ori-bar"><s style="width:${n/M.length*100}%"></s></i></div>
+   <div class="ori-bt"><a class="btn pri" href="orientativo/#${prox}">${n?'▶ Continuar':'▶ Começar'}</a><a class="btn sec" href="mostruario/">🧊 Mostruário 3D</a><a class="btn sec" href="orientativo/#quiz">✓ Prova final</a></div>
    <div class="ori-m">${M.map((m,i)=>`<a href="orientativo/#${m[0]}" class="${F.includes(m[0])?'ok':''}"><span>${F.includes(m[0])?'✓':String(i+1).padStart(2,'0')}</span>${m[1]}</a>`).join('')}</div></div>`;}
 function telaTip(){
   const L=TIPS.filter(t=>t.l==='res'&&(filtro==='todas'||t.g===filtro)),F=TIPS.filter(t=>t.l==='fac'&&(filtro==='todas'||filtro==='fac'));
@@ -356,11 +356,11 @@ function detalhe(id){
   d.innerHTML=`<div class="cx" role="dialog" aria-modal="true" aria-label="${h(t.n)}"><div class="des">${desenho(t.id)}</div><div class="tx">
    <span class="chip t" style="align-self:flex-start">${LINHAS[t.l].n}</span><h2 style="font-size:21px">${h(t.n)}</h2><p>${h(t.d)}</p>
    <dl><dt>Abertura</dt><dd>${t.ab}</dd><dt>Folhas</dt><dd>${t.f}</dd><dt>Indicada para</dt><dd>${h(t.uso)}</dd></dl>
-   ${t.mo?`<a class="btn pri" href="mostruario/?t=${t.mo}">🧊 Mostruário 3D · conhecer e montar</a>`:t.m3d?`<a class="btn pri" href="orientativo/?m=${t.m3d}#cor">🧊 Ver em 3D</a>`:''}
+   ${t.mo?`<a class="btn pri" href="mostruario/?t=${t.mo}">🧊 Mostruário 3D · conhecer e montar</a>`:t.m3d?`<a class="btn pri" href="montagens/?m=${t.m3d}#cor">🧊 Ver em 3D</a>`:''}
    ${t.tec?`<a class="btn pri" href="${t.tec}">📐 Desenho técnico interativo</a>`:''}
    ${t.obra?`<a class="btn pri" href="${OBRA(t.obra)}" target="_blank" rel="noopener">Abrir em 3D com as medidas da obra</a>`:''}
    ${!t.m3d&&!t.obra&&!t.mo?'<button class="btn sec" disabled title="Chega nas próximas etapas">Ver em 3D · em breve</button>':''}
-   ${papel()!=='arquiteto'&&t.est&&!t.m3d&&!t.mo?`<a class="btn sec" href="orientativo/#${t.est}">📘 Estudar no Orientativo</a>`:''}
+   ${papel()!=='arquiteto'&&t.est?`<a class="btn sec" href="orientativo/#${t.est}">📘 Estudar no Orientativo</a>`:''}
    <p class="aviso">Desenho esquemático, sem escala. Medidas, pesos e acabamentos devem ser confirmados com o fornecedor da empresa.</p>
    <button class="btn sec" id="detFecha">Fechar</button></div></div>`;
   d.hidden=false;$('#detFecha').focus();

@@ -25,13 +25,12 @@ gate=r'''/* ===== Plataforma FC 3D Clientes: entrada com a sessão da plataforma
  if(!tk){nega('Entre na Plataforma FC 3D','O Mostruário 3D abre pela plataforma, depois de entrar com o seu login.');return;}
  fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})}).then(r=>r.ok?r.json():null).then(d=>{
   if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}
-  g.remove();const t=new URLSearchParams(location.search).get('t');setTypo(TYPOS[t]&&LINHAS[0].t.includes(t)?t:'jcr200');
+  g.remove();const t=new URLSearchParams(location.search).get('t');setTypo(TYPOS[t]?t:'jcr200');
  }).catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));})();
 '''
 s=s[:a]+gate+s[b+len('if(window.FC_DEMO===2)demo2Init();else if(window.FC_DEMO)demoInit();'):]
 # 3) só a Linha FC Residencial
-s=re.sub(r"\{k:'gold',n:'Gold',c:'#c8932f',t:\[[^\]]*\]\}",'',s)
-s=s.replace(",\n]",'\n]')
+# (a Linha FC Premium fica, para o Orientativo abrir o 3D das duas linhas)
 # 4) nomes das linhas
 REP=[("catálogo técnico Suprema","catálogo técnico da linha"),("catálogo Suprema","catálogo da linha"),
  ("catálogos MettallFleck e Alcoa","catálogos dos fabricantes"),("Linha Suprema","Linha FC Residencial"),("LINHA SUPREMA","LINHA FC RESIDENCIAL"),
@@ -44,10 +43,10 @@ s=re.sub(r"\bSuprema\b","FC Residencial",s);s=re.sub(r"\bGold\b","FC Premium",s)
 s=re.sub(r"code:'SUP ","code:'FC ",s);s=s.replace(".replace('SUP ','')",".replace('FC ','')").replace(".replace('GOLD ','G ')",".replace('GOLD ','G ')")
 s=s.replace('(SUP JCR 200)','(FC JCR 200)')
 # 5) esconde a linha Premium no diagrama e o guia do aluno do Orientativo
-s=s.replace('</style>','.dia-ln[data-l="gold"],.guiabtn{display:none!important}\n</style>',1)
+s=s.replace('</style>','.guiabtn{display:none!important}\n</style>',1)
 s=s.replace('<title>FC Mostruário 3D</title>','<title>Mostruário 3D · Plataforma FC 3D</title>')
-# 6) botão de voltar para a plataforma
-s=s.replace('</body>','<a href="../#tip" style="position:fixed;left:14px;bottom:14px;z-index:9000;background:#0a4f4b;color:#fff;font:600 14px system-ui;padding:9px 14px;border-radius:11px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25)">← Plataforma FC 3D</a>\n</body>',1) if '</body>' in s else s+'<a href="../#tip" style="position:fixed;left:14px;bottom:14px;z-index:9000;background:#0a4f4b;color:#fff;font:600 14px system-ui;padding:9px 14px;border-radius:11px;text-decoration:none">← Plataforma FC 3D</a>'
+# 6) botão de voltar para a plataforma (some quando o Mostruário está dentro do Orientativo)
+s+='\n<script>if(window.top===window){const a=document.createElement("a");a.href="../#tip";a.textContent="← Plataforma FC 3D";a.style.cssText="position:fixed;left:14px;bottom:14px;z-index:9000;background:#0a4f4b;color:#fff;font:600 14px system-ui;padding:9px 14px;border-radius:11px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25)";document.body.appendChild(a);}</script>\n'
 os.makedirs(os.path.dirname(out),exist_ok=True)
 open(out,'w',encoding='utf-8').write(s)
 for w in ['Suprema','SUPREMA','Alcoa','ALCOA','Gold','Claiton','Ladore','Belmetal','Perfileve']:

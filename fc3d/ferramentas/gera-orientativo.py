@@ -1,0 +1,48 @@
+"""Gera fc3d/clientes/orientativo/ a partir do Orientativo de Montagem 3D original
+(treinamento/esquadrias/), inteiro, para a Plataforma FC 3D Clientes:
+- entrada só com a sessão da plataforma (pfc_sessao), sem o login da Matriz do treinamento;
+- o 3D abre no Mostruário da plataforma (../mostruario/);
+- nomes de marca trocados pelos nomes das linhas FC (Residencial e Premium).
+Uso: python3 gera-orientativo.py <caminho do treinamento/esquadrias>"""
+import re,sys,os,shutil
+src=sys.argv[1];base=os.path.dirname(os.path.abspath(__file__))
+dst=os.path.join(base,'..','clientes','orientativo');os.makedirs(dst,exist_ok=True)
+def marcas(s):
+    for x,y in [("Gold x Suprema","Premium x Residencial"),("Suprema x Gold","Residencial x Premium"),("Linha Suprema","Linha FC Residencial"),("Linha Gold","Linha FC Premium"),
+                ("catálogos técnicos Gold e Suprema","catálogos técnicos das linhas"),("catálogo técnico Suprema","catálogo técnico da linha"),("catálogo técnico Gold","catálogo técnico da linha"),
+                ("(Alcoa, 2004)","(2004)"),("Alcoa, 2004","2004")]:s=s.replace(x,y)
+    s=re.sub(r"\bSUPREMA\b","FC RESIDENCIAL",s);s=re.sub(r"\bGOLD\b","FC PREMIUM",s)
+    s=re.sub(r"\bSuprema\b","FC Residencial",s);s=re.sub(r"\bGold\b","FC Premium",s);s=re.sub(r"\bAlcoa\b","fabricante",s)
+    s=re.sub(r"\bSUP ([A-Z]{3} \d)",r"FC \1",s)
+    return s
+# arquivos de apoio
+for f in ['cm3d.js','perfis.json','perfis_extra.json','jan_shapes.json']:
+    t=open(os.path.join(src,f),encoding='utf-8').read();open(os.path.join(dst,f),'w',encoding='utf-8').write(marcas(t) if f.endswith('.js') else t)
+for d in ['gua','img2d']:
+    if os.path.isdir(os.path.join(dst,d)):shutil.rmtree(os.path.join(dst,d))
+    shutil.copytree(os.path.join(src,d),os.path.join(dst,d))
+s=open(os.path.join(src,'index.html'),encoding='utf-8').read()
+s=s.replace('<script src="../cda-codigos.js?v=3"></script>','').replace('<script src="/whats.js?v=1"></script>','').replace('<script src="../conversa-equipe.js?v=11"></script>','')
+s=s.replace('<script src="../auth.js"></script>',"<script>const sb=window.supabase.createClient('https://cpkjphodruyxfouirhpd.supabase.co','sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg',{auth:{persistSession:false,storageKey:'pfc-ori-sb'}});</script>")
+s=s.replace("/treinamento/demo/index.html?previa&esq=1&v=3","../mostruario/?esq=1&v=3")
+s=s.replace("/treinamento/esquadrias/?sala=","/fc3d/clientes/orientativo/?sala=")
+s=re.sub(r"function voltaUrl\(adm\)\{.*?return u\|\|'/treinamento/';\}","function voltaUrl(adm){return '../#tip';}",s,flags=re.S)
+s=s.replace("b.textContent=adm?'← Painel matriz':'← Painel inicial';b.title=adm?'Voltar para o painel matriz da FC':'Voltar para o painel inicial da empresa';","b.textContent='← Plataforma FC 3D';b.title='Voltar para as Tipologias da plataforma';")
+old="if(ALUNO||ESTUDO)iniciar();else gateUI(()=>{try{localStorage.setItem('fc_eu','1')}catch(_){}iniciar();},{soMatriz:true});"
+assert old in s
+s=s.replace(old,r"""if(ALUNO||ESTUDO)iniciar();else (function(){/* Plataforma FC 3D Clientes: entra com a sessão da plataforma */
+ const SP='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_sessao',SPK='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs',G=$('#gate');
+ const nega=(t,p)=>{G.hidden=false;G.innerHTML='<form><small>Plataforma FC 3D</small><h1>'+t+'</h1><p>'+p+'</p><a href="../" style="color:#0f6b70;font-weight:700">Ir para a Plataforma FC 3D</a></form>';};
+ let tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
+ if(!tk){nega('Entre na Plataforma FC 3D','O Orientativo abre pela plataforma, depois de entrar com o seu login.');return;}
+ fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})}).then(r=>r.ok?r.json():null)
+  .then(d=>{if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}if(!d.matriz){const g=$('#bGrav');if(g)g.hidden=true;}iniciar();})
+  .catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));})();""")
+s=s.replace('<small>FC Consultoria · Matriz</small>','<small>Plataforma FC 3D</small>')
+s=s.replace('<title>Esquadrias 3D · Passo a passo · FC Consultoria</title>','<title>Orientativo 3D · Plataforma FC 3D</title>')
+s=marcas(s)
+open(os.path.join(dst,'index.html'),'w',encoding='utf-8').write(s)
+for w in ['Suprema','SUPREMA','Alcoa','Gold','Claiton','Ladore','Belmetal','Perfileve']:
+    n=len(re.findall(r'\b'+w+r'\b',s))
+    if n:print('ainda tem',w,n)
+print('ok',dst)
