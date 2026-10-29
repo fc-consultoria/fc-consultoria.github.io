@@ -1,7 +1,7 @@
 /* Plataforma FC 3D · Como usar (tutorial guiado por painel)
    © FC Consultoria em Esquadria — criação da FC, uso exclusivo de empresas licenciadas.
    Cada painel tem o seu passo a passo, separado: cada pessoa vê só o guia do próprio painel.
-   Hoje: Colaborador (chave interna "vendedor"). Gestor, Portal do Cliente e Demonstrativo entram depois em GUIAS.
+   Hoje: Colaborador (chave interna "vendedor") e Gestor. Portal do Cliente e Demonstrativo entram depois em GUIAS.
    Ao mudar a tela, revise os passos do painel aqui. Passo cujo alvo não existe na tela é pulado sozinho. */
 (function(){
   if(window.PFCtut)return;
@@ -52,8 +52,37 @@
       {tab:'inicio',alvo:'#btAjuda',t:'Pronto!',
        x:'Sempre que precisar, toque em "?" para ver este guia de novo. Dúvidas: fale com o gestor da sua empresa ou com a FC (segunda a sexta, 8h às 11h e 13h às 17h).'}
     ]}
-    /* gestor:{nome:'Gestor',passos:[...]}, arquiteto:{...}, demo:{...} — próximos */
   };
+
+  /* ---------- GESTOR ----------
+     Mesmas telas do Colaborador + Gestão. Reaproveita os passos comuns (pc) e troca o que muda para o gestor. */
+  var C=GUIAS.vendedor.passos,pc=function(t){for(var k=0;k<C.length;k++)if(C[k].t===t)return C[k];};
+  var mais=function(o,n){var r={};for(var k in o)r[k]=o[k];for(k in n)r[k]=n[k];return r;};
+  GUIAS.gestor={nome:'Gestor',passos:[
+    {tab:'inicio',t:'Bem-vindo, gestor',
+     x:'Este é o painel do Gestor. Você tem tudo o que a equipe usa para apresentar as esquadrias ao cliente e, além disso, a área de Gestão. Vamos passar por cada parte. Leva uns 3 minutos.'},
+    mais(pc('Menu do painel'),{x:'Por aqui você troca de tela: Início, Tipologias, Ambientes, Apresentação e Gestão. Gestão só aparece para o gestor; a equipe não vê.'}),
+    pc('Atalhos rápidos'),
+    mais(pc('Cartões das ferramentas'),{x:'Cada cartão leva a uma ferramenta. O selo verde "Disponível" mostra o que já está pronto; "Em construção" é o que a FC ainda vai liberar.'}),
+    pc('Catálogo de Perfis'),
+    pc('Filtrar as tipologias'),
+    mais(pc('Orientativo de Montagem 3D'),{x:'É o estudo da equipe: módulos por assunto e a Prova final. Oriente cada colaborador a estudar os módulos antes de atender. Assim todos explicam a esquadria do mesmo jeito.'}),
+    pc('Entenda o desenho técnico'),
+    pc('Linhas Suprema e Gold'),
+    pc('Ficha da tipologia'),
+    pc('Fachadas'),
+    pc('Ambientes · Monte sua Casa'),
+    pc('Modo apresentação'),
+    mais(pc('Sempre é simulação'),{x:'Tudo na plataforma é apresentação e simulação. Medidas, pesos e cálculo final são confirmados no sistema de cálculo da empresa e com o fornecedor. Reforce isso com a equipe.'}),
+    {tab:'ges',alvo:'main .vazio',t:'Gestão',
+     x:'Aqui ficarão os acessos da equipe, o uso de cada pessoa (quem entrou e o que apresentou) e os dados da licença. Enquanto a área está em construção, para incluir, trocar ou tirar alguém da equipe, fale com a FC.'},
+    {tab:'inicio',t:'Guia da equipe',
+     x:'Cada colaborador tem o próprio guia "Como usar", que abre sozinho no primeiro acesso dele. Se alguém tiver dúvida, peça para tocar no "?" no topo da tela.'},
+    pc('Fundo claro ou escuro'),
+    pc('Sair'),
+    mais(pc('Pronto!'),{x:'Sempre que precisar, toque em "?" para ver este guia de novo. Dúvidas sobre a plataforma ou sobre a licença: fale com a FC (segunda a sexta, 8h às 11h e 13h às 17h).'})
+  ]};
+  /* arquiteto (Portal do Cliente) e demo (Demonstrativo): próximos */
 
   /* ============ ESTILO ============ */
   var css=document.createElement('style');
