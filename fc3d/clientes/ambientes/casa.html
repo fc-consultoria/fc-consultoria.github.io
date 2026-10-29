@@ -129,7 +129,7 @@ fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},b
     <div class="lg"><b>Monte sua Casa 3D</b><small>Plataforma FC 3D · esquadrias Suprema e Gold</small></div>
     <span class="sp"></span>
     <button type="button" id="bBairro">🏙 Bairro</button>
-    <a id="bVolta" class="pri" href="../#amb" style="display:inline-flex;align-items:center;text-decoration:none">← Plataforma</a><button type="button" id="bOp" hidden>Sua opinião</button>
+    <a id="bVolta" class="pri" href="../#amb" style="display:inline-flex;align-items:center;text-decoration:none">← Plataforma</a><button type="button" id="bOp" class="pri" hidden>Sua opinião</button>
   </div>
   <div class="stage" id="stage">
     <canvas id="cv" aria-label="Casa em 3D com as esquadrias"></canvas>
@@ -366,8 +366,8 @@ const TEL=[['plat','Platibanda'],['2ag','2 águas'],['4ag','4 águas']];
 
 /* ================= ESTADO ================= */
 let ST={vista:'bairro',carreira:false,selos:[],obras:{},m:0,linha:'sup',tel:'plat',corTel:COR.tel[0][1],corPar:COR.par[0][1],corDet:COR.det[0][1],corPerf:COR.perf[0][1],noite:false,aberto:false,sel:null,tab:'planta',vaos:null};
-const DEMO=false;
-const KEY='pfc_montecasa_v1';
+let DEMO=false;try{DEMO=localStorage.getItem('pfc-papel')==='demo';}catch(_){}
+const KEY=DEMO?'pfc_montecasa_demo':'pfc_montecasa_v1';
 try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&MODELOS[o.m])ST={...ST,...o,aberto:false,sel:null};}catch(_){}
 const cmDe=n=>{n=(n||'').toLowerCase();return /entrada/.test(n)?'Entrada':/(quarto|su[ií]te)/.test(n)?'Quarto':/(sala|living)/.test(n)?'Sala':/cozinha/.test(n)?'Cozinha':/banh/.test(n)?'Banheiro':'Outros';};
 MODELOS.forEach(m=>m.vaos.forEach(v=>{if(v.t!=='passagem'&&!v.cm)v.cm=cmDe(v.nome);}));
@@ -576,7 +576,7 @@ function montarBairro(){limparCena();sombra(70);
   avatarNaCena(true);aplicaNoite();chip();}
 const SO_ORIENT=['emL','predio'];
 const bloqueada=k=>(DEMO&&SO_ORIENT.includes(k))||ST.carreira&&ORDEM.indexOf(k)>0&&!ST.selos.includes(ORDEM[ORDEM.indexOf(k)-1]);
-const motivo=k=>DEMO&&SO_ORIENT.includes(k)?'disponível no FC Mostruário 3D completo':'termine a obra anterior';
+const motivo=k=>DEMO&&SO_ORIENT.includes(k)?'disponível no Plataforma FC 3D completa':'termine a obra anterior';
 function entrarObra(k){setTimeout(botoes,0);const i=MODELOS.findIndex(m=>m.k===k);if(i<0)return;if(bloqueada(k)){dica('🔒 Esta obra: '+motivo(k)+'.');return;}
   clearInterval(FILA_T);FILA_T=null;FILA=[];DETALHE.clear();andarOff();ST.vista='obra';ST.m=i;ST.vaos=ST.obras[k];ST.sel=null;ST.tab=MODELOS[i].predio||ST.carreira?'esq':'planta';montar();painel();vista('rua');salvar();}
 function irBairro(){setTimeout(botoes,0);clearInterval(FILA_T);FILA_T=null;FILA=[];andarOff();ST.vista='bairro';ST.sel=null;montar();painel();vistaBairro();salvar();}
@@ -752,7 +752,7 @@ function miniPlanta(cvs,M){const g=cvs.getContext('2d'),W=cvs.width=184,H=cvs.he
   g.strokeStyle='#8a8f93';g.lineWidth=1;g.strokeRect(ox,oy,LW*k,LD*k);}
 function painelBairro(){$('#tabs').innerHTML='<button type="button" role="tab" class="on" aria-selected="true">Bairro</button>';
   let h=`<div><h2>Bairro FC</h2><p class="nt">Uma avenida com praça, mercado, farmácia, posto e 4 obras para você fechar com esquadrias. Toque num lote ou passeie a pé pela rua.</p></div>
-  ${DEMO?`<div class="box"><h3>Demonstração</h3><p>Monte a <b>Compacta</b> e a <b>Térrea</b>. A Casa em L, o prédio de 12 apartamentos, o modo Carreira e a conta dos perfis da obra estão no <b>FC Mostruário 3D</b> completo.</p><a class="cta" href="${CTA()}" target="_blank" rel="noopener" style="display:block;margin-top:10px">Quero o Mostruário completo</a></div>`:''}
+  ${DEMO?`<div class="box"><h3>Demonstração</h3><p>Monte a <b>Compacta</b> e a <b>Térrea</b>. A Casa em L, o prédio de 12 apartamentos, o modo Carreira e a conta dos perfis da obra estão na <b>Plataforma FC 3D</b> completa.</p><a class="cta" href="${CTA()}" target="_blank" rel="noopener" style="display:block;margin-top:10px">Falar com a FC</a></div>`:''}
   <div ${DEMO?'hidden':''}><h3>Modo de jogo</h3><div class="seg"><button type="button" data-modo="livre" class="${!ST.carreira?'on':''}">Livre</button><button type="button" data-modo="carreira" class="${ST.carreira?'on':''}">Carreira</button></div>
   <p class="nt" style="margin-top:6px">${ST.carreira?'Comece pela Compacta. Cada obra fechada vira um selo 🏅 e libera a próxima, até o prédio.':'Escolha qualquer obra, na ordem que quiser.'}</p></div>
   <div class="lt">${ORDEM.map(k=>{const i=MODELOS.findIndex(m=>m.k===k),m=MODELOS[i],L=ST.obras[k].filter(v=>v.t!=='passagem'),f=L.filter(v=>v.t).length,bl=bloqueada(k),ok=ST.selos.includes(k);
@@ -790,7 +790,7 @@ function painel(){if(ST.vista==='bairro'){painelBairro();return;}abas();let h=''
       <label class="f">Altura<select id="sH">${hs.map(x=>`<option value="${x}" ${Math.abs(s.h-x)<.01?'selected':''}>${fmt(x)} m</option>`).join('')}</select></label></div>
       <div class="row2" style="margin-top:10px"><button type="button" class="cta alt" id="bPerto">Ver de perto</button><button type="button" class="cta alt" data-tab="perfis">Ver os perfis</button></div></div>`;}
     h+=`<div class="vl">${lista.map(v=>`<button type="button" class="vi ${ST.sel===v.k?'on':''}" data-vi="${v.k}"><i>${ICO[v.t].replace('<svg','<svg width="22" height="18"')}</i><span><b>${esc(v.nome)}</b><small>${TIPOS[v.t].n} · ${fmt(v.w)} × ${fmt(v.h)} m</small></span></button>`).join('')}</div>`;}
-  if(ST.tab==='perfis'&&DEMO){h+=`<div><h2>Perfis da obra</h2><p class="nt">Peso de alumínio, perfis e cortes de cada esquadria.</p></div><div class="box"><p>No <b>FC Mostruário 3D</b> completo você vê, para cada esquadria da obra, o código do perfil, a peça, a quantidade e o corte, e compara o peso da obra inteira em <b>Suprema</b> e <b>Gold</b>.</p><a class="cta" href="${CTA()}" target="_blank" rel="noopener" style="display:block;margin-top:10px">Quero o Mostruário completo</a></div><p class="nt">Medidas e pesos são demonstrativos: confirme sempre com o seu fornecedor.</p>`;}
+  if(ST.tab==='perfis'&&DEMO){h+=`<div><h2>Perfis da obra</h2><p class="nt">Peso de alumínio, perfis e cortes de cada esquadria.</p></div><div class="box"><p>Na <b>Plataforma FC 3D</b> completa você vê, para cada esquadria da obra, o código do perfil, a peça, a quantidade e o corte, e compara o peso da obra inteira em <b>Suprema</b> e <b>Gold</b>.</p><a class="cta" href="${CTA()}" target="_blank" rel="noopener" style="display:block;margin-top:10px">Falar com a FC</a></div><p class="nt">Medidas e pesos são demonstrativos: confirme sempre com o seu fornecedor.</p>`;}
   else if(ST.tab==='perfis'){const kS=kgObra('sup'),kG=kgObra('gold');
     h+=`<div><h2>Perfis da obra</h2><p class="nt">Peso de alumínio das esquadrias desta obra (sem contramarco).</p></div>
     <div class="cmp"><div><span>Suprema</span><b>${fmt(kS,1)} kg</b></div><div><span>Gold</span><b>${fmt(kG,1)} kg</b></div><div><span>Diferença</span><b>${kS?'+'+Math.round((kG/kS-1)*100)+'%':'—'}</b></div></div>`;
@@ -862,10 +862,10 @@ function abrirOp(){$('#stars').innerHTML=[1,2,3,4,5].map(n=>`<button type="butto
   $('#chips').innerHTML=GOSTOS.map(g=>`<button type="button" class="${GOST.has(g)?'on':''}">${g}</button>`).join('');$('#opMsg').hidden=true;$('#md').hidden=false;}
 function checaOpiniao(){return;let ja=false;try{ja=!!localStorage.getItem(KOP);}catch(_){}if(ja||!$('#md').hidden)return;if(INTER>=6&&Date.now()-T0>60000){try{localStorage.setItem(KOP,'perguntado');}catch(_){}abrirOp();}}
 setInterval(checaOpiniao,15000);
-function CTA(){return 'https://wa.me/5566999867984?text='+encodeURIComponent('Olá! Testei o Monte sua Casa 3D no site da FC e quero conhecer o FC Mostruário 3D para a minha vidraçaria.');}
-if(DEMO){const b=$('#bOp');b.textContent='Quero o Mostruário 3D';b.onclick=()=>{try{parent!==window&&parent.postMessage({fc:'cta'},'*');}catch(_){}window.open(CTA(),'_blank','noopener');};
+function CTA(){return 'https://wa.me/5566999867984?text='+encodeURIComponent('Olá, FC! Testei o demonstrativo da Plataforma FC 3D e quero conhecer os planos.');}
+if(DEMO){const b=$('#bOp');b.hidden=false;b.textContent='Falar com a FC';b.onclick=()=>{try{parent!==window&&parent.postMessage({fc:'cta'},'*');}catch(_){}window.open(CTA(),'_blank','noopener');};
   $('.top .lg small').textContent='Demonstração grátis · FC Consultoria em Esquadria';
-  setTimeout(()=>{if(INTER>=4)dica('Gostou? A versão completa está no FC Mostruário 3D: toque em “Quero o Mostruário 3D”.');},90000);}
+  setTimeout(()=>{if(INTER>=4)dica('Gostou? A versão completa está na Plataforma FC 3D: toque em “Falar com a FC”.');},90000);}
 else $('#bOp').onclick=abrirOp;
 $('#stars').addEventListener('click',e=>{const b=e.target.closest('[data-n]');if(!b)return;NOTA=+b.dataset.n;document.querySelectorAll('#stars button').forEach(x=>x.classList.toggle('on',+x.dataset.n<=NOTA));});
 $('#chips').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const t=b.textContent;GOST.has(t)?GOST.delete(t):GOST.add(t);b.classList.toggle('on');});

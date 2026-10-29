@@ -63,6 +63,9 @@ input.in:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:tra
 .ent-alt button{all:unset;cursor:pointer;color:var(--teal);font-weight:600}
 .ent-zap{margin-top:26px;padding:14px;border-radius:12px;background:var(--panel);border:1px solid var(--line);font-size:13.5px}
 .ent-zap a{color:var(--teal);font-weight:600}
+.demo-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 18px;padding:11px 14px;border-radius:12px;background:var(--soft);border:1px solid var(--line);font-size:13.5px}
+.demo-bar b{color:var(--teal)}.demo-bar .sp{flex:1}
+.demo-fim{margin-top:14px;padding:12px;border-radius:12px;background:var(--soft);font-size:13.5px}
 
 /* ---------- app ---------- */
 #app{min-height:100vh;display:flex;flex-direction:column}
@@ -197,6 +200,19 @@ a.card.tip{text-decoration:none;color:inherit}
       </div>
       <div class="ent-zap">Ainda não tem acesso? <a id="zapEnt" target="_blank" rel="noopener">Fale com a FC pelo WhatsApp</a> e conheça a Plataforma FC 3D.</div>
     </form>
+    <form class="ent-card" id="demoForm" autocomplete="on" hidden>
+      <h2>Demonstrativo grátis</h2>
+      <p class="sub mute">Conheça a Plataforma FC 3D por <b id="demoDias">3 dias</b>, no celular, no notebook ou na TV.</p>
+      <label class="f" for="dNome">Seu nome</label><input class="in" id="dNome" name="name" autocomplete="name" maxlength="80">
+      <label class="f" for="dEmp">Empresa</label><input class="in" id="dEmp" name="organization" autocomplete="organization" maxlength="100">
+      <label class="f" for="dCid">Cidade</label><input class="in" id="dCid" name="city" autocomplete="address-level2" maxlength="80">
+      <label class="f" for="dZap">WhatsApp com DDD</label><input class="in" id="dZap" name="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="(66) 9 9999-9999" maxlength="20">
+      <div id="demoMsg" role="alert" style="min-height:22px;font-size:13.5px;color:#b3401a;margin:-4px 0 10px"></div>
+      <button class="btn pri" style="width:100%" id="demoBt">Começar o demonstrativo</button>
+      <p class="mute" style="font-size:12.5px;margin-top:10px">Já entrou antes? Use o mesmo WhatsApp para continuar em outro aparelho. Os dados servem só para a FC Consultoria falar com você.</p>
+      <div class="demo-fim" id="demoFim" hidden></div>
+      <div class="ent-alt"><span class="mute">Já é cliente?</span><button type="button" id="demoTroca">Entrar com login</button></div>
+    </form>
   </div>
 </section>
 
@@ -240,13 +256,13 @@ $('#btTema').onclick=()=>{const atual=document.documentElement.getAttribute('dat
 
 /* ---------- conteúdo ---------- */
 /* nomes na tela (as chaves internas continuam gestor, vendedor e arquiteto) */
-const PAPEIS={gestor:'Gestor',vendedor:'Colaborador',arquiteto:'Portal do Cliente',fc:'FC Consultoria'};
+const PAPEIS={gestor:'Gestor',vendedor:'Colaborador',arquiteto:'Portal do Cliente',fc:'FC Consultoria',demo:'Demonstrativo'};
 const SETORES={gestor:'Gestor',compras:'Compras',vendas:'Vendas (Comercial)',estoque:'Estoque',fabrica:'Fábrica',gerente:'Gerente comercial',marketing:'Marketing'};
 const MENU=[
-  {k:'inicio',n:'Início',i:'⌂',p:['gestor','vendedor','arquiteto']},
-  {k:'tip',n:'Tipologias',i:'▦',p:['gestor','vendedor','arquiteto']},
-  {k:'amb',n:'Ambientes',i:'◫',p:['gestor','vendedor']},
-  {k:'apr',n:'Apresentação',i:'▶',p:['gestor','vendedor','arquiteto']},
+  {k:'inicio',n:'Início',i:'⌂',p:['gestor','vendedor','arquiteto','demo']},
+  {k:'tip',n:'Tipologias',i:'▦',p:['gestor','vendedor','arquiteto','demo']},
+  {k:'amb',n:'Ambientes',i:'◫',p:['gestor','vendedor','demo']},
+  {k:'apr',n:'Apresentação',i:'▶',p:['gestor','vendedor','arquiteto','demo']},
   {k:'ges',n:'Gestão',i:'⚙',p:['gestor']}];
 /* Etapas de construção da plataforma (a etapa 1 está pronta) */
 const ETAPAS=[['1','Estrutura','Entrada, painel e menu'],['2','Tipologias 3D','Modelos de mercado'],['3','Ambiente residência','Montar a casa'],['4','Modo apresentação','TV e telão'],['5','Equipe','Orientativo 3D'],['6','Gestão','Acessos e contrato']];
@@ -340,10 +356,33 @@ $('#entForm').addEventListener('submit',async e=>{
   finally{bt.disabled=false;bt.textContent='Entrar';}
 });
 
+/* ---------- demonstrativo (link único: ?demo=1 ou /demo/) ---------- */
+const ZAPDEMO='https://wa.me/5566999867984?text='+encodeURIComponent('Olá, FC! Testei o demonstrativo da Plataforma FC 3D e quero conhecer os planos.');
+let modoDemo=/[?&]demo=1/.test(location.search);
+function formDemo(on){modoDemo=on;$('#entForm').hidden=on;$('#demoForm').hidden=!on;}
+$('#demoTroca').onclick=()=>formDemo(false);
+function demoFim(t){const f=$('#demoFim');f.hidden=false;f.innerHTML=h(t)+`<br><a class="btn pri" style="margin-top:10px;display:inline-block" href="${ZAPDEMO}" target="_blank" rel="noopener">Falar com a FC no WhatsApp</a>`;}
+$('#demoForm').addEventListener('submit',async e=>{
+  e.preventDefault();const bt=$('#demoBt'),msg=$('#demoMsg');msg.textContent='';$('#demoFim').hidden=true;
+  const v=k=>$(k).value.trim();
+  if(v('#dNome').length<2){msg.textContent='Informe o seu nome.';return;}
+  if(v('#dEmp').length<2){msg.textContent='Informe a empresa.';return;}
+  if(v('#dZap').replace(/\D/g,'').length<10){msg.textContent='Informe o WhatsApp com DDD.';return;}
+  bt.disabled=true;bt.textContent='Abrindo…';
+  try{const r=await rpc('pfc_demo_entrar',{p_nome:v('#dNome'),p_empresa:v('#dEmp'),p_cidade:v('#dCid'),p_whats:v('#dZap')});
+    if(r.erro){if(r.fim)demoFim(r.erro);else msg.textContent=r.erro;return;}
+    ls.set(TK,r.token);history.replaceState(null,'',location.pathname);await abrir(r.token);
+  }catch(err){msg.textContent='Não foi possível abrir agora. Confira a internet e tente de novo.';}
+  finally{bt.disabled=false;bt.textContent='Começar o demonstrativo';}
+});
+function faltaDemo(){if(!S||!S.demo)return '';const ms=new Date(S.expira)-Date.now();if(ms<=0)return 'termina agora';const hs=Math.floor(ms/36e5),d=Math.floor(hs/24),r=hs%24;
+  return 'termina em '+(d?d+(d>1?' dias':' dia')+(r?' e '+r+' h':''):Math.max(1,hs)+' h');}
+const barraDemo=()=>S&&S.demo?`<div class="demo-bar"><span><b>Demonstrativo</b> · ${faltaDemo()}</span><span class="sp"></span><span class="mute">Gostou? Conheça os planos para a sua equipe.</span><a class="btn pri" href="${ZAPDEMO}" target="_blank" rel="noopener">Falar com a FC</a></div>`:'';
 const escH=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function abrir(token){
   try{S=await rpc('pfc_sessao',{p_token:token});S.token=token;}
-  catch(err){ls.del(TK);S=null;mostrarEntrada(err.message&&/pausad/i.test(err.message)?err.message:'');return;}
+  catch(err){ls.del(TK);ls.del('pfc-papel');S=null;const m=err.message||'';if(/demonstrativo/i.test(m)){formDemo(true);mostrarEntrada('');demoFim(m);return;}mostrarEntrada(/pausad/i.test(m)?m:'');return;}
+  if(S.demo)ls.set('pfc-papel','demo');else ls.del('pfc-papel');
   $('#entrada').hidden=true;$('#app').hidden=false;
   const dentro=S.matriz&&S.empresa;
   $('#empNome').innerHTML=S.matriz&&!dentro?'Visão da FC Consultoria':escH(S.empresa_nome)+(dentro?'<span class="mestre" title="Você está dentro desta empresa como FC Consultoria">FC · gestor mestre</span>':'');
@@ -358,12 +397,12 @@ async function abrir(token){
   }
   $('#euNome').textContent=S.nome;
   const vc=$('#verComo');vc.hidden=!S.matriz;
-  if(S.matriz){vc.innerHTML=['gestor','vendedor','arquiteto'].map(p=>`<button type="button" data-ver="${p}" aria-pressed="${papel()===p}">${PAPEIS[p]}</button>`).join('');
+  if(S.matriz){vc.innerHTML=['gestor','vendedor','arquiteto','demo'].map(p=>`<button type="button" data-ver="${p}" aria-pressed="${papel()===p}">${PAPEIS[p]}</button>`).join('');
     vc.querySelectorAll('[data-ver]').forEach(b=>b.onclick=()=>{papelVer=b.dataset.ver;vc.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));if(!itens().some(m=>m.k===tab))tab='inicio';render();});}
   render();
 }
-function mostrarEntrada(m){$('#app').hidden=true;$('#entrada').hidden=false;$('#entMsg').textContent=m||'';}
-$('#btSair').onclick=async()=>{const t=S&&S.token;S=null;ls.del(TK);try{if(t)await rpc('pfc_sair',{p_token:t});}catch(_){}mostrarEntrada('');};
+function mostrarEntrada(m){$('#app').hidden=true;$('#entrada').hidden=false;$('#entMsg').textContent=m||'';formDemo(modoDemo);}
+$('#btSair').onclick=async()=>{const t=S&&S.token;S=null;ls.del(TK);ls.del('pfc-papel');try{if(t)await rpc('pfc_sair',{p_token:t});}catch(_){}mostrarEntrada('');};
 
 /* ---------- telas ---------- */
 const itens=()=>MENU.filter(m=>m.p.includes(papel()));
@@ -372,21 +411,21 @@ function render(){
   $('#euPapel').textContent=S.matriz?'vendo como '+PAPEIS[papel()]:(S.setor&&S.setor!=='gestor'?(SETORES[S.setor]||S.setor):(PAPEIS[S.papel]||S.papel));
   $('#menu').innerHTML=itens().map(m=>`<button type="button" data-tab="${m.k}" ${m.k===tab?'aria-current="page"':''}><span aria-hidden="true">${m.i}</span>${m.n}</button>`).join('');
   $('#menu').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();scrollTo(0,0);});
-  $('#tela').innerHTML=({inicio:telaInicio,tip:telaTip,amb:telaAmb,apr:telaApr,ges:telaGes}[tab]||telaInicio)();
+  $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaAmb,apr:telaApr,ges:telaGes}[tab]||telaInicio)();
   ligar();
 }
 const vaiPara=k=>{tab=k;render();scrollTo(0,0);};
 
 function telaInicio(){
   const p=papel(),nome=S.matriz?'FC':(S.nome||'').split(' ')[0];
-  const txt={gestor:'Acompanhe a equipe e use a plataforma para apresentar as esquadrias aos seus clientes.',vendedor:'Escolha a tipologia, monte o ambiente e apresente ao seu cliente em 3D.',arquiteto:'Veja os projetos, as plantas e as esquadrias preparadas para a sua obra.'}[p];
+  const txt={gestor:'Acompanhe a equipe e use a plataforma para apresentar as esquadrias aos seus clientes.',vendedor:'Escolha a tipologia, monte o ambiente e apresente ao seu cliente em 3D.',arquiteto:'Veja os projetos, as plantas e as esquadrias preparadas para a sua obra.',demo:'Conheça a plataforma: abra as tipologias em 3D, veja o desenho técnico e monte uma casa com as esquadrias.'}[p];
   const mods=itens().filter(m=>m.k!=='inicio');
   const desc={tip:'Janelas, portas e fachadas em 3D, com desenho técnico e o Orientativo da equipe.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ges:'Acessos da equipe, licença e contrato da empresa.'};
   return `<div class="hero"><div><h2>Olá, ${h(nome)}!</h2><p>${txt}</p></div><div class="bts"><button class="btn cl" data-ir="tip">Ver tipologias</button>${p!=='arquiteto'?'<button class="btn sec" style="border-color:rgba(255,255,255,.4);color:#fff" data-ir="apr">Modo apresentação</button>':''}</div></div>
   <div class="grid">${mods.map(m=>`<button class="card" data-ir="${m.k}"><span class="ic" aria-hidden="true">${m.i}</span><h3>${m.n}</h3><span class="d">${desc[m.k]}</span><span class="pe">${m.k==='tip'||m.k==='apr'||m.k==='amb'?'<span class="chip o">Disponível</span>':'<span class="chip a">Em construção</span>'}</span></button>`).join('')}</div>
   ${S.matriz?`<div style="margin:18px 0 6px"><a class="btn pri" href="empresas/">👥 Empresas e acessos</a> <span class="mute" style="margin-left:8px">cadastro das empresas, pessoas, licença e mensagem para o WhatsApp · só a FC vê</span></div>`:''}${S.matriz?`<div class="linha-tit"><h3>Etapas da plataforma</h3><span class="chip t">só a FC vê</span></div><div class="etapas">${ETAPAS.map(([n,t,d])=>`<div class="etp ${n==='1'?'on':''}"><span class="chip ${n==='1'?'o':''}">${n==='1'?'Pronta':'Etapa '+n}</span><b>${t}</b><span class="mute">${d}</span></div>`).join('')}</div>`:''}`;
 }
-function faixaOri(){if(papel()==='arquiteto')return '';let F=[];try{F=JSON.parse(localStorage.getItem('fc_esq_feito'))||[]}catch(_){}
+function faixaOri(){if(papel()==='arquiteto')return '';if(papel()==='demo')return `<div class="demo-bar"><span><b>📘 Orientativo de Montagem 3D</b> · módulos de estudo e prova final para a equipe aprender cada tipologia.</span><span class="sp"></span><span class="chip a">Na versão completa</span></div>`;let F=[];try{F=JSON.parse(localStorage.getItem('fc_esq_feito'))||[]}catch(_){}
   const M=[['cat','Catálogo de Perfis'],['tip','Tipologias'],['cm','Contramarco'],['gua','Guarnições'],['max','Maxim-Ar'],['cor','Janelas de Correr'],['pad','Perfis e Componentes Padrão'],['giro','Porta de Giro'],['div','Perfis Diversos'],['per','Porta com Persiana']],n=M.filter(m=>F.includes(m[0])).length,prox=(M.find(m=>!F.includes(m[0]))||M[0])[0];
   return `<div class="ori"><div class="ori-tx"><b>📘 Orientativo de Montagem 3D</b><span class="mute">${n} de ${M.length} módulos estudados · toque no assunto para abrir só aquele módulo</span><i class="ori-bar"><s style="width:${n/M.length*100}%"></s></i></div>
    <div class="ori-bt"><a class="btn sec" href="orientativo/?foco=1#quiz">✓ Prova final</a></div>
@@ -415,7 +454,7 @@ function telaTip(){
 `;
 }
 const emBreve=(ic,tit,txt,itens)=>`<div class="vazio"><div class="ic">${ic}</div><h3>${tit}</h3><p class="mute" style="max-width:56ch;margin:0 auto">${txt}</p>${itens?`<div class="grid" style="margin-top:18px;text-align:left">${itens.map(([i,n,d])=>`<div class="card"><span class="ic">${i}</span><h3>${n}</h3><span class="d">${d}</span><span class="pe"><span class="chip a">Em construção</span></span></div>`).join('')}</div>`:''}</div>`;
-function telaAmb(){const casa=`<a class="card" href="ambientes/casa.html"><span class="ic">⌂</span><h3>Residência · Monte sua Casa</h3><span class="d">Bairro com casas e prédio: coloque as esquadrias Suprema ou Gold na planta, troque telhado, paredes e cor dos perfis, passeie pela casa e veja os perfis da obra (peso de alumínio, peças e cortes).</span><span class="pe"><span class="chip o">Disponível</span></span></a>`;
+function telaAmb(){const casa=`<a class="card" href="ambientes/casa.html"><span class="ic">⌂</span><h3>Residência · Monte sua Casa</h3><span class="d">${papel()==='demo'?'Coloque as esquadrias Suprema ou Gold na planta, troque telhado, paredes e cor dos perfis e passeie pela casa. Casa em L, prédio e Perfis da obra ficam na versão completa.':'Bairro com casas e prédio: coloque as esquadrias Suprema ou Gold na planta, troque telhado, paredes e cor dos perfis, passeie pela casa e veja os perfis da obra (peso de alumínio, peças e cortes).'}</span><span class="pe"><span class="chip o">Disponível</span></span></a>`;
  const prox=[['▤','Apartamento e varanda','Fechamento de varanda e janelas de apartamento.'],['▣','Comercial','Fachadas e vitrines de lojas e escritórios.'],['✎','Obra do cliente','A planta da obra do cliente, liberada a pedido.']];
  return `<div class="cab"><div><h2>Ambientes</h2><p class="mute">Monte a obra do seu cliente com as esquadrias escolhidas.</p></div></div>
   <div class="grid">${casa}${prox.map(([i,n,d])=>`<div class="card"><span class="ic">${i}</span><h3>${n}</h3><span class="d">${d}</span><span class="pe"><span class="chip a">Em construção</span></span></div>`).join('')}</div>
@@ -441,7 +480,7 @@ function detalhe(id){
    ${t.tec?`<a class="btn pri" href="${t.tec}">📐 Desenho técnico interativo</a>`:''}
    ${t.obra?`<a class="btn pri" href="${OBRA(t.obra)}" target="_blank" rel="noopener">Abrir em 3D com as medidas da obra</a>`:''}
    ${!t.m3d&&!t.obra&&!t.mo?'<button class="btn sec" disabled title="Chega nas próximas etapas">Ver em 3D · em breve</button>':''}
-   ${papel()!=='arquiteto'&&t.est?`<a class="btn sec" href="orientativo/?foco=1#${t.est}">📘 Estudar no Orientativo</a>`:''}
+   ${papel()!=='arquiteto'&&papel()!=='demo'&&t.est?`<a class="btn sec" href="orientativo/?foco=1#${t.est}">📘 Estudar no Orientativo</a>`:''}
    <p class="aviso">Desenho esquemático, sem escala. Medidas, pesos e acabamentos devem ser confirmados com o fornecedor da empresa.</p>
    <button class="btn sec" id="detFecha">Fechar</button></div></div>`;
   d.hidden=false;$('#detFecha').focus();
