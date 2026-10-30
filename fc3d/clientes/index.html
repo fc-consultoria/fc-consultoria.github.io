@@ -66,6 +66,11 @@ input.in:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:tra
 .ent-alt button{all:unset;cursor:pointer;color:var(--teal);font-weight:600}
 .ent-zap{margin-top:26px;padding:14px;border-radius:12px;background:var(--panel);border:1px solid var(--line);font-size:13.5px}
 .ent-zap a{color:var(--teal);font-weight:600}
+.ent-cad{margin-top:14px;width:100%;justify-content:center}
+.cad-esc{display:flex;flex-direction:column;gap:8px;margin:-4px 0 12px}
+.cad-esc button{text-align:left}
+.cad-emp{margin:-6px 0 14px;padding:10px 12px;border-radius:10px;background:var(--soft);font-size:14px}
+.cad-emp a{color:var(--teal);font-weight:600;cursor:pointer;margin-left:6px}
 .demo-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 18px;padding:11px 14px;border-radius:12px;background:var(--soft);border:1px solid var(--line);font-size:13.5px}
 .demo-bar b{color:var(--teal)}.demo-bar .sp{flex:1}
 .demo-fim{margin-top:14px;padding:12px;border-radius:12px;background:var(--soft);font-size:13.5px}
@@ -223,7 +228,24 @@ a.card:hover{border-color:var(--teal);transform:translateY(-1px)}
         <span class="mute">Esqueceu a senha? Fale com a FC.</span>
         <button type="button" id="entTroca">Acesso FC</button>
       </div>
+      <button type="button" class="btn ent-cad" id="entCad">Primeiro acesso da equipe? Faça seu cadastro</button>
       <div class="ent-zap">Ainda não tem acesso? <a id="zapEnt" target="_blank" rel="noopener">Fale com a FC pelo WhatsApp</a> e conheça a Plataforma FC 3D.</div>
+    </form>
+    <form class="ent-card" id="cadForm" autocomplete="on" hidden>
+      <h2>Primeiro acesso</h2>
+      <p class="sub mute">Para colaboradores das empresas clientes da FC. Faça o cadastro uma vez; a FC libera e você entra com o seu telefone e senha.</p>
+      <div id="cadEmpBox">
+        <label class="f" for="cEmp">Nome da sua empresa</label><input class="in" id="cEmp" autocomplete="organization" maxlength="60" placeholder="Ex.: Guaporé Sinop">
+        <div class="cad-esc" id="cadEsc" hidden></div>
+      </div>
+      <div class="cad-emp" id="cadEmpOk" hidden></div>
+      <label class="f" for="cNome">Seu nome completo</label><input class="in" id="cNome" name="name" autocomplete="name" maxlength="80">
+      <label class="f" for="cTel">Telefone com DDD</label><input class="in" id="cTel" name="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="(66) 9 9999-9999" maxlength="20">
+      <label class="f" for="cSen">Crie uma senha</label><input class="in" id="cSen" name="new-password" type="password" autocomplete="new-password" placeholder="mínimo 4 caracteres">
+      <div id="cadMsg" role="alert" style="min-height:22px;font-size:13.5px;color:#b3401a;margin:-4px 0 10px"></div>
+      <button class="btn pri" style="width:100%" id="cadBt">Enviar cadastro</button>
+      <div class="demo-fim" id="cadFim" hidden></div>
+      <div class="ent-alt"><span class="mute">Já tem cadastro?</span><button type="button" id="cadTroca">Entrar com login</button></div>
     </form>
     <form class="ent-card" id="demoForm" autocomplete="on" hidden>
       <h2>Demonstrativo grátis</h2>
@@ -445,10 +467,61 @@ $('#entForm').addEventListener('submit',async e=>{
   finally{bt.disabled=false;bt.textContent='Entrar';}
 });
 
+
+/* ---------- primeiro acesso da equipe (cadastro na Central do Cliente; a FC libera e o acesso chega aqui) ---------- */
+const CEN_URL='https://cpkjphodruyxfouirhpd.supabase.co',CEN_KEY='sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg';
+async function cen(fn,args){const r=await fetch(CEN_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'Content-Type':'application/json',apikey:CEN_KEY,Authorization:'Bearer '+CEN_KEY},body:JSON.stringify(args)});if(!r.ok)throw new Error('rede');return r.json();}
+const EMP_ALIAS={gs:'gs','guapore-sinop':'gs',gb:'gb','guapore-vidros':'gb',cde:'cde',cb:'cb','casa-bandeirante':'cb'};
+const norm=t=>String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+let cadEmp=null;
+function empDoTexto(t){const n=norm(t);if(!n.trim())return null;
+  if(/guapor/.test(n)&&/sinop/.test(n))return 'gs';
+  if(/guapor/.test(n)&&/(cuiaba|vidros)/.test(n))return 'gb';
+  if(/guapor/.test(n))return '?guapore';
+  if(/\bcde\b|espelho/.test(n))return 'cde';
+  if(/bandeirante/.test(n))return 'cb';
+  return '';}
+async function fixarEmp(k){const msg=$('#cadMsg');msg.textContent='';$('#cadEsc').hidden=true;
+  try{const inf=await cen('emp_info',{p_emp:k});if(!inf||!inf.nome){msg.textContent='Empresa não encontrada. Confira com o gestor da sua empresa.';return false;}
+    if(!inf.autocad){msg.textContent='Na '+inf.nome+' quem faz o cadastro da equipe é a FC. Fale com o gestor da sua empresa.';return false;}
+    cadEmp={id:k,nome:inf.nome};$('#cadEmpBox').hidden=true;const b=$('#cadEmpOk');b.hidden=false;
+    b.innerHTML='Empresa: <b>'+h(inf.nome)+'</b>'+(FIXO?'':'<a id="cadEmpTroca">trocar</a>');
+    const tr=$('#cadEmpTroca');if(tr)tr.onclick=()=>{cadEmp=null;b.hidden=true;$('#cadEmpBox').hidden=false;$('#cEmp').focus();};
+    return true;}catch(_){msg.textContent='Não foi possível carregar. Confira a internet e tente de novo.';return false;}}
+function escolhaGuapore(){const box=$('#cadEsc');box.hidden=false;
+  box.innerHTML='<span class="mute" style="font-size:13px">Qual unidade?</span><button type="button" class="btn" data-ce="gb">Guaporé Vidros · Cuiabá</button><button type="button" class="btn" data-ce="gs">Guaporé Sinop</button>';
+  box.querySelectorAll('[data-ce]').forEach(b=>b.onclick=()=>fixarEmp(b.dataset.ce).then(ok=>{if(ok)$('#cNome').focus();}));}
+$('#cEmp').addEventListener('change',()=>{const k=empDoTexto($('#cEmp').value);if(k==='?guapore')escolhaGuapore();else if(k)fixarEmp(k);});
+const FIXO=EMP_ALIAS[(new URLSearchParams(location.search).get('e')||'').toLowerCase()]||null;
+function formCad(on){$('#liAmb').hidden=on;$('#entForm').hidden=on;$('#demoForm').hidden=true;$('#cadForm').hidden=!on;
+  if(on){if(FIXO&&!cadEmp)fixarEmp(FIXO);setTimeout(()=>(cadEmp?$('#cNome'):$('#cEmp')).focus(),50);}}
+$('#entCad').onclick=()=>formCad(true);
+$('#cadTroca').onclick=()=>formCad(false);
+$('#cadForm').addEventListener('submit',async e=>{e.preventDefault();const msg=$('#cadMsg'),bt=$('#cadBt');msg.textContent='';
+  if(!cadEmp){const k=empDoTexto($('#cEmp').value);if(k==='?guapore'){escolhaGuapore();msg.textContent='Escolha a unidade da Guaporé.';return;}
+    if(!k){msg.textContent=$('#cEmp').value.trim()?'Não encontramos essa empresa. Confira o nome com o gestor ou fale com a FC.':'Informe o nome da sua empresa.';return;}
+    if(!await fixarEmp(k))return;}
+  const n=$('#cNome').value.trim(),t=$('#cTel').value,sn=$('#cSen').value;
+  if(n.length<3){msg.textContent='Informe seu nome completo.';return;}
+  if(t.replace(/\D/g,'').length<10){msg.textContent='Informe o telefone com DDD.';return;}
+  if(sn.length<4){msg.textContent='A senha precisa ter pelo menos 4 caracteres.';return;}
+  bt.disabled=true;bt.textContent='Enviando…';
+  try{const r=await cen('emp_autocadastro',{p_emp:cadEmp.id,p_nome:n,p_tel:t,p_senha:sn,p_ua:navigator.userAgent});
+    if(r&&r.ok){bt.hidden=true;{const tr=$('#cadEmpTroca');if(tr)tr.remove();}['#cNome','#cTel','#cSen'].forEach(s=>$(s).disabled=true);const f=$('#cadFim');f.hidden=false;
+      f.innerHTML='<b>Cadastro enviado!</b><br>A FC vai liberar o seu acesso na <b>'+h(cadEmp.nome)+'</b>. Depois é só entrar aqui com o telefone <b>'+h(t)+'</b> e a senha que você criou.<br><button type="button" class="btn pri" style="margin-top:10px" id="cadIrEnt">Ir para o login</button>';
+      $('#cadIrEnt').onclick=()=>{formCad(false);$('#inLogin').value=t.replace(/\D/g,'');$('#inCod').focus();};return;}
+    const M={pendente:'Este telefone já tem um cadastro aguardando liberação. Aguarde o aviso da FC.',existe:'Este telefone já tem acesso. Volte e entre com o seu telefone e senha.',
+      telefone:'Telefone inválido. Use o DDD e o número, por exemplo (66) 9 9999-9999.',nome:'Informe seu nome completo.',senha:'A senha precisa ter pelo menos 4 caracteres.',
+      limite:'Muitos cadastros em pouco tempo. Tente de novo mais tarde.',fechado:'O cadastro dessa empresa está fechado. Fale com a FC Consultoria.'};
+    msg.textContent=M[r&&r.erro]||'Não foi possível enviar. Tente de novo.';
+  }catch(_){msg.textContent='Não foi possível enviar agora. Confira a internet e tente de novo.';}
+  finally{bt.disabled=false;bt.textContent='Enviar cadastro';}
+});
+
 /* ---------- demonstrativo (link único: ?demo=1 ou /demo/) ---------- */
 const ZAPDEMO='https://wa.me/5566999867984?text='+encodeURIComponent('Olá, FC! Testei o demonstrativo da Plataforma FC 3D e quero conhecer os planos.');
 let modoDemo=/[?&]demo=1/.test(location.search);
-function formDemo(on){modoDemo=on;$('#liAmb').hidden=on;$('#entForm').hidden=on;$('#demoForm').hidden=!on;}
+function formDemo(on){modoDemo=on;$('#liAmb').hidden=on;$('#entForm').hidden=on;$('#demoForm').hidden=!on;const cf=$('#cadForm');if(cf)cf.hidden=true;}
 $('#demoTroca').onclick=()=>formDemo(false);
 function demoFim(t){const f=$('#demoFim');f.hidden=false;f.innerHTML=h(t)+`<br><a class="btn pri" style="margin-top:10px;display:inline-block" href="${ZAPDEMO}" target="_blank" rel="noopener">Falar com a FC no WhatsApp</a>`;}
 const PEDK='pfc-demo-pedido';let espT=null;
