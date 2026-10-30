@@ -33,14 +33,26 @@ function base(q){q=String(q||'').trim().toUpperCase().replace(/\s+/g,'');if(!q)r
 const cod=c=>{const e=st.it[c];const cc=e&&(e.cg||e.c);return cc&&cc!==c?cc:c;};
 function lin(c,tag,mat,b){const p=F(c);if(!p)return '';const img=p.img||IMG+(p.d3?p.i:'c'+p.i)+'.webp',peso=num(p.p);
  return `<div class="fsr"><button type="button" class="fsrow" data-fspick="${esc(cod(c))}" data-fsbase="${esc(c)}" title="Ver no catálogo"><img loading="lazy" src="${img}" alt=""><div><small>${esc(tag)}</small><b>${esc(cod(c))}</b><small>${esc(p.n)}</small>${Array.isArray(p.d)?`<small>📐 ${mm(p.d[0])} × ${mm(p.d[1])} mm</small>`:''}</div><div class="w">${peso!=null?kg(peso)+'<small> kg/m</small>':''}</div></button>
- <div class="fsm"><span class="fst">sob consulta</span></div></div>`;}
+ <div class="fsm">${mat&&b?bts(b,c,mat):''}<span class="fst">sob consulta</span></div></div>`;}
+/* Acesso FC: aprovar, deixar pendente (oculto) ou recusar cada substituição */
+function bts(b,c,k){const B=(s,t,ti)=>`<button type="button" data-fsap="${esc(b)}|${esc(c)}|${s}" title="${ti}">${t}</button>`;
+ if(k==='ok')return B('pend','⏳ Pendente','Ocultar da equipe até aprovar de novo')+B('','✕ Remover','Tirar a indicação');
+ if(k==='pend')return B('ok','✓ Aprovar','Mostrar para a equipe como indicação')+B('nao','✕ Recusar','Não sugerir mais');
+ return B('ok','✓ Aprovar','Mostrar para a equipe como indicação')+B('pend','⏳ Pendente','Guardar oculto para decidir depois')+B('nao','✕ Não serve','Não sugerir mais');}
+function pendTodas(){const L=st.ap.filter(x=>x.st==='pend'&&F(x.b)&&F(x.s));
+ if(!L.length)return '<p class="fsn">Nenhuma substituição pendente de aprovação.</p>';
+ return `<h4>⏳ Pendentes de aprovação (${L.length})</h4>`+L.map(x=>lin(x.s,'Substitui '+F(x.b).k,'pend',F(x.b).k)).join('');}
 function res(){const box=document.getElementById('fsRes');const q=st.q.trim();
- if(!q){box.innerHTML='';return;}
- const b=base(q),mat=st.S&&st.S.matriz;if(!b){box.innerHTML='<p class="fsn fsw">Código não encontrado na base Suprema/Gold.<br><b>Confirme com o serralheiro ou com compras.</b></p>';return;}
+ const mat=st.S&&st.S.matriz;
+ if(!q){box.innerHTML=mat?pendTodas():'';return;}
+ const b=base(q);if(!b){box.innerHTML='<p class="fsn fsw">Código não encontrado na base Suprema/Gold.<br><b>Confirme com o serralheiro ou com compras.</b></p>';return;}
  const d=disp(b),ok=st.ap.filter(x=>x.b===b&&x.st==='ok'&&F(x.s)).map(x=>F(x.s).k),au=auto(b).filter(c=>!ok.includes(c)),okD=ok.filter(disp);
  let h=`<div class="fsh"><span class="fst ${d?'ok':'no'}">${d?'Trabalhamos com este perfil':'Não trabalhamos com este perfil'}</span></div>${lin(b,'Pesquisado',false)}`;
- if(okD.length)h+='<h4>Indicado para substituir</h4>'+okD.map(c=>lin(c,'Indicação',mat,b)).join('');
- if(au.length)h+=`<h4>${okD.length?'Outras opções':'Possível substituição'}</h4>`+au.map(c=>lin(c,'Sugestão',mat,b)).join('');
+ if(okD.length)h+='<h4>Indicado para substituir</h4>'+okD.map(c=>lin(c,'Indicação',mat&&'ok',b)).join('');
+ if(au.length)h+=`<h4>${okD.length?'Outras opções':'Possível substituição'}</h4>`+au.map(c=>lin(c,'Sugestão',mat&&'sug',b)).join('');
+ if(mat){const pe=st.ap.filter(x=>x.b===b&&x.st==='pend'&&F(x.s)).map(x=>F(x.s).k);
+  if(pe.length)h+='<h4>⏳ Pendente de aprovação · só a FC vê</h4>'+pe.map(c=>lin(c,'Pendente','pend',b)).join('');
+  h+=`<form id="fsAdd" class="fsadd"><input name="c" placeholder="Indicar outro código para ${esc(b)}" autocomplete="off"><button type="submit">＋ Indicar</button></form>`;}
  
  
  if(!okD.length&&!au.length)h+=`<p class="fsn fsw">Sem indicação de substituição para ${esc(b)}.<br><b>Verifique com o serralheiro ou com compras qual perfil usar.</b></p>`;
