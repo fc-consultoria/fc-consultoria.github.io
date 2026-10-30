@@ -769,7 +769,7 @@ async function iniciar(){try{const j=await fetch('perfis.json?v=1',{cache:'no-ca
  try{const x=await fetch('perfis_extra.json?v=1',{cache:'no-cache'}).then(r=>r.json());Object.entries(x).forEach(([k,v])=>{if(IDX[k])return;const o=Object.assign({k},v);P[k]=o;IDX[k]=o;});}catch(e){console.warn(e);}
  if(ALUNO){participar();return;}const h=location.hash.slice(1);go(R[h]?h:null);if(APRES.length>=10){try{localStorage.setItem('fc_esq_sala',APRES)}catch(_){}apresentar(APRES);}}
 /* Substituição de perfil: módulo compartilhado (só equipe interna logada) */
-function subInit(){try{const sc=document.createElement('script');sc.src='../subst.js?v=3';sc.onload=()=>{try{FCSUB.init({slug:SESS&&SESS.catalogo,abrir:new URLSearchParams(location.search).get('sub')==='1',pick:(c,b)=>{try{abre3d(b||c);}catch(_){}}});}catch(_){}};document.head.appendChild(sc);}catch(_){}}
+function subInit(){try{const sc=document.createElement('script');sc.src='../subst.js?v=4';sc.onload=()=>{try{FCSUB.init({slug:SESS&&SESS.catalogo,abrir:new URLSearchParams(location.search).get('sub')==='1',pick:(c,b)=>{try{abre3d(b||c);}catch(_){}}});}catch(_){}};document.head.appendChild(sc);}catch(_){}}
 marca();if(!ALUNO&&!ESTUDO){const g=$('#bGrav');if(g)g.hidden=false;}voltaBtn(!ALUNO&&!ESTUDO);if(ALUNO||ESTUDO)iniciar();else (function(){/* Plataforma FC 3D Clientes: entra com a sessão da plataforma */
  const SP='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_sessao',SPK='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs',G=$('#gate');
  const nega=(t,p)=>{G.hidden=false;G.innerHTML='<form><small>Plataforma FC 3D</small><h1>'+t+'</h1><p>'+p+'</p><a href="../" style="color:#02717d;font-weight:700">Ir para a Plataforma FC 3D</a></form>';};
