@@ -143,17 +143,24 @@ const bd=document.getElementById('v-desm');if(bd)bd.addEventListener('click',()=
 (function(){
 const card=document.getElementById('c-swap');if(!card)return;
 const sm=card.querySelector('summary h2');if(sm)sm.textContent='Substituições possíveis';
-const nt=card.querySelector('.note');if(nt)nt.innerHTML='Indicação do catálogo: perfis que podem substituir o original na mesma posição. <b>A montagem em 3D continua com o original.</b> Passe o mouse para ver o perfil.';
+const nt=card.querySelector('.note');if(nt)nt.innerHTML='Indicação do catálogo: perfis que podem substituir o original na mesma posição. <b>Clique numa opção para trocar o perfil na tipologia em 3D</b>; "original" volta ao perfil da tipologia. Passe o mouse para ver o perfil.';
 const st=document.createElement('style');st.textContent=`.sbi{border:1px solid #d8e2e6;border-radius:12px;padding:10px 12px;margin-bottom:10px;background:#fff}
 .sbi .h{display:flex;align-items:center;gap:8px;font:600 14px var(--f-body,system-ui)}.sbi .h i{width:12px;height:12px;border-radius:3px;display:inline-block}.sbi .h b{font-family:var(--f-mono,monospace)}.sbi .h span{color:#5a6b75;font-weight:500}
 .sbi .p{font-size:13px;color:#5a6b75;margin:8px 0 6px}.sbi .o{display:flex;gap:6px;flex-wrap:wrap}
 .sbi .o span{display:inline-flex;flex-direction:column;border:1px dashed #9fb3bf;border-radius:10px;padding:6px 10px;font:600 13px var(--f-mono,monospace);cursor:help;background:#f6f9fa}
+.sbi .o span[aria-pressed=true]{border-style:solid;border-color:var(--accent,#1f6f9a);background:var(--accent-soft,#e6f2f3);box-shadow:inset 0 0 0 1px var(--accent,#1f6f9a)}
+.sbi .o span{cursor:pointer}.sbi.on{border-color:var(--accent,#1f6f9a)}
 .sbi .o span small{font:500 11.5px var(--f-body,system-ui);color:#5a6b75}`;document.head.appendChild(st);
-renderSwap=function(){try{S.swaps[S.typo]={};}catch(_){}
-  const list=ORIGC.filter(c=>ALT[c]);swreset.hidden=true;
+renderSwap=function(){
+  const sw=SWP(),list=ORIGC.filter(c=>ALT[c]);swreset.hidden=!Object.keys(sw).length;
   if(!list.length){swl.innerHTML='<p class="note">Esta tipologia não tem substituições indicadas no catálogo.</p>';return;}
-  swl.innerHTML=list.map(b=>`<div class="sbi"><div class="h"><i style="background:${css(zcol(b))}"></i><b>${b}</b><span>${PN[b]?PN[b].n:TIT[b]||''}</span></div>
+  swl.innerHTML=list.map(b=>{const cur=sw[b]||b;return `<div class="sbi${sw[b]?' on':''}"><div class="h"><i style="background:${css(zcol(b))}"></i><b>${b}</b><span>${PN[b]?PN[b].n:TIT[b]||''}</span></div>
     <div class="p">Pode ser substituído por:</div>
-    <div class="o">${ALT[b].map(o=>`<span data-p="${o.split('+')[0]}">${o.replace('+',' + ')}<small>${o.includes('+')?'marco + complemento':(KG[o]?fmt(KG[o],3)+' kg/m':'')}</small></span>`).join('')}</div></div>`).join('');
-  swl.querySelectorAll('[data-p]').forEach(x=>x.addEventListener('mouseenter',()=>{try{showProfile(x.dataset.p);}catch(_){}}));};
+    <div class="o">${[b,...ALT[b]].map(o=>`<span role="button" tabindex="0" data-b="${b}" data-o="${o}" data-p="${o.split('+')[0]}" aria-pressed="${o===cur}">${o.replace('+',' + ')}<small>${o===b?'original':o.includes('+')?'marco + complemento':(KG[o]?fmt(KG[o],3)+' kg/m':'')}</small></span>`).join('')}</div></div>`;}).join('');
+  swl.querySelectorAll('[data-o]').forEach(x=>{
+    x.addEventListener('mouseenter',()=>{try{showProfile(x.dataset.p);}catch(_){}});
+    const troca=()=>{if(typeof window.FC_VT_END==='function')window.FC_VT_END();const b=x.dataset.b,o=x.dataset.o,m=SWP();if(o===b)delete m[b];else{m[b]=o;try{trk('troca',{t:S.typo,de:b,para:o});}catch(_){}}
+      try{refreshSwap(o.split('+')[0]);}catch(_){applyTypo();build();renderSwap();}};
+    x.addEventListener('click',troca);x.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();troca();}});});};
+try{renderSwap();}catch(_){}
 })();

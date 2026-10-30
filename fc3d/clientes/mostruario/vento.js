@@ -68,20 +68,26 @@ const L0=d=>d.LS[0],L1=d=>d.LS[d.LS.length-1];
 
 function lista(){
   OPC=opcs().slice().sort((a,b)=>(orig(b)-orig(a))||(a.jxt-b.jxt));
-  if(!OPC.includes(SEL))SEL=OPC[0]||null;
+  if(!OPC.includes(SEL))SEL=atual()||OPC[0]||null;
   $('vtCb').innerHTML=OPC.map((d,i)=>`<button type="button" data-i="${i}" aria-pressed="${d===SEL}"><b>${d.cods.join(' + ')}</b><small>${orig(d)?'Original da tipologia · ':''}Jx do conjunto ${NF(d.jxt)} mm⁴ · catálogo p. ${d.pag}</small></button>`).join('');
-  $('vtCb').querySelectorAll('button').forEach(b=>b.onclick=()=>{SEL=OPC[+b.dataset.i];lista();faixa();if(S.vtOn)avalia();});
+  $('vtCb').querySelectorAll('button').forEach(b=>b.onclick=()=>{SEL=OPC[+b.dataset.i];if(S.vtOn){lista();faixa();avalia();}else{trocaPerfil(SEL);lista();faixa();}});
 }
 function faixa(){if(!SEL)return;$('vtFx').textContent=`Faixa do diagrama: L de ${NF(L0(SEL))} a ${NF(L1(SEL))} mm · H de ${NF(SEL.Hr[0])} a ${NF(SEL.Hr[1])} mm.`;}
 function medidasAtuais(){}
 
+/* troca a mão de amigo na tipologia (3D, cortes, substituições), mantendo as outras trocas que o cliente fez */
+function trocaPerfil(d){
+  const keys=new Set(OPC.flatMap(o=>Object.keys(o.sw||{})));
+  const cur=Object.assign({},S.swaps[S.typo]||{});keys.forEach(k=>delete cur[k]);Object.assign(cur,d.sw||{});
+  S.swaps[S.typo]=cur;
+  if(typeof refreshSwap==='function')refreshSwap(null);else{applyTypo();build();renderSwap();renderCuts();}
+}
+function atual(){const sw=S.swaps[S.typo]||{};return OPC.find(o=>Object.entries(o.sw||{}).every(([k,v])=>sw[k]===v)&&OPC.flatMap(x=>Object.keys(x.sw||{})).filter(k=>!(k in (o.sw||{}))).every(k=>!(k in sw)))||null;}
 function aplica3D(d){
-  if(!SAVE){SAVE={sw:S.swaps[S.typo]||{},w:S.w,h:S.h,typo:S.typo};DIAP0=DIAP;}
-  const mudou=DIA!==d;
-  if(mudou)renderSwap(); /* o painel de substituições zera as trocas: chama antes */
-  S.swaps[S.typo]=Object.assign({},d.sw);DIA=d;
+  if(!SAVE){SAVE={sw:Object.assign({},S.swaps[S.typo]||{}),w:S.w,h:S.h,typo:S.typo};DIAP0=DIAP;}
+  if(atual()!==d)trocaPerfil(d);
+  DIA=d;
   if(!S.vtOn){S.vtOn=true;if(typeof resetOpen==='function')resetOpen();}
-  if(mudou){applyTypo();renderCuts();}
 }
 function verifica(d,L,H,p){
   if(L>L1(d))return {fora:1};
@@ -128,9 +134,12 @@ function encerra(rebuild){
   if(SAVE){if(SAVE.typo===S.typo){S.swaps[S.typo]=SAVE.sw;}
     if(DIAP0!=null)DIAP=DIAP0;SAVE=null;}
   $('vtRes').hidden=true;$('vtGo').textContent='🌬 Avaliar pressão de vento';
-  if(rebuild!==false){applyTypo();renderSwap();renderCuts();build();if(typeof setView==='function')setView('persp');}
+  if(rebuild===false){SEL=null;lista();faixa();}
+  if(rebuild!==false){if(typeof refreshSwap==='function')refreshSwap(null);else{applyTypo();renderSwap();renderCuts();build();}if(typeof setView==='function')setView('persp');SEL=null;lista();faixa();}
 }
-$('vtGo').onclick=avalia;
+$('vtGo').onclick=()=>{const sw=$('c-swap');if(sw)sw.open=false;avalia();};
+/* Substituições e simulação são momentos diferentes: usar as substituições encerra a simulação */
+window.FC_VT_END=()=>{if(!S.vtOn&&!SAVE)return;encerra(false);const c=$('c-conf');if(c&&c.classList.contains('cf-flu'))c.open=false;};
 $('vtOff').onclick=()=>{encerra();medidasAtuais();};
 $('vtPr').querySelectorAll('button').forEach(b=>b.onclick=()=>{VP=+b.dataset.p;$('vtPr').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));if(S.vtOn)avalia();});
 /* o tamanho vem da Configuração (Largura e Altura): ao mudar lá, a simulação reavalia sozinha */

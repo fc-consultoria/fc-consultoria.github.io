@@ -70,8 +70,8 @@ card.id='btFlu';card.hidden=true;card.setAttribute('role','complementary');card.
 stage.appendChild(card);
 const MK='fc3d-bt-min';
 /* no celular começa recolhido (só o botão), para não cobrir o 3D */
-let MIN=innerWidth<700,salvo=null;try{salvo=localStorage.getItem(MK);}catch(_){}
-if(salvo==='1')MIN=true;else if(salvo==='0'&&innerWidth>=700)MIN=false;
+/* sempre começa fechado (só o botão): quem quiser abre */
+let MIN=true;
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const tipo=()=>{try{return S.typo;}catch(_){return null;}};
