@@ -19,7 +19,7 @@ function tok(n){const s=String(n||'').toLowerCase().normalize('NFD').replace(/[Ì
 const disp=c=>{if(!st.temCat)return true;const e=st.it[c];return !!(e&&!e.oc);};
 const est=c=>{const e=st.it[c];return st.temCat&&e&&e.sc===false;};
 function auto(b){const a=F(b);if(!a)return [];const ta=tok(a.n),pa=num(a.p),da=Array.isArray(a.d)?a.d:null;
- const nao=new Set(st.ap.filter(x=>x.b===b&&x.st==='nao').map(x=>x.s));
+ const nao=new Set(st.ap.filter(x=>x.b===b&&(x.st==='nao'||x.st==='pend')).map(x=>x.s));
  return Object.values(st.P).filter(q=>q.k!==a.k&&q.l===a.l&&q.g===a.g&&disp(q.k)&&!nao.has(q.k)).map(q=>{const t=tok(q.n);
   if(IGUAL.some(k=>ta.has(k)!==t.has(k)))return null;
   if((ta.has('int')&&t.has('ext'))||(ta.has('ext')&&t.has('int')))return null;
