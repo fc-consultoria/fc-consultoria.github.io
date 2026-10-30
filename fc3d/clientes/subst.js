@@ -32,7 +32,7 @@ function base(q){q=String(q||'').trim().toUpperCase().replace(/\s+/g,'');if(!q)r
  const e=Object.values(st.it).find(x=>[x.c,x.cg].some(v=>v&&String(v).toUpperCase().replace(/\s+/g,'')===q));return e&&F(e.base)?F(e.base).k:null;}
 const cod=c=>{const e=st.it[c];const cc=e&&(e.cg||e.c);return cc&&cc!==c?cc:c;};
 function lin(c,tag,mat,b){const p=F(c);if(!p)return '';const img=p.img||IMG+(p.d3?p.i:'c'+p.i)+'.webp',peso=num(p.p);
- return `<div class="fsr"><button type="button" class="fsrow" data-fspick="${esc(cod(c))}" title="Ver no catálogo"><img loading="lazy" src="${img}" alt=""><div><small>${esc(tag)}</small><b>${esc(cod(c))}</b><small>${esc(p.n)}</small>${Array.isArray(p.d)?`<small>📐 ${mm(p.d[0])} × ${mm(p.d[1])} mm</small>`:''}</div><div class="w">${peso!=null?kg(peso)+'<small> kg/m</small>':''}</div></button>
+ return `<div class="fsr"><button type="button" class="fsrow" data-fspick="${esc(cod(c))}" data-fsbase="${esc(c)}" title="Ver no catálogo"><img loading="lazy" src="${img}" alt=""><div><small>${esc(tag)}</small><b>${esc(cod(c))}</b><small>${esc(p.n)}</small>${Array.isArray(p.d)?`<small>📐 ${mm(p.d[0])} × ${mm(p.d[1])} mm</small>`:''}</div><div class="w">${peso!=null?kg(peso)+'<small> kg/m</small>':''}</div></button>
  <div class="fsm"><span class="fst">sob consulta</span>${mat&&tag!=='Sugestão'&&tag!=='Pesquisado'?`<button data-fsap="${esc(b)}|${esc(c)}|" title="Tirar esta indicação">desfazer</button>`:''}${mat&&tag==='Sugestão'?`<button data-fsap="${esc(b)}|${esc(c)}|ok">✓ aprovar</button><button data-fsap="${esc(b)}|${esc(c)}|nao" title="Não indicar">✕</button>`:''}</div></div>`;}
 function res(){const box=document.getElementById('fsRes');const q=st.q.trim();
  if(!q){box.innerHTML='<p class="fsn">Digite o código do perfil (ex.: SU-041, SU-006). Aparecem as opções da mesma linha e com a mesma lógica de montagem.</p>';return;}
@@ -55,16 +55,27 @@ function ui(abrir){const css=document.createElement('style');css.textContent=`#f
 .fsm{display:flex;gap:6px;align-items:center;justify-content:flex-end;margin-top:3px}.fsm button,.fsx button,.fsadd button{border:1px solid #dde3e6;background:#fff;border-radius:99px;font:700 12px system-ui,sans-serif;padding:3px 9px;cursor:pointer}
 .fst{font:700 11.5px system-ui,sans-serif;padding:2px 8px;border-radius:99px;background:#eef1f3;color:#55636b}.fst.ok{background:#e1f4ea;color:#17683f}.fst.no{background:#fde8e6;color:#9b2c22}
 .fsh{margin:2px 0 6px}.fsn{font-size:13.5px;line-height:1.45;color:#5d6b72;margin:8px 0}.fsw{background:#fff6e0;border:1px solid #f1d38a;color:#5c3d00;border-radius:10px;padding:8px 10px}.fsx{font-weight:600;font-size:13px;margin:3px 0}.fsadd{display:flex;gap:6px;margin-top:10px}.fsadd input{flex:1;font:600 13px system-ui,sans-serif;padding:6px 9px;border:1px solid #dde3e6;border-radius:8px}
+#fsPn{width:min(300px,calc(100vw - 32px))}#fsPn .hd{padding:10px 12px 6px;gap:6px}#fsPn .hd b{font-size:14px}#fsQ{margin:0 12px 8px;font-size:15px;padding:8px 10px}#fsRes{padding:0 12px 12px}
+.fsrow{grid-template-columns:64px 1fr auto;gap:8px;padding:4px 6px}.fsrow img{width:64px;height:50px}.fsrow b{font-size:14.5px}.fsrow small{font-size:11.5px}.fsrow .w{font-size:12px}
+.fsv{border:1px solid #dde3e6!important;background:#fff!important;border-radius:99px;font:700 12px system-ui,sans-serif!important;padding:4px 9px;cursor:pointer;color:#02717d!important;white-space:nowrap}
+#fsPn.fs{left:0;top:0;bottom:0;right:0;width:100vw;max-height:none;height:100vh;border-radius:0;border:0}
+#fsPn.fs .hd{max-width:1180px;width:100%;margin:0 auto;padding:16px 20px 10px}#fsPn.fs .hd b{font-size:18px}#fsPn.fs #fsQ{max-width:1140px;width:calc(100% - 40px);margin:0 auto 12px;font-size:17px}
+#fsPn.fs #fsRes{max-width:1180px;width:100%;margin:0 auto;padding:0 20px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;align-content:start}
+#fsPn.fs #fsRes>h4,#fsPn.fs #fsRes>.fsh,#fsPn.fs #fsRes>.fsn,#fsPn.fs #fsRes>.fsadd{grid-column:1/-1}
+#fsPn.fs .fsrow{grid-template-columns:1fr;gap:6px;padding:10px}#fsPn.fs .fsrow img{width:100%;height:190px}#fsPn.fs .fsrow b{font-size:19px}#fsPn.fs .fsrow small{font-size:13px}#fsPn.fs .fsrow .w{text-align:left;font-size:15px}
 @media print{#fsBt,#fsPn{display:none!important}}`;document.head.appendChild(css);
  const bt=document.createElement('button');bt.id='fsBt';bt.type='button';bt.textContent='🔁 Substituir perfil';
- const pn=document.createElement('div');pn.id='fsPn';pn.hidden=true;pn.innerHTML='<div class="hd"><b>🔁 Substituição de perfil</b><button type="button" id="fsX" aria-label="Fechar">✕</button></div><input id="fsQ" placeholder="Digite o código · ex.: SU-041" autocomplete="off"><div id="fsRes"></div>';
+ const pn=document.createElement('div');pn.id='fsPn';pn.hidden=true;pn.innerHTML='<div class="hd"><button type="button" id="fsVolta" class="fsv" hidden>← Voltar</button><b>🔁 Substituição de perfil</b><button type="button" id="fsTc" class="fsv" title="Ver em tela cheia">⛶ Tela cheia</button><button type="button" id="fsX" aria-label="Fechar">✕</button></div><input id="fsQ" placeholder="Digite o código · ex.: SU-041" autocomplete="off"><div id="fsRes"></div>';
  document.body.append(bt,pn);const tog=v=>{pn.hidden=!v;if(v){res();document.getElementById('fsQ').focus();}};
- bt.onclick=()=>tog(pn.hidden);document.getElementById('fsX').onclick=()=>tog(false);
+ const cheia=v=>{pn.classList.toggle('fs',v);document.getElementById('fsVolta').hidden=!v;document.getElementById('fsTc').hidden=v;bt.hidden=v;};
+ document.getElementById('fsTc').onclick=()=>cheia(true);document.getElementById('fsVolta').onclick=()=>cheia(false);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&pn.classList.contains('fs'))cheia(false);});
+ bt.onclick=()=>tog(pn.hidden);document.getElementById('fsX').onclick=()=>{cheia(false);tog(false);};
  document.getElementById('fsQ').addEventListener('input',e=>{st.q=e.target.value;clearTimeout(st.t);st.t=setTimeout(res,250);});
  pn.addEventListener('submit',async e=>{if(e.target.id!=='fsAdd')return;e.preventDefault();const c=base(e.target.c.value)||e.target.c.value.trim().toUpperCase(),b=base(st.q);if(!b||!c)return;
   try{st.ap=await rpc('pfc_subst_salvar',{p_token:st.tk,p_base:b,p_sub:c,p_status:'ok'});res();}catch(er){alert(er.message);}});
  pn.addEventListener('click',async e=>{const a=e.target.closest('[data-fsap]');if(a){e.stopPropagation();const [b,c,s]=a.dataset.fsap.split('|');try{st.ap=await rpc('pfc_subst_salvar',{p_token:st.tk,p_base:b,p_sub:c,p_status:s||null});res();}catch(er){alert(er.message);}return;}
-  const p=e.target.closest('[data-fspick]');if(p&&st.pick){st.pick(p.dataset.fspick);}},true);
+  const p=e.target.closest('[data-fspick]');if(p&&st.pick){if(pn.classList.contains('fs'))pn.classList.remove('fs');st.pick(p.dataset.fspick,p.dataset.fsbase);}},true);
  if(abrir)tog(true);}
 window.FCSUB={async init(o){o=o||{};try{st.tk=localStorage.getItem('pfc-token');}catch(_){}if(!st.tk)return false;
  try{st.S=await rpc('pfc_sessao',{p_token:st.tk});}catch(_){return false;}const S=st.S;
