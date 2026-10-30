@@ -90,20 +90,38 @@ function quando(t){if(!t)return 'nunca entrou';const d=new Date(t),m=Math.round(
 /* ---------- demonstrativos (link único /fc3d/clientes/demo/) ---------- */
 const LINKDEMO='https://fc-consultoria.github.io/fc3d/clientes/demo/';
 const zapDe=w=>{let n=String(w||'').replace(/\D/g,'');if(n.length<=11)n='55'+n;return 'https://wa.me/'+n;};
+const CONVITE='Olá! 👋 A FC Consultoria convida você para conhecer a *Plataforma FC 3D*: janelas, portas e fachadas em 3D, com desenho técnico de cada montagem, para apresentar ao seu cliente.\n\n✅ *3 dias de acesso grátis*, no celular, notebook ou TV.\n📝 É só informar nome e WhatsApp — o acesso é liberado em até 3 minutos.\n\n👉 '+LINKDEMO+'\n\nFC Consultoria em Esquadria · @fc__consultoria';
+let pendVistos=null,demoT=null;
+function avisaNovos(D){const p=D.filter(d=>d.status==='pendente');document.title=(p.length?'('+p.length+') ':'')+'Empresas e acessos · FC 3D';
+  const ids=p.map(d=>d.id);if(pendVistos){const novos=p.filter(d=>!pendVistos.includes(d.id));
+    if(novos.length){try{if('Notification' in window&&Notification.permission==='granted')new Notification('Pedido de demonstrativo',{body:novos.map(d=>d.nome+' · '+d.whats).join('\n')});}catch(_){}
+      try{const c=new AudioContext(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;g.gain.value=.08;o.start();o.stop(c.currentTime+.25);}catch(_){}}}
+  pendVistos=ids;}
 async function carregarDemos(){
+  clearTimeout(demoT);demoT=setTimeout(carregarDemos,15000);
   let D=[];try{D=await rpc('pfc_adm_demo_lista');}catch(e){$('#demos').innerHTML='<div class="eh"><h2>Demonstrativos</h2></div><p class="msg" style="padding:14px 16px">'+h(e.message)+'</p>';return;}
-  const agora=Date.now(),ativos=D.filter(d=>d.ativo&&new Date(d.expira)>agora).length;
-  const st=d=>!d.ativo?['Pausado','r']:new Date(d.expira)<agora?['Terminou','a']:['Ativo até '+new Date(d.expira).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}),'o'];
-  $('#demos').innerHTML=`<div class="eh"><div class="sig">▶</div><div><h2>Demonstrativos</h2><span class="mute" style="font-size:13px">${D.length} cadastro${D.length===1?'':'s'} · ${ativos} ativo${ativos===1?'':'s'} · 3 dias por pessoa</span></div><span class="sp"></span>
-    <button class="btn sm" id="cpDemo">Copiar link do demonstrativo</button></div>
-    ${D.length?`<div style="overflow-x:auto"><table><thead><tr><th>Nome</th><th>Empresa · cidade</th><th>Entrou</th><th>Situação</th><th></th></tr></thead><tbody>${D.map(d=>{const [t,c]=st(d);return `<tr>
-      <td><b>${h(d.nome)}</b><br><a href="${zapDe(d.whats)}" target="_blank" rel="noopener">${h(d.whats)}</a></td>
-      <td>${h(d.empresa)}${d.cidade?'<br><span class="mute">'+h(d.cidade)+'</span>':''}</td>
-      <td>${new Date(d.criado).toLocaleDateString('pt-BR')}<br><span class="mute">último: ${quando(d.ultimo)} · ${d.entradas}x</span></td>
-      <td><span class="chip ${c}">${t}</span></td>
-      <td style="white-space:nowrap"><button class="btn sm" data-dmais="${d.id}">+3 dias</button> <button class="btn sm ${d.ativo?'red':''}" data-datv="${d.id}" data-v="${d.ativo?0:1}">${d.ativo?'Pausar':'Reativar'}</button></td></tr>`;}).join('')}</tbody></table></div>`
-    :'<p class="mute" style="padding:14px 16px">Ninguém entrou pelo demonstrativo ainda. Copie o link e envie no WhatsApp.</p>'}`;
+  avisaNovos(D);
+  const agora=Date.now(),pend=D.filter(d=>d.status==='pendente'),ativos=D.filter(d=>d.status==='liberado'&&d.ativo&&new Date(d.expira)>agora).length;
+  const st=d=>d.status==='pendente'?['Aguardando · libera sozinho às '+new Date(d.libera_auto).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),'t']:d.status==='recusado'?['Recusado','r']:!d.ativo?['Pausado','r']:new Date(d.expira)<agora?['Terminou','a']:['Ativo até '+new Date(d.expira).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}),'o'];
+  const por=d=>d.status!=='liberado'||!d.liberado_por?'':d.liberado_por==='auto'?' · liberado automático':d.liberado_por==='fc'?' · liberado pela FC':'';
+  const acoes=d=>d.status==='pendente'?`<button class="btn sm pri" data-dlib="${d.id}" data-v="1">Liberar agora</button> <button class="btn sm red" data-dlib="${d.id}" data-v="0">Recusar</button>`
+    :`<button class="btn sm" data-dmais="${d.id}">+3 dias</button> <button class="btn sm ${d.ativo?'red':''}" data-datv="${d.id}" data-v="${d.ativo?0:1}">${d.ativo?'Pausar':'Reativar'}</button>`;
+  $('#demos').innerHTML=`<div class="eh"><div class="sig">▶</div><div><h2>Demonstrativos</h2><span class="mute" style="font-size:13px">${D.length} cadastro${D.length===1?'':'s'} · ${ativos} ativo${ativos===1?'':'s'} · ${pend.length} aguardando · 3 dias por pessoa · libera sozinho em 3 min</span></div><span class="sp"></span>
+    <button class="btn sm" id="cpDemo">Copiar link</button> <button class="btn sm pri" id="cvDemo">💬 Convite para o WhatsApp</button>${'Notification' in window&&Notification.permission==='default'?' <button class="btn sm" id="ntDemo">🔔 Avisar no computador</button>':''}</div>
+    ${D.length?`<div style="overflow-x:auto"><table><thead><tr><th>Nome</th><th>Pedido</th><th>Entrou</th><th>Situação</th><th></th></tr></thead><tbody>${D.map(d=>{const [t,c]=st(d);return `<tr${d.status==='pendente'?' style="background:var(--tealSoft)"':''}>
+      <td><b>${h(d.nome)}</b><br><a href="${zapDe(d.whats)}" target="_blank" rel="noopener">${h(d.whats)}</a>${d.empresa?'<br><span class="mute">'+h(d.empresa)+(d.cidade?' · '+h(d.cidade):'')+'</span>':''}</td>
+      <td>${new Date(d.criado).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
+      <td>${d.status==='pendente'?'<span class="mute">—</span>':'<span class="mute">último: '+quando(d.ultimo)+' · '+d.entradas+'x</span>'}</td>
+      <td><span class="chip ${c}">${t}</span><span class="mute" style="font-size:12px">${por(d)}</span></td>
+      <td style="white-space:nowrap">${acoes(d)}</td></tr>`;}).join('')}</tbody></table></div>`
+    :'<p class="mute" style="padding:14px 16px">Ninguém pediu o demonstrativo ainda. Use o botão “Convite para o WhatsApp”.</p>'}`;
   $('#cpDemo').onclick=async()=>{try{await navigator.clipboard.writeText(LINKDEMO);$('#cpDemo').textContent='Link copiado ✓';}catch(_){prompt('Copie o link:',LINKDEMO);}};
+  $('#cvDemo').onclick=()=>{abre(`<h3>Convite do demonstrativo</h3><textarea id="cvTx">${h(CONVITE)}</textarea><p class="nota">Pode ajustar o texto antes de enviar. Funciona para mandar a uma pessoa ou num grupo.</p>
+    <div class="bts"><button class="btn" id="cvCp">📋 Copiar</button><a class="btn pri" id="cvZap" target="_blank" rel="noopener">💬 Abrir no WhatsApp</a><button class="btn" data-x>Fechar</button></div>`);{
+      const up=()=>$('#cvZap').href='https://wa.me/?text='+encodeURIComponent($('#cvTx').value);up();$('#cvTx').oninput=up;
+      $('#cvCp').onclick=async()=>{try{await navigator.clipboard.writeText($('#cvTx').value);$('#cvCp').textContent='Copiado ✓';}catch(_){$('#cvTx').select();}};}};
+  if($('#ntDemo'))$('#ntDemo').onclick=async()=>{try{await Notification.requestPermission();}catch(_){}carregarDemos();};
+  $('#demos').querySelectorAll('[data-dlib]').forEach(b=>b.onclick=async()=>{if(b.dataset.v==='0'&&!confirm('Recusar este pedido? A pessoa não vai conseguir entrar.'))return;try{await rpc('pfc_adm_demo_liberar',{p_id:b.dataset.dlib,p_liberar:b.dataset.v==='1'});carregarDemos();}catch(e){alert(e.message);}});
   $('#demos').querySelectorAll('[data-dmais]').forEach(b=>b.onclick=async()=>{try{await rpc('pfc_adm_demo',{p_id:b.dataset.dmais,p_ativo:true,p_mais_dias:3});carregarDemos();}catch(e){alert(e.message);}});
   $('#demos').querySelectorAll('[data-datv]').forEach(b=>b.onclick=async()=>{try{await rpc('pfc_adm_demo',{p_id:b.dataset.datv,p_ativo:b.dataset.v==='1',p_mais_dias:0});carregarDemos();}catch(e){alert(e.message);}});
 }

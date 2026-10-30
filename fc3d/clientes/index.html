@@ -229,12 +229,11 @@ a.card:hover{border-color:var(--teal);transform:translateY(-1px)}
       <h2>Demonstrativo grátis</h2>
       <p class="sub mute">Conheça a Plataforma FC 3D por <b id="demoDias">3 dias</b>, no celular, no notebook ou na TV.</p>
       <label class="f" for="dNome">Seu nome</label><input class="in" id="dNome" name="name" autocomplete="name" maxlength="80">
-      <label class="f" for="dEmp">Empresa</label><input class="in" id="dEmp" name="organization" autocomplete="organization" maxlength="100">
-      <label class="f" for="dCid">Cidade</label><input class="in" id="dCid" name="city" autocomplete="address-level2" maxlength="80">
       <label class="f" for="dZap">WhatsApp com DDD</label><input class="in" id="dZap" name="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="(66) 9 9999-9999" maxlength="20">
       <div id="demoMsg" role="alert" style="min-height:22px;font-size:13.5px;color:#b3401a;margin:-4px 0 10px"></div>
-      <button class="btn pri" style="width:100%" id="demoBt">Começar o demonstrativo</button>
-      <p class="mute" style="font-size:12.5px;margin-top:10px">Já entrou antes? Use o mesmo WhatsApp para continuar. O demonstrativo funciona em um aparelho por vez. Os dados servem só para a FC Consultoria falar com você.</p>
+      <button class="btn pri" style="width:100%" id="demoBt">Enviar cadastro</button>
+      <div class="demo-fim" id="demoEsp" hidden></div>
+      <p class="mute" style="font-size:12.5px;margin-top:10px">Só nome e WhatsApp. O acesso é liberado em até 3 minutos e vale por 3 dias. Já entrou antes? Use o mesmo WhatsApp para continuar. Funciona em um aparelho por vez. Os dados servem só para a FC Consultoria falar com você.</p>
       <div class="demo-fim" id="demoFim" hidden></div>
       <div class="ent-alt"><span class="mute">Já é cliente?</span><button type="button" id="demoTroca">Entrar com login</button></div>
     </form>
@@ -451,19 +450,32 @@ let modoDemo=/[?&]demo=1/.test(location.search);
 function formDemo(on){modoDemo=on;$('#liAmb').hidden=on;$('#entForm').hidden=on;$('#demoForm').hidden=!on;}
 $('#demoTroca').onclick=()=>formDemo(false);
 function demoFim(t){const f=$('#demoFim');f.hidden=false;f.innerHTML=h(t)+`<br><a class="btn pri" style="margin-top:10px;display:inline-block" href="${ZAPDEMO}" target="_blank" rel="noopener">Falar com a FC no WhatsApp</a>`;}
+const PEDK='pfc-demo-pedido';let espT=null;
+function esperaDemo(r){const box=$('#demoEsp');clearTimeout(espT);box.hidden=false;$('#demoBt').hidden=true;$('#dNome').disabled=$('#dZap').disabled=true;ls.set(PEDK,r.pedido);
+  let seg=r.segundos||0;const zap='https://wa.me/5566999867984?text='+encodeURIComponent('Olá, FC! Sou '+(r.nome||'')+' e fiz o cadastro no demonstrativo da Plataforma FC 3D.');
+  const pinta=()=>{const m=Math.floor(seg/60),x=String(seg%60).padStart(2,'0');box.innerHTML=`<b>✅ Cadastro recebido!</b><br>A FC Consultoria está liberando o seu acesso. ${seg>0?`Libera sozinho em <b>${m}:${x}</b>.`:'Liberando…'}<br><span class="mute">Pode deixar esta tela aberta — a plataforma abre sozinha.</span><br><a class="btn" style="margin-top:10px;display:inline-block" href="${zap}" target="_blank" rel="noopener">Avisar a FC no WhatsApp</a>`;};
+  pinta();const tic=setInterval(()=>{seg=Math.max(0,seg-1);pinta();},1000);
+  const checa=async()=>{try{const q=await rpc('pfc_demo_aguardar',{p_pedido:r.pedido});
+      if(q.token){clearInterval(tic);ls.del(PEDK);box.hidden=true;$('#demoBt').hidden=false;$('#dNome').disabled=$('#dZap').disabled=false;ls.set(TK,q.token);history.replaceState(null,'',location.pathname);await abrir(q.token);return;}
+      if(q.erro){clearInterval(tic);ls.del(PEDK);box.hidden=true;$('#demoBt').hidden=false;$('#dNome').disabled=$('#dZap').disabled=false;if(q.fim)demoFim(q.erro);else $('#demoMsg').textContent=q.erro;return;}
+      if(typeof q.segundos==='number')seg=q.segundos;}catch(_){}
+    espT=setTimeout(checa,5000);};
+  espT=setTimeout(checa,5000);}
 $('#demoForm').addEventListener('submit',async e=>{
   e.preventDefault();const bt=$('#demoBt'),msg=$('#demoMsg');msg.textContent='';$('#demoFim').hidden=true;
   const v=k=>$(k).value.trim();
   if(v('#dNome').length<2){msg.textContent='Informe o seu nome.';return;}
-  if(v('#dEmp').length<2){msg.textContent='Informe a empresa.';return;}
   if(v('#dZap').replace(/\D/g,'').length<10){msg.textContent='Informe o WhatsApp com DDD.';return;}
-  bt.disabled=true;bt.textContent='Abrindo…';
-  try{const r=await rpc('pfc_demo_entrar',{p_nome:v('#dNome'),p_empresa:v('#dEmp'),p_cidade:v('#dCid'),p_whats:v('#dZap')});
+  bt.disabled=true;bt.textContent='Enviando…';
+  try{const r=await rpc('pfc_demo_entrar',{p_nome:v('#dNome'),p_empresa:'',p_cidade:'',p_whats:v('#dZap')});
     if(r.erro){if(r.fim)demoFim(r.erro);else msg.textContent=r.erro;return;}
+    if(r.pendente){esperaDemo(r);return;}
     ls.set(TK,r.token);history.replaceState(null,'',location.pathname);await abrir(r.token);
-  }catch(err){msg.textContent='Não foi possível abrir agora. Confira a internet e tente de novo.';}
-  finally{bt.disabled=false;bt.textContent='Começar o demonstrativo';}
+  }catch(err){msg.textContent='Não foi possível enviar agora. Confira a internet e tente de novo.';}
+  finally{bt.disabled=false;bt.textContent='Enviar cadastro';}
 });
+/* pedido em espera continua mesmo se a pessoa recarregar a página */
+(async()=>{const pid=ls.get(PEDK);if(!pid||ls.get(TK))return;try{const q=await rpc('pfc_demo_aguardar',{p_pedido:pid});if(q.pendente){formDemo(true);esperaDemo(q);}else if(q.token){ls.del(PEDK);ls.set(TK,q.token);await abrir(q.token);}else ls.del(PEDK);}catch(_){}})();
 function faltaDemo(){if(!S||!S.demo)return '';const ms=new Date(S.expira)-Date.now();if(ms<=0)return 'termina agora';const hs=Math.floor(ms/36e5),d=Math.floor(hs/24),r=hs%24;
   return 'termina em '+(d?d+(d>1?' dias':' dia')+(r?' e '+r+' h':''):Math.max(1,hs)+' h');}
 const barraDemo=()=>S&&S.demo?`<div class="demo-bar"><span><b>Demonstrativo</b> · ${faltaDemo()}</span><span class="sp"></span><span class="mute">Gostou? Conheça os planos para a sua equipe.</span><a class="btn pri" href="${ZAPDEMO}" target="_blank" rel="noopener">Falar com a FC</a></div>`:'';
@@ -506,6 +518,7 @@ function render(){
   $('#euPapel').textContent=S.matriz?'vendo como '+PAPEIS[papel()]:(S.setor&&S.setor!=='gestor'?(SETORES[S.setor]||S.setor):(PAPEIS[S.papel]||S.papel));
   $('#menu').innerHTML=itens().map(m=>`<button type="button" data-tab="${m.k}" ${m.k===tab?'aria-current="page"':''}><span aria-hidden="true">${m.i}</span>${m.n}</button>`).join('');
   $('#menu').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();scrollTo(0,0);});
+  if(S&&S.matriz)setTimeout(async()=>{const el=document.getElementById('demoPend');if(!el)return;try{const D=await rpc('pfc_adm_demo_lista',{p_token:S.token});const n=D.filter(d=>d.status==='pendente').length;if(n){el.hidden=false;el.textContent=n+' demonstrativo'+(n>1?'s':'')+' aguardando';}}catch(_){}},50);
   $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaAmb,apr:telaApr,ges:telaGes}[tab]||telaInicio)();
   ligar();
   if(tab==='inicio')dicasPl();
@@ -568,7 +581,7 @@ function telaInicio(){
   return `<div class="hero"><div><h2>Olá, ${h(nome)}!</h2><p>${txt}</p></div><div class="bts"><button class="btn cl" data-ir="tip">Ver tipologias</button></div></div>
   <div class="grid">${mods.map(m=>`<button class="card" data-ir="${m.k}"><span class="ic" aria-hidden="true">${m.i}</span><h3>${m.n}</h3><span class="d">${desc[m.k]}</span><span class="pe">${m.k==='tip'||m.k==='apr'||m.k==='amb'?'<span class="chip o">Disponível</span>':'<span class="chip a">Em construção</span>'}</span></button>`+(m.k==='tip'&&p!=='arquiteto'&&p!=='demo'?`<a class="card" href="orientativo/?foco=1#cat" style="text-decoration:none;color:inherit"><span class="ic" aria-hidden="true">▤</span><h3>Catálogo de Perfis</h3><span class="d">Todos os perfis da linha com código e desenho, para consultar na hora do atendimento.</span><span class="pe"><span class="chip o">Disponível</span></span></a>`:'')).join('')}</div>
   <div id="dicasPl"></div>
-  ${S.matriz&&papel()==='gestor'?`<div style="margin:18px 0 6px"><a class="btn pri" href="empresas/">👥 Empresas e acessos</a> <span class="mute" style="margin-left:8px">cadastro das empresas, pessoas, licença e mensagem para o WhatsApp · só a FC vê</span></div>`:''}${S.matriz&&papel()==='gestor'?`<div class="linha-tit"><h3>Etapas da plataforma</h3><span class="chip t">só a FC vê</span></div><div class="etapas">${ETAPAS.map(([n,t,d])=>`<div class="etp ${n==='1'?'on':''}"><span class="chip ${n==='1'?'o':''}">${n==='1'?'Pronta':'Etapa '+n}</span><b>${t}</b><span class="mute">${d}</span></div>`).join('')}</div>`:''}`;
+  ${S.matriz&&papel()==='gestor'?`<div style="margin:18px 0 6px"><a class="btn pri" href="empresas/">👥 Empresas e acessos <span id="demoPend" class="chip a" hidden></span></a> <span class="mute" style="margin-left:8px">cadastro das empresas, pessoas, licença e mensagem para o WhatsApp · só a FC vê</span></div>`:''}${S.matriz&&papel()==='gestor'?`<div class="linha-tit"><h3>Etapas da plataforma</h3><span class="chip t">só a FC vê</span></div><div class="etapas">${ETAPAS.map(([n,t,d])=>`<div class="etp ${n==='1'?'on':''}"><span class="chip ${n==='1'?'o':''}">${n==='1'?'Pronta':'Etapa '+n}</span><b>${t}</b><span class="mute">${d}</span></div>`).join('')}</div>`:''}`;
 }
 function faixaOri(){if(papel()==='arquiteto')return '';if(papel()==='demo')return `<div class="demo-bar"><span><b>📘 Orientativo de Montagem 3D</b> · módulos de estudo e prova final para a equipe aprender cada tipologia.</span><span class="sp"></span><span class="chip a">Na versão completa</span></div>`;let F=[];try{F=JSON.parse(localStorage.getItem('fc_esq_feito'))||[]}catch(_){}
   const M=[['cat','Catálogo de Perfis'],['tip','Tipologias'],['cm','Contramarco'],['gua','Guarnições'],['max','Maxim-Ar'],['cor','Janelas de Correr'],['pad','Perfis e Componentes Padrão'],['giro','Porta de Giro'],['div','Perfis Diversos'],['per','Porta com Persiana']],n=M.filter(m=>F.includes(m[0])).length,prox=(M.find(m=>!F.includes(m[0]))||M[0])[0];
