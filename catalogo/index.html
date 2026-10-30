@@ -101,6 +101,8 @@ html,body{max-width:100%;overflow-x:hidden}
 .tools .w>*{min-width:0}
 #tabs{display:flex!important;flex-wrap:nowrap;gap:8px;width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin;padding-bottom:4px;-webkit-overflow-scrolling:touch}
 #tabs .tb{flex:none;white-space:nowrap;scroll-snap-align:start}
+/* nomes das linhas compactos e em mais de uma fileira: sem barra de rolagem */
+#tabs{flex-wrap:wrap!important;overflow-x:visible;gap:6px;padding-bottom:0}#tabs .tb,.tools #tabs button.tb{font-size:13.5px;padding:5px 12px;min-height:32px}
 .tools input{min-width:0;flex:1 1 220px}
 @media(max-width:900px){.tools{top:64px}.tools .w{gap:6px}.tools button.tb{font-size:14px;padding:7px 13px;min-height:38px}.gh h2{font-size:22px}}
 @media(max-width:560px){.tools{top:56px;padding:8px 0}.tools button.tb{font-size:13.5px;padding:6px 12px;min-height:36px}.tools input{font-size:15px;min-height:40px;padding:8px 12px;flex-basis:100%}
@@ -209,7 +211,7 @@ function hit(ev,ref){if(window.HITX)return HITX(ev,ref);try{if(localStorage.getI
 let LI=LN[0],G='all',Q='',tq;
 function card(p){return `<article class="cd${p.d3&&!OK(p.i)?LKC:''}" style="--c:${COR[p.g]}" id="p-${esc(nz(p.c))}" data-i="${p.i}" data-c="${esc(p.c)}" data-n="${esc(p.n)}" data-m="${esc(p.m)}"${p.un?` data-un="${esc(p.un)}"`:''} tabindex="0" role="button" aria-label="Ver ${esc(p.c)} em 3D"><div class="im">${p.fd?`<img class="d3${p.d3?'':' only d2im'}" src="${esc(p.fd)}" alt="Perfil ${esc(p.cd||p.c)}" loading="lazy">${p.d3?`<img class="d2" src="${IMG}c${p.i}.webp" alt="" loading="lazy">`:''}`:p.d3?`<img class="d3" src="${IMG}${p.i}.webp" alt="Perfil ${esc(p.c)} em 3D" loading="lazy"><img class="d2" src="${IMG}c${p.i}.webp" alt="" loading="lazy">`:(p.im!==undefined?(p.im?`<img class="d3 only d2im" src="${esc(p.im)}" alt="${p.ac?"Acessório":"Perfil"} ${esc(p.c)}" loading="lazy" title="Clique para ampliar" style="cursor:zoom-in">`:(p.ac?'<div style="display:grid;place-items:center;height:100%;color:#8a959c;font-size:13px;text-align:center">📷<br>foto em breve</div>':'<div style="display:grid;place-items:center;height:100%;color:#8a959c;font-size:13px">desenho em breve</div>')):`<img class="d3 only" src="${IMG}c${p.i}.webp" alt="Perfil ${esc(p.c)}" loading="lazy">`)}</div>${p.d3?(OK(p.i)?'<i class="g3" style="font-style:normal">↻ girar em 3D</i>':LKT):''}<b>${esc(p.cd||p.c)}</b><span>${esc(p.nd||p.n)}</span><em>${p.un?'Venda: '+esc(p.un):p.p?'Peso: '+esc(p.p)+' kg/m':p.pb?'Peso: '+esc(p.pb)+' kg/barra':''}</em>${window.CARDX?CARDX(p):''}</article>`;}
 function desenha(){
- document.getElementById('tabs').innerHTML=LN.length>1?LN.map(l=>`<button type="button" class="tb" data-l="${l.id}" aria-pressed="${l===LI}">${esc(l.n)}</button>`).join(''):'';
+ document.getElementById('tabs').innerHTML=LN.length>1?LN.map(l=>`<button type="button" class="tb" data-l="${l.id}" aria-pressed="${l===LI}" title="${esc(l.n)}">${esc(String(l.n).replace(/^Linha\s+/i,''))}</button>`).join(''):'';
  document.getElementById('dl').innerHTML=LN.filter(l=>l.pdf).map(l=>`<a class="btn ${l===LI?'b-or':'b-gh'}" href="${PDFP}${l.pdf}" download data-dl="${l.id}">📄 Baixar ${esc(l.n)} (PDF)</a>`).join('');
  document.getElementById('gf').innerHTML=[['all','Todos','#55636c']].concat(LI.g.map(g=>[g[0],g[1],COR[g[0]]])).map(([k,n,c])=>`<button type="button" data-g="${k}" aria-pressed="${G===k}"><i style="background:${c}"></i>${esc(n)}</button>`).join('');
  const t=nz(Q);let html='';const LS=t?[LI].concat(LN.filter(l=>l!==LI)):[LI];
