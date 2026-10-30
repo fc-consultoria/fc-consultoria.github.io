@@ -471,6 +471,9 @@ async function abrir(token){
   catch(err){const eraDemo=ls.get('pfc-papel')==='demo';ls.del(TK);ls.del('pfc-papel');S=null;const m=err.message||'';if(/demonstrativo/i.test(m)){formDemo(true);mostrarEntrada('');demoFim(m);return;}if(eraDemo){formDemo(true);mostrarEntrada('');$('#demoMsg').textContent='O demonstrativo foi aberto em outro aparelho. Para usar aqui, entre de novo com o mesmo WhatsApp.';return;}mostrarEntrada(/pausad/i.test(m)?m:'');return;}
   if(S.demo)ls.set('pfc-papel','demo');else ls.del('pfc-papel');
   $('#entrada').hidden=true;$('#app').hidden=false;
+  {const ok=!S.demo&&(S.matriz||((S.papel==='gestor'||S.papel==='vendedor')&&['cde','cde-vidros','casa-bandeirante','guapore-vidros','guapore-sinop'].includes(S.empresa)));let b=document.getElementById('sbBtH');
+   if(ok&&!b){b=document.createElement('a');b.id='sbBtH';b.href='orientativo/?foco=1&sub=1#cat';b.textContent='🔁 Substituir perfil';b.style.cssText='position:fixed;left:16px;bottom:16px;z-index:60;border-radius:99px;background:#02717d;color:#fff;font:700 14px system-ui,sans-serif;padding:10px 15px;box-shadow:0 6px 18px #0003;text-decoration:none';document.body.appendChild(b);}
+   else if(!ok&&b)b.remove();}
   const dentro=S.matriz&&S.empresa;
   $('#empNome').innerHTML=S.matriz&&!dentro?'Visão da FC Consultoria':escH(S.empresa_nome)+(dentro?'<span class="mestre" title="Você está dentro desta empresa como FC Consultoria">FC · gestor mestre</span>':'');
   $('#sigla').textContent=S.matriz&&!dentro?'FC':(S.sigla||(S.empresa_nome||'FC').slice(0,2).toUpperCase());

@@ -827,6 +827,7 @@ body.printing #sbBt,body.printing #sbPn{display:none}`;document.head.appendChild
  pn.innerHTML=`<div class="hd"><b>🔁 Substituição de perfil</b><button type="button" id="sbX" aria-label="Fechar">✕</button></div><input id="sbQ" placeholder="Digite o código · ex.: SU-041" autocomplete="off"><div id="sbRes"></div>`;
  document.body.append(bt,pn);bt.onclick=()=>{pn.hidden=!pn.hidden;if(!pn.hidden){subRes();$('#sbQ').focus();}};$('#sbX').onclick=()=>{pn.hidden=true;};
  $('#sbQ').addEventListener('input',e=>{SUB.q=e.target.value;clearTimeout(window.__sbq);window.__sbq=setTimeout(subRes,250);});
+ if(new URLSearchParams(location.search).get('sub')==='1'){pn.hidden=false;subRes();setTimeout(()=>$('#sbQ').focus(),50);}
  pn.addEventListener('submit',async e=>{if(e.target.id!=='sbAdd')return;e.preventDefault();const c=subBase(e.target.c.value)||e.target.c.value.trim().toUpperCase();const b=subBase(SUB.q);if(!b||!c)return;
   try{SUB.ap=await subRpc('pfc_subst_salvar',{p_token:tk,p_base:b,p_sub:c,p_status:'ok'});subRes();}catch(er){alert(er.message);}});
  pn.addEventListener('click',async e=>{const x=e.target.closest('[data-subap]');if(!x)return;e.stopPropagation();const [b,c,s]=x.dataset.subap.split('|');
