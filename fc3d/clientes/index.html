@@ -516,11 +516,11 @@ function telaTip(){
    return `${go}<div class="des">${desenho(t.id)}</div>${t.aj?`<span class="chip a" title="Oculto para os clientes">⚠ Oculto · ajustar</span>`:''}<h3>${h(t.n)}</h3><span class="d">${t.cd?'<b style="font-weight:600">'+h(t.cd)+'</b> · ':''}${h(t.uso)}</span>${t.aj?`<span class="d" style="color:#b45309"><b>Ajuste pendente:</b> ${h(t.aj)}. Só a FC vê esta tipologia.</span>`:''}<span class="pe">${t.tec?'<span class="tec-ok">🧊 3D e 📐 desenho técnico →</span>':t.obra?'<span class="tec-ok">🧊 Abrir em 3D com as medidas da obra →</span>':'<span class="tec-em">Desenho técnico em breve</span>'}</span>${fim}`;};
   return `<div class="cab"><div><h2>Tipologias</h2><p class="mute">Janelas, portas e fachadas de mercado para escolher e apresentar ao cliente.</p></div>
    <div class="filtros" role="group" aria-label="Filtrar">${[['todas','Todas'],['jan','Janelas'],['por','Portas'],['fac','Fachadas']].map(([k,n])=>`<button type="button" data-f="${k}" aria-pressed="${filtro===k}">${n}</button>`).join('')}</div></div>
-   ${faixaOri()}
-   ${filtro!=='fac'?`<div class="linha-tit"><h3>Desenho Técnico</h3></div>${guiaTec()}
-   <div class="linha-tit"><h3 style="font-size:15px">Linha Suprema</h3></div><div class="grid">${L.map(card).join('')}</div>
+   ${filtro!=='fac'?`<div class="linha-tit"><h3 style="font-size:15px">Linha Suprema</h3></div><div class="grid">${L.map(card).join('')}</div>
    ${G.length?`<div class="linha-tit"><h3 style="font-size:15px">Linha Gold</h3></div><div class="grid">${G.map(card).join('')}</div>`:''}`:''}
    ${F.length?`<div class="linha-tit"><h3>Fachadas</h3></div><div class="grid">${F.map(card).join('')}</div>`:''}
+   ${filtro!=='fac'?`<div class="linha-tit" style="margin-top:28px"><h3>Desenho Técnico</h3></div>${guiaTec()}`:''}
+   ${papel()!=='arquiteto'&&papel()!=='demo'?`<p class="mute" style="margin-top:18px;font-size:14px"><a href="orientativo/?foco=1" style="color:#02717d;font-weight:500;text-decoration:none">📘 Orientativo completo · módulos gerais e prova final →</a></p>`:''}
 `;
 }
 const emBreve=(ic,tit,txt,itens)=>`<div class="vazio"><div class="ic">${ic}</div><h3>${tit}</h3><p class="mute" style="max-width:56ch;margin:0 auto">${txt}</p>${itens?`<div class="grid" style="margin-top:18px;text-align:left">${itens.map(([i,n,d])=>`<div class="card"><span class="ic">${i}</span><h3>${n}</h3><span class="d">${d}</span><span class="pe"><span class="chip a">Em construção</span></span></div>`).join('')}</div>`:''}</div>`;
