@@ -768,13 +768,77 @@ async function iniciar(){try{const j=await fetch('perfis.json?v=1',{cache:'no-ca
   Object.entries(raw).forEach(([k,v])=>{const o=Object.assign({k},v);P[k]=o;IDX[k]=o;k.split(' / ').forEach(c=>IDX[c.trim()]=o);});}catch(e){console.warn(e);}
  try{const x=await fetch('perfis_extra.json?v=1',{cache:'no-cache'}).then(r=>r.json());Object.entries(x).forEach(([k,v])=>{if(IDX[k])return;const o=Object.assign({k},v);P[k]=o;IDX[k]=o;});}catch(e){console.warn(e);}
  if(ALUNO){participar();return;}const h=location.hash.slice(1);go(R[h]?h:null);if(APRES.length>=10){try{localStorage.setItem('fc_esq_sala',APRES)}catch(_){}apresentar(APRES);}}
+/* === Substituição de perfil · só equipe interna (CDE, Casa Bandeirante, Guaporé) ===
+   Sugestão automática: mesma linha, mesmo grupo e mesma lógica de montagem (mão de amigo, central, veneziana, folhas, vidro duplo...),
+   só entre os perfis que a empresa trabalha. A FC aprova ou descarta no Acesso FC. Sempre: confirmar com o serralheiro. */
+const SUB={on:false,it:{},temCat:false,ap:[],q:''};
+const SUB_EMP=['cde','cde-vidros','casa-bandeirante','guapore-vidros','guapore-sinop'];
+function subTok(n){const s=String(n||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');const f=new Set();
+ [['mao de amigo','mda'],['interna','int'],['externa','ext'],['central','cen'],['duplo','dup'],['vidro duplo','vd'],['veneziana','ven'],['tela','tel'],['camarao','cam'],['maxim','max'],['basculante','bas'],['portinhola','ptn'],['giro','gir'],['parapeito','par'],['bandeira','ban'],['reforco','ref'],['largo','lar'],['puxador','pux'],['53 mm','m53'],['65 mm','m65'],['sequencia','seq'],['macarrao','mac']].forEach(([k,v])=>{if(s.includes(k))f.add(v);});
+ const fo=s.match(/(\d)(?:\s*[e\/]\s*(\d))?\s*folhas/);if(fo){f.add('f'+fo[1]);if(fo[2])f.add('f'+fo[2]);}
+ if(/\bporta\b/.test(s)&&!/janela/.test(s))f.add('porta');if(/janela/.test(s)&&!/porta/.test(s))f.add('janela');return f;}
+const SUB_IGUAL=['mda','cen','ven','cam','max','bas','ptn','gir','vd','dup'];
+function subDisp(c){if(!SUB.temCat)return true;const e=SUB.it[c];return !!(e&&!e.oc);}
+function subEst(c){const e=SUB.it[c];return SUB.temCat&&e&&e.sc===false;}
+function subAuto(b){const a=F(b);if(!a)return [];const ta=subTok(a.n),pa=num(a.p),da=Array.isArray(a.d)?a.d:null;
+ const nao=new Set(SUB.ap.filter(x=>x.b===b&&x.st==='nao').map(x=>x.s));
+ return Object.values(P).filter(q=>q.k!==a.k&&q.l===a.l&&q.g===a.g&&subDisp(q.k)&&!nao.has(q.k)).map(q=>{const t=subTok(q.n);
+  if(SUB_IGUAL.some(k=>ta.has(k)!==t.has(k)))return null;
+  if((ta.has('int')&&t.has('ext'))||(ta.has('ext')&&t.has('int')))return null;
+  if((ta.has('porta')&&t.has('janela'))||(ta.has('janela')&&t.has('porta')))return null;
+  const fa=[...ta].filter(k=>/^f\d/.test(k)),fb=[...t].filter(k=>/^f\d/.test(k));if(fa.length&&fb.length&&!fa.some(k=>fb.includes(k)))return null;
+  let sc=0;ta.forEach(k=>{if(t.has(k))sc+=2;else sc-=1;});t.forEach(k=>{if(!ta.has(k))sc-=1;});
+  const db=Array.isArray(q.d)?q.d:null;if(da&&db)sc-=Math.abs(da[0]-db[0])/8;
+  const pb=num(q.p);if(pa&&pb)sc-=Math.abs(pa-pb)*2;if(subEst(q.k))sc+=1.5;return {c:q.k,sc};}).filter(x=>x&&x.sc>-4).sort((x,y)=>y.sc-x.sc).slice(0,3).map(x=>x.c);}
+function subBase(q){q=String(q||'').trim().toUpperCase().replace(/\s+/g,'');if(!q)return null;if(F(q))return F(q).k;
+ const e=Object.values(SUB.it).find(x=>[x.c,x.cg].some(v=>v&&String(v).toUpperCase().replace(/\s+/g,'')===q));return e&&F(e.base)?F(e.base).k:null;}
+function subCod(c){const e=SUB.it[c];const cc=e&&(e.cg||e.c);return cc&&cc!==c?c+' · '+cc:c;}
+function subLin(c,tag,mat,b){const x=pfInfo(c);const st=subEst(c)?'<span class="sbt ok">em estoque</span>':(SUB.temCat?'<span class="sbt">sob consulta</span>':'');
+ return `<div class="sbr">${row(tag,subCod(c))}<div class="sbm">${st}${mat?`<button data-subap="${esc(b)}|${esc(c)}|ok" title="Aprovar esta indicação">✓ aprovar</button><button data-subap="${esc(b)}|${esc(c)}|nao" title="Não indicar">✕</button>`:''}</div></div>`;}
+function subRes(){const box=$('#sbRes');if(!box)return;const q=SUB.q.trim();if(!q){box.innerHTML='<p class="sbn">Digite o código do perfil (ex.: SU-041, SU-006). Aparecem as opções da mesma linha e com a mesma lógica de montagem.</p>';return;}
+ const b=subBase(q),mat=SESS&&SESS.matriz;if(!b){box.innerHTML='<p class="sbn">Código não encontrado na base Suprema/Gold.<br><b>Confirme com o serralheiro ou com compras.</b></p>';return;}
+ const a=F(b),disp=subDisp(b);const ok=SUB.ap.filter(x=>x.b===b&&x.st==='ok'&&F(x.s)).map(x=>F(x.s).k);
+ const au=subAuto(b).filter(c=>!ok.includes(c));const okD=ok.filter(subDisp),okFora=ok.filter(c=>!subDisp(c));
+ let h=`<div class="sbh"><span class="sbt ${disp?'ok':'no'}">${disp?'Trabalhamos com este perfil':'Não trabalhamos com este perfil'}</span></div>${subLin(b,'Pesquisado',false)}`;
+ if(okD.length)h+=`<h4>Indicado para substituir</h4>`+okD.map(c=>subLin(c,'Indicação conferida',false)).join('');
+ if(au.length)h+=`<h4>${okD.length?'Outras opções':'Possível substituição'}</h4>`+au.map(c=>subLin(c,'Sugestão',mat,b)).join('');
+ if(mat&&ok.length)h+=`<h4>Aprovadas (FC)</h4>`+ok.map(c=>`<div class="sbx">${esc(c)}${okFora.includes(c)?' · fora do catálogo desta empresa':''} <button data-subap="${esc(b)}|${esc(c)}|">desfazer</button></div>`).join('');
+ if(mat)h+=`<form id="sbAdd" class="sbadd"><input name="c" placeholder="Indicar outro código para ${esc(b)}"><button>+ indicar</button></form>`;
+ if(!okD.length&&!au.length)h+=`<p class="sbn sbw">Sem indicação de substituição para ${esc(b)}.<br><b>Verifique com o serralheiro ou com compras qual perfil usar.</b></p>`;
+ h+=`<p class="sbn sbw">⚠ Substituição é sugestão. <b>Confirme com o serralheiro</b> antes de fechar o pedido.</p>`;box.innerHTML=h;}
+async function subRpc(fn,body){const r=await fetch('https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:'sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs','Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.message||'Erro');return j;}
+async function subInit(){const S=SESS;if(!S||S.demo)return;if(!(S.matriz||((S.papel==='gestor'||S.papel==='vendedor')&&SUB_EMP.includes(S.empresa))))return;
+ const tk=(()=>{try{return localStorage.getItem('pfc-token')}catch(_){return null}})();
+ try{SUB.ap=await subRpc('pfc_subst_lista',{p_token:tk})||[];}catch(_){}
+ if(S.catalogo){try{const H={apikey:'sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg'},U='https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/';
+  const c=(await fetch(U+'cat_clientes?select=id,linhas&slug=eq.'+encodeURIComponent(S.catalogo),{headers:H}).then(r=>r.json()))[0];
+  if(c){const it=await fetch(U+'cat_itens?select=base,c,cg,oc,sc&cliente_id=eq.'+encodeURIComponent(c.id),{headers:H}).then(r=>r.json());SUB.temCat=true;
+   const L=c.linhas||[];Object.values(P).forEach(q=>{if((q.l==='sup'&&L.includes('sup'))||(q.l==='gold'&&L.includes('gold')))SUB.it[q.k]={base:q.k,oc:false,sc:true};});
+   it.forEach(x=>{if(SUB.it[x.base]||F(x.base))SUB.it[F(x.base)?F(x.base).k:x.base]=Object.assign({},SUB.it[x.base]||{},x,{oc:!!x.oc,sc:x.sc!==false});});}}catch(e){console.warn('subst',e);}}
+ const st=document.createElement('style');st.textContent=`#sbBt{position:fixed;left:16px;bottom:16px;z-index:60;border:0;border-radius:99px;background:var(--tl);color:#fff;font:700 14px var(--f-b);padding:10px 15px;box-shadow:0 6px 18px #0003;cursor:pointer}
+#sbPn{position:fixed;left:16px;bottom:66px;z-index:61;width:min(380px,calc(100vw - 32px));max-height:min(70vh,620px);display:flex;flex-direction:column;background:#fff;border:1px solid var(--ln);border-radius:16px;box-shadow:0 14px 40px #0003;overflow:hidden}
+#sbPn[hidden]{display:none}#sbPn .hd{display:flex;align-items:center;gap:8px;padding:12px 14px 8px}#sbPn .hd b{flex:1;font:800 15px var(--f-b)}#sbPn .hd button{border:0;background:none;font-size:18px;cursor:pointer;color:var(--tm)}
+#sbQ{margin:0 14px 8px;font:600 16px var(--f-b);padding:9px 12px;border:1px solid var(--ln);border-radius:10px;text-transform:uppercase}#sbRes{overflow:auto;padding:0 14px 14px}
+#sbRes h4{font:800 12px var(--f-b);text-transform:uppercase;letter-spacing:.04em;color:var(--tm);margin:12px 0 4px}#sbRes .row{width:100%;margin:0}.sbr{margin-bottom:6px}.sbm{display:flex;gap:6px;align-items:center;justify-content:flex-end;margin-top:3px}
+.sbm button,.sbx button,.sbadd button{border:1px solid var(--ln);background:#fff;border-radius:99px;font:700 12px var(--f-b);padding:3px 9px;cursor:pointer}.sbt{font:700 11.5px var(--f-b);padding:2px 8px;border-radius:99px;background:#eef1f3;color:#55636b}.sbt.ok{background:#e1f4ea;color:#17683f}.sbt.no{background:#fde8e6;color:#9b2c22}
+.sbh{margin:2px 0 6px}.sbn{font:500 13.5px/1.45 var(--f-b);color:var(--tm);margin:8px 0}.sbw{background:#fff6e0;border:1px solid #f1d38a;color:#5c3d00;border-radius:10px;padding:8px 10px}.sbx{font:600 13px var(--f-b);margin:3px 0}.sbadd{display:flex;gap:6px;margin-top:10px}.sbadd input{flex:1;font:600 13px var(--f-b);padding:6px 9px;border:1px solid var(--ln);border-radius:8px}
+body.printing #sbBt,body.printing #sbPn{display:none}`;document.head.appendChild(st);
+ const bt=document.createElement('button');bt.id='sbBt';bt.type='button';bt.innerHTML='🔁 Substituir perfil';const pn=document.createElement('div');pn.id='sbPn';pn.hidden=true;
+ pn.innerHTML=`<div class="hd"><b>🔁 Substituição de perfil</b><button type="button" id="sbX" aria-label="Fechar">✕</button></div><input id="sbQ" placeholder="Digite o código · ex.: SU-041" autocomplete="off"><div id="sbRes"></div>`;
+ document.body.append(bt,pn);bt.onclick=()=>{pn.hidden=!pn.hidden;if(!pn.hidden){subRes();$('#sbQ').focus();}};$('#sbX').onclick=()=>{pn.hidden=true;};
+ $('#sbQ').addEventListener('input',e=>{SUB.q=e.target.value;clearTimeout(window.__sbq);window.__sbq=setTimeout(subRes,250);});
+ pn.addEventListener('submit',async e=>{if(e.target.id!=='sbAdd')return;e.preventDefault();const c=subBase(e.target.c.value)||e.target.c.value.trim().toUpperCase();const b=subBase(SUB.q);if(!b||!c)return;
+  try{SUB.ap=await subRpc('pfc_subst_salvar',{p_token:tk,p_base:b,p_sub:c,p_status:'ok'});subRes();}catch(er){alert(er.message);}});
+ pn.addEventListener('click',async e=>{const x=e.target.closest('[data-subap]');if(!x)return;e.stopPropagation();const [b,c,s]=x.dataset.subap.split('|');
+  try{SUB.ap=await subRpc('pfc_subst_salvar',{p_token:tk,p_base:b,p_sub:c,p_status:s||null});subRes();}catch(er){alert(er.message);}},true);}
+
 marca();if(!ALUNO&&!ESTUDO){const g=$('#bGrav');if(g)g.hidden=false;}voltaBtn(!ALUNO&&!ESTUDO);if(ALUNO||ESTUDO)iniciar();else (function(){/* Plataforma FC 3D Clientes: entra com a sessão da plataforma */
  const SP='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_sessao',SPK='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs',G=$('#gate');
  const nega=(t,p)=>{G.hidden=false;G.innerHTML='<form><small>Plataforma FC 3D</small><h1>'+t+'</h1><p>'+p+'</p><a href="../" style="color:#02717d;font-weight:700">Ir para a Plataforma FC 3D</a></form>';};
  let tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
  if(!tk){nega('Entre na Plataforma FC 3D','O Orientativo abre pela plataforma, depois de entrar com o seu login.');return;}
  fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})}).then(r=>r.ok?r.json():null)
-  .then(d=>{if(d&&d.demo){nega('Disponível nos planos','O Orientativo de Montagem 3D faz parte dos planos da Plataforma FC 3D. No demonstrativo você conhece Tipologias, Ambientes e Apresentação.');return;}if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}if(d.demo){nega('Na versão completa','O Orientativo de Montagem 3D faz parte da Plataforma FC 3D completa. Fale com a FC Consultoria pelo WhatsApp (66) 9 9986-7984.');return;}{const g=$('#bGrav');if(g)g.remove();}SESS=d;iniciar();})
+  .then(d=>{if(d&&d.demo){nega('Disponível nos planos','O Orientativo de Montagem 3D faz parte dos planos da Plataforma FC 3D. No demonstrativo você conhece Tipologias, Ambientes e Apresentação.');return;}if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}if(d.demo){nega('Na versão completa','O Orientativo de Montagem 3D faz parte da Plataforma FC 3D completa. Fale com a FC Consultoria pelo WhatsApp (66) 9 9986-7984.');return;}{const g=$('#bGrav');if(g)g.remove();}SESS=d;iniciar().then(subInit).catch(()=>{});})
   .catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));})();
 </script>
 
