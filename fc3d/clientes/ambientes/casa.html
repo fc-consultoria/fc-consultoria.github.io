@@ -134,6 +134,7 @@ fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},b
   <div class="stage" id="stage">
     <canvas id="cv" aria-label="Casa em 3D com as esquadrias"></canvas>
     <div class="fl tr">
+      <button type="button" class="tb" id="bVoltar" hidden title="Voltar à tela anterior (Esc)">↩ Voltar</button>
       <button type="button" class="tb" id="bAndar">🚶 Passear</button>
       <button type="button" class="tb" id="bAbrir">Abrir esquadrias</button>
       <button type="button" class="tb" id="bNoite">🌙 Noite</button>
@@ -577,9 +578,9 @@ function montarBairro(){limparCena();sombra(70);
 const SO_ORIENT=['emL','predio'];
 const bloqueada=k=>(DEMO&&SO_ORIENT.includes(k))||ST.carreira&&ORDEM.indexOf(k)>0&&!ST.selos.includes(ORDEM[ORDEM.indexOf(k)-1]);
 const motivo=k=>DEMO&&SO_ORIENT.includes(k)?'disponível no Plataforma FC 3D completa':'termine a obra anterior';
-function entrarObra(k){setTimeout(botoes,0);const i=MODELOS.findIndex(m=>m.k===k);if(i<0)return;if(bloqueada(k)){dica('🔒 Esta obra: '+motivo(k)+'.');return;}
+function entrarObra(k){setTimeout(botoes,0);const i=MODELOS.findIndex(m=>m.k===k);if(i<0)return;if(bloqueada(k)){dica('🔒 Esta obra: '+motivo(k)+'.');return;}marcaVolta();
   clearInterval(FILA_T);FILA_T=null;FILA=[];DETALHE.clear();andarOff();ST.vista='obra';ST.m=i;ST.vaos=ST.obras[k];ST.sel=null;ST.tab=MODELOS[i].predio||ST.carreira?'esq':'planta';montar();painel();vista('rua');salvar();}
-function irBairro(){setTimeout(botoes,0);clearInterval(FILA_T);FILA_T=null;FILA=[];andarOff();ST.vista='bairro';ST.sel=null;montar();painel();vistaBairro();salvar();}
+function irBairro(){marcaVolta();setTimeout(botoes,0);clearInterval(FILA_T);FILA_T=null;FILA=[];andarOff();ST.vista='bairro';ST.sel=null;montar();painel();vistaBairro();salvar();}
 function vistaBairro(){voar([-20,46,62],[-8,0,0]);}
 
 /* ================= PERSONAGEM: passeio a pé ================= */
@@ -732,7 +733,7 @@ function passoVoo(){if(!ALVO)return;const k=Math.min(1,(performance.now()-ALVO.t
   const {s0,s1}=ALVO,lift=Math.sin(Math.PI*e)*Math.min(.35,Math.abs(ALVO.dth)*.18);
   const sp=new THREE.Spherical(s0.radius+(s1.radius-s0.radius)*e+Math.sin(Math.PI*e)*Math.abs(ALVO.dth)*2.5,Math.max(.05,s0.phi+(s1.phi-s0.phi)*e-lift),s0.theta+ALVO.dth*e);
   ctl.target.lerpVectors(ALVO.a,ALVO.b,e);cam.position.copy(ctl.target).add(new THREE.Vector3().setFromSpherical(sp));if(k>=1)ALVO=null;}
-function vista(v){if(ST.vista==='bairro'){andarOff();if(v==='rua')voar([-30,7,4],[-14,3,-14]);if(v==='quintal')vistaBairro();if(v==='cima')voar([-8,120,8],[-8,0,0]);document.querySelectorAll('[data-vista]').forEach(b=>b.classList.toggle('on',b.dataset.vista===v));return;}const M=MODELOS[ST.m],[LW,LD]=M.lote;if(M.predio){if(v==='rua')voar([-LW*.42,14,LD/2+16],[0,6,0]);if(v==='quintal')voar([LW*.15,9,LD*.34],[ -2,1.5,LD*.12]);if(v==='cima')voar([.01,LD*1.6,6],[0,0,0]);document.querySelectorAll('[data-vista]').forEach(b=>b.classList.toggle('on',b.dataset.vista===v));return;}if(v==='rua')voar([-LW*.35,4.2,LD/2+9],[0,1.6,LD*.12]);if(v==='quintal')voar([LW*.45,7.5,-LD/2-5],[0,1.2,-LD*.18]);if(v==='cima')voar([0.01,Math.max(LW,LD)*1.25,4],[0,0,0]);
+function vista(v){marcaVolta();if(ST.vista==='bairro'){andarOff();if(v==='rua')voar([-30,7,4],[-14,3,-14]);if(v==='quintal')vistaBairro();if(v==='cima')voar([-8,120,8],[-8,0,0]);document.querySelectorAll('[data-vista]').forEach(b=>b.classList.toggle('on',b.dataset.vista===v));return;}const M=MODELOS[ST.m],[LW,LD]=M.lote;if(M.predio){if(v==='rua')voar([-LW*.42,14,LD/2+16],[0,6,0]);if(v==='quintal')voar([LW*.15,9,LD*.34],[ -2,1.5,LD*.12]);if(v==='cima')voar([.01,LD*1.6,6],[0,0,0]);document.querySelectorAll('[data-vista]').forEach(b=>b.classList.toggle('on',b.dataset.vista===v));return;}if(v==='rua')voar([-LW*.35,4.2,LD/2+9],[0,1.6,LD*.12]);if(v==='quintal')voar([LW*.45,7.5,-LD/2-5],[0,1.2,-LD*.18]);if(v==='cima')voar([0.01,Math.max(LW,LD)*1.25,4],[0,0,0]);
   document.querySelectorAll('[data-vista]').forEach(b=>b.classList.toggle('on',b.dataset.vista===v));}
 
 /* ---------- contas de perfis (para aprender) ---------- */
@@ -807,12 +808,12 @@ let INTER=0,T0=Date.now();const conta=()=>{INTER++;checaOpiniao();};
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(!b)return;ST.tab=b.dataset.tab;painel();});
 $('#pn').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
   if(d.tab){ST.tab=d.tab;painel();return;}
-  if(d.mod!=null){const k=MODELOS[+d.mod].k;if(bloqueada(k)){dica('🔒 Esta obra: '+motivo(k)+'.');return;}clearInterval(FILA_T);FILA_T=null;FILA=[];DETALHE.clear();ST.m=+d.mod;ST.vaos=ST.obras[k];ST.sel=null;montar();painel();vista('rua');conta();salvar();return;}
+  if(d.mod!=null){const k=MODELOS[+d.mod].k;if(bloqueada(k)){dica('🔒 Esta obra: '+motivo(k)+'.');return;}marcaVolta();clearInterval(FILA_T);FILA_T=null;FILA=[];DETALHE.clear();ST.m=+d.mod;ST.vaos=ST.obras[k];ST.sel=null;montar();painel();vista('rua');conta();salvar();return;}
   if(d.linha){ST.linha=d.linha;montar();painel();conta();salvar();return;}
   if(d.tel){ST.tel=d.tel;montar();painel();conta();salvar();return;}
   if(d.cor){ST[d.cor]=d.v;aplicaCores();if(d.cor==='corTel'&&ST.tel==='plat')montar();painel();conta();salvar();return;}
   if(d.entrar){entrarObra(d.entrar);return;}
-  if(d.irlote){const l=LOTES.find(q=>q.k===d.irlote);if(l){if(AV.on){AV.p.set(l.porta.x,0,l.porta.z+(l.porta.z<0?2.5:-2.5));AV.yaw=l.porta.z<0?Math.PI:0;}else voar([l.centro.x+10,22,l.centro.z+(l.centro.z<0?30:-30)],[l.centro.x,2,l.centro.z]);}return;}
+  if(d.irlote){const l=LOTES.find(q=>q.k===d.irlote);if(l){marcaVolta();if(AV.on){AV.p.set(l.porta.x,0,l.porta.z+(l.porta.z<0?2.5:-2.5));AV.yaw=l.porta.z<0?Math.PI:0;}else voar([l.centro.x+10,22,l.centro.z+(l.centro.z<0?30:-30)],[l.centro.x,2,l.centro.z]);}return;}
   if(d.modo){const c2=d.modo==='carreira';if(c2&&!ST.carreira){if(!confirm('Começar a carreira? As obras começam vazias e você vai liberando uma por vez.'))return;ORDEM.forEach(k=>{const m=MODELOS.find(x=>x.k===k);ST.obras[k]=novoVaos(m,true);});ST.selos=[];}
     ST.carreira=c2;ST.vaos=ST.obras[MODELOS[ST.m].k];salvar();montar();painel();return;}
   if(b.id==='bRecomecar'){if(!confirm('Recomeçar a carreira do zero?'))return;ORDEM.forEach(k=>{const m=MODELOS.find(x=>x.k===k);ST.obras[k]=novoVaos(m,true);});ST.selos=[];ST.vaos=ST.obras[MODELOS[ST.m].k];salvar();montar();painel();return;}
@@ -853,6 +854,26 @@ cv.addEventListener('pointerup',e=>{if(!down)return;const mv=Math.hypot(e.client
   if(ST.vista==='bairro'){if(AV.on)return;const h=ray.intersectObjects(LOTES.map(l=>l.hit),false)[0];if(h){const k=h.object.userData.lote,m=MODELOS.find(x=>x.k===k);dica(bloqueada(k)?'🔒 '+m.n+': '+motivo(k)+'.':m.n+' · toque em “Montar” no painel ou chegue no portão passeando.');}return;}
   const objs=[];ESQ.forEach(q=>q.r.root.traverse(o=>{if(o.isMesh&&o.visible)objs.push(o);}));const hit=ray.intersectObjects(objs,false)[0];
   if(hit){ST.sel=hit.object.userData.vi;ST.tab='esq';selVisual();painel();conta();dica('Esquadria selecionada: troque a tipologia ou a medida no painel.');}});
+/* ================= VOLTAR: retorna à tela/câmera anterior (botão, Esc e botão voltar do celular) ================= */
+const HIST=[];let VOLTANDO=false,MARCA_T=null,HIST_ON=false;
+function fotoVolta(){return {vista:ST.vista,m:ST.m,tab:ST.tab,cam:cam.position.clone(),tgt:ctl.target.clone()};}
+function marcaVolta(){if(VOLTANDO||MARCA_T||!HIST_ON)return;MARCA_T=setTimeout(()=>{MARCA_T=null;},0);
+  HIST.push(fotoVolta());if(HIST.length>30)HIST.shift();try{history.pushState({fcVolta:HIST.length},'');}catch(_){}atualizaVolta();}
+function atualizaVolta(){$('#bVoltar').hidden=!HIST.length;}
+function voltar(){const s=HIST.pop();atualizaVolta();if(!s){location.href='../#amb';return;}
+  VOLTANDO=true;try{if(AV.on)andarOff();
+    if(s.vista==='bairro'&&ST.vista!=='bairro')irBairro();
+    else if(s.vista!=='bairro'&&(ST.vista==='bairro'||ST.m!==s.m))entrarObra(MODELOS[s.m].k);
+    if(s.vista!=='bairro'&&s.tab&&ST.tab!==s.tab){ST.tab=s.tab;painel();}
+    botoes();voar(s.cam,s.tgt);
+    const vs=document.querySelectorAll('[data-vista]');vs.forEach(b=>b.classList.remove('on'));
+  }finally{VOLTANDO=false;}}
+$('#bVoltar').onclick=()=>{if(HIST.length)history.back();};
+addEventListener('popstate',()=>{if(HIST.length)voltar();});
+addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(document.querySelector('#mcDica:not([hidden])')||!$('#selo').hidden)return;
+  const t=e.target;if(t&&/INPUT|TEXTAREA|SELECT/.test(t.tagName))return;
+  if(AV.on){andarOff();return;}if(HIST.length){e.preventDefault();history.back();}});
+setTimeout(()=>{HIST_ON=true;},800);
 let dT=null;function dica(t){const el=$('#tip');el.textContent=t;el.hidden=false;clearTimeout(dT);dT=setTimeout(()=>{el.hidden=true;},2600);}
 
 /* ================= OPINIÃO ================= */
