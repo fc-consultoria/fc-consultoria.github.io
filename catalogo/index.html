@@ -218,7 +218,7 @@ function desenha(){
  LS.forEach(LL=>LL.g.forEach(([g,nm,ds])=>{if(G!=='all'&&G!==g)return;const L=LL.p.filter(p=>p.g===g&&!p.oc&&(!t||nz(p.c).includes(t)||nz(p.n).includes(t)||nz(p.cd||'').includes(t)||nz(p.cm||'').includes(t)||nz(p.nd||'').includes(t)));if(!L.length)return;
   html+=`<div class="gh"><i style="background:${COR[g]}"></i><div><h2>${esc(t&&LN.length>1?LL.n+' · '+nm:nm)}</h2><p>${esc(ds)}</p></div></div><div class="grid">${L.map(card).join('')}</div>`;}));
  document.getElementById('lst').innerHTML=html||'<p style="color:var(--tm);margin:30px 0">Nenhum perfil encontrado. Tente outro código ou nome.</p>';
- document.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{LI=LN.find(l=>l.id===b.dataset.l);G='all';desenha();hit('perfis_linha',LI.id);history.replaceState(null,'','?l='+LI.id);});
+ document.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{LI=LN.find(l=>l.id===b.dataset.l);G='all';desenha();hit('perfis_linha',LI.id);{const u=new URLSearchParams(location.search);if(SLUG&&!(location.pathname.match(/\/catalogo\/([^\/?#]+)/)||[])[1]&&!window.CAT_SLUG)u.set('c',SLUG);u.set('l',LI.id);history.replaceState(null,'','?'+u.toString());}});
  document.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{G=b.dataset.g;desenha();});}
 document.getElementById('q').addEventListener('input',e=>{Q=e.target.value;desenha();clearTimeout(tq);tq=setTimeout(()=>{if(Q.trim())hit('perfis_busca',Q.trim().slice(0,40));},1500);});
 document.addEventListener('click',e=>{const d=e.target.closest('[data-dl]');if(d)hit('perfis_pdf',d.dataset.dl);const c=e.target.closest('[data-cv]');if(c&&window.FCRC){hit('rep_conv','perfis');FCRC.abrir('Vi o catálogo de perfis e quero falar sobre: ');}});
