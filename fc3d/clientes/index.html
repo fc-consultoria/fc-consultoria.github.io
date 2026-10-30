@@ -438,7 +438,9 @@ $('#entForm').addEventListener('submit',async e=>{
     const fc=modoFC||lg.toLowerCase()==='matriz';
     const r=fc?await rpc('pfc_login_matriz',{p_senha:cd}):await rpc('pfc_login',{p_login:lg,p_codigo:cd});
     if(r.erro){msg.textContent=r.erro;return;}
-    ls.set(TK,r.token);await abrir(r.token);
+    ls.set(TK,r.token);
+    if(fc&&typeof IR!=='undefined'&&IR){try{await rpc('pfc_matriz_empresa',{p_token:r.token,p_empresa:IR.emp});papelVer=IR.ver;tab='inicio';}catch(_){}}
+    await abrir(r.token);
   }catch(err){msg.textContent='Não foi possível entrar agora. Confira a internet e tente de novo.';}
   finally{bt.disabled=false;bt.textContent='Entrar';}
 });
@@ -645,8 +647,17 @@ function detalhe(id){
 }
 
 /* ---------- início ---------- */
+/* 29/10/2026 · vindo do Portal Comercial (?emp=&ver=): o acesso FC abre direto dentro da empresa
+   e no papel que estava vendo lá (Colaborador ou Gestor). Para quem não é FC, não muda nada. */
+const IR=(()=>{const q=new URLSearchParams(location.search),e=(q.get('emp')||'').replace(/[^\w-]/g,''),v=q.get('ver');
+  if(e||v)history.replaceState(null,'',location.pathname+location.hash);
+  return e?{emp:e,ver:['gestor','vendedor'].includes(v)?v:'vendedor'}:null;})();
 const tk=ls.get(TK);
-if(tk)abrir(tk);else mostrarEntrada('');
+if(tk)(async()=>{
+  if(IR){try{const s0=await rpc('pfc_sessao',{p_token:tk});
+    if(s0&&s0.matriz){if(s0.empresa!==IR.emp)await rpc('pfc_matriz_empresa',{p_token:tk,p_empresa:IR.emp});papelVer=IR.ver;tab='inicio';}}catch(_){}}
+  abrir(tk);})();
+else mostrarEntrada('');
 })();
 </script>
 <script src="toque.js?v=1"></script>
