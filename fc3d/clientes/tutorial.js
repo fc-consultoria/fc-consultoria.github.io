@@ -1,7 +1,8 @@
 /* Plataforma FC 3D · Como usar (tutorial guiado por painel)
    © FC Consultoria em Esquadria — criação da FC, uso exclusivo de empresas licenciadas.
    Cada painel tem o seu passo a passo, separado: cada pessoa vê só o guia do próprio painel.
-   Hoje: Colaborador (chave interna "vendedor") e Gestor. Portal do Cliente e Demonstrativo entram depois em GUIAS.
+   Hoje: Colaborador (chave interna "vendedor"), Gestor e Demonstrativo (curto, ~1 min). Portal do Cliente entra depois em GUIAS.
+   1ª entrada: tela de boas-vindas (Ver agora / Depois); "Ver agora" passa sozinho com voz feminina (modo automático).
    Ao mudar a tela, revise os passos do painel aqui. Passo cujo alvo não existe na tela é pulado sozinho. */
 (function(){
   if(window.PFCtut)return;
@@ -82,7 +83,25 @@
     pc('Sair'),
     mais(pc('Pronto!'),{x:'Sempre que precisar, toque em "?" para ver este guia de novo. Dúvidas sobre a plataforma ou sobre a licença: fale com a FC (segunda a sexta, 8h às 11h e 13h às 17h).'})
   ]};
-  /* arquiteto (Portal do Cliente) e demo (Demonstrativo): próximos */
+  /* ---------- DEMONSTRATIVO (teste de 3 dias) ----------
+     Curto (cerca de 1 minuto): o melhor da plataforma e o convite para falar com a FC. */
+  GUIAS.demo={nome:'Demonstrativo',curto:true,passos:[
+    {tab:'inicio',t:'Bem-vindo à Plataforma FC 3D',
+     x:'Em um minuto eu mostro como funciona. Aqui a equipe da vidraçaria apresenta janelas e portas de alumínio em 3D para o cliente, no celular, no notebook ou na TV.'},
+    {tab:'inicio',alvo:'.demo-bar',t:'O seu teste de 3 dias',
+     x:'Aqui aparece quanto tempo falta do seu teste. Gostou? Por este botão você fala direto com a FC pelo WhatsApp.'},
+    {tab:'inicio',alvo:'#menu',t:'Menu',
+     x:'Por aqui você navega: Início, Tipologias e Apresentação.'},
+    {tab:'tip',alvo:'#vit',t:'Linhas Suprema e Gold',
+     x:'Escolha a linha e veja as janelas e portas de mercado, cada uma com o desenho e o código da montagem no catálogo.'},
+    {tab:'tip',alvo:'#det .cx',antes:function(){if($('#det').hidden){var b=$('[data-tip]');if(b)b.click();}},depois:fechaFicha,t:'Ficha da tipologia',
+     x:'Toque em uma tipologia para abrir a ficha: como ela abre, onde usar e o botão para ver em 3D, girando a janela e abrindo as folhas.'},
+    {tab:'apr',alvo:'main .hero',t:'Apresentação na TV',
+     x:'No modo apresentação a tela fica limpa, sem menus, para mostrar na TV ou no telão durante a reunião com o cliente.'},
+    {tab:'inicio',alvo:'#btAjuda',t:'Pronto! Agora é com você',
+     x:'Explore à vontade durante os 3 dias. Para ver este passo a passo de novo, toque em Como funciona. Quer a plataforma para a sua equipe? Fale com a FC pelo WhatsApp.'}
+  ]};
+  /* arquiteto (Portal do Cliente): próximo */
 
   /* ============ ESTILO ============ */
   var css=document.createElement('style');
@@ -99,6 +118,17 @@
   '#tutCx ol{margin:10px 0 0;padding:0 0 0 20px;max-height:46vh;overflow:auto;font-size:14px}#tutCx ol li{padding:4px 0}#tutCx ol button{all:unset;cursor:pointer;color:var(--ink)}#tutCx ol li.at button{color:var(--teal);font-weight:700}'+
   '#tutCx .wm{margin-top:10px;font-size:10.5px;letter-spacing:.06em;color:var(--mute);text-transform:uppercase}'+
   '#btAjuda{font:700 17px var(--f-h)}'+
+  '#btAjuda.txt{display:inline-flex;align-items:center;justify-content:center;width:auto;padding:0 12px;font:600 13.5px var(--f-h);gap:6px;white-space:nowrap}'+
+  '@media(max-width:760px){#btAjuda.txt{width:40px;padding:0;font:700 15px var(--f-h)}#btAjuda.txt .tx{display:none}}'+
+  '#tutCx .tq{flex-wrap:nowrap;white-space:nowrap}#tutCx .tq>span:first-child{overflow:hidden;text-overflow:ellipsis}'+
+  '#tutBv{position:fixed;inset:0;z-index:1003;display:grid;place-items:center;background:rgba(8,18,24,.62);padding:16px}'+
+  '#tutBv .cx{width:min(440px,100%);background:var(--panel);color:var(--ink);border-radius:20px;padding:26px 24px 20px;box-shadow:0 18px 50px rgba(0,0,0,.4);text-align:center}'+
+  '#tutBv .ic{width:62px;height:62px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;font-size:28px;background:var(--tealSoft);color:var(--teal)}'+
+  '#tutBv h2{font-size:22px;margin:0 0 8px}#tutBv p{font-size:15px;line-height:1.5;color:var(--mute);margin:0 0 18px}'+
+  '#tutBv .bts{display:flex;flex-direction:column;gap:8px}#tutBv .btn{min-height:46px;font-size:15.5px}'+
+  '#tutBv small{display:block;margin-top:12px;font-size:12px;color:var(--mute)}'+
+  '#tutDica{position:fixed;z-index:1004;max-width:260px;background:var(--teal);color:#fff;font:600 13.5px var(--f-h);padding:10px 12px;border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,.3)}'+
+  '#tutCx #tutPlay{color:var(--teal)}'+
   '@media(max-width:600px){#tutCx{left:16px!important;right:16px;bottom:16px!important;top:auto!important;width:auto}}';
   document.head.appendChild(css);
 
@@ -108,10 +138,21 @@
     var fem=/francisca|luciana|maria|vit[oó]ria|raquel|helo[ií]sa|camila|google portugu[eê]s|female|feminina/i;
     voz=V.filter(function(v){return fem.test(v.name);})[0]||V[0]||null;}
   if(window.speechSynthesis){acharVoz();speechSynthesis.onvoiceschanged=acharVoz;}
-  function falar(t){if(!window.speechSynthesis)return;speechSynthesis.cancel();if(!vozOn||!t)return;var u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';if(voz)u.voice=voz;u.rate=1;speechSynthesis.speak(u);}
+  var falaN=0;
+  function falar(t,fim){if(!window.speechSynthesis){if(fim)fim(false);return;}speechSynthesis.cancel();if(!vozOn||!t){if(fim)fim(false);return;}
+    var n=++falaN,u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';if(voz)u.voice=voz;u.rate=1.02;
+    var ok=false,feito=function(){if(ok||n!==falaN)return;ok=true;if(fim)fim(true);};
+    u.onend=feito;u.onerror=function(){if(!ok&&n===falaN){ok=true;if(fim)fim(false);}};speechSynthesis.speak(u);}
 
   /* ============ MOTOR ============ */
-  var guia=null,passos=[],i=0,aberto=false,lista=false,alvoAt=null,papelAt=null;
+  var guia=null,passos=[],i=0,aberto=false,lista=false,alvoAt=null,papelAt=null,auto=false,autoT=null;
+  /* Modo automático: depois de falar o passo, vai para o próximo; sem voz, espera o tempo de leitura. */
+  function agenda(p){clearTimeout(autoT);if(!auto||!aberto)return;var at=i,txt=p.t+'. '+texto(p);
+    var segue=function(){clearTimeout(autoT);autoT=setTimeout(function(){if(auto&&aberto&&i===at&&!lista)ir(i+1,1);},900);};
+    if(vozOn&&window.speechSynthesis){falar(txt,function(f){if(f)segue();else autoT=setTimeout(function(){if(auto&&aberto&&i===at&&!lista)ir(i+1,1);},Math.max(4500,txt.length*60));});
+      /* rede de segurança: alguns aparelhos não avisam o fim da fala */
+      setTimeout(function(){if(auto&&aberto&&i===at&&!lista&&!speechSynthesis.speaking)segue();},Math.max(6000,txt.length*95));}
+    else autoT=setTimeout(function(){if(auto&&aberto&&i===at&&!lista)ir(i+1,1);},Math.max(4500,txt.length*60));}
   function alvoDe(p){if(!p.alvo)return null;var e=typeof p.alvo==='function'?p.alvo():$(p.alvo);if(!e)return null;var r=e.getBoundingClientRect();return (r.width||r.height)?e:null;}
   function irTab(k){if(window.PFC&&window.PFC.tab()!==k)window.PFC.ir(k);}
 
@@ -138,7 +179,7 @@
       alvoAt=e;
       if(e&&!(e.closest&&e.closest('.topo')))e.scrollIntoView({block:'center',behavior:'smooth'});
       desenhar();setTimeout(posicionar,320);posicionar();
-      falar(p.t+'. '+texto(p));
+      if(auto)agenda(p);else falar(p.t+'. '+texto(p));
     },p.antes?140:40);
   }
   function texto(p){return ehToque()&&p.xToque?p.xToque:p.x;}
@@ -152,8 +193,8 @@
       $('#tutVolta').onclick=function(){lista=false;desenhar();posicionar();};
       cx.querySelectorAll('[data-tp]').forEach(function(b){b.onclick=function(){ir(+b.dataset.tp,1);};});
       return;}
-    cx.innerHTML='<div class="tq"><span>Guia do '+guia.nome+' · '+(i+1)+' de '+tot+'</span><span class="sp"></span>'+
-      '<button type="button" id="tutLista">Passos</button>'+(temVoz?'<button type="button" id="tutVoz" aria-pressed="'+vozOn+'">'+(vozOn?'🔊 Voz ligada':'🔈 Ouvir')+'</button>':'')+'</div>'+
+    cx.innerHTML='<div class="tq"><span>'+(guia.curto?'Como funciona':'Guia do '+guia.nome)+' · '+(i+1)+' de '+tot+'</span><span class="sp"></span>'+
+      '<button type="button" id="tutPlay" aria-pressed="'+auto+'" title="'+(auto?'Pausar':'Passar sozinho')+'" aria-label="'+(auto?'Pausar':'Passar sozinho')+'">'+(auto?'Pausar':'▶ Seguir')+'</button>'+'<button type="button" id="tutLista">Passos</button>'+(temVoz?'<button type="button" id="tutVoz" aria-pressed="'+vozOn+'">'+(vozOn?'🔊 Voz':'🔈 Ouvir')+'</button>':'')+'</div>'+
       '<div class="bar"><s style="width:'+((i+1)/tot*100)+'%"></s></div>'+
       '<h3 id="tutTit">'+p.t+'</h3><p>'+texto(p)+'</p>'+
       '<div class="bts">'+(pri?'<button class="btn sec" id="tutFim">Agora não</button>':'<button class="btn sec" id="tutAnt">Voltar</button>')+
@@ -164,8 +205,9 @@
     if((b=$('#tutAnt')))b.onclick=function(){ir(i-1,-1);};
     if((b=$('#tutFim')))b.onclick=function(){fechar(true);};
     $('#tutProx').onclick=function(){ir(i+1,1);};
-    $('#tutLista').onclick=function(){lista=true;desenhar();posicionar();};
-    if((b=$('#tutVoz')))b.onclick=function(){vozOn=!vozOn;ls.set(VZ,vozOn?'1':'0');desenhar();falar(vozOn?p.t+'. '+texto(p):'');};
+    $('#tutLista').onclick=function(){clearTimeout(autoT);if(window.speechSynthesis)speechSynthesis.cancel();lista=true;desenhar();posicionar();};
+    $('#tutPlay').onclick=function(){auto=!auto;desenhar();posicionar();if(auto)agenda(p);else{clearTimeout(autoT);if(window.speechSynthesis)speechSynthesis.cancel();}};
+    if((b=$('#tutVoz')))b.onclick=function(){vozOn=!vozOn;ls.set(VZ,vozOn?'1':'0');desenhar();if(auto)agenda(p);else falar(vozOn?p.t+'. '+texto(p):'');};
     setTimeout(function(){var f=$('#tutProx');if(f)f.focus({preventScroll:true});},30);
   }
 
@@ -187,14 +229,38 @@
   }
 
   function chave(){var P=window.PFC;return 'pfc-tut-visto-'+papelAt+'-'+((P&&P.nome())||'');}
-  function abrir(){
-    papelAt=window.PFC&&window.PFC.papel();guia=GUIAS[papelAt];if(!guia)return;
-    passos=guia.passos;montar();aberto=true;$('#tutVeu').hidden=false;i=0;ir(0,1);
+  function abrir(op){
+    op=op||{};papelAt=window.PFC&&window.PFC.papel();guia=GUIAS[papelAt];if(!guia)return;
+    if(op.voz&&window.speechSynthesis){vozOn=true;ls.set(VZ,'1');}
+    auto=!!op.auto;passos=guia.passos;montar();aberto=true;$('#tutVeu').hidden=false;i=0;
+    /* no modo automático o 1º passo já começa (sem o "Começar") */
+    ir(0,1);
   }
+  /* ===== Boas-vindas: 1ª entrada da pessoa no painel ===== */
+  function boasVindas(){
+    if($('#tutBv')||aberto)return;var pp=window.PFC.papel(),g=GUIAS[pp];if(!g)return;
+    var nome=(window.PFC.nome()||'').split(' ')[0];
+    var d=document.createElement('div');d.id='tutBv';
+    d.innerHTML='<div class="cx" role="dialog" aria-modal="true" aria-labelledby="tutBvT"><div class="ic" aria-hidden="true">▶</div>'+
+      '<h2 id="tutBvT">Bem-vindo'+(nome&&pp!=='demo'?', '+nome:'')+'!</h2>'+
+      '<p>Quer ver agora como funciona a Plataforma FC 3D? '+(g.curto?'Em cerca de 1 minuto':'Em poucos minutos')+', uma narração mostra cada parte da tela.</p>'+
+      '<div class="bts"><button type="button" class="btn pri" id="tutBvSim">▶ Ver agora como funciona</button><button type="button" class="btn sec" id="tutBvNao">Depois</button></div>'+
+      '<small>Você pode ver a qualquer hora no botão "Como funciona", no topo da tela.</small></div>';
+    document.body.appendChild(d);
+    var sai=function(){d.remove();ls.set(chave(),'1');};
+    $('#tutBvSim').onclick=function(){sai();abrir({auto:true,voz:true});};
+    $('#tutBvNao').onclick=function(){sai();dica();};
+    setTimeout(function(){var b=$('#tutBvSim');if(b)b.focus({preventScroll:true});},40);
+  }
+  /* "Depois": balão apontando o botão Como funciona */
+  function dica(){var b=$('#btAjuda');if(!b||!b.offsetParent)return;var r=b.getBoundingClientRect(),t=document.createElement('div');t.id='tutDica';
+    t.textContent='Quando quiser, toque aqui para ver como funciona.';document.body.appendChild(t);
+    t.style.top=(r.bottom+10)+'px';t.style.left=Math.max(12,Math.min(innerWidth-t.offsetWidth-12,r.right-t.offsetWidth))+'px';
+    var tira=function(){t.remove();document.removeEventListener('click',tira,true);};setTimeout(tira,6000);setTimeout(function(){document.addEventListener('click',tira,true);},50);}
   function fechar(marcar){
     if(!aberto)return;var p=passos[i];if(p&&p.depois)p.depois();
     aberto=false;alvoAt=null;var v=$('#tutVeu');if(v)v.hidden=true;
-    if(window.speechSynthesis)speechSynthesis.cancel();
+    clearTimeout(autoT);auto=false;if(window.speechSynthesis)speechSynthesis.cancel();
     if(marcar!==false)ls.set(chave(),'1');
     var b=$('#btAjuda');if(b)b.focus({preventScroll:true});
   }
@@ -203,13 +269,16 @@
   function atualiza(){
     var P=window.PFC;if(!P)return;var pp=P.papel(),tem=!!GUIAS[pp],b=$('#btAjuda');
     if(!b){var ref=$('#btTema');if(!ref)return;b=document.createElement('button');b.className='ic-bt';b.id='btAjuda';b.type='button';
-      b.title='Como usar este painel';b.setAttribute('aria-label','Como usar este painel');b.textContent='?';
-      b.onclick=abrir;ref.parentNode.insertBefore(b,ref);}
+      b.title='Como funciona este painel';b.setAttribute('aria-label','Como funciona este painel');b.className='ic-bt txt';
+      b.innerHTML='<span aria-hidden="true">▶</span><span class="tx">Como funciona</span>';
+      b.onclick=function(){abrir({auto:true});};ref.parentNode.insertBefore(b,ref);}
     b.hidden=!tem;
     if(aberto&&pp!==papelAt)fechar(false);
-    /* 1ª vez da pessoa neste painel: abre o guia sozinho (não abre para a FC nem no demonstrativo) */
-    if(tem&&!aberto&&!P.matriz()&&pp!=='demo'){papelAt=pp;if(!ls.get(chave()))setTimeout(function(){if(!aberto&&!$('#app').hidden)abrir();},700);}
+    /* 1ª vez da pessoa neste painel: tela de boas-vindas (Ver agora / Depois). Não abre para a FC;
+       a FC confere com ?boasvindas=1 no link. */
+    var forca=/[?&]boasvindas=1/.test(location.search);
+    if(tem&&!aberto&&(forca||!P.matriz())){papelAt=pp;if(forca||!ls.get(chave()))setTimeout(function(){if(!aberto&&!$('#app').hidden)boasVindas();},700);}
   }
-  window.PFCtut={abrir:abrir,fechar:fechar,atualiza:atualiza,guias:GUIAS};
+  window.PFCtut={abrir:abrir,fechar:fechar,atualiza:atualiza,boasVindas:boasVindas,guias:GUIAS};
   if(window.PFC&&$('#app')&&!$('#app').hidden)atualiza();
 })();
