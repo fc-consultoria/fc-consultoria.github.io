@@ -1,4 +1,5 @@
 /* Plataforma FC 3D Clientes · Mostruário 3D · Comandos flutuantes
+   Cada caixinha tem o botão – (ocultar) na alça; oculta, fica só a alça com "mostrar ▸".
    O controle de giro (com a medida) e a caixinha "Dois cliques" ganham uma alça ⠿ para arrastar
    por cima do 3D. A posição fica guardada neste aparelho; duplo clique na alça volta ao lugar.
    © FC Consultoria em Esquadria · uso exclusivo de empresas licenciadas. */
@@ -14,6 +15,12 @@ css.textContent=`
 .flu.arr .alca{cursor:grabbing}
 #padFlu .angw,#padFlu .dimtag{position:static!important;inset:auto!important}
 #padFlu{right:12px;bottom:12px;align-items:stretch}
+.flu .alca{position:relative;padding:0 20px}
+.flu .ocl{position:absolute;right:3px;top:50%;transform:translateY(-50%);border:0;background:none;color:inherit;font:700 12px system-ui;line-height:12px;cursor:pointer;padding:1px 4px;border-radius:4px;letter-spacing:0}
+.flu .ocl:hover{background:rgba(127,127,127,.18)}
+.flu.min>*:not(.alca){display:none!important}
+.flu.min .alca{height:22px;opacity:1}
+.flu.min .ocl{position:static;transform:none;margin-left:8px;font-size:11.5px}
 #dicaFlu{left:10px;bottom:10px;align-items:stretch}
 #dicaFlu .alca{background:rgba(16,32,31,.9);border-color:rgba(255,255,255,.2);color:#9fd8d1}
 #dicaFlu #pfcMv{position:static!important;max-height:none}
@@ -24,6 +31,12 @@ document.head.appendChild(css);
 function arrastavel(box,chave,padrao){
   const al=document.createElement('div');al.className='alca';al.textContent='⠿⠿';al.title='Arraste para mover · duplo clique volta ao lugar';al.setAttribute('aria-label','Mover');
   box.insertBefore(al,box.firstChild);
+  const oc=document.createElement('button');oc.type='button';oc.className='ocl';al.appendChild(oc);
+  const kMin=chave+'-min',setMin=m=>{box.classList.toggle('min',m);oc.textContent=m?'mostrar ▸':'–';oc.title=m?'Mostrar':'Ocultar';oc.setAttribute('aria-label',oc.title);
+    try{m?localStorage.setItem(kMin,'1'):localStorage.removeItem(kMin);}catch(_){}};
+  let m0=false;try{m0=localStorage.getItem(kMin)==='1';}catch(_){}setMin(m0);
+  ['pointerdown','dblclick'].forEach(t=>oc.addEventListener(t,e=>e.stopPropagation()));
+  oc.addEventListener('click',e=>{e.stopPropagation();setMin(!box.classList.contains('min'));});
   const poe=(x,y)=>{const W=st.clientWidth,H=st.clientHeight,w=box.offsetWidth,h=box.offsetHeight;
     x=Math.max(0,Math.min(W-w,x));y=Math.max(0,Math.min(H-h,y));
     box.style.left=x+'px';box.style.top=y+'px';box.style.right='auto';box.style.bottom='auto';return [x,y];};
