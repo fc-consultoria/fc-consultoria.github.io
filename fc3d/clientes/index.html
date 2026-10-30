@@ -262,7 +262,7 @@ a.card:hover{border-color:var(--teal);transform:translateY(-1px)}
 <div id="det" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="https://fc-consultoria.github.io/treinamento/dicas.js?v=20261029202545"></script>
+<script src="https://fc-consultoria.github.io/treinamento/dicas.js?v=20261029210000"></script>
 <script>
 (function(){
 const SB_URL='https://pawwncmfadzxfahfvhry.supabase.co';
@@ -545,7 +545,7 @@ const dicMarca=id=>{try{const v=dicVistas();if(!v.includes(id)){v.push(id);local
 async function dicasPl(){
   const box=$('#dicasPl');if(!box||!window.FCD)return;const p=papel();if(p==='arquiteto'||p==='demo'){box.innerHTML='';return;}
   try{if(!DICAS)DICAS=await FCD.carregar();}catch(_){return;}
-  const emp=S.empresa||'',L=DICAS.filter(d=>FCD.ativa(d,'pl')&&(S.matriz||!d.emp||!d.emp.length||d.emp.includes(emp))&&(!d.para||d.para==='todos'||d.para===p));
+  const emp=S.empresa||'',L=DICAS.filter(d=>FCD.ativa(d,'pl')&&(S.matriz||!d.emp||!d.emp.length||d.emp.includes(emp))&&(!d.para||d.para==='todos'||d.para===p)&&(S.matriz||p==='gestor'||!d.set||!d.set.length||!S.setor||d.set.includes(S.setor)));
   if(!L.length||!$('#dicasPl')){box.innerHTML='';return;}
   const vis=dicVistas(),nov=L.filter(d=>!vis.includes(d.id)).length,M=dicTodas?L:L.slice(0,3);
   const quem=(emp+'|'+String(S.nome||'').trim()).slice(0,44);
