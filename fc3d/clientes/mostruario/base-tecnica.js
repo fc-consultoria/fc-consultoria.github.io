@@ -5,10 +5,13 @@
    Tipologia sem desenho: some para os clientes; o Acesso FC vê o aviso do que falta.
    © FC Consultoria em Esquadria · uso exclusivo de empresas licenciadas. */
 (function(){
-/* tipologias que já têm o desenho do catálogo · legenda do corte */
+/* tipologias que já têm o desenho do catálogo · página impressa do catálogo técnico
+   (folha de montagem inteira: elevação + cortes horizontais e verticais) */
 const BASE={
-  jcr200:'Corte vertical · cortes 01 e 02'
+  jcr200:117, jcr200a:118, jcr300:119, jcr205:122, pvz300:129, pcr200:130, pgr100:135, max800:137,
+  gjc2f:151, gjc4f:152, gpc2fpe:156, gpc3fvz:157
 };
+const LEG=p=>'Folha de montagem · elevação e cortes · catálogo p. '+p;
 let MATRIZ=false;
 const A=window.PFC_AJ;
 if(A&&A.matriz){const m0=A.matriz;A.matriz=function(v){MATRIZ=!!v;m0.call(A,v);atualiza();};}
@@ -48,8 +51,8 @@ function atualiza(){
   ultimo=t;
   if(!tem&&!MATRIZ){card.hidden=true;card.innerHTML='';return;}
   card.innerHTML=`<summary><h2>Base técnica</h2></summary>`+
-    (tem?`<button type="button" class="bt-img" title="Abrir o desenho em tela cheia"><img src="base/${t}.webp?v=1" alt="Desenho técnico do catálogo · ${esc(d.cd)}" loading="lazy"></button>
-     <p class="bt-leg">${esc(d.cd)} · ${esc(BASE[t])}</p>`
+    (tem?`<button type="button" class="bt-img" title="Abrir o desenho em tela cheia"><img src="base/${t}.webp?v=2" alt="Desenho técnico do catálogo · ${esc(d.cd)}" loading="lazy"></button>
+     <p class="bt-leg">${esc(d.cd)} · ${LEG(BASE[t])}</p>`
     :`<p class="bt-falta">⚠ Só a FC vê: falta o desenho do catálogo desta tipologia (${esc(d.cd)}). Para os clientes este item fica oculto.</p>`)+
     `<p class="note">${fonte(d)}</p>`;
   card.open=aberto;
@@ -59,7 +62,7 @@ function atualiza(){
 function zoom(t,d){
   const z=document.createElement('div');z.id='btZoom';z.setAttribute('role','dialog');z.setAttribute('aria-modal','true');z.setAttribute('aria-label','Desenho técnico');
   z.innerHTML=`<div class="bz-bar"><span>${esc(d.n)} · ${esc(d.cd)}</span><button type="button">Fechar</button></div>
-   <div class="bz-area"><img src="base/${t}.webp?v=1" alt="Desenho técnico do catálogo · ${esc(d.cd)}"></div>
+   <div class="bz-area"><img src="base/${t}.webp?v=2" alt="Desenho técnico do catálogo · ${esc(d.cd)}"></div>
    <p class="bz-fonte">${fonte(d)} Toque no desenho para ampliar.</p>`;
   document.body.appendChild(z);
   const fecha=()=>{z.remove();document.removeEventListener('keydown',k);},k=e=>{if(e.key==='Escape')fecha();};
