@@ -25,8 +25,9 @@ css.textContent=`
 #dicaFlu .alca{background:rgba(16,32,31,.9);border-color:rgba(255,255,255,.2);color:#9fd8d1}
 #dicaFlu #pfcMv{position:static!important;max-height:none}
 #dicaFlu:has(#pfcMv[hidden]){display:none}
-/* a janela 3D sobressai em tudo: painéis e caixinhas ficam atrás dela (continuam clicáveis); só os "+" e etiquetas ficam na frente */
-.stage.pop>#btFlu,.stage.pop>#c-conf.cf-flu,.stage.pop>.flu,.stage.pop>#pfcMv{z-index:3!important}
+/* a janela 3D sobressai em tudo: painéis e caixinhas ficam atrás dela (continuam clicáveis); só os "+" das junções ficam na frente */
+.stage.pop>#btFlu,.stage.pop>#c-conf.cf-flu,.stage.pop>.flu,.stage.pop>#pfcMv,.stage.pop>.views,.stage.pop>.hint,.stage.pop>.diatag,.stage.pop>.tip,.stage.pop>#labels{z-index:3!important}
+.stage.pop>canvas{z-index:4!important}
 @media (max-width:640px){#padFlu{right:8px;bottom:8px}}`;
 document.head.appendChild(css);
 
