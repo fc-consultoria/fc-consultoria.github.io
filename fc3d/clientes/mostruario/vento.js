@@ -72,6 +72,8 @@ const VTX=[];
   add(pg('gold',26),{t:'gpc2fpe',sw:{},k:'m0',parts:['folhaA','folhaB']});
   add(pg('gold',27),{t:'gpc2fpe',sw:{'LG-019':'LG-049'},k:'m0',parts:['folhaA','folhaB']});
   add(pg('gold',28),{t:'gpc2fpe',sw:{'LG-019':'LG-052'},k:'m0',parts:['folhaA','folhaB']});
+  /* SUP JVZ 300 · encontro SU-040 (vidro) + SU-069 (veneziana cega) + SU-070 (veneziana ventilada) · catálogo p. 22 */
+  add(pg('sup',22),{t:'jvz300',sw:{},k:'m0',parts:['folhaA','folhaV','folhaW']});
 })();
 const opcs=()=>Object.values(DIAG).flat().concat(VTX).filter(d=>d.t&&d.t===S.typo);
 const orig=d=>!Object.keys(d.sw||{}).length;

@@ -10,7 +10,9 @@
 const BASE={
   jcr200:117, jcr200a:118, jcr300:119, jcr205:122, pvz300:129, pcr200:130, pgr100:135, max800:137,
   jcr400:120, jcr400a:121, pcr300:134, pcr400:132, pgr200:136, jcr402:123, max801:138,
-  gjc2f:151, gjc4f:152, gpc2fpe:156, gpc3fvz:157
+  gjc2f:151, gjc4f:152, gpc2fpe:156, gpc3fvz:157,
+  jcr402a:124, jvz300:125, jcr204:126, jvc701:127, jvz600:128, pcr200a:131, pcr400a:133,
+  gjc6f:153, gjc3fvz:154, gjc2fbmf:155, gpc4fbmf:158, gpgr1fvz:159, gpgr2f:160, gmaxpf:161, gmaxpfcc:163, gcjunit:166
 };
 const LEG=p=>'Folha de montagem · elevação e cortes · catálogo p. '+p;
 let MATRIZ=false;
