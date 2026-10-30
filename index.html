@@ -203,12 +203,15 @@ footer{padding:28px 0 90px;color:var(--tm);font-size:13.5px}footer .w{display:fl
  .dif figcaption{position:absolute;left:12px;bottom:12px;right:12px;background:rgba(8,32,36,.88);color:#fff;border-radius:12px;padding:10px 14px;font-size:14.5px;line-height:1.35}
  .dif figcaption b{display:block;color:#f2b33d;font-size:16px;margin-bottom:2px}
  .dif .dn{margin:14px 0 0;color:#9fb9bf;font-size:13px}
+ .dif figure.dv{background:#0b0f11;min-height:520px}.dif figure.dv video{display:block;width:100%;height:100%;object-fit:contain;position:absolute;inset:0}
+ .dif .dvs{position:absolute;top:12px;right:12px;z-index:2;border:1px solid rgba(242,179,61,.7);background:rgba(8,32,36,.85);color:#fff;font:600 13px/1 inherit;padding:9px 12px;border-radius:999px;cursor:pointer}
+ @media(max-width:760px){.dif figure.dv{min-height:0;aspect-ratio:9/16;max-height:82vh;width:100%;max-width:calc(82vh*9/16);margin:0 auto}}
  @media(max-width:760px){.dif{padding:16px}.dif .dg{grid-template-columns:1fr}.dif .dt h3{font-size:21px}}
  </style>
  <div class="dif" id="diferencial">
   <div class="dt"><h3>O diferencial: um 3D que mostra a esquadria por dentro</h3><span>não é só uma imagem que gira</span></div>
   <div class="dg">
-   <figure><img src="img/dif-desmontar.webp" alt="Janela de correr desmontada em 3D, peça por peça" loading="lazy"><figcaption><b>Desmonta peça por peça</b>Trilhos, marcos, folhas, vidros e montantes separados, e monta de volta com um toque.</figcaption></figure>
+   <figure class="dv"><video id="difVid" src="vid/fc3d_reels.mp4" poster="img/fc3d_reels_capa.jpg" autoplay muted loop playsinline preload="auto" aria-label="Vídeo da Plataforma FC 3D: janela desmontada peça por peça, simulação de vento e troca de cores"></video><button type="button" class="dvs" id="difSom" aria-label="Ativar som do vídeo">🔇 Ativar som</button></figure>
    <div class="dc">
     <figure><img src="img/dif-codigos.webp" alt="Perfis com o código de cada peça indicado no 3D" loading="lazy"><figcaption><b>Código real de cada perfil</b>Toque na peça e veja qual perfil é: SU-039, SU-102, SU-003.</figcaption></figure>
     <figure><img src="img/dif-juncao.webp" alt="Corte da junção com os perfis separados" loading="lazy"><figcaption><b>Corte das junções em detalhe</b>Como cada perfil encaixa no outro, com escovas e acessórios.</figcaption></figure>
@@ -430,4 +433,5 @@ function fcConfete(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)r
  }catch(_){}})();
 document.getElementById('acDemo').addEventListener('click',()=>{try{const s=sessionStorage.getItem('fc_s')||'x';fetch('https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/rpc/site_hit',{method:'POST',keepalive:true,headers:{apikey:'sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg','Content-Type':'application/json'},body:JSON.stringify({p_s:s,p_pag:'site',p_ev:'acomp_demo',p_o:sessionStorage.getItem('fc_o')||'direto',p_ref:''})});}catch(_){}});
 </script><script src="rep_chat.js?v=1792043132"></script><script src="teatro.js?v=5"></script><script src="vitrine.js?v=4"></script><script src="insta.js?v=1"></script><script>if(window.FCRC)FCRC.init({pag:"site",marca:"FC Consultoria",cor:"#02717d",logo:"img/logo-fc-160.jpg",rotulo:"💬 Fale com a FC",sub:"Consultoria, Plataforma FC 3D e representação · respondemos por aqui",ph:"Escreva sua dúvida ou pedido",ola:"Olá! Pode falar sobre qualquer assunto: consultoria, implantação de sistema, Plataforma FC 3D ou orçamento de produtos."});</script><script>document.addEventListener("click",e=>{const a=e.target.closest("[data-orc]");if(!a||!window.FCRC)return;e.preventDefault();FCRC.abrir("Quero orçamento de "+a.dataset.orc+". Produto e quantidade: ");});</script>
+<script>(function(){var v=document.getElementById('difVid'),b=document.getElementById('difSom');if(!v||!b)return;var p=v.play&&v.play();if(p&&p.catch)p.catch(function(){});b.addEventListener('click',function(){v.muted=!v.muted;if(!v.muted){v.currentTime=0;v.play();}b.textContent=v.muted?'🔇 Ativar som':'🔊 Som ligado';});})();</script>
 </body></html>
