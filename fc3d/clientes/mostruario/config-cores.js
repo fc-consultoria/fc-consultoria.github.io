@@ -37,3 +37,45 @@ box.appendChild(grupo(cor,'Alumínio'));box.appendChild(grupo(vid,'Vidro'));
 row.hidden=true;row.style.display='none';
 row.parentNode.insertBefore(box,row.nextSibling);
 })();
+
+/* ===== Painel "Simular pressão de vento" à esquerda do 3D, abaixo da Base técnica =====
+   (no computador; no celular continua no painel lateral). Título "Configuração" só quando
+   a tipologia não tem diagrama de mão de amigo. */
+(function(){
+const $=id=>document.getElementById(id);
+const st=$('stage'),conf=$('c-conf');if(!st||!conf)return;
+const h2=conf.querySelector('summary h2');
+const casa={p:conf.parentNode,n:conf.nextSibling};
+const css=document.createElement('style');
+css.textContent=`
+#c-conf.cf-flu{position:absolute;left:12px;width:262px;z-index:8;margin:0;padding:12px 13px;gap:10px;overflow:auto;overscroll-behavior:contain;
+  border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,.14);font-size:13px}
+#c-conf.cf-flu summary h2{font-size:12.5px}
+#c-conf.cf-flu .cfg-cores{gap:6px}
+#c-conf.cf-flu .cfg-cores .cc{gap:6px}
+#c-conf.cf-flu .cfg-cores .sw{width:21px;height:21px}
+#c-conf.cf-flu .cfg-cores .cc>span{min-width:0;flex-basis:100%;margin-bottom:-2px}
+#c-conf.cf-flu .cfg-cores .cc em{flex-basis:auto;margin:0 0 0 2px}
+#c-conf.cf-flu .row label{font-size:12px}
+#c-conf.cf-flu #c-vt .vt>.note:first-child{display:none}
+#c-conf.cf-flu #c-vt .vt-cb button{padding:5px 9px}
+#c-conf.cf-flu #c-vt .vt-cb button small{font-size:10.5px}
+#c-dims{display:none!important}
+#c-vt>summary{display:none!important}
+#c-vt{border-top:1px solid var(--line);padding-top:8px}`;
+document.head.appendChild(css);
+let aberto=false;
+function posiciona(){
+  const desk=innerWidth>=900;
+  if(desk&&conf.parentNode!==st){st.appendChild(conf);conf.classList.add('cf-flu');if(!aberto){conf.open=true;aberto=true;}}
+  else if(!desk&&conf.parentNode===st){casa.p.insertBefore(conf,casa.n&&casa.n.parentNode===casa.p?casa.n:null);conf.classList.remove('cf-flu');conf.style.top=conf.style.maxHeight='';}
+  const vt=$('c-vt');
+  if(vt){if(!vt.open)vt.open=true;}
+  if(h2){const t=vt&&!vt.hidden?'🌬 Simular pressão de vento':'Configuração';if(h2.textContent!==t)h2.textContent=t;}
+  if(conf.parentNode===st){
+    const b=$('btFlu');const top=b&&!b.hidden&&b.offsetParent?b.offsetTop+b.offsetHeight+10:58;
+    conf.style.top=top+'px';conf.style.maxHeight=Math.max(160,st.clientHeight-top-12)+'px';
+  }
+}
+addEventListener('resize',posiciona);setInterval(posiciona,500);setTimeout(posiciona,0);
+})();
