@@ -35,10 +35,29 @@ details.bt .bt-f{font-size:12px;color:var(--mute);line-height:1.45;margin:0}
 #btZoom .bz-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;color:#fff;font:600 14px system-ui}
 #btZoom .bz-bar button{background:#fff;color:#025a67;border:0;border-radius:8px;padding:7px 12px;font:600 14px system-ui;cursor:pointer}
 #btZoom .bz-area{flex:1;overflow:auto;display:grid;place-items:center;padding:10px}
-#btZoom .bz-area img{background:#fff;border-radius:6px;max-width:100%;max-height:100%;cursor:zoom-in}
+#btZoom .bz-area img{background:#fff;border-radius:6px;max-width:100%;max-height:calc(100vh - 130px);cursor:zoom-in}
 #btZoom .bz-area.z img{max-width:none;max-height:none;height:240vh;cursor:zoom-out}
+#btZoom .bz-acoes{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+#btZoom .bz-bar button.bz-rot{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35)}
+#btZoom .bz-bar button.bz-rot:hover{background:rgba(255,255,255,.26)}
 #btZoom .bz-fonte{color:#d7e3e1;font:500 12px system-ui;padding:0 14px 12px;margin:0}`;
 document.head.appendChild(css);
+
+/* girar o desenho (90° por clique) · guarda o giro escolhido por tipologia neste aparelho */
+const RK='fc3d-bt-rot';
+const rotLe=t=>{try{return (+JSON.parse(localStorage.getItem(RK)||'{}')[t])||0;}catch(_){return 0;}};
+const rotGrava=(t,r)=>{try{const o=JSON.parse(localStorage.getItem(RK)||'{}');if(r)o[t]=r;else delete o[t];localStorage.setItem(RK,JSON.stringify(o));}catch(_){}};
+const ROT={};
+function srcGirado(src,r){
+  r=((r%360)+360)%360;if(!r)return Promise.resolve(src);
+  const k=src+'|'+r;if(ROT[k])return Promise.resolve(ROT[k]);
+  return new Promise(res=>{const im=new Image();
+    im.onload=()=>{const w=im.naturalWidth,h=im.naturalHeight,s=r%180!==0,c=document.createElement('canvas');
+      c.width=s?h:w;c.height=s?w:h;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);
+      g.translate(c.width/2,c.height/2);g.rotate(r*Math.PI/180);g.drawImage(im,-w/2,-h/2);
+      try{ROT[k]=c.toDataURL('image/webp',.92);}catch(_){ROT[k]=src;}res(ROT[k]);};
+    im.onerror=()=>res(src);im.src=src;});
+}
 
 const box=document.createElement('details');box.className='box bt';
 box.innerHTML=`<summary><h3>📐 Base técnica</h3></summary>
@@ -46,17 +65,23 @@ box.innerHTML=`<summary><h3>📐 Base técnica</h3></summary>
   <p class="bt-leg">${esc(cd)} · Folha de montagem · catálogo p. ${PAG[KEY]}</p>
   <p class="bt-f">${fonte}</p>`;
 const av=lat.querySelector('.aviso');lat.insertBefore(box,av||null);
+function miniGiro(){srcGirado(img,rotLe(KEY)).then(u=>{box.querySelector('.bt-img img').src=u;});}
+miniGiro();
 
 box.querySelector('.bt-img').onclick=()=>{
   const z=document.createElement('div');z.id='btZoom';z.setAttribute('role','dialog');z.setAttribute('aria-modal','true');z.setAttribute('aria-label','Base técnica');
-  z.innerHTML=`<div class="bz-bar"><span>${esc(M.n)} · ${esc(cd)}</span><button type="button">Fechar</button></div>
+  z.innerHTML=`<div class="bz-bar"><span>${esc(M.n)} · ${esc(cd)}</span><div class="bz-acoes"><button type="button" class="bz-rot" data-r="-90" title="Girar para a esquerda">⟲ Girar</button><button type="button" class="bz-rot" data-r="90" title="Girar para a direita">Girar ⟳</button><button type="button" class="bz-fecha">Fechar</button></div></div>
    <div class="bz-area"><img src="${img}" alt="Folha de montagem do catálogo · ${esc(cd)}"></div>
    <p class="bz-fonte">${fonte} Toque no desenho para ampliar.</p>`;
   document.body.appendChild(z);
   const fecha=()=>{z.remove();document.removeEventListener('keydown',k);},k=e=>{if(e.key==='Escape')fecha();};
-  const b=z.querySelector('.bz-bar button');b.onclick=fecha;b.focus();
+  const b=z.querySelector('.bz-fecha');b.onclick=fecha;b.focus();
   z.querySelector('.bz-area img').onclick=e=>{e.stopPropagation();z.querySelector('.bz-area').classList.toggle('z');};
   z.querySelector('.bz-area').onclick=e=>{if(e.target===e.currentTarget)fecha();};
+  const zi=z.querySelector('.bz-area img');let r=rotLe(KEY);
+  const aplica=()=>srcGirado(img,r).then(u=>{zi.src=u;});
+  if(r)aplica();
+  z.querySelectorAll('.bz-rot').forEach(x=>x.onclick=e=>{e.stopPropagation();r=(r+(+x.dataset.r)+360)%360;rotGrava(KEY,r);aplica();if(typeof miniGiro==='function')miniGiro();});
   document.addEventListener('keydown',k);
 };
 })();
