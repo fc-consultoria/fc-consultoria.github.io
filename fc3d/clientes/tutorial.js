@@ -276,7 +276,8 @@
     if(aberto&&pp!==papelAt)fechar(false);
     /* 1ª vez da pessoa neste painel: tela de boas-vindas (Ver agora / Depois). Não abre para a FC;
        a FC confere com ?boasvindas=1 no link. */
-    var forca=/[?&]boasvindas=1/.test(location.search);
+    var forca=/[?&]boasvindas=1/.test(location.search)&&!window.__pfcBv;
+    if(forca&&tem&&!aberto&&!$('#tutBv'))window.__pfcBv=1; /* na conferência da FC, mostra uma vez por carregamento */
     if(tem&&!aberto&&(forca||!P.matriz())){papelAt=pp;if(forca||!ls.get(chave()))setTimeout(function(){if(!aberto&&!$('#app').hidden)boasVindas();},700);}
   }
   window.PFCtut={abrir:abrir,fechar:fechar,atualiza:atualiza,boasVindas:boasVindas,guias:GUIAS};
