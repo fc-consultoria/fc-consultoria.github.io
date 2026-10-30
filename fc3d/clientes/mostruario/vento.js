@@ -7,13 +7,18 @@
 (function(){
 if(typeof DIAG==='undefined'||typeof diaHmax!=='function')return;
 const $=id=>document.getElementById(id);
-const ref=$('c-parts');if(!ref)return;
+const conf=$('c-conf');if(!conf)return;
 const NF=n=>Number(n).toLocaleString('pt-BR');
 const RAJ={80:129,100:144,120:158,150:176};
 S.vtOn=false;
 
 const css=document.createElement('style');
 css.textContent=`
+#c-vt{border-top:1px solid var(--line);padding-top:10px}
+#c-vt>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font:600 13px var(--f-display,system-ui);text-transform:uppercase;letter-spacing:.05em;color:var(--fg)}
+#c-vt>summary::-webkit-details-marker{display:none}
+#c-vt>summary::after{content:'+';font:18px var(--f-mono,monospace);color:var(--muted)}
+#c-vt[open]>summary::after{content:'−'}
 #c-vt .vt{display:flex;flex-direction:column;gap:10px;margin-top:10px}
 #c-vt .vt-step{font:600 12px var(--f-display,system-ui);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
 #c-vt .vt-cb{display:flex;flex-direction:column;gap:6px}
@@ -34,15 +39,13 @@ css.textContent=`
 #c-vt .vt-av{font-size:11.5px;color:var(--muted);line-height:1.45;margin:0}`;
 document.head.appendChild(css);
 
-const card=document.createElement('details');card.className='card';card.id='c-vt';card.hidden=true;
-card.innerHTML=`<summary><h2>🌬 Simular vento</h2></summary>
+const card=document.createElement('details');card.className='vt-sub';card.id='c-vt';card.hidden=true;
+card.innerHTML=`<summary>🌬 Simular pressão de vento</summary>
 <div class="vt">
-  <p class="note" style="margin:0">Mude o tamanho, escolha a mão de amigo do encontro central e avalie a pressão de vento. Só aparecem as combinações que têm diagrama no catálogo.</p>
+  <p class="note" style="margin:0">Usa a Largura × Altura acima. Escolha a mão de amigo do encontro central e avalie a pressão de vento. Só aparecem as combinações que têm diagrama no catálogo.</p>
   <div class="vt-step">1 · Mão de amigo do encontro</div><div class="vt-cb" id="vtCb"></div>
-  <div class="vt-step">2 · Tamanho da janela (Largura × Altura)</div>
-  <div class="vt-med"><b id="vtMed"></b><button type="button" class="vt-lk" id="vtCfg">Alterar em Configuração ↓</button></div>
   <p class="note" id="vtFx" style="margin:0"></p>
-  <div class="vt-step">3 · Pressão de ensaio (kgf/m²)</div>
+  <div class="vt-step">2 · Pressão de ensaio (kgf/m²)</div>
   <div class="dia-pr" id="vtPr">${[80,100,120,150].map(p=>`<button type="button" data-p="${p}" aria-pressed="${p===100}">${p}</button>`).join('')}</div>
   <button type="button" class="vt-go" id="vtGo">🌬 Avaliar pressão de vento</button>
   <div id="vtRes" hidden style="display:flex;flex-direction:column;gap:8px">
@@ -56,7 +59,7 @@ card.innerHTML=`<summary><h2>🌬 Simular vento</h2></summary>
   </div>
   <p class="vt-av">⚠ <b>Apenas demonstrativo.</b> Valores lidos dos gráficos do Diagrama de dimensões do catálogo, de forma aproximada. Não é base técnica para fabricação ou especificação: consulte sempre o catálogo oficial e o projeto técnico.</p>
 </div>`;
-ref.parentNode.insertBefore(card,ref);
+conf.insertBefore(card,$('openCtl')||null);
 
 let OPC=[],SEL=null,VP=100,SAVE=null,DIAP0=null;
 const opcs=()=>Object.values(DIAG).flat().filter(d=>d.t&&d.t===S.typo);
@@ -70,7 +73,7 @@ function lista(){
   $('vtCb').querySelectorAll('button').forEach(b=>b.onclick=()=>{SEL=OPC[+b.dataset.i];lista();faixa();if(S.vtOn)avalia();});
 }
 function faixa(){if(!SEL)return;$('vtFx').textContent=`Faixa do diagrama: L de ${NF(L0(SEL))} a ${NF(L1(SEL))} mm · H de ${NF(SEL.Hr[0])} a ${NF(SEL.Hr[1])} mm.`;}
-function medidasAtuais(){$('vtMed').textContent=NF(S.w)+' × '+NF(S.h)+' mm';}
+function medidasAtuais(){}
 
 function aplica3D(d){
   if(!SAVE){SAVE={sw:S.swaps[S.typo]||{},w:S.w,h:S.h,typo:S.typo};DIAP0=DIAP;}
@@ -132,7 +135,6 @@ $('vtOff').onclick=()=>{encerra();medidasAtuais();};
 $('vtPr').querySelectorAll('button').forEach(b=>b.onclick=()=>{VP=+b.dataset.p;$('vtPr').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));if(S.vtOn)avalia();});
 /* o tamanho vem da Configuração (Largura e Altura): ao mudar lá, a simulação reavalia sozinha */
 ['in-w','in-h'].forEach(k=>{const el=$(k);if(el)el.addEventListener('change',()=>setTimeout(()=>{medidasAtuais();if(S.vtOn)avalia();},0));});
-$('vtCfg').onclick=()=>{const c=$('c-conf');if(!c)return;c.open=true;c.scrollIntoView({block:'center',behavior:'smooth'});setTimeout(()=>{const w=$('in-w');if(w){w.focus();w.select();}},350);};
 card.addEventListener('toggle',()=>{if(card.open){if(!S.vtOn)medidasAtuais();}else if(S.vtOn){encerra();}});
 
 /* aparece só no Conhecer a esquadria, em tipologia que tem diagrama de mão de amigo */
