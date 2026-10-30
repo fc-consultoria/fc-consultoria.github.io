@@ -163,7 +163,7 @@ tr.na .vk{background:var(--line);color:var(--muted)}
 @media (prefers-reduced-motion:reduce){.tour-hl,.tour-card{transition:none}}
 
 /* modo apresentação */
-body.show .obra,body.show .cmp details{display:none}
+body.show .obra,body.show .cmp details,body.show #bVolta{display:none}
 body.show .palco iframe{height:calc(100vh - 150px)}
 
 /* aviso de desenvolvimento e uso exclusivo */
@@ -219,6 +219,7 @@ body.watch #bMin,body.watch #bShow,body.watch #bPrint{display:none!important}
       <h1>Apresentação de Obra<small>Orientativo FC 3D · uma obra, duas tipologias, a mesma simulação</small></h1>
     </div>
     <div class="hbtns">
+      <a class="btn" id="bVolta" href="../" style="text-decoration:none;display:inline-flex;align-items:center" title="Voltar para a tela inicial da Plataforma FC 3D">← Plataforma FC 3D</a>
       <button class="btn" id="bTour" type="button">🎧 Como usar</button>
       <button class="btn" id="bMin" type="button">Recolher a obra</button>
       <button class="btn big" id="bShow" type="button">▶ Modo apresentação</button>
