@@ -793,19 +793,19 @@ function subAuto(b){const a=F(b);if(!a)return [];const ta=subTok(a.n),pa=num(a.p
 function subBase(q){q=String(q||'').trim().toUpperCase().replace(/\s+/g,'');if(!q)return null;if(F(q))return F(q).k;
  const e=Object.values(SUB.it).find(x=>[x.c,x.cg].some(v=>v&&String(v).toUpperCase().replace(/\s+/g,'')===q));return e&&F(e.base)?F(e.base).k:null;}
 function subCod(c){const e=SUB.it[c];const cc=e&&(e.cg||e.c);return cc&&cc!==c?c+' · '+cc:c;}
-function subLin(c,tag,mat,b){const x=pfInfo(c);const st='<span class="sbt">sob consulta</span>';
- return `<div class="sbr">${row(tag,subCod(c))}<div class="sbm">${st}${mat?`<button data-subap="${esc(b)}|${esc(c)}|ok" title="Aprovar esta indicação">✓ aprovar</button><button data-subap="${esc(b)}|${esc(c)}|nao" title="Não indicar">✕</button>`:''}</div></div>`;}
+function subLin(c,tag,mat,b,apr){const x=pfInfo(c);const st='<span class="sbt">sob consulta</span>';
+ return `<div class="sbr">${row(tag,subCod(c))}<div class="sbm">${st}${mat&&apr?`<button data-subap="${esc(b)}|${esc(c)}|" title="Tirar esta indicação">desfazer</button>`:''}${mat&&!apr?`<button data-subap="${esc(b)}|${esc(c)}|ok" title="Aprovar esta indicação">✓ aprovar</button><button data-subap="${esc(b)}|${esc(c)}|nao" title="Não indicar">✕</button>`:''}</div></div>`;}
 function subRes(){const box=$('#sbRes');if(!box)return;const q=SUB.q.trim();if(!q){box.innerHTML='<p class="sbn">Digite o código do perfil (ex.: SU-041, SU-006). Aparecem as opções da mesma linha e com a mesma lógica de montagem.</p>';return;}
  const b=subBase(q),mat=SESS&&SESS.matriz;if(!b){box.innerHTML='<p class="sbn">Código não encontrado na base Suprema/Gold.<br><b>Confirme com o serralheiro ou com compras.</b></p>';return;}
  const a=F(b),disp=subDisp(b);const ok=SUB.ap.filter(x=>x.b===b&&x.st==='ok'&&F(x.s)).map(x=>F(x.s).k);
  const au=subAuto(b).filter(c=>!ok.includes(c));const okD=ok.filter(subDisp),okFora=ok.filter(c=>!subDisp(c));
  let h=`<div class="sbh"><span class="sbt ${disp?'ok':'no'}">${disp?'Trabalhamos com este perfil':'Não trabalhamos com este perfil'}</span></div>${subLin(b,'Pesquisado',false)}`;
- if(okD.length)h+=`<h4>Indicado para substituir</h4>`+okD.map(c=>subLin(c,'Indicação conferida',false)).join('');
+ if(okD.length)h+=`<h4>Indicado para substituir</h4>`+okD.map(c=>subLin(c,'Indicação',mat,b,1)).join('');
  if(au.length)h+=`<h4>${okD.length?'Outras opções':'Possível substituição'}</h4>`+au.map(c=>subLin(c,'Sugestão',mat,b)).join('');
- if(mat&&ok.length)h+=`<h4>Aprovadas (FC)</h4>`+ok.map(c=>`<div class="sbx">${esc(c)}${okFora.includes(c)?' · fora do catálogo desta empresa':''} <button data-subap="${esc(b)}|${esc(c)}|">desfazer</button></div>`).join('');
+ 
  if(mat)h+=`<form id="sbAdd" class="sbadd"><input name="c" placeholder="Indicar outro código para ${esc(b)}"><button>+ indicar</button></form>`;
  if(!okD.length&&!au.length)h+=`<p class="sbn sbw">Sem indicação de substituição para ${esc(b)}.<br><b>Verifique com o serralheiro ou com compras qual perfil usar.</b></p>`;
- h+=`<p class="sbn sbw">⚠ Substituição é sugestão. <b>Confirme com o serralheiro</b> antes de fechar o pedido.</p>`;box.innerHTML=h;}
+ h+=`<p class="sbn sbw">⚠ Substituição é sugestão. <b>Confirme com o serralheiro</b> antes de fechar o pedido.<br>📸 <b>Faça um print desta tela e encaminhe ao cliente para ele confirmar.</b></p>`;box.innerHTML=h;}
 async function subRpc(fn,body){const r=await fetch('https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:'sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs','Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.message||'Erro');return j;}
 async function subInit(){const S=SESS;if(!S||S.demo)return;if(!(S.matriz||((S.papel==='gestor'||S.papel==='vendedor')&&SUB_EMP.includes(S.empresa))))return;
  const tk=(()=>{try{return localStorage.getItem('pfc-token')}catch(_){return null}})();
