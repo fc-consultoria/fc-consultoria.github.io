@@ -16,7 +16,7 @@ import os
 
 # Tipologias do Mostruário que estão com "Oculto · ajustar" nos cards da plataforma.
 # Quando conferir e liberar no card, tire daqui também.
-OCULTAS = ['gpc2fpe', 'gpc3fvz']
+OCULTAS = ['gpc2fpe', 'gpc3fvz', 'pgr200', 'pcr200a', 'gjc2fbmf', 'gpc4fbmf', 'gpgr1fvz', 'gmaxpf', 'gmaxpfcc', 'gcjunit']
 
 MARCA = '/*pfc-tipologia-fixa*/'
 

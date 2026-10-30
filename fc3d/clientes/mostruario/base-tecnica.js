@@ -80,7 +80,7 @@ const tipo=()=>{try{return S.typo;}catch(_){return null;}};
 const dados=t=>{let TY=null;try{TY=TYPOS[t];}catch(_){}
   const cd=TY&&TY.code||'',linha=/^SUP/i.test(cd)?'Suprema':'Gold';
   return {cd,linha,n:TY&&TY.n||''};};
-const fonte=(d)=>`📘 <b>Fonte técnica:</b> desenho do catálogo técnico oficial da Linha ${d.linha} (Alcoa)${d.cd?' · '+esc(d.cd):''}. O 3D desta tipologia foi montado a partir deste desenho. Medidas e pesos são demonstrativos: confirme sempre com o seu fornecedor. Marcas pertencem aos seus titulares.`;
+const fonte=(d)=>`📘 <b>Fonte técnica:</b> desenho do catálogo técnico oficial da Linha ${d.linha}${d.cd?' · '+esc(d.cd):''}. O 3D desta tipologia foi montado a partir deste desenho. Medidas e pesos são demonstrativos: confirme sempre com o seu fornecedor. Marcas pertencem aos seus titulares.`;
 
 let ultimo=null;
 function atualiza(){
@@ -91,7 +91,7 @@ function atualiza(){
   card.innerHTML=`<div class="bf-top"><span class="bf-t">📐 Base técnica</span><button type="button" class="bf-x" title="Recolher" aria-label="Recolher a base técnica">–</button></div>
    <div class="bf-corpo">`+
     (tem?`<button type="button" class="bf-img" title="Abrir o desenho do catálogo em tela cheia"><img src="base/${t}.webp?v=2" alt="Desenho técnico do catálogo · ${esc(d.cd)}"></button>
-     <p class="bf-leg">${esc(d.cd)} · catálogo p. ${BASE[t]}</p><p class="bf-src">Fonte: catálogo técnico ${d.linha} (Alcoa) · clique para ampliar</p>`
+     <p class="bf-leg">${esc(d.cd)} · catálogo p. ${BASE[t]}</p><p class="bf-src">Fonte: catálogo técnico ${d.linha} · clique para ampliar</p>`
     :`<p class="bf-falta">⚠ Só a FC vê: falta o desenho do catálogo (${esc(d.cd)}). Oculto para os clientes.</p>`)+
    `</div><button type="button" class="bf-chip" title="Mostrar a base técnica">📐 Base técnica</button>`;
   card.classList.toggle('min',MIN);

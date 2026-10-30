@@ -46,13 +46,29 @@ s=re.sub(r"\bAlcoa\b","fabricante",s)
 s=s.replace('</style>','.guiabtn{display:none!important}\n</style>',1)
 s=s.replace('<title>FC Mostruário 3D</title>','<title>Mostruário 3D · Plataforma FC 3D</title>')
 # 5b) mover peças (todos) e ajuste técnico (Matriz)
-s+='\n<script src="ajustes.js?v=5"></script>\n'
+s+='\n<script src="ajustes.js?v=8"></script>\n'
 s+='<script src="tipologias-extra.js?v=3"></script>\n'  # tipologias novas no formato completo (lotes)
 s+='<script src="perfis-extra.js?v=1"></script>\n'  # seções dos perfis que faltavam (catálogos técnicos)
 s+='<script src="tipologias-lote2.js?v=1"></script>\n'  # Lote 2 em diante: as tipologias restantes da Suprema e Gold
-s+='<script src="base-tecnica.js?v=7"></script>\n'  # Base técnica: desenho do catálogo + fonte
+s+='<script src="base-tecnica.js?v=8"></script>\n'  # Base técnica: desenho do catálogo + fonte
+s+='<script src="config-cores.js?v=6"></script>\n'  # Configuração compacta e botão Cores
+s+='<script src="vento.js?v=4"></script>\n'  # Simular pressão de vento
+s+='<script src="flutuantes.js?v=2"></script>\n'  # painéis flutuantes (Base técnica, Simular) e 3D por cima
+# 5c) Simular pressão de vento (S.vtOn) usa a mesma mão de amigo do catálogo (S.diaOn)
+VT=[
+ ("if(S.diaOn&&DIA&&!S.cut&&DIA.parts.includes(part)","if((S.diaOn||S.vtOn)&&DIA&&!S.cut&&DIA.parts.includes(part)"),
+ ("if(c&&S.diaOn&&DIA){","if(c&&(S.diaOn||S.vtOn)&&DIA){"),
+ ("if(S.lock||S.diaOn||S.us||S.cut){","if(S.lock||S.diaOn||S.vtOn||S.us||S.cut){"),
+ ("if(S.lock||S.diaOn||DESM||EXE>.02)return;","if(S.lock||S.diaOn||S.vtOn||DESM||EXE>.02)return;"),
+ ("const on=!!(S.diaOn&&DIA&&!S.cut&&!DESM);","const on=!!((S.diaOn||S.vtOn)&&DIA&&!S.cut&&!DESM);"),
+ ("const hb=hotList.find(h=>h.c.k===DIA.k);if(hb){","const hb=hotList.find(h=>h.c.k===DIA.k);if(hb&&S.diaOn){"),
+]
+for x,y in VT:
+    assert s.count(x)==1,('vento',x);s=s.replace(x,y)
+# 5d) cabeçalho cabe no celular
+s=s.replace('.hdr-r{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}\n','.hdr-r{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}\n@media(max-width:700px){.hdr-r{width:100%;min-width:0}.hdr-r,.hdr-r *{box-sizing:border-box;max-width:100%}}\n',1)
 # 6) botão de voltar para a plataforma (some quando o Mostruário está dentro do Orientativo)
-s+='\n<script>if(window.top===window){const a=document.createElement("a");a.href="../#tip";a.textContent="← Plataforma FC 3D";a.style.cssText="position:fixed;right:14px;bottom:14px;z-index:9000;background:#0a4f4b;color:#fff;font:600 14px system-ui;padding:9px 14px;border-radius:11px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25)";document.body.appendChild(a);}</script>\n'
+s+='\n<script>if(window.top===window){const a=document.createElement("a");a.href="../#tip";a.textContent="← Plataforma FC 3D";a.style.cssText="position:fixed;right:14px;bottom:14px;z-index:9000;background:#0a4f4b;color:#fff;font:600 14px system-ui;padding:9px 14px;border-radius:11px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25)";document.body.appendChild(a);}</script>\n<script src="../toque.js?v=1"></script>\n'
 # 7) tipologia fixa: escolhida no card, sem seletor de linha/tipologia dentro do 3D
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 import tipologia_fixa

@@ -16,7 +16,7 @@ const lat=document.querySelector('aside.lat');if(!lat)return;
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const cd=M.cd||'',linha=/^SUP/i.test(cd)?'Suprema':'Gold',img=`base/${KEY}.webp?v=${V}`;
-const fonte=`📘 <b>Fonte técnica:</b> folha de montagem do catálogo técnico oficial da Linha ${linha} (Alcoa) · ${esc(cd)}, p. ${PAG[KEY]}. O 3D e o desenho desta tipologia foram montados a partir dela. Medidas e pesos são demonstrativos: confirme sempre com o seu fornecedor. Marcas pertencem aos seus titulares.`;
+const fonte=`📘 <b>Fonte técnica:</b> folha de montagem do catálogo técnico oficial da Linha ${linha} · ${esc(cd)}, p. ${PAG[KEY]}. O 3D e o desenho desta tipologia foram montados a partir dela. Medidas e pesos são demonstrativos: confirme sempre com o seu fornecedor. Marcas pertencem aos seus titulares.`;
 
 const css=document.createElement('style');
 css.textContent=`

@@ -10,13 +10,13 @@ dst=os.path.join(base,'..','clientes','orientativo');os.makedirs(dst,exist_ok=Tr
 def marcas(s):
     for x,y in [
                 ("catálogos técnicos Gold e Suprema","catálogos técnicos das linhas"),
-                ("(Alcoa, 2004)","(2004)"),("Alcoa, 2004","2004")]:s=s.replace(x,y)
+                ("(Alcoa, 2004)","(2004)"),("Alcoa, 2004","2004"),("catálogo Alcoa","catálogo do fabricante")]:s=s.replace(x,y)
     
     s=re.sub(r"\bAlcoa\b","fabricante",s)
     return s
 # arquivos de apoio
 for f in ['cm3d.js','perfis.json','perfis_extra.json','jan_shapes.json']:
-    t=open(os.path.join(src,f),encoding='utf-8').read();open(os.path.join(dst,f),'w',encoding='utf-8').write(marcas(t) if f.endswith('.js') else t)
+    t=open(os.path.join(src,f),encoding='utf-8').read();open(os.path.join(dst,f),'w',encoding='utf-8').write(marcas(t))  # .json também: o cliente vê as notas dos perfis
 for d in ['gua','img2d']:
     if os.path.isdir(os.path.join(dst,d)):shutil.rmtree(os.path.join(dst,d))
     shutil.copytree(os.path.join(src,d),os.path.join(dst,d))
