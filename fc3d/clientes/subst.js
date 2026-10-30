@@ -45,7 +45,7 @@ function res(){const box=document.getElementById('fsRes');const q=st.q.trim();
  if(mat)h+=`<form id="fsAdd" class="fsadd"><input name="c" placeholder="Indicar outro código para ${esc(b)}"><button>+ indicar</button></form>`;
  if(!okD.length&&!au.length)h+=`<p class="fsn fsw">Sem indicação de substituição para ${esc(b)}.<br><b>Verifique com o serralheiro ou com compras qual perfil usar.</b></p>`;
  h+='<p class="fsn fsw">⚠ Substituição é sugestão. <b>Confirme com o serralheiro</b> antes de fechar o pedido.<br>📸 <b>Faça um print desta tela e encaminhe ao cliente para ele confirmar.</b></p>';box.innerHTML=h;}
-function ui(abrir){const css=document.createElement('style');css.textContent=`#fsBt{position:fixed;left:16px;bottom:16px;z-index:9990;border:0;border-radius:99px;background:#02717d;color:#fff;font:700 14px system-ui,sans-serif;padding:10px 15px;box-shadow:0 6px 18px #0003;cursor:pointer}
+function ui(abrir,alvo){const css=document.createElement('style');css.textContent=`#fsBt{position:fixed;left:16px;bottom:16px;z-index:9990;border:0;border-radius:99px;background:#02717d;color:#fff;font:700 14px system-ui,sans-serif;padding:10px 15px;box-shadow:0 6px 18px #0003;cursor:pointer}
 #fsPn{position:fixed;left:16px;bottom:16px;z-index:9991;width:min(380px,calc(100vw - 32px));max-height:min(72vh,640px);display:flex;flex-direction:column;background:#fff;color:#1d2a30;border:1px solid #dde3e6;border-radius:16px;box-shadow:0 14px 40px #0003;overflow:hidden;font:14px system-ui,sans-serif}
 #fsPn[hidden]{display:none}#fsPn .hd{display:flex;align-items:center;gap:8px;padding:12px 14px 8px}#fsPn .hd b{flex:1;font-weight:800;font-size:15px}#fsPn .hd button{border:0;background:none;font-size:18px;cursor:pointer;color:#5d6b72}
 #fsQ{margin:0 14px 8px;font:600 16px system-ui,sans-serif;padding:9px 12px;border:1px solid #dde3e6;border-radius:10px;text-transform:uppercase}#fsRes{overflow:auto;padding:0 14px 14px}
@@ -63,10 +63,11 @@ function ui(abrir){const css=document.createElement('style');css.textContent=`#f
 #fsPn.fs #fsRes{max-width:1180px;width:100%;margin:0 auto;padding:0 20px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;align-content:start}
 #fsPn.fs #fsRes>h4,#fsPn.fs #fsRes>.fsh,#fsPn.fs #fsRes>.fsn,#fsPn.fs #fsRes>.fsadd{grid-column:1/-1}
 #fsPn.fs .fsrow{grid-template-columns:1fr;gap:6px;padding:10px}#fsPn.fs .fsrow img{width:100%;height:190px}#fsPn.fs .fsrow b{font-size:19px}#fsPn.fs .fsrow small{font-size:13px}#fsPn.fs .fsrow .w{text-align:left;font-size:15px}
-#fsQ::placeholder{text-transform:none}@media print{#fsBt,#fsPn{display:none!important}}`;document.head.appendChild(css);
+#fsQ::placeholder{text-transform:none}#fsPn.inl{position:relative;left:auto;bottom:auto;width:100%;max-width:400px;justify-self:end;max-height:none;z-index:5;color:#1d2a30}#fsPn.inl #fsRes{max-height:min(55vh,520px)}#fsPn.inl #fsRes:empty{display:none}
+#fsPn.inl.fs{position:fixed;max-width:none;z-index:9991}#fsPn.inl.fs #fsRes{max-height:none}@media print{#fsBt,#fsPn{display:none!important}}`;document.head.appendChild(css);
  const bt=document.createElement('button');bt.id='fsBt';bt.type='button';bt.textContent='🔁 Substituir perfil';
  const pn=document.createElement('div');pn.id='fsPn';pn.hidden=true;pn.innerHTML='<div class="hd"><button type="button" id="fsVolta" class="fsv" hidden>← Voltar</button><b style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">🔁 Substituir perfil</b><button type="button" id="fsTc" class="fsv" title="Ver em tela cheia">⛶ Tela cheia</button><button type="button" id="fsX" aria-label="Fechar">✕</button></div><input id="fsQ" placeholder="Código do perfil · ex.: SU-041" autocomplete="off"><div id="fsRes"></div>';
- document.body.append(bt,pn);const tog=(v,sem)=>{pn.hidden=!v;bt.hidden=v;try{localStorage.setItem('fcsub_fechado',v?'0':'1');}catch(_){}if(v){res();if(!sem)document.getElementById('fsQ').focus();}};
+ document.body.append(bt);if(alvo){pn.classList.add('inl');alvo.appendChild(pn);}else document.body.append(pn);const tog=(v,sem)=>{pn.hidden=!v;bt.hidden=v;try{localStorage.setItem('fcsub_fechado',v?'0':'1');}catch(_){}if(v){res();if(!sem)document.getElementById('fsQ').focus();}};
  const cheia=v=>{pn.classList.toggle('fs',v);document.getElementById('fsVolta').hidden=!v;document.getElementById('fsTc').hidden=v;};
  document.getElementById('fsTc').onclick=()=>cheia(true);document.getElementById('fsVolta').onclick=()=>cheia(false);
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&pn.classList.contains('fs'))cheia(false);});
@@ -76,6 +77,11 @@ function ui(abrir){const css=document.createElement('style');css.textContent=`#f
   try{st.ap=await rpc('pfc_subst_salvar',{p_token:st.tk,p_base:b,p_sub:c,p_status:'ok'});res();}catch(er){alert(er.message);}});
  pn.addEventListener('click',async e=>{const a=e.target.closest('[data-fsap]');if(a){e.stopPropagation();const [b,c,s]=a.dataset.fsap.split('|');try{st.ap=await rpc('pfc_subst_salvar',{p_token:st.tk,p_base:b,p_sub:c,p_status:s||null});res();}catch(er){alert(er.message);}return;}
   const p=e.target.closest('[data-fspick]');if(p&&st.pick){if(pn.classList.contains('fs'))pn.classList.remove('fs');st.pick(p.dataset.fspick,p.dataset.fsbase);}},true);
+ if(alvo){/* no topo do catálogo: sempre aberto; ao rolar a página aparece o botão que volta para a pesquisa */
+  document.getElementById('fsX').hidden=true;pn.hidden=false;res();bt.hidden=true;
+  bt.onclick=()=>{alvo.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>document.getElementById('fsQ').focus({preventScroll:true}),450);};
+  try{new IntersectionObserver(es=>{bt.hidden=es[0].isIntersecting||pn.classList.contains('fs');}).observe(pn);}catch(_){}
+  if(abrir)document.getElementById('fsQ').focus();return;}
  let fech=false;try{fech=localStorage.getItem('fcsub_fechado')==='1';}catch(_){}
  if(abrir||!fech)tog(true,!abrir);}
 window.FCSUB={async init(o){o=o||{};try{st.tk=localStorage.getItem('pfc-token');}catch(_){}if(!st.tk)return false;
@@ -89,5 +95,5 @@ window.FCSUB={async init(o){o=o||{};try{st.tk=localStorage.getItem('pfc-token');
   if(c){const it=await fetch(CBU+'cat_itens?select=base,c,cg,oc,sc&cliente_id=eq.'+encodeURIComponent(c.id),{headers:H}).then(r=>r.json());st.temCat=true;const L=c.linhas||[];
    Object.values(st.P).forEach(q=>{if((q.l==='sup'&&L.includes('sup'))||(q.l==='gold'&&L.includes('gold')))st.it[q.k]={base:q.k,oc:false,sc:true};});
    it.forEach(x=>{const k=F(x.base)?F(x.base).k:x.base;if(st.it[k]||F(x.base))st.it[k]=Object.assign({},st.it[k]||{},x,{oc:!!x.oc,sc:x.sc!==false});});}}catch(_){}}
- ui(!!o.abrir);return true;}};
+ ui(!!o.abrir,(typeof o.alvo==='function'?o.alvo():o.alvo)||null);return true;}};
 })();
