@@ -33,7 +33,7 @@ function base(q){q=String(q||'').trim().toUpperCase().replace(/\s+/g,'');if(!q)r
 const cod=c=>{const e=st.it[c];const cc=e&&(e.cg||e.c);return cc&&cc!==c?cc:c;};
 function lin(c,tag,mat,b){const p=F(c);if(!p)return '';const img=p.img||IMG+(p.d3?p.i:'c'+p.i)+'.webp',peso=num(p.p);
  return `<div class="fsr"><button type="button" class="fsrow" data-fspick="${esc(cod(c))}" data-fsbase="${esc(c)}" title="Ver no catálogo"><img loading="lazy" src="${img}" alt=""><div><small>${esc(tag)}</small><b>${esc(cod(c))}</b><small>${esc(p.n)}</small>${Array.isArray(p.d)?`<small>📐 ${mm(p.d[0])} × ${mm(p.d[1])} mm</small>`:''}</div><div class="w">${peso!=null?kg(peso)+'<small> kg/m</small>':''}</div></button>
- <div class="fsm"><span class="fst">sob consulta</span>${mat&&tag!=='Sugestão'&&tag!=='Pesquisado'?`<button data-fsap="${esc(b)}|${esc(c)}|" title="Tirar esta indicação">desfazer</button>`:''}${mat&&tag==='Sugestão'?`<button data-fsap="${esc(b)}|${esc(c)}|ok">✓ aprovar</button><button data-fsap="${esc(b)}|${esc(c)}|nao" title="Não indicar">✕</button>`:''}</div></div>`;}
+ <div class="fsm"><span class="fst">sob consulta</span></div></div>`;}
 function res(){const box=document.getElementById('fsRes');const q=st.q.trim();
  if(!q){box.innerHTML='';return;}
  const b=base(q),mat=st.S&&st.S.matriz;if(!b){box.innerHTML='<p class="fsn fsw">Código não encontrado na base Suprema/Gold.<br><b>Confirme com o serralheiro ou com compras.</b></p>';return;}
@@ -42,7 +42,7 @@ function res(){const box=document.getElementById('fsRes');const q=st.q.trim();
  if(okD.length)h+='<h4>Indicado para substituir</h4>'+okD.map(c=>lin(c,'Indicação',mat,b)).join('');
  if(au.length)h+=`<h4>${okD.length?'Outras opções':'Possível substituição'}</h4>`+au.map(c=>lin(c,'Sugestão',mat,b)).join('');
  
- if(mat)h+=`<form id="fsAdd" class="fsadd"><input name="c" placeholder="Indicar outro código para ${esc(b)}"><button>+ indicar</button></form>`;
+ 
  if(!okD.length&&!au.length)h+=`<p class="fsn fsw">Sem indicação de substituição para ${esc(b)}.<br><b>Verifique com o serralheiro ou com compras qual perfil usar.</b></p>`;
  h+='<p class="fsn fsw">⚠ Substituição é sugestão. <b>Confirme com o serralheiro</b> antes de fechar o pedido.<br>📸 <b>Faça um print desta tela e encaminhe ao cliente para ele confirmar.</b></p>';box.innerHTML=h;}
 function ui(abrir,alvo){const css=document.createElement('style');css.textContent=`#fsBt{position:fixed;left:16px;bottom:16px;z-index:9990;border:0;border-radius:99px;background:#02717d;color:#fff;font:700 14px system-ui,sans-serif;padding:10px 15px;box-shadow:0 6px 18px #0003;cursor:pointer}
