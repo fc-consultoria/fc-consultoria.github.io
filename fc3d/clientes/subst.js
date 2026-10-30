@@ -43,7 +43,7 @@ function pendTodas(){const L=st.ap.filter(x=>x.st==='pend'&&F(x.b)&&F(x.s));
  if(!L.length)return '<p class="fsn">Nenhuma substituição pendente de aprovação.</p>';
  return `<h4>⏳ Pendentes de aprovação (${L.length})</h4>`+L.map(x=>lin(x.s,'Substitui '+F(x.b).k,'pend',F(x.b).k)).join('');}
 function res(){const box=document.getElementById('fsRes');const q=st.q.trim();
- const mat=st.S&&st.S.matriz;
+ const mat=false; /* botões de aprovação desligados: todos veem só 'sob consulta' */
  if(!q){box.innerHTML=mat?pendTodas():'';return;}
  const b=base(q);if(!b){box.innerHTML='<p class="fsn fsw">Código não encontrado na base Suprema/Gold.<br><b>Confirme com o serralheiro ou com compras.</b></p>';return;}
  const d=disp(b),ok=st.ap.filter(x=>x.b===b&&x.st==='ok'&&F(x.s)).map(x=>F(x.s).k),au=auto(b).filter(c=>!ok.includes(c)),okD=ok.filter(disp);
