@@ -897,7 +897,7 @@ const selPart=()=>S.sel==='busca'
 function labelColor(part,zone){
   const sp=selPart();return sp&&sp.z.length&&sp.p.includes(part)&&sp.z.includes(zone)?ZC[zone]:null;}
 function selColors(part,zone){
-  if(S.diaOn&&DIA&&!S.cut&&DIA.parts.includes(part)&&DIA.hl.includes(zone))return DIA_OK?0x1f8a4c:0xc0392b;
+  if((S.diaOn||S.vtOn)&&DIA&&!S.cut&&DIA.parts.includes(part)&&DIA.hl.includes(zone))return DIA_OK?0x1f8a4c:0xc0392b;
   if(S.focus)return zone===S.focus&&part!=='vidro'?ZC[zone]:null;
   return labelColor(part,zone);}
 function setFocus(z){if(S.focus===z)return;S.focus=z;build();}
@@ -1696,7 +1696,7 @@ function syncCutUI(){
   const c=CUTS.find(x=>x.k===S.cut);document.getElementById('cutbar').hidden=!c;
   cutl.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===S.cut));
   if(c){document.getElementById('cutName').textContent='Corte · '+c.n;document.getElementById('cutDesc').textContent=c.d.replace(/SU-\d{3}/g,x=>SW(x));}
-  if(c&&S.diaOn&&DIA){document.getElementById('cutName').textContent='Corte · mão de amigo '+DIA.cods.join(' + ');document.getElementById('cutDesc').textContent=DIA.pf.map(p=>p[0]+' (Jx '+DIANF(p[1])+')').join(' + ')+' = Jx do conjunto '+DIANF(DIA.jxt)+' mm⁴. Juntos eles resistem ao vento que empurra o meio da janela.';}
+  if(c&&(S.diaOn||S.vtOn)&&DIA){document.getElementById('cutName').textContent='Corte · mão de amigo '+DIA.cods.join(' + ');document.getElementById('cutDesc').textContent=DIA.pf.map(p=>p[0]+' (Jx '+DIANF(p[1])+')').join(' + ')+' = Jx do conjunto '+DIANF(DIA.jxt)+' mm⁴. Juntos eles resistem ao vento que empurra o meio da janela.';}
 }
 document.getElementById('cutExit').addEventListener('click',()=>setCut(null));
 const cutl=document.getElementById('cutlist');
@@ -2317,7 +2317,7 @@ for(let i=0;i<18;i++){const a=new THREE.Group(),c=new THREE.Mesh(new THREE.Cylin
 let bendM=null;const bendMat=new THREE.MeshStandardMaterial({color:0x1f8a4c,emissive:0x0a3a1e,transparent:true,opacity:.9,roughness:.4});
 function diaBend(){if(bendM){scene.remove(bendM);bendM.geometry.dispose();bendM=null;}if(!DIA)return;const i=+DIA.k.slice(1),x=meetX(i),H=S.h/1000-.12;
  const G=new THREE.CylinderGeometry(.011,.011,H,10,40);G.translate(x,0,.075);bendM=new THREE.Mesh(G,bendMat);bendM.userData={b:G.attributes.position.array.slice(),H};scene.add(bendM);}
-function diaTick(){const on=!!(S.diaOn&&DIA&&!S.cut&&!DESM);windG.visible=on;if(bendM)bendM.visible=on;if(!on)return;
+function diaTick(){const on=!!((S.diaOn||S.vtOn)&&DIA&&!S.cut&&!DESM);windG.visible=on;if(bendM)bendM.visible=on;if(!on)return;
  const t=(performance.now()-DIAT0)/1000,W=S.w/1000,H=S.h/1000,sp=.25+DIAP/400,sc=.8+DIAP/250;
  windG.children.forEach(g=>{const u=g.userData,ph=(u.ph+t*sp)%1;g.position.set(u.x*W*.92,u.y*H*.92,-1.5+ph*1.4);g.children[0].material.opacity=Math.sin(ph*Math.PI)*.85;g.scale.setScalar(sc);});
  if(bendM){const b=DIABOW*(1+.12*Math.sin(t*3.1)+.06*Math.sin(t*7.3)),p=bendM.geometry.attributes.position.array,B=bendM.userData.b,h=bendM.userData.H;
@@ -2328,7 +2328,7 @@ function diaTick(){const on=!!(S.diaOn&&DIA&&!S.cut&&!DESM);windG.visible=on;if(
  const mx=meetX(+DIA.k.slice(1)),sw=geo.sW,sh=DIAROT*(1+.06*Math.sin(t*5));
  SASH.forEach(sa=>{if(!DIA.parts.includes('folha'+sa.id)||sa.roll||sa.swing||sa.hinge)return;const left=sa.x0<mx,px=left?sa.x0-sw/2:sa.x0+sw/2,th=left?-sh:sh,cx=sa.x0-px,cz=0;
   sa.g.rotation.y=th;sa.g.position.x=px+cx*Math.cos(th);sa.g.position.z=sa.z-cx*Math.sin(th);});
- const hb=hotList.find(h=>h.c.k===DIA.k);if(hb){const sp=hb.b.querySelector('span'),tx=DIAROT>.1?'💥 Rompeu no encontro central':'Mão de amigo · '+DIA.cods.join(' + ');if(sp&&sp.textContent!==tx)sp.textContent=tx;}}
+ const hb=hotList.find(h=>h.c.k===DIA.k);if(hb&&S.diaOn){const sp=hb.b.querySelector('span'),tx=DIAROT>.1?'💥 Rompeu no encontro central':'Mão de amigo · '+DIA.cods.join(' + ');if(sp&&sp.textContent!==tx)sp.textContent=tx;}}
 /* desafio */
 function diaQNew(){const d=DIA;if(!d)return;const L0=d.LS[0],L1=d.LS[d.LS.length-1],L=L0+50*Math.floor(Math.random()*((L1-L0)/50)),H=d.Hr[0]+50*Math.floor(Math.random()*((d.Hr[1]-d.Hr[0])/50)),p=[80,100,120,150][Math.floor(Math.random()*4)];
  DIAQ={L,H,p,ok:H<=diaHmax(d,p,L),done:false};dq('diaQ').innerHTML=`Cliente quer uma <b>${d.tipo.toLowerCase()}</b> de <b>${L} × ${H} mm</b> com pressão de <b>${p} kgf/m²</b>. Com ${d.cods.join(' + ')}, o diagrama aprova?`;dq('diaQr').textContent='';diaChart('diaQch',d,p,{L},false);}
@@ -2847,6 +2847,7 @@ applyTypo();build();renderParts();renderCuts();renderUs();renderSliders();render
 <script src="ajustes.js?v=7"></script>
 <script src="tipologias-extra.js?v=1"></script>
 <script src="base-tecnica.js?v=5"></script>
+<script src="vento.js?v=1"></script>
 
 <script>if(window.top===window){const a=document.createElement("a");a.href="../#tip";a.textContent="← Voltar às tipologias";a.style.cssText="position:fixed;right:14px;bottom:14px;z-index:9000;background:#0a4f4b;color:#fff;font:600 14px system-ui;padding:9px 14px;border-radius:11px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25)";document.body.appendChild(a);}</script>
 <script src="../toque.js?v=1"></script>
