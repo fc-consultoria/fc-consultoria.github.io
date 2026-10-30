@@ -275,7 +275,7 @@ function catCli(){const sl=SESS&&SESS.catalogo;if(!sl)return '';const u='../../.
 function catAbas(){if(!(SESS&&SESS.catalogo))return '';return `<div class="seg" style="margin:0 0 14px"><button class="${CATV==='cli'?'on':''}" data-catv="cli">📚 Catálogo ${esc(SESS.empresa_nome||'da empresa')}</button><button class="${CATV==='fc'?'on':''}" data-catv="fc">⚖ Suprema × Gold · estudo</button></div>`;}
 function mCat(){const G={trs:'Trilhos superiores',tri:'Trilhos inferiores',mon:'Montantes da folha',tra:'Travessas da folha',arr:'Arremates e complementos'};
  if(SESS&&SESS.catalogo&&!CATV)CATV='cli';
- if(CATV==='cli'&&SESS&&SESS.catalogo)return head(0,'Catálogo de Perfis')+catAbas()+catCli()+`<p class="nt">Para concluir este módulo do Orientativo, responda as perguntas na aba <b>Suprema × Gold · estudo</b>.</p>`+foot(0);
+ if(CATV==='cli'&&SESS&&SESS.catalogo)return head(0,'Catálogo de Perfis')+catAbas()+catCli()+`<p class="nt">Para concluir este módulo do Orientativo, responda as perguntas na aba <b>Suprema × Gold · estudo</b>.</p>`;
  const lst=Object.entries(P).filter(([c,p])=>p.l===(CATL==='gold'?'gold':'sup')&&(!CATG||p.g===CATG)&&(!CATQ||(c+' '+p.n).toLowerCase().includes(CATQ.toLowerCase())));
  /* comparação média por grupo */
  const av=(l,g)=>{const v=Object.values(P).filter(p=>p.l===l&&p.g===g).map(p=>num(p.p)).filter(x=>x!=null);return v.length?v.reduce((a,b)=>a+b,0)/v.length:0;};
