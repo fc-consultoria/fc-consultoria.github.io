@@ -1,5 +1,5 @@
 /* Plataforma FC 3D Clientes · Mostruário 3D · Base técnica
-   Item fechado no fim do painel lateral: mostra o desenho do catálogo técnico
+   Painel flutuante fixo no canto do 3D (abaixo dos botões de vista): mostra o desenho do catálogo técnico
    que serviu de base para o 3D da tipologia, com a fonte.
    Desenhos em base/<tipologia>.webp (ex.: base/jcr200.webp).
    Tipologia sem desenho: some para os clientes; o Acesso FC vê o aviso do que falta.
@@ -18,10 +18,21 @@ if(A&&A.matriz){const m0=A.matriz;A.matriz=function(v){MATRIZ=!!v;m0.call(A,v);a
 
 const css=document.createElement('style');
 css.textContent=`
-#c-base .bt-img{display:block;width:100%;padding:0;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:zoom-in;overflow:hidden}
-#c-base .bt-img img{display:block;width:100%;max-height:260px;object-fit:contain}
-#c-base .bt-leg{font-size:12px;font-weight:600;margin:0}
-#c-base .bt-falta{font-size:12px;color:#b45309;margin:0}
+#btFlu{position:absolute;top:58px;left:12px;z-index:8;width:150px;background:var(--panel,#fff);border:1px solid var(--line,#d9e0e0);border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,.14);padding:8px;font-family:system-ui,sans-serif}
+#btFlu .bf-top{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px}
+#btFlu .bf-t{font:700 11px system-ui;letter-spacing:.06em;text-transform:uppercase;color:var(--fg,#16202a)}
+#btFlu .bf-x{border:0;background:transparent;color:var(--muted,#5b6b6b);font:700 15px system-ui;line-height:1;cursor:pointer;padding:2px 4px;border-radius:6px}
+#btFlu .bf-x:hover{background:var(--accent-soft,#e6f2f3)}
+#btFlu .bf-img{display:block;width:100%;padding:0;border:1px solid var(--line,#d9e0e0);border-radius:8px;background:#fff;cursor:zoom-in;overflow:hidden}
+#btFlu .bf-img img{display:block;width:100%;height:150px;object-fit:contain}
+#btFlu .bf-leg{margin:6px 0 0;font:600 11px/1.3 system-ui;color:var(--fg,#16202a)}
+#btFlu .bf-src{margin:2px 0 0;font:500 10.5px/1.3 system-ui;color:var(--muted,#5b6b6b)}
+#btFlu .bf-falta{margin:0;font:600 11px/1.35 system-ui;color:#b45309}
+#btFlu.min{width:auto;padding:0;border-radius:999px}
+#btFlu.min .bf-corpo,#btFlu.min .bf-top{display:none}
+#btFlu .bf-chip{display:none;border:0;background:transparent;padding:7px 12px;font:600 12.5px system-ui;color:var(--fg,#16202a);cursor:pointer;border-radius:999px}
+#btFlu.min .bf-chip{display:block}
+@media (max-width:700px){#btFlu{width:130px;top:auto;bottom:-6px;left:0}#btFlu .bf-img img{height:110px}}
 #btZoom{position:fixed;inset:0;z-index:99990;background:rgba(10,20,22,.88);display:flex;flex-direction:column}
 #btZoom .bz-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;color:#fff;font:600 14px system-ui}
 #btZoom .bz-bar button{background:#fff;color:#0a4f4b;border:0;border-radius:8px;padding:7px 12px;font:600 14px system-ui;cursor:pointer}
@@ -31,11 +42,16 @@ css.textContent=`
 #btZoom .bz-fonte{color:#d7e3e1;font:500 12px system-ui;padding:0 14px 12px;margin:0}`;
 document.head.appendChild(css);
 
-const ref=document.getElementById('c-dims');
-if(!ref)return;
-const card=document.createElement('details');
-card.className='card';card.id='c-base';card.hidden=true;
-ref.parentNode.insertBefore(card,ref.nextSibling);
+/* painel flutuante fixo no canto do 3D, logo abaixo dos botões de vista (Perspectiva…) */
+const stage=document.getElementById('stage');
+if(!stage)return;
+const card=document.createElement('div');
+card.id='btFlu';card.hidden=true;card.setAttribute('role','complementary');card.setAttribute('aria-label','Base técnica');
+stage.appendChild(card);
+const MK='fc3d-bt-min';
+/* no celular começa recolhido (só o botão), para não cobrir o 3D */
+let MIN=innerWidth<700,salvo=null;try{salvo=localStorage.getItem(MK);}catch(_){}
+if(salvo==='1')MIN=true;else if(salvo==='0'&&innerWidth>=700)MIN=false;
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const tipo=()=>{try{return S.typo;}catch(_){return null;}};
@@ -47,18 +63,22 @@ const fonte=(d)=>`📘 <b>Fonte técnica:</b> desenho do catálogo técnico ofic
 let ultimo=null;
 function atualiza(){
   const t=tipo();if(!t)return;
-  const tem=!!BASE[t],d=dados(t),aberto=card.open&&ultimo===t;
+  const tem=!!BASE[t],d=dados(t);
   ultimo=t;
   if(!tem&&!MATRIZ){card.hidden=true;card.innerHTML='';return;}
-  card.innerHTML=`<summary><h2>Base técnica</h2></summary>`+
-    (tem?`<button type="button" class="bt-img" title="Abrir o desenho em tela cheia"><img src="base/${t}.webp?v=2" alt="Desenho técnico do catálogo · ${esc(d.cd)}" loading="lazy"></button>
-     <p class="bt-leg">${esc(d.cd)} · ${LEG(BASE[t])}</p>`
-    :`<p class="bt-falta">⚠ Só a FC vê: falta o desenho do catálogo desta tipologia (${esc(d.cd)}). Para os clientes este item fica oculto.</p>`)+
-    `<p class="note">${fonte(d)}</p>`;
-  card.open=aberto;
+  card.innerHTML=`<div class="bf-top"><span class="bf-t">📐 Base técnica</span><button type="button" class="bf-x" title="Recolher" aria-label="Recolher a base técnica">–</button></div>
+   <div class="bf-corpo">`+
+    (tem?`<button type="button" class="bf-img" title="Abrir o desenho do catálogo em tela cheia"><img src="base/${t}.webp?v=2" alt="Desenho técnico do catálogo · ${esc(d.cd)}"></button>
+     <p class="bf-leg">${esc(d.cd)} · catálogo p. ${BASE[t]}</p><p class="bf-src">Fonte: catálogo técnico ${d.linha} (Alcoa) · clique para ampliar</p>`
+    :`<p class="bf-falta">⚠ Só a FC vê: falta o desenho do catálogo (${esc(d.cd)}). Oculto para os clientes.</p>`)+
+   `</div><button type="button" class="bf-chip" title="Mostrar a base técnica">📐 Base técnica</button>`;
+  card.classList.toggle('min',MIN);
+  card.querySelector('.bf-x').onclick=()=>poeMin(true);
+  card.querySelector('.bf-chip').onclick=()=>poeMin(false);
+  const b=card.querySelector('.bf-img');if(b)b.onclick=()=>zoom(t,d);
   segueModo();
-  const b=card.querySelector('.bt-img');if(b)b.onclick=()=>zoom(t,d);
 }
+function poeMin(v){MIN=v;card.classList.toggle('min',v);try{localStorage.setItem(MK,v?'1':'0');}catch(_){}}
 function zoom(t,d){
   const z=document.createElement('div');z.id='btZoom';z.setAttribute('role','dialog');z.setAttribute('aria-modal','true');z.setAttribute('aria-label','Desenho técnico');
   z.innerHTML=`<div class="bz-bar"><span>${esc(d.n)} · ${esc(d.cd)}</span><button type="button">Fechar</button></div>
