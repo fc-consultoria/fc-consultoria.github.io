@@ -9,7 +9,7 @@
    (folha de montagem inteira: elevação + cortes horizontais e verticais) */
 const BASE={
   jcr200:117, jcr200a:118, jcr300:119, jcr205:122, pvz300:129, pcr200:130, pgr100:135, max800:137,
-  jcr400:120, jcr400a:121, pcr300:134, pcr400:132,
+  jcr400:120, jcr400a:121, pcr300:134, pcr400:132, pgr200:136, jcr402:123, max801:138,
   gjc2f:151, gjc4f:152, gpc2fpe:156, gpc3fvz:157
 };
 const LEG=p=>'Folha de montagem · elevação e cortes · catálogo p. '+p;

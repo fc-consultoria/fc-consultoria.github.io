@@ -47,14 +47,16 @@ s=s.replace('</style>','.guiabtn{display:none!important}\n</style>',1)
 s=s.replace('<title>FC Mostruário 3D</title>','<title>Mostruário 3D · Plataforma FC 3D</title>')
 # 5b) mover peças (todos) e ajuste técnico (Matriz)
 s+='\n<script src="ajustes.js?v=5"></script>\n'
-s+='<script src="tipologias-extra.js?v=1"></script>\n'  # tipologias novas no formato completo (lotes)
-s+='<script src="base-tecnica.js?v=5"></script>\n'  # Base técnica: desenho do catálogo + fonte
+s+='<script src="tipologias-extra.js?v=3"></script>\n'  # tipologias novas no formato completo (lotes)
+s+='<script src="base-tecnica.js?v=7"></script>\n'  # Base técnica: desenho do catálogo + fonte
 # 6) botão de voltar para a plataforma (some quando o Mostruário está dentro do Orientativo)
 s+='\n<script>if(window.top===window){const a=document.createElement("a");a.href="../#tip";a.textContent="← Plataforma FC 3D";a.style.cssText="position:fixed;right:14px;bottom:14px;z-index:9000;background:#0a4f4b;color:#fff;font:600 14px system-ui;padding:9px 14px;border-radius:11px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25)";document.body.appendChild(a);}</script>\n'
 # 7) tipologia fixa: escolhida no card, sem seletor de linha/tipologia dentro do 3D
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 import tipologia_fixa
 s=tipologia_fixa.aplicar(s)
+import motor_extra  # giro 2 folhas, maxim-ar duplo, peitoril fixo
+s=motor_extra.aplicar(s)
 os.makedirs(os.path.dirname(out),exist_ok=True)
 open(out,'w',encoding='utf-8').write(s)
 for w in ['Alcoa','ALCOA','Claiton','Ladore','Belmetal','Perfileve']:
