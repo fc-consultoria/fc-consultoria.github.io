@@ -295,6 +295,7 @@ const $=s=>document.querySelector(s);
 const h=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ls={get(k){try{return localStorage.getItem(k)}catch(_){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(_){}},del(k){try{localStorage.removeItem(k)}catch(_){}}};
 $('#zapEnt').href=ZAP;
+{const u=new URLSearchParams(location.search).get('u');if(u){const i=$('#inLogin');if(i&&!i.value)i.value=u.replace(/\D/g,'')||u;}}
 
 /* ---------- tema ---------- */
 function tema(m){if(m)document.documentElement.setAttribute('data-theme',m);else document.documentElement.removeAttribute('data-theme');}
