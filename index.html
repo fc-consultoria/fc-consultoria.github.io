@@ -91,6 +91,11 @@ section{padding:72px 0;scroll-margin-top:64px}
 .shots{position:relative;min-height:380px}.shots img{position:absolute;border-radius:12px;border:1px solid #2b4a58;box-shadow:0 18px 40px rgba(0,0,0,.45)}
 .shots .s1{width:86%;left:0;top:0}.shots .s2{width:62%;right:0;bottom:0}
 .trb{display:flex;gap:12px;flex-wrap:wrap}
+.dfold{display:grid;grid-template-columns:300px 1fr;gap:22px;align-items:center;margin-top:16px;padding:18px;border-radius:14px;background:#13242d;border:1px solid #2b4a58}
+.dfimg img{display:block;width:100%;height:auto;border-radius:12px;box-shadow:0 12px 26px rgba(0,0,0,.35)}
+.dftx h3{margin:8px 0 10px}.dftx ol{margin:0 0 12px;padding-left:20px;color:#d6e3e8;line-height:1.55}.dftx ol b{color:#fff}.dftx .dfal{color:#f2c46a!important;margin:0 0 14px!important}
+.dfbt{display:flex;flex-wrap:wrap;gap:10px}
+@media(max-width:720px){.dfold{grid-template-columns:1fr}.dfimg{max-width:340px;margin:0 auto}}
 .demo{margin-top:40px;background:#0f1a22;border:1px solid #2b4a58;border-radius:16px;padding:20px}
 .demo h3{color:#fff;font-size:24px;margin:2px 0 4px}.demo p{color:#b9cdd6;margin:0}.demo .dnote{font-size:13.5px;margin-top:10px}
 .dbox{position:relative;margin-top:14px;border-radius:12px;overflow:hidden;border:1px solid #2b4a58;background:#dfe5ea}
@@ -161,7 +166,7 @@ footer{padding:28px 0 90px;color:var(--tm);font-size:13.5px}footer .w{display:fl
 </style>
 <script src="/whats.js?v=1"></script>
 </head><body>
-<div class="vt" id="vt" hidden><span>👤 Você está com o FC Mostruário 3D aberto</span><a href="https://fc-consultoria.github.io/treinamento/" id="vtA">◀ Voltar ao orientativo</a></div>
+<div class="vt" id="vt" hidden><span>👤 Você está com a área do cliente FC aberta</span><a href="https://fc-consultoria.github.io/treinamento/" id="vtA">◀ Voltar à área do cliente</a></div>
 <header class="top"><div class="w">
  <a class="brand" href="#inicio"><img src="img/logo-fc-marca.png" alt="FC Consultoria"><span>FC Consultoria<small>EM ESQUADRIA · REPRESENTAÇÃO</small></span></a>
  <button class="mbtn" id="mb" aria-label="Abrir menu">☰</button>
@@ -223,9 +228,22 @@ footer{padding:28px 0 90px;color:var(--tm);font-size:13.5px}footer .w{display:fl
   <div class="shots"><img class="s1" src="img/02-conhecer.jpg" alt="Janela de correr em 3D na Plataforma FC 3D" loading="lazy"><img class="s2" src="fc3d/clientes/img/folha-tecnica.webp" alt="Desenho técnico interativo da janela de correr 2 folhas" loading="lazy"></div>
  </div>
  <div class="demo" id="demo">
-  <div class="dhd"><div><span class="chip">VÍDEO · 1 min</span><h3>Como funciona o demonstrativo de 3 dias</h3><p>Abra o link, preencha nome, empresa, cidade e WhatsApp, e use por 3 dias no celular, no notebook ou na TV.</p></div></div>
+  <div class="dhd"><div><span class="chip">VÍDEO · 1 min</span><h3>Como funciona o demonstrativo de 3 dias</h3><p>Abra o link, preencha só nome e WhatsApp, e use por 3 dias no celular, no notebook ou na TV.</p></div></div>
     <div class="dbox" id="dbox"><video id="dvid" src="vid/plataforma_fc3d_demonstrativo.mp4?v=4" poster="img/plataforma-fc3d-video.jpg" controls playsinline preload="none"></video><button type="button" id="dplay">▶ Assista como funciona</button></div>
-  <div class="vcta"><b>Quer testar? Peça o link do demonstrativo: são 3 dias grátis para conhecer a plataforma.</b><a class="btn cy" href="https://wa.me/5566999867984?text=Ol%C3%A1%20Fernando%2C%20quero%20o%20link%20do%20demonstrativo%20da%20Plataforma%20FC%203D." target="_blank" rel="noopener">💬 Pedir o link do demonstrativo</a><a class="btn gh" href="https://wa.me/5566999867984?text=Ol%C3%A1%20Fernando%2C%20quero%20o%20link%20do%20demonstrativo%20da%20Plataforma%20FC%203D." target="_blank" rel="noopener">WhatsApp (66) 9 9986-7984</a></div>
+  <div class="dfold">
+   <a class="dfimg" href="img/folder-demonstrativo-fc3d.jpg" target="_blank" rel="noopener"><img src="img/folder-demonstrativo-fc3d-540.webp" width="540" height="675" alt="Folder do demonstrativo grátis de 3 dias da Plataforma FC 3D" loading="lazy"></a>
+   <div class="dftx">
+    <span class="chip">DEMONSTRATIVO GRÁTIS · 3 DIAS</span>
+    <h3>Entre agora e conheça a Plataforma FC 3D</h3>
+    <ol>
+     <li><b>Abra o demonstrativo</b> pelo botão abaixo ou pelo QR Code do folder.</li>
+     <li><b>Só nome e WhatsApp:</b> o acesso é liberado em até 3 minutos.</li>
+     <li><b>Use por 3 dias</b> no celular, no notebook ou na TV da loja.</li>
+    </ol>
+    <p class="dfal">Gostou? Fale com a FC e conheça os planos para a sua equipe: licença anual por empresa, com login para cada pessoa.</p>
+    <div class="dfbt"><a class="btn cy" href="fc3d/clientes/demo/" target="_blank" rel="noopener">▶ Entrar no demonstrativo</a><a class="btn gh" href="https://wa.me/5566999867984?text=Ol%C3%A1%2C%20FC!%20Conheci%20a%20Plataforma%20FC%203D%20pelo%20demonstrativo%20e%20quero%20saber%20dos%20planos%20para%20a%20minha%20equipe." target="_blank" rel="noopener">💬 Gostei, quero falar com a FC</a><a class="btn gh" href="img/folder-demonstrativo-fc3d.jpg" download="Folder-Plataforma-FC3D-demonstrativo.jpg">⬇ Baixar o folder</a></div>
+   </div>
+  </div>
   <p class="dnote">📘 É uma ferramenta de apresentação e simulação: medidas e pesos são demonstrativos e devem ser confirmados no sistema de cálculo e com o seu fornecedor. Suprema e Gold são marcas de seus respectivos titulares.</p>
  </div>
 </div></section>
@@ -342,7 +360,7 @@ fetch('https://cpkjphodruyxfouirhpd.supabase.co/functions/v1/noticias',{cache:'n
 <script src="https://fc-consultoria.github.io/treinamento/mapa.js?v=1792037768"></script>
 <script>
 {const v=document.getElementById('dvid'),pb=document.getElementById('dplay');const play=()=>{pb.hidden=true;v.muted=false;v.play().catch(()=>{v.muted=true;v.play();});};pb.onclick=play;v.addEventListener('play',()=>{pb.hidden=true;});
-document.querySelectorAll('[data-chatv]').forEach(a=>a.onclick=e=>{e.preventDefault();if(window.FCRC)FCRC.abrir('Olá! Assisti ao vídeo do FC Mostruário 3D e quero um acesso para conhecer. Minha empresa e cidade: ');else open('https://wa.me/5566999867984','_blank');});}
+document.querySelectorAll('[data-chatv]').forEach(a=>a.onclick=e=>{e.preventDefault();if(window.FCRC)FCRC.abrir('Olá! Assisti ao vídeo da Plataforma FC 3D e quero um acesso para conhecer. Minha empresa e cidade: ');else open('https://wa.me/5566999867984','_blank');});}
 document.getElementById('mb').onclick=()=>document.getElementById('mn').classList.toggle('on');(function(){const h=document.querySelector('header.top'),w=h&&h.querySelector('.w');if(!w)return;function f(){h.classList.remove('cmp');if(window.innerWidth<=1440||w.scrollWidth>w.clientWidth+1)h.classList.add('cmp');}f();addEventListener('resize',()=>{clearTimeout(window.__hf);window.__hf=setTimeout(f,120);});addEventListener('load',f);new MutationObserver(f).observe(w,{subtree:true,childList:true,characterData:true});})();
 document.querySelectorAll('#mn a').forEach(a=>a.onclick=()=>document.getElementById('mn').classList.remove('on'));
 const MAPA_FALLBACK=[{"c": "Sinop", "n": 3, "s": "and", "t": "on", "u": "MT"}, {"c": "Cuiabá", "n": 1, "s": "and", "t": "pr", "u": "MT"}, {"c": "Cuiabá", "n": 6, "s": "and", "t": "on", "u": "MT"}, {"c": "Manaus", "n": 1, "s": "and", "t": "pr", "u": "AM"}, {"c": "Recife", "n": 1, "s": "and", "t": "pr", "u": "PE"}];
@@ -353,7 +371,7 @@ function mostrar(it,orr,cons,vit){if(window.FCM){if(FCM.render2)FCM.render2(docu
 <script>(function(){try{if(!localStorage.getItem('trein-fc-auth'))return;}catch(e){return;}
  let u='https://fc-consultoria.github.io/treinamento/';try{const x=localStorage.getItem('fcTreinUrl');if(x&&x.indexOf('https://fc-consultoria.github.io/treinamento/')===0)u=x;}catch(e){}
  const back=e=>{if(window.opener&&!window.opener.closed){try{if(window.opener.location.href.indexOf('/treinamento/')>-1){e.preventDefault();window.opener.focus();window.close();return;}}catch(_){}}};
- const ac=document.querySelector('.top .btn.ac');if(ac){ac.textContent='◀ Voltar ao Mostruário';ac.title='Você está com o FC Mostruário 3D aberto';ac.href=u;ac.onclick=back;ac.style.background='#e8912d';ac.style.color='#1b1205';}})();</script>
+ const ac=document.querySelector('.top .btn.ac');if(ac){ac.textContent='◀ Voltar à área do cliente';ac.title='Você está com a área do cliente FC aberta';ac.href=u;ac.onclick=back;ac.style.background='#e8912d';ac.style.color='#1b1205';}})();</script>
 <script id="fctrack">/* contagem anônima de visitas (sem nome, sem cookie) */
 (function(){try{{const e=new URLSearchParams(location.search).get('eu');if(e==='1')localStorage.setItem('fc_eu','1');if(e==='0')localStorage.removeItem('fc_eu');}if(localStorage.getItem('fc_eu')==='1')return;const SB='https://cpkjphodruyxfouirhpd.supabase.co',KEY='sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg';
  let s=sessionStorage.getItem('fc_s');if(!s){s=Math.random().toString(36).slice(2,12)+Date.now().toString(36);sessionStorage.setItem('fc_s',s);}
@@ -411,5 +429,5 @@ function fcConfete(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)r
   mostrar('impl-'+d.ultima,'Mais uma implantação de preços concluída pela FC!','Linhas alimentadas, conferidas e com margem ajustada no sistema do cliente.',true,true,null);
  }catch(_){}})();
 document.getElementById('acDemo').addEventListener('click',()=>{try{const s=sessionStorage.getItem('fc_s')||'x';fetch('https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/rpc/site_hit',{method:'POST',keepalive:true,headers:{apikey:'sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg','Content-Type':'application/json'},body:JSON.stringify({p_s:s,p_pag:'site',p_ev:'acomp_demo',p_o:sessionStorage.getItem('fc_o')||'direto',p_ref:''})});}catch(_){}});
-</script><script src="rep_chat.js?v=1792043132"></script><script src="teatro.js?v=5"></script><script src="vitrine.js?v=4"></script><script src="insta.js?v=1"></script><script>if(window.FCRC)FCRC.init({pag:"site",marca:"FC Consultoria",cor:"#02717d",logo:"img/logo-fc-160.jpg",rotulo:"💬 Fale com a FC",sub:"Consultoria, Mostruário 3D e representação · respondemos por aqui",ph:"Escreva sua dúvida ou pedido",ola:"Olá! Pode falar sobre qualquer assunto: consultoria, implantação de sistema, Mostruário 3D ou orçamento de produtos."});</script><script>document.addEventListener("click",e=>{const a=e.target.closest("[data-orc]");if(!a||!window.FCRC)return;e.preventDefault();FCRC.abrir("Quero orçamento de "+a.dataset.orc+". Produto e quantidade: ");});</script>
+</script><script src="rep_chat.js?v=1792043132"></script><script src="teatro.js?v=5"></script><script src="vitrine.js?v=4"></script><script src="insta.js?v=1"></script><script>if(window.FCRC)FCRC.init({pag:"site",marca:"FC Consultoria",cor:"#02717d",logo:"img/logo-fc-160.jpg",rotulo:"💬 Fale com a FC",sub:"Consultoria, Plataforma FC 3D e representação · respondemos por aqui",ph:"Escreva sua dúvida ou pedido",ola:"Olá! Pode falar sobre qualquer assunto: consultoria, implantação de sistema, Plataforma FC 3D ou orçamento de produtos."});</script><script>document.addEventListener("click",e=>{const a=e.target.closest("[data-orc]");if(!a||!window.FCRC)return;e.preventDefault();FCRC.abrir("Quero orçamento de "+a.dataset.orc+". Produto e quantidade: ");});</script>
 </body></html>

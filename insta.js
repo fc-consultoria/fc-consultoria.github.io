@@ -27,7 +27,7 @@
     const c=document.createElement('aside');c.id='igC';c.style.setProperty('--igw',w+'px');c.setAttribute('aria-label','Instagram da FC');
     c.innerHTML=`<div class="igh"><span>📸 SIGA A FC</span><button type="button" id="igMin" title="Minimizar" aria-label="Minimizar">–</button></div>
       <div class="igtop"><div class="igav"><img src="${BASE}img/logo-fc-160.jpg" alt="FC Consultoria"></div><b>@fc__consultoria</b><span>FC Consultoria em Esquadria</span></div>
-      <ul><li>💡<span>Dicas de custo e preço para esquadria</span></li><li>🧊<span>Novidades do Mostruário 3D</span></li><li>📣<span>Lançamentos das representadas</span></li></ul>
+      <ul><li>💡<span>Dicas de custo e preço para esquadria</span></li><li>🧊<span>Novidades da Plataforma FC 3D</span></li><li>📣<span>Lançamentos das representadas</span></li></ul>
       <a class="igbt" href="${URL_IG}" target="_blank" rel="noopener">${ICO}Seguir no Instagram</a><small>Segue lá e acompanha a FC 👊</small>`;
     document.body.appendChild(c);document.getElementById('igMin').onclick=()=>{SS.s('ig_min','1');desenhar();};}
   function montar(){const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);desenhar();
