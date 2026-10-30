@@ -150,13 +150,15 @@ dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:10px 0}dt{col
 
 @keyframes pisca{0%,100%{opacity:1}50%{opacity:.35}}
 .anim{transition:transform .9s cubic-bezier(.5,0,.2,1)}
+body.fixo .nav,body.fixo #bHome,body.fixo .prog,body.fixo .foot,body.fixo .row:has(#sel3),body.fixo .sec:has(#crFig),body.fixo .sec:has(.qz){display:none!important}body.fixo .lay{grid-template-columns:1fr!important;max-width:1180px}
 </style>
 </head>
 <body>
+<script>if(new URLSearchParams(location.search).get("fixo")==="1")document.body.classList.add("fixo");</script>
 <div class="gate" id="gate"><div><h1 id="gateT">Abrindo o Orientativo…</h1><p class="mute" id="gateP">Conferindo o seu acesso.</p></div></div>
 
 <header class="topo"><div class="w">
-  <a class="volta" href="../#tip">← Tipologias</a>
+  <a class="volta" href="../#tip">← Voltar às tipologias</a>
   <div class="tt"><small>Plataforma FC 3D · Tipologias</small><b>Montagens 3D · Linhas Suprema e Gold</b></div>
   <span class="sp"></span>
   <div class="prog" title="Módulos estudados"><i><s id="pgB" style="width:0"></s></i><span id="pgT">0/9</span></div>
@@ -177,7 +179,7 @@ if(!tk){nega('Entre na Plataforma FC 3D','O Orientativo abre pela plataforma, de
 fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
  .then(r=>r.ok?r.json():null).then(d=>{
    if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}
-   MATRIZ=!!d.matriz;if(!MATRIZ&&FCM.MONT[CR3]&&FCM.MONT[CR3].aj)CR3='jc2';
+   MATRIZ=!!d.matriz;if(!MATRIZ&&FCM.MONT[CR3]&&FCM.MONT[CR3].aj){if(document.body.classList.contains('fixo')){nega('Tipologia em ajuste','Esta tipologia está sendo conferida pela FC e ainda não está liberada.');return;}CR3='jc2';}
    
    document.getElementById('gate').hidden=true;iniciar();})
  .catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));
@@ -542,7 +544,7 @@ function iniciar(){
  });
  addEventListener('keydown',e=>{if(e.key==='Escape'){const w=$('#v3w.fs');if(w){w.classList.remove('fs');$('#b3Fs').textContent='⛶ Tela cheia';}}});
  $('#bHome').onclick=()=>go(null);
- const h=location.hash.slice(1);go(RT[h]?h:null,true);
+ const h=document.body.classList.contains('fixo')?'cor':location.hash.slice(1);go(RT[h]?h:null,true);
  addEventListener('hashchange',()=>{const k=location.hash.slice(1);if((RT[k]?k:null)!==AT)go(RT[k]?k:null);});
  fetch('../tecnico/secoes.json?v=3').then(r=>r.json()).then(j=>{SEC=SEC||j;}).catch(()=>{});
 }

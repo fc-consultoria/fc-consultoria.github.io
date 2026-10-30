@@ -344,6 +344,7 @@ details.card:not([open]){gap:0}
 .dia-q ol{margin:0;padding-left:18px;font-size:12.5px;color:var(--muted)}
 [hidden]{display:none!important}
 #d2Ct>*,#d2Ca>*,#d2Op2>*{margin:auto}.guiabtn{display:none!important}
+/*pfc-tipologia-fixa*/#typoLab{display:none!important}
 </style>
 
 <div class="wrap">
@@ -767,7 +768,7 @@ const GOLD_CM={'NYL-329':'NYL-395','NYL-335':'CON-381','NYL-414':'NYL-347','ROL-
 const GFLIP={'LG-050':[1,0],'LG-017':[1,0],'LG-048':[1,0],'LG-021':[1,0],'LG-006':[0,1]};
 const MA={'FEC-493':'FEC-009','GUA-239':'GUA-053','PIV-756':'BRA-702','BRA-766':'BRA-702','BRA-767':'BRA-702','BRA-768':'BRA-702','ROL-413':'ROL-439','NYL-395':'NYL-329','CON-381':'NYL-335','NYL-347':'NYL-414','NYL-396':'NYL-332','FEC-052':'FEC-636','CON-382':'CON-370','FRA-823':'FEC-055'};
 const TYPOS={
-  gpc2fpe:{line:'gold',n:'Porta de correr 2 folhas com persiana de enrolar',code:'GOLD PC-2FPE',def:[1600,2100],fr:{t:'LG-044',b:'LG-047',s:'MN-003'},edge:.06,ov:.057,sds:.032,
+  gpc2fpe:{line:'gold',n:'Porta de correr 2 folhas com persiana de enrolar',code:'GLD PC-2FPE',def:[1600,2100],fr:{t:'LG-044',b:'LG-047',s:'MN-003'},edge:.06,ov:.057,sds:.032,
     gcontra:true,noplate:true,lockU:'LG-028',web:.022,latz:-.0184,persiana:{box:.21,ze:-.08815,cz:-.070},
     bag:'BG-057',bagOff:[4.4,5.9],lock:'LG-017',cmap:GOLD_CM,comp:{rol:'ROL-439'},
     sashes:[{id:'A',n:'Folha interna',z:.0223,L:'LG-017',R:'LG-021',dir:1,top:'LG-006',bot:'LG-007',mid:'LG-055'},
@@ -778,7 +779,7 @@ const TYPOS={
     cutd:{sup:'Caixa da persiana: MN-001 em cima, MN-039 na frente (lado externo), MN-032 atrás, MN-002 embaixo; eixo MN-015 com o recolhedor REC-013. Abaixo, o marco LG-044 da porta.',inf:'Marco inferior LG-047 com as travessas LG-007 sobre as roldanas ROL-413; por fora, a última lâmina LAM-45 da persiana.'},
     meetd:'Mão de amigo LG-021 (folha interna, com puxador) encaixando na LG-019 (folha externa).',
     glass:(W,H)=>[(W-.2491)/2,(H-.2241)/2],gtxt:'(L−249,1)/2 × (H−224,1)/2, 2 vidros por folha'},
-  gjc2f:{line:'gold',n:'Janela de correr 2 folhas',code:'GOLD JC-2F',fr:{t:'LG-044',b:'LG-024',s:'LG-045'},edge:.022,ov:.057,sds:.032,gcontra:true,
+  gjc2f:{line:'gold',n:'Janela de correr 2 folhas',code:'GLD JC-2F',fr:{t:'LG-044',b:'LG-024',s:'LG-045'},edge:.022,ov:.057,sds:.032,gcontra:true,
     bag:'BG-057',bagOff:[4.4,5.9],lock:'LG-050',cmap:GOLD_CM,comp:{rol:'ROL-439'},
     sashes:[{id:'A',n:'Folha interna',z:.0223,L:'LG-050',R:'LG-048',dir:1,top:'LG-006',bot:'LG-006'},{id:'B',n:'Folha externa',z:-.0223,L:'LG-049',R:'LG-050',dir:-1,top:'LG-006',bot:'LG-006'}],
     rails:{bot:'LG-006'},sh:H=>H-.051,sy:H=>-.0015,
@@ -786,7 +787,7 @@ const TYPOS={
     cutd:{sup:'Marco superior LG-044 com a travessa LG-006 das folhas e a vedação superior CON-381 no encontro.',inf:'Marco inferior LG-024 com a travessa LG-006 sobre as roldanas ROL-413 e a vedação inferior NYL-395.'},
     meetd:'Mão de amigo LG-048 (folha interna) encaixando na LG-049 (folha externa).',
     glass:(W,H)=>[(W-.180)/2,H-.1396],gtxt:'(L−180)/2 × (H−139,6)'},
-  gpc3fvz:{line:'gold',n:'Porta de correr 3 folhas com veneziana',code:'GOLD PC3F-VZ',def:[1800,2100],slots:2,fr:{t:'LG-062',b:'LG-066',s:'LG-064'},edge:.022,ov:.057,sds:.032,gcontra:true,
+  gpc3fvz:{line:'gold',n:'Porta de correr 3 folhas com veneziana',code:'GLD PC3F-VZ',def:[1800,2100],slots:2,fr:{t:'LG-062',b:'LG-066',s:'LG-064'},edge:.022,ov:.057,sds:.032,gcontra:true,
     bag:'BG-057',bagOff:[4.4,5.9],lock:'LG-017',cmap:GOLD_CM,comp:{rol:'ROL-439'},cz:[-.0446,0],
     sashes:[{id:'V',n:'Veneziana fixa',slot:1,z:0,L:'LG-019',R:'LG-050',fixed:true,ven:true,top:'LG-006',bot:'LG-007',mid:null},
             {id:'A',n:'Folha de vidro',slot:0,z:.0446,L:'LG-017',R:'LG-021',dir:1,top:'LG-006',bot:'LG-007',mid:'LG-055'},
@@ -834,7 +835,7 @@ const TYPOS={
     codes:['SU-079','SU-200','SU-080','SU-276','SU-102'],fz:['SU-200','SU-080','SU-276'],
     cutd:{sup:'Marco SU-079 com a travessa superior SU-080 e a pingadeira SU-276.',inf:'Marco SU-079 com a travessa SU-200: a aba da folha fecha por fora.'},
     glass:(W,H)=>[W-.0984,H-.0984],gtxt:'(L−98,4) × (H−98,4)'},
-  gjc4f:{line:'gold',n:'Janela de correr 4 folhas (2 fixas e 2 móveis)',code:'GOLD JC-4F',def:[2000,1200],fr:{t:'LG-044',b:'LG-047',s:'LG-045'},edge:.022,ov:.057,sds:.032,gcontra:true,
+  gjc4f:{line:'gold',n:'Janela de correr 4 folhas (2 fixas e 2 móveis)',code:'GLD JC-4F',def:[2000,1200],fr:{t:'LG-044',b:'LG-047',s:'LG-045'},edge:.022,ov:.057,sds:.032,gcontra:true,
     bag:'BG-057',bagOff:[4.4,5.9],lock:'LG-051',cmap:GOLD_CM,comp:{rol:'ROL-439'},ovs:[.057,.0105,.057],together:true,
     sashes:[{id:'A',n:'Folha fixa esquerda',slot:0,z:-.0223,L:'LG-050',R:'LG-049',fixed:true,top:'LG-006',bot:'LG-006'},
             {id:'B',n:'Folha móvel esquerda',slot:1,z:.0223,L:'LG-048',R:'LG-051',dir:-1,top:'LG-006',bot:'LG-006'},
@@ -845,7 +846,7 @@ const TYPOS={
     cutd:{sup:'Trilho superior LG-044 (largura − 28) com a travessa LG-006 das folhas e o vedador de vento CON-381.',inf:'Trilho inferior LG-047 (largura − 28) com a travessa LG-006 sobre as roldanas ROL-012; as folhas fixas travadas com SUP-622 e calço NYL-394.'},
     meetd:'No centro, as duas folhas móveis se encontram no mesmo trilho: montante central LG-051 com o fecho concha FEC-636 e o contrafecho central CON-385. Nas laterais, mão-amigo LG-048 (folha móvel) encaixa na LG-049 (folha fixa).',
     glass:(W,H)=>[(W-.335)/4,H-.139],gtxt:'(L−335)/4 × (H−139)'},
-  gjc4fs:{line:'gold',n:'Janela de correr 4 folhas sequenciais',code:'GOLD JC-4FS',seq:true,seq2:true,def:[2400,1200],fr:{t:'LG-070',b:'LG-071',s:'LG-072'},edge:-.0052,ov:.057,sds:.032,
+  gjc4fs:{line:'gold',n:'Janela de correr 4 folhas sequenciais',code:'GLD JC-4FS',seq:true,seq2:true,def:[2400,1200],fr:{t:'LG-070',b:'LG-071',s:'LG-072'},edge:-.0052,ov:.057,sds:.032,
     cmp0:'LG-028',cfz:[-.0669,.0669],bag:'BG-057',bagOff:[4.4,5.9],lock:'LG-050',cmap:GOLD_CM,comp:{rol:'ROL-439'},
     sashes:[{id:'A',n:'Folha 1 (externa)',slot:0,z:-.0669,L:'LG-050',R:'LG-049',dir:1,top:'LG-006',bot:'LG-006'},
             {id:'B',n:'Folha 2',slot:1,z:-.0223,L:'LG-048',R:'LG-049',dir:1,top:'LG-006',bot:'LG-006'},
@@ -856,7 +857,7 @@ const TYPOS={
     cutd:{sup:'Trilho superior LG-070 de 4 trilhos (largura − 28) com a travessa LG-006 de cada folha e o vedador de vento CON-381.',inf:'Trilho inferior LG-071 de 4 trilhos (largura − 28) com a travessa LG-006 sobre as roldanas ROL-012 e a caixa de dreno NYL-395.'},
     meetd:'Folhas em sequência, cada uma no seu trilho: mão-amigo LG-048 (folha mais interna) encaixa na LG-049 (folha mais externa) nos três encontros.',
     glass:(W,H)=>[(W-.266)/4,H-.139],gtxt:'(L−266)/4 × (H−139)'},
-  gpc2f:{line:'gold',n:'Porta de correr 2 folhas',code:'GOLD PC-2F',def:[1600,2100],fr:{t:'LG-044',b:'LG-047',s:'LG-045'},edge:.022,ov:.057,sds:.032,gcontra:true,
+  gpc2f:{line:'gold',n:'Porta de correr 2 folhas',code:'GLD PC-2F',def:[1600,2100],fr:{t:'LG-044',b:'LG-047',s:'LG-045'},edge:.022,ov:.057,sds:.032,gcontra:true,
     bag:'BG-057',bagOff:[4.4,5.9],lock:'LG-050',cmap:GOLD_CM,comp:{rol:'ROL-439'},
     sashes:[{id:'A',n:'Folha interna',z:.0223,L:'LG-050',R:'LG-021',dir:1,top:'LG-006',bot:'LG-007'},{id:'B',n:'Folha externa',z:-.0223,L:'LG-052',R:'LG-050',dir:-1,top:'LG-006',bot:'LG-007'}],
     rails:{bot:'LG-007'},sh:H=>H-.051,sy:H=>-.0015,
@@ -864,7 +865,7 @@ const TYPOS={
     cutd:{sup:'Trilho superior LG-044 (largura − 28) com a travessa superior LG-006 das folhas e o vedador de vento CON-381.',inf:'Trilho inferior LG-047 (largura − 28) com a travessa inferior LG-007 sobre as roldanas ROL-013 (folhas de até 80 kg).'},
     meetd:'Mão de amigo com reforço LG-021 (folha interna) encaixando na LG-052 (folha externa), com a tampa NYL-472 nas pontas.',
     glass:(W,H)=>[(W-.192)/2,H-.183],gtxt:'(L−192)/2 × (H−183)'},
-  gpc2fm:{line:'gold',n:'Porta de correr 2 folhas com trilho macarrão',code:'GOLD PC-2F MAC',mac:true,def:[1600,2100],fr:{t:'LG-044',b:'TM-MAC',s:'LG-045'},edge:.022,ov:.057,sds:.032,
+  gpc2fm:{line:'gold',n:'Porta de correr 2 folhas com trilho macarrão',code:'GLD PC-2F MAC',mac:true,def:[1600,2100],fr:{t:'LG-044',b:'TM-MAC',s:'LG-045'},edge:.022,ov:.057,sds:.032,
     bag:'BG-057',bagOff:[4.4,5.9],lock:'LG-050',cmap:GOLD_CM,comp:{rol:'ROL-439'},
     sashes:[{id:'A',n:'Folha interna',z:.0223,L:'LG-050',R:'LG-021',dir:1,top:'LG-006',bot:'LG-237'},{id:'B',n:'Folha externa',z:-.0223,L:'LG-052',R:'LG-050',dir:-1,top:'LG-006',bot:'LG-237'}],
     rails:{bot:'LG-237'},sh:H=>H-.037,sy:H=>-.0015,
@@ -872,7 +873,7 @@ const TYPOS={
     cutd:{sup:'Trilho superior LG-044 (largura − 28) com a travessa superior LG-006 das folhas e o vedador de vento CON-381.',inf:'Dois trilhos macarrão (largura − 28) chumbados na soleira de mármore; a travessa LG-237 corre sobre eles com a roldana côncava.'},
     meetd:'Mão de amigo com reforço LG-021 (folha interna) encaixando na LG-052 (folha externa), com a tampa NYL-472 nas pontas.',
     glass:(W,H)=>[(W-.192)/2,H-.174],gtxt:'(L−192)/2 × (H−174)'},
-  gmax:{line:'gold',n:'Janela maxim-ar 1 folha',code:'GOLD MAX',kind:'maxim',def:[800,700],fr:{t:'LG-068',b:'LG-068',s:'LG-068'},edge:0,
+  gmax:{line:'gold',n:'Janela maxim-ar 1 folha',code:'GLD MAX',kind:'maxim',def:[800,700],fr:{t:'LG-068',b:'LG-068',s:'LG-068'},edge:0,
     mx:{mar:'LG-068',lat:'LG-085',ping:'LG-091',bagH:'BG-057',bagV:'LG-026',MB:.032,IN:.014,fech:'FEC-493',gua:'GUA-239'},
     sashes:[{id:'A',n:'Folha maxim-ar',z:-.005,L:'LG-085',R:'LG-085',dir:1}],
     codes:['LG-068','LG-085','BG-057','LG-026'],fz:['LG-085'],
@@ -2668,7 +2669,7 @@ const starsHTML=(n,m)=>Array.from({length:m||3},(_,i)=>i<n?'<span>★</span>':'<
 function better(a,b){if(!b)return true;return a.stars>b.stars||(a.stars===b.stars&&(a.pct>b.pct||(a.pct===b.pct&&a.ms<b.ms)));}
 function mergeProg(list){(list||[]).forEach(r=>lvAdd(r));lvSave();if(typeof lvUI==='function')lvUI();(list||[]).forEach(r=>{if(r&&r.t&&better(r,PROG[r.t]))PROG[r.t]={stars:r.stars,pct:r.pct,ms:r.ms};});renderProg();}
 function renderProg(){const el=document.getElementById('prog');if(!el)return;let tot=0;
-  el.innerHTML=ORDEM.map(k=>{const r=PROG[k],n=r?r.stars:0;tot+=n;return `<li><button type="button" data-t="${k}" aria-current="${k===S.typo}"><span>${TYPOS[k].code.replace('SUP ','').replace('GOLD ','G ')}</span><span class="st">${starsHTML(n).replace(/<\/?span>/g,'')}</span></button></li>`;}).join('');
+  el.innerHTML=ORDEM.map(k=>{const r=PROG[k],n=r?r.stars:0;tot+=n;return `<li><button type="button" data-t="${k}" aria-current="${k===S.typo}"><span>${TYPOS[k].code.replace('SUP ','').replace('GLD ','G ')}</span><span class="st">${starsHTML(n).replace(/<\/?span>/g,'')}</span></button></li>`;}).join('');
   document.getElementById('pgTot').textContent='· ★ '+tot+'/'+ORDEM.length*3;
   el.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.t!==S.typo){tsel.value=b.dataset.t;setTypo(b.dataset.t);}}));}
 if(window.TRKPROG)window.TRKPROG().then(mergeProg).catch(()=>{});
@@ -2836,7 +2837,7 @@ applyTypo();build();renderParts();renderCuts();renderUs();renderSliders();render
  if(!tk){nega('Entre na Plataforma FC 3D','O Mostruário 3D abre pela plataforma, depois de entrar com o seu login.');return;}
  fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})}).then(r=>r.ok?r.json():null).then(d=>{
   if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}
-  const t=new URLSearchParams(location.search).get('t');const A=window.PFC_AJ;if(A)A.matriz(d.matriz);(A?A.carregar():Promise.resolve()).then(()=>{g.remove();setTypo(TYPOS[t]?t:'jcr200');});
+  const t=new URLSearchParams(location.search).get('t');if(window.top===window&&['gpc2fpe','gpc3fvz'].includes(t)&&!d.matriz){nega('Tipologia em ajuste','Esta tipologia está sendo conferida pela FC e ainda não está liberada.');return;}const A=window.PFC_AJ;if(A)A.matriz(d.matriz);(A?A.carregar():Promise.resolve()).then(()=>{g.remove();setTypo(TYPOS[t]?t:'jcr200');});
  }).catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));})();
 
 </script>
@@ -2845,5 +2846,5 @@ applyTypo();build();renderParts();renderCuts();renderUs();renderSliders();render
 
 <script src="ajustes.js?v=7"></script>
 
-<script>if(window.top===window){const a=document.createElement("a");a.href="../#tip";a.textContent="← Plataforma FC 3D";a.style.cssText="position:fixed;right:14px;bottom:14px;z-index:9000;background:#0a4f4b;color:#fff;font:600 14px system-ui;padding:9px 14px;border-radius:11px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25)";document.body.appendChild(a);}</script>
+<script>if(window.top===window){const a=document.createElement("a");a.href="../#tip";a.textContent="← Voltar às tipologias";a.style.cssText="position:fixed;right:14px;bottom:14px;z-index:9000;background:#0a4f4b;color:#fff;font:600 14px system-ui;padding:9px 14px;border-radius:11px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25)";document.body.appendChild(a);}</script>
 <script src="../toque.js?v=1"></script>
