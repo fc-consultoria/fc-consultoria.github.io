@@ -210,17 +210,17 @@ a.card:hover{border-color:var(--teal);transform:translateY(-1px)}
   <div class="ent-form">
     <form class="ent-card" id="entForm" autocomplete="on">
       <h2 id="entTit">Entrar</h2>
-      <p class="sub mute" id="entSub">Use o login e o código que a FC Consultoria enviou para você.</p>
+      <p class="sub mute" id="entSub">Entre com o mesmo telefone (ou login) e senha que você usa no portal da sua empresa.</p>
       <div id="campoLogin">
-        <label class="f" for="inLogin">Login</label>
+        <label class="f" for="inLogin">Telefone ou login</label>
         <input class="in" id="inLogin" name="username" autocomplete="username" autocapitalize="none" spellcheck="false">
       </div>
-      <label class="f" for="inCod" id="lbCod">Código de acesso</label>
+      <label class="f" for="inCod" id="lbCod">Senha</label>
       <input class="in" id="inCod" name="password" type="password" autocomplete="current-password">
       <div id="entMsg" role="alert"></div>
       <button class="btn pri" style="width:100%" id="entBt">Entrar</button>
       <div class="ent-alt">
-        <span class="mute">Esqueceu o código? Fale com a FC.</span>
+        <span class="mute">Esqueceu a senha? Fale com a FC.</span>
         <button type="button" id="entTroca">Acesso FC</button>
       </div>
       <div class="ent-zap">Ainda não tem acesso? <a id="zapEnt" target="_blank" rel="noopener">Fale com a FC pelo WhatsApp</a> e conheça a Plataforma FC 3D.</div>
@@ -424,15 +424,15 @@ const papel=()=>S&&S.matriz?(papelVer||'gestor'):S&&S.papel;
 async function rpc(fn,args){const r=await sb.rpc(fn,args);if(r.error)throw new Error(r.error.message);return r.data;}
 
 let modoFC=false;
-$('#entTroca').onclick=()=>{modoFC=!modoFC;$('#campoLogin').hidden=modoFC;$('#lbCod').textContent=modoFC?'Senha da FC':'Código de acesso';
-  $('#entTit').textContent=modoFC?'Acesso FC':'Entrar';$('#entSub').textContent=modoFC?'Entrada da FC Consultoria para acompanhar e conferir a plataforma.':'Use o login e o código que a FC Consultoria enviou para você.';
+$('#entTroca').onclick=()=>{modoFC=!modoFC;$('#campoLogin').hidden=modoFC;$('#lbCod').textContent=modoFC?'Senha da FC':'Senha';
+  $('#entTit').textContent=modoFC?'Acesso FC':'Entrar';$('#entSub').textContent=modoFC?'Entrada da FC Consultoria para acompanhar e conferir a plataforma.':'Entre com o mesmo telefone (ou login) e senha que você usa no portal da sua empresa.';
   $('#entTroca').textContent=modoFC?'Entrar como empresa':'Acesso FC';$('#entMsg').textContent='';$('#inCod').value='';(modoFC?$('#inCod'):$('#inLogin')).focus();};
 
 $('#entForm').addEventListener('submit',async e=>{
   e.preventDefault();const bt=$('#entBt'),msg=$('#entMsg');msg.textContent='';
   const lg=$('#inLogin').value.trim(),cd=$('#inCod').value;
-  if(!modoFC&&!lg){msg.textContent='Informe o login.';return;}
-  if(!cd){msg.textContent=modoFC?'Informe a senha.':'Informe o código.';return;}
+  if(!modoFC&&!lg){msg.textContent='Informe o telefone ou login.';return;}
+  if(!cd){msg.textContent=modoFC?'Informe a senha.':'Informe a senha.';return;}
   bt.disabled=true;bt.textContent='Entrando…';
   try{
     const fc=modoFC||lg.toLowerCase()==='matriz';
