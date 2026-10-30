@@ -183,6 +183,9 @@ a.card:hover{border-color:var(--teal);transform:translateY(-1px)}
 @keyframes chegou{0%,40%{color:var(--teal);transform:translateX(6px)}100%{transform:none}}
 @media(max-width:820px){.vit{grid-template-columns:repeat(2,minmax(0,1fr))}.vit b{font-size:17px}}
 @media(prefers-reduced-motion:reduce){.vit button,.vit .vg i{transition:none}.linha-tit.chegou h3{animation:none}}
+.ln-volta{all:unset;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--teal);border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:4px 11px;white-space:nowrap}
+.ln-volta:hover{border-color:var(--teal)}.ln-volta:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+#vit{scroll-margin-top:14px}
 </style>
 </head>
 <body>
@@ -583,7 +586,7 @@ function vitrine(){/* painel destaque: leva direto à linha escolhida */
    ['gld','Linha','Gold',nG+' tipologias','#c8932f','#7a5414',desenho('g_jc2')],
    ['fac','Obras','Fachadas',nF+' sistemas','#02717d','#0b3f45',desenho('cor')],
    ['tec','Leitura','Desenho Técnico','Cortes e perfis','#3a4a54','#18232a','<img src="img/folha-tecnica.webp" alt="" loading="lazy">']].filter(x=>x[0]!=='gld'||nG);
-  return `<div class="vit" role="group" aria-label="Ir para">${T.map(([k,e,n,q,c,c2,d])=>`<button type="button" data-ln="${k}" style="--vc:${c};--vc2:${c2}"><span class="vt"><span class="vk">${e}</span><b>${n}</b><span class="vn">${q}</span></span><span class="vg"><i aria-hidden="true">↓</i>Ver</span><span class="vd" aria-hidden="true">${d}</span></button>`).join('')}</div>`;}
+  return `<div class="vit" id="vit" role="group" aria-label="Ir para">${T.map(([k,e,n,q,c,c2,d])=>`<button type="button" data-ln="${k}" style="--vc:${c};--vc2:${c2}"><span class="vt"><span class="vk">${e}</span><b>${n}</b><span class="vn">${q}</span></span><span class="vg"><i aria-hidden="true">↓</i>Ver</span><span class="vd" aria-hidden="true">${d}</span></button>`).join('')}</div>`;}
 function vaiLinha(k){let el=document.getElementById('ln-'+k);
   if(!el){filtro='todas';render();el=document.getElementById('ln-'+k);}
   if(!el)return;el.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
@@ -596,9 +599,9 @@ function telaTip(){
    <div class="filtros" role="group" aria-label="Filtrar">${[['todas','Todas'],['jan','Janelas'],['por','Portas'],['fac','Fachadas']].map(([k,n])=>`<button type="button" data-f="${k}" aria-pressed="${filtro===k}">${n}</button>`).join('')}</div></div>
    ${vitrine()}
    ${filtro!=='fac'?`<div class="linha-tit" id="ln-sup"><h3 style="font-size:15px">Linha Suprema</h3></div><div class="grid">${L.map(card).join('')}</div>
-   ${G.length?`<div class="linha-tit" id="ln-gld"><h3 style="font-size:15px">Linha Gold</h3></div><div class="grid">${G.map(card).join('')}</div>`:''}`:''}
-   ${F.length?`<div class="linha-tit" id="ln-fac"><h3>Fachadas</h3></div><div class="grid">${F.map(card).join('')}</div>`:''}
-   ${filtro!=='fac'?`<div class="linha-tit" id="ln-tec" style="margin-top:28px"><h3>Desenho Técnico</h3></div>${guiaTec()}`:''}
+   ${G.length?`<div class="linha-tit" id="ln-gld"><h3 style="font-size:15px">Linha Gold</h3><button type="button" class="ln-volta" data-topo title="Voltar ao painel das linhas">↑ Voltar às linhas</button></div><div class="grid">${G.map(card).join('')}</div>`:''}`:''}
+   ${F.length?`<div class="linha-tit" id="ln-fac"><h3>Fachadas</h3><button type="button" class="ln-volta" data-topo title="Voltar ao painel das linhas">↑ Voltar às linhas</button></div><div class="grid">${F.map(card).join('')}</div>`:''}
+   ${filtro!=='fac'?`<div class="linha-tit" id="ln-tec" style="margin-top:28px"><h3>Desenho Técnico</h3><button type="button" class="ln-volta" data-topo title="Voltar ao painel das linhas">↑ Voltar às linhas</button></div>${guiaTec()}`:''}
    ${papel()!=='arquiteto'&&papel()!=='demo'?`<p class="mute" style="margin-top:18px;font-size:14px"><a href="orientativo/?foco=1" style="color:#02717d;font-weight:500;text-decoration:none">📘 Orientativo completo · módulos gerais e prova final →</a></p>`:''}
 `;
 }
@@ -620,6 +623,7 @@ function ligar(){
   document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{filtro=b.dataset.f;render();});
   document.querySelectorAll('[data-tip]').forEach(b=>b.onclick=()=>detalhe(b.dataset.tip));
   document.querySelectorAll('[data-ln]').forEach(b=>b.onclick=()=>vaiLinha(b.dataset.ln));
+  document.querySelectorAll('[data-topo]').forEach(b=>b.onclick=()=>{const v=document.getElementById('vit');if(v)v.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});});
 }
 function detalhe(id){
   const t=TIPS.find(x=>x.id===id),d=$('#det');
