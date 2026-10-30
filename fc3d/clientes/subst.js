@@ -63,7 +63,7 @@ function ui(abrir){const css=document.createElement('style');css.textContent=`#f
 #fsPn.fs #fsRes{max-width:1180px;width:100%;margin:0 auto;padding:0 20px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;align-content:start}
 #fsPn.fs #fsRes>h4,#fsPn.fs #fsRes>.fsh,#fsPn.fs #fsRes>.fsn,#fsPn.fs #fsRes>.fsadd{grid-column:1/-1}
 #fsPn.fs .fsrow{grid-template-columns:1fr;gap:6px;padding:10px}#fsPn.fs .fsrow img{width:100%;height:190px}#fsPn.fs .fsrow b{font-size:19px}#fsPn.fs .fsrow small{font-size:13px}#fsPn.fs .fsrow .w{text-align:left;font-size:15px}
-@media print{#fsBt,#fsPn{display:none!important}}`;document.head.appendChild(css);
+#fsQ::placeholder{text-transform:none}@media print{#fsBt,#fsPn{display:none!important}}`;document.head.appendChild(css);
  const bt=document.createElement('button');bt.id='fsBt';bt.type='button';bt.textContent='🔁 Substituir perfil';
  const pn=document.createElement('div');pn.id='fsPn';pn.hidden=true;pn.innerHTML='<div class="hd"><button type="button" id="fsVolta" class="fsv" hidden>← Voltar</button><b style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">🔁 Substituir perfil</b><button type="button" id="fsTc" class="fsv" title="Ver em tela cheia">⛶ Tela cheia</button><button type="button" id="fsX" aria-label="Fechar">✕</button></div><input id="fsQ" placeholder="Código do perfil · ex.: SU-041" autocomplete="off"><div id="fsRes"></div>';
  document.body.append(bt,pn);const tog=(v,sem)=>{pn.hidden=!v;bt.hidden=v;try{localStorage.setItem('fcsub_fechado',v?'0':'1');}catch(_){}if(v){res();if(!sem)document.getElementById('fsQ').focus();}};

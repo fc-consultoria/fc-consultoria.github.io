@@ -197,7 +197,7 @@ async function carregaCli(){const M=document.getElementById('lst');
   let ni=0;document.addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('img,canvas')&&++ni<=3)HITX('salvar_imagem',(e.target.closest('.cd')||{}).dataset?.c||'');});}
  /* equipe interna logada na Plataforma FC 3D: painel Substituir perfil (o cliente final não vê) */
  if(!QS.get('print')&&!QS.get('fc3d')){let tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
-  if(tk){const sc=document.createElement('script');sc.src='/fc3d/clientes/subst.js?v=5';sc.onload=()=>{try{FCSUB.init({slug:SLUG,pick:c=>{const q=document.getElementById('q');q.value=c;Q=c;desenha();q.scrollIntoView({behavior:'smooth',block:'center'});}});}catch(e){}};document.head.appendChild(sc);}}
+  if(tk){const sc=document.createElement('script');sc.src='/fc3d/clientes/subst.js?v=6';sc.onload=()=>{try{FCSUB.init({slug:SLUG,pick:c=>{const q=document.getElementById('q');q.value=c;Q=c;desenha();q.scrollIntoView({behavior:'smooth',block:'center'});}});}catch(e){}};document.head.appendChild(sc);}}
  if(QS.get('print'))setTimeout(imprimir,600);}
 function imprimir(){const M=document.getElementById('lst'),l0=LI,q0=Q;Q='';let H='';LN.forEach(l=>{LI=l;desenha();H+=`<div class="pline"><h2 class="ptitle">${esc(l.n)}</h2>${M.innerHTML}</div>`;});M.innerHTML=H;document.body.classList.add('printing');setTimeout(()=>{window.print();},500);
  const back=()=>{document.body.classList.remove('printing');LI=l0;Q=q0;desenha();removeEventListener('afterprint',back);};addEventListener('afterprint',back);}
