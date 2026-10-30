@@ -793,7 +793,7 @@ function subAuto(b){const a=F(b);if(!a)return [];const ta=subTok(a.n),pa=num(a.p
 function subBase(q){q=String(q||'').trim().toUpperCase().replace(/\s+/g,'');if(!q)return null;if(F(q))return F(q).k;
  const e=Object.values(SUB.it).find(x=>[x.c,x.cg].some(v=>v&&String(v).toUpperCase().replace(/\s+/g,'')===q));return e&&F(e.base)?F(e.base).k:null;}
 function subCod(c){const e=SUB.it[c];const cc=e&&(e.cg||e.c);return cc&&cc!==c?c+' · '+cc:c;}
-function subLin(c,tag,mat,b){const x=pfInfo(c);const st=subEst(c)?'<span class="sbt ok">em estoque</span>':(SUB.temCat?'<span class="sbt">sob consulta</span>':'');
+function subLin(c,tag,mat,b){const x=pfInfo(c);const st='<span class="sbt">sob consulta</span>';
  return `<div class="sbr">${row(tag,subCod(c))}<div class="sbm">${st}${mat?`<button data-subap="${esc(b)}|${esc(c)}|ok" title="Aprovar esta indicação">✓ aprovar</button><button data-subap="${esc(b)}|${esc(c)}|nao" title="Não indicar">✕</button>`:''}</div></div>`;}
 function subRes(){const box=$('#sbRes');if(!box)return;const q=SUB.q.trim();if(!q){box.innerHTML='<p class="sbn">Digite o código do perfil (ex.: SU-041, SU-006). Aparecem as opções da mesma linha e com a mesma lógica de montagem.</p>';return;}
  const b=subBase(q),mat=SESS&&SESS.matriz;if(!b){box.innerHTML='<p class="sbn">Código não encontrado na base Suprema/Gold.<br><b>Confirme com o serralheiro ou com compras.</b></p>';return;}
