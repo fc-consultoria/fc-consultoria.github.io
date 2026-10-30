@@ -58,16 +58,17 @@ function ui(abrir,alvo){const css=document.createElement('style');css.textConten
 #fsPn{width:min(300px,calc(100vw - 32px))}#fsPn .hd{padding:10px 12px 6px;gap:6px}#fsPn .hd b{font-size:14px}#fsQ{margin:0 12px 8px;font-size:15px;padding:8px 10px}#fsRes{padding:0 12px 12px}
 .fsrow{grid-template-columns:64px 1fr auto;gap:8px;padding:4px 6px}.fsrow img{width:64px;height:50px}.fsrow b{font-size:14.5px}.fsrow small{font-size:11.5px}.fsrow .w{font-size:12px}
 .fsv{border:1px solid #dde3e6!important;background:#fff!important;border-radius:99px;font:700 12px system-ui,sans-serif!important;padding:4px 9px;cursor:pointer;color:#02717d!important;white-space:nowrap}
-#fsPn.fs{left:0;top:0;bottom:0;right:0;width:100vw;max-height:none;height:100vh;border-radius:0;border:0}
+#fsPn.fs{left:0!important;top:0!important;bottom:0!important;right:0;width:100vw;max-height:none;height:100vh;border-radius:0;border:0}
 #fsPn.fs .hd{max-width:1180px;width:100%;margin:0 auto;padding:16px 20px 10px}#fsPn.fs .hd b{font-size:18px}#fsPn.fs #fsQ{max-width:1140px;width:calc(100% - 40px);margin:0 auto 12px;font-size:17px}
 #fsPn.fs #fsRes{max-width:1180px;width:100%;margin:0 auto;padding:0 20px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;align-content:start}
 #fsPn.fs #fsRes>h4,#fsPn.fs #fsRes>.fsh,#fsPn.fs #fsRes>.fsn,#fsPn.fs #fsRes>.fsadd{grid-column:1/-1}
 #fsPn.fs .fsrow{grid-template-columns:1fr;gap:6px;padding:10px}#fsPn.fs .fsrow img{width:100%;height:190px}#fsPn.fs .fsrow b{font-size:19px}#fsPn.fs .fsrow small{font-size:13px}#fsPn.fs .fsrow .w{text-align:left;font-size:15px}
-#fsQ::placeholder{text-transform:none}#fsPn p,#fsPn .fsn{color:#5d6b72!important;margin:8px 0!important;font-size:13.5px!important;line-height:1.45!important;max-width:none!important}#fsPn .fsw,#fsPn .fsw b{color:#5c3d00!important}#fsPn h4{color:#5d6b72!important}#fsPn.inl{position:relative;left:auto;bottom:auto;width:100%;max-width:400px;justify-self:end;max-height:none;z-index:5;color:#1d2a30}#fsPn.inl #fsRes{max-height:min(55vh,520px)}#fsPn.inl #fsRes:empty{display:none}
+#fsQ::placeholder{text-transform:none}#fsPn .hd{cursor:grab;touch-action:none}#fsPn .hd:active{cursor:grabbing}.fsg{color:#9aa8b0;font-size:16px;line-height:1;user-select:none}#fsPn.fs .hd{cursor:default}#fsPn.fs .fsg,#fsPn.fs #fsVt{display:none}
+#fsPn.mv{position:fixed!important;z-index:9991;max-height:min(80vh,680px)}#fsPn.mv #fsRes{max-height:min(60vh,560px)}#fsPn.fs.mv{max-height:none}#fsPn.fs.mv #fsRes{max-height:none}#fsPn p,#fsPn .fsn{color:#5d6b72!important;margin:8px 0!important;font-size:13.5px!important;line-height:1.45!important;max-width:none!important}#fsPn .fsw,#fsPn .fsw b{color:#5c3d00!important}#fsPn h4{color:#5d6b72!important}#fsPn.inl{position:relative;left:auto;bottom:auto;width:100%;max-width:400px;justify-self:end;max-height:none;z-index:5;color:#1d2a30}#fsPn.inl #fsRes{max-height:min(55vh,520px)}#fsPn.inl #fsRes:empty{display:none}
 #fsPn.inl.fs{position:fixed;max-width:none;z-index:9991}#fsPn.inl.fs #fsRes{max-height:none}@media print{#fsBt,#fsPn{display:none!important}}`;document.head.appendChild(css);
  const bt=document.createElement('button');bt.id='fsBt';bt.type='button';bt.textContent='🔁 Substituir perfil';
- const pn=document.createElement('div');pn.id='fsPn';pn.hidden=true;pn.innerHTML='<div class="hd"><button type="button" id="fsVolta" class="fsv" hidden>← Voltar</button><b style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">🔁 Substituir perfil</b><button type="button" id="fsTc" class="fsv" title="Ver em tela cheia">⛶ Tela cheia</button><button type="button" id="fsX" aria-label="Fechar">✕</button></div><input id="fsQ" placeholder="Código do perfil · ex.: SU-041" autocomplete="off"><div id="fsRes"></div>';
- document.body.append(bt);if(alvo){pn.classList.add('inl');alvo.appendChild(pn);}else document.body.append(pn);const tog=(v,sem)=>{pn.hidden=!v;bt.hidden=v;try{localStorage.setItem('fcsub_fechado',v?'0':'1');}catch(_){}if(v){res();if(!sem)document.getElementById('fsQ').focus();}};
+ const pn=document.createElement('div');pn.id='fsPn';pn.hidden=true;pn.innerHTML='<div class="hd"><button type="button" id="fsVolta" class="fsv" hidden>← Voltar</button><span class="fsg" title="Arraste para mudar o painel de lugar" aria-hidden="true">⠿</span><b style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">🔁 Substituir perfil</b><button type="button" id="fsVt" class="fsv" title="Voltar o painel para o lugar original" hidden>↺</button><button type="button" id="fsTc" class="fsv" title="Ver em tela cheia">⛶ Tela cheia</button><button type="button" id="fsX" aria-label="Fechar">✕</button></div><input id="fsQ" placeholder="Código do perfil · ex.: SU-041" autocomplete="off"><div id="fsRes"></div>';
+ document.body.append(bt);if(alvo){pn.classList.add('inl');alvo.appendChild(pn);}else document.body.append(pn);const tog=(v,sem)=>{pn.hidden=!v;bt.hidden=v;try{localStorage.setItem('fcsub_fechado',v?'0':'1');}catch(_){}if(v){res();if(!sem)document.getElementById('fsQ').focus();try{repoe();}catch(_){}}};
  const cheia=v=>{pn.classList.toggle('fs',v);document.getElementById('fsVolta').hidden=!v;document.getElementById('fsTc').hidden=v;};
  document.getElementById('fsTc').onclick=()=>cheia(true);document.getElementById('fsVolta').onclick=()=>cheia(false);
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&pn.classList.contains('fs'))cheia(false);});
@@ -77,13 +78,26 @@ function ui(abrir,alvo){const css=document.createElement('style');css.textConten
   try{st.ap=await rpc('pfc_subst_salvar',{p_token:st.tk,p_base:b,p_sub:c,p_status:'ok'});res();}catch(er){alert(er.message);}});
  pn.addEventListener('click',async e=>{const a=e.target.closest('[data-fsap]');if(a){e.stopPropagation();const [b,c,s]=a.dataset.fsap.split('|');try{st.ap=await rpc('pfc_subst_salvar',{p_token:st.tk,p_base:b,p_sub:c,p_status:s||null});res();}catch(er){alert(er.message);}return;}
   const p=e.target.closest('[data-fspick]');if(p&&st.pick){if(pn.classList.contains('fs'))pn.classList.remove('fs');st.pick(p.dataset.fspick,p.dataset.fsbase);}},true);
+ /* arrastar pelo topo do painel e soltar onde quiser (fica fixo na tela e o lugar é lembrado) */
+ const hd=pn.querySelector('.hd'),vt=document.getElementById('fsVt'),K='fcsub_pos';
+ const solto=(x,y)=>{const w=pn.offsetWidth,h=pn.offsetHeight;x=Math.max(4,Math.min(innerWidth-w-4,x));y=Math.max(4,Math.min(innerHeight-Math.min(h,120),y));
+  if(pn.parentElement!==document.body)document.body.appendChild(pn);pn.classList.add('mv');pn.classList.remove('inl');pn.style.left=x+'px';pn.style.top=y+'px';pn.style.bottom='auto';vt.hidden=false;bt.hidden=true;return [x,y];};
+ const original=()=>{try{localStorage.removeItem(K);}catch(_){}pn.classList.remove('mv');pn.style.left=pn.style.top=pn.style.bottom='';vt.hidden=true;if(alvo){pn.classList.add('inl');alvo.appendChild(pn);}};
+ vt.onclick=original;
+ hd.addEventListener('pointerdown',e=>{if(e.target.closest('button')||pn.classList.contains('fs')||e.button>0)return;const r=pn.getBoundingClientRect(),dx=e.clientX-r.left,dy=e.clientY-r.top;let ult=null;
+  hd.setPointerCapture(e.pointerId);document.body.style.userSelect='none';
+  const mv=ev=>{ult=solto(ev.clientX-dx,ev.clientY-dy);};const up=()=>{hd.removeEventListener('pointermove',mv);hd.removeEventListener('pointerup',up);hd.removeEventListener('pointercancel',up);document.body.style.userSelect='';
+   if(ult)try{localStorage.setItem(K,JSON.stringify({x:ult[0]/innerWidth,y:ult[1]/innerHeight}));}catch(_){}};
+  hd.addEventListener('pointermove',mv);hd.addEventListener('pointerup',up);hd.addEventListener('pointercancel',up);});
+ const repoe=()=>{try{const p=JSON.parse(localStorage.getItem(K));if(p&&!pn.hidden)solto(p.x*innerWidth,p.y*innerHeight);}catch(_){}};
+ addEventListener('resize',()=>{if(pn.classList.contains('mv'))repoe();});
  if(alvo){/* no topo do catálogo: sempre aberto; ao rolar a página aparece o botão que volta para a pesquisa */
   document.getElementById('fsX').hidden=true;pn.hidden=false;res();bt.hidden=true;
   bt.onclick=()=>{alvo.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>document.getElementById('fsQ').focus({preventScroll:true}),450);};
-  try{new IntersectionObserver(es=>{bt.hidden=es[0].isIntersecting||pn.classList.contains('fs');}).observe(pn);}catch(_){}
-  if(abrir)document.getElementById('fsQ').focus();return;}
+  try{new IntersectionObserver(es=>{bt.hidden=es[0].isIntersecting||pn.classList.contains('fs')||pn.classList.contains('mv');}).observe(pn);}catch(_){}
+  repoe();if(abrir)document.getElementById('fsQ').focus();return;}
  let fech=false;try{fech=localStorage.getItem('fcsub_fechado')==='1';}catch(_){}
- if(abrir||!fech)tog(true,!abrir);}
+ if(abrir||!fech){tog(true,!abrir);repoe();}}
 window.FCSUB={async init(o){o=o||{};try{st.tk=localStorage.getItem('pfc-token');}catch(_){}if(!st.tk)return false;
  try{st.S=await rpc('pfc_sessao',{p_token:st.tk});}catch(_){return false;}const S=st.S;
  if(!S||S.demo||!(S.matriz||((S.papel==='gestor'||S.papel==='vendedor')&&EMP.includes(S.empresa))))return false;
