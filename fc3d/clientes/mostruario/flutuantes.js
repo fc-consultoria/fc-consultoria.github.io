@@ -25,8 +25,8 @@ css.textContent=`
 #dicaFlu .alca{background:rgba(16,32,31,.9);border-color:rgba(255,255,255,.2);color:#9fd8d1}
 #dicaFlu #pfcMv{position:static!important;max-height:none}
 #dicaFlu:has(#pfcMv[hidden]){display:none}
-/* janela 3D passa por cima da Base técnica e do Simular pressão de vento (continuam clicáveis) */
-.stage.pop>#btFlu,.stage.pop>#c-conf.cf-flu{z-index:3}
+/* a janela 3D sobressai em tudo: painéis e caixinhas ficam atrás dela (continuam clicáveis); só os "+" e etiquetas ficam na frente */
+.stage.pop>#btFlu,.stage.pop>#c-conf.cf-flu,.stage.pop>.flu,.stage.pop>#pfcMv{z-index:3!important}
 @media (max-width:640px){#padFlu{right:8px;bottom:8px}}`;
 document.head.appendChild(css);
 
