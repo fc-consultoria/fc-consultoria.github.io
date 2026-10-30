@@ -62,7 +62,18 @@ card.innerHTML=`<summary>🌬 Simular pressão de vento</summary>
 conf.insertBefore(card,$('openCtl')||null);
 
 let OPC=[],SEL=null,VP=100,SAVE=null,DIAP0=null;
-const opcs=()=>Object.values(DIAG).flat().filter(d=>d.t&&d.t===S.typo);
+/* diagramas do catálogo ligados a outras tipologias do Mostruário (só aqui no Simular; o Diagrama de dimensões não muda).
+   Só entram quando os perfis do encontro da tipologia são exatamente os do diagrama. */
+const VTX=[];
+(function(){const pg=(l,p)=>DIAG[l].find(d=>d.pag===p),add=(d,o)=>{if(d)VTX.push(Object.assign({},d,o));};
+  /* SUP JCR 400 · encontro central SU-039 (+SU-291 contrafecho) · catálogo p. 21 */
+  add(pg('sup',21),{t:'jcr400',sw:{},k:'m1',parts:['folhaB','folhaC']});
+  /* GLD PC-2FPE · mão de amigo LG-021 + LG-019 (original) e as trocas do catálogo p. 27 e 28 */
+  add(pg('gold',26),{t:'gpc2fpe',sw:{},k:'m0',parts:['folhaA','folhaB']});
+  add(pg('gold',27),{t:'gpc2fpe',sw:{'LG-019':'LG-049'},k:'m0',parts:['folhaA','folhaB']});
+  add(pg('gold',28),{t:'gpc2fpe',sw:{'LG-019':'LG-052'},k:'m0',parts:['folhaA','folhaB']});
+})();
+const opcs=()=>Object.values(DIAG).flat().concat(VTX).filter(d=>d.t&&d.t===S.typo);
 const orig=d=>!Object.keys(d.sw||{}).length;
 const L0=d=>d.LS[0],L1=d=>d.LS[d.LS.length-1];
 
