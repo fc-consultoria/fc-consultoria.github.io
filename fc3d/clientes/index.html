@@ -151,7 +151,7 @@ footer{padding:16px 20px;text-align:center;font-size:11.5px;letter-spacing:.06em
 @media(max-width:700px){.ori{grid-template-columns:1fr}}
 a.card.tip{text-decoration:none;color:inherit}
 a.card:hover{border-color:var(--teal);transform:translateY(-1px)}
-.tec-ok{font-size:13.5px;font-weight:700;color:var(--teal)}.tec-em{font-size:13px;color:var(--mute)}
+.tec-ok{font-size:13.5px;font-weight:700;color:var(--teal)}.vt-tag{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:999px;background:#e3f1fb;color:#14598a;border:1px solid #b9dcf3;cursor:pointer}.vt-tag:hover{background:#cfe7f8}.vt-tag:focus-visible{outline:3px solid #14598a;outline-offset:2px}.tec-em{font-size:13px;color:var(--mute)}
 .gtec{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;align-items:start}
 .gtec-img{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}.gtec-img img{display:block;width:100%;height:auto}
 .gtec-pt{position:absolute;width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:var(--amber);color:#1b1205;font:700 14px var(--f-h);cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.3);z-index:2;transform:translate(-30%,-30%)}
@@ -418,6 +418,7 @@ function desenho(id){
 
 /* ---------- sessão ---------- */
 let S=null,papelVer=null,tab=(['tip','amb','apr','ges'].includes(location.hash.slice(1))?location.hash.slice(1):'inicio'),filtro='todas';
+const VENTO=['jcr200','jcr400','jvz300','pcr200','gjc2f','gjc4f','gpc2fpe'];/* com Simular pressão de vento: manter igual ao mostruario/vento.js */
 const papel=()=>S&&S.matriz?(papelVer||'gestor'):S&&S.papel;
 
 async function rpc(fn,args){const r=await sb.rpc(fn,args);if(r.error)throw new Error(r.error.message);return r.data;}
@@ -612,8 +613,10 @@ function vaiLinha(k){let el=document.getElementById('ln-'+k);
   el.classList.remove('chegou');void el.offsetWidth;el.classList.add('chegou');}
 function telaTip(){
   const L=TIPS.filter(t=>(!t.aj||S.matriz)&&t.l==='res'&&(filtro==='todas'||t.g===filtro)),G=TIPS.filter(t=>(!t.aj||S.matriz)&&t.l==='gld'&&(filtro==='todas'||t.g===filtro)),F=TIPS.filter(t=>t.l==='fac'&&(filtro==='todas'||filtro==='fac'));
+  /* tipologias com Simular pressão de vento no Mostruário (mesma lista do mostruario/vento.js: DIAG + VTX) */
+  const eqV=papel()!=='arquiteto'&&papel()!=='demo';
   const card=t=>{const go=t.obra&&!t.tec?`<a class="card tip" href="${OBRA(t.obra)}" target="_blank" rel="noopener">`:`<button class="card tip" data-tip="${t.id}">`,fim=t.obra?'</a>':'</button>';
-   return `${go}<div class="des">${desenho(t.id)}</div>${t.aj?`<span class="chip a" title="Oculto para os clientes">⚠ Oculto · ajustar</span>`:''}<h3>${h(t.n)}</h3><span class="d">${t.cd?'<b style="font-weight:600">'+h(t.cd)+'</b> · ':''}${h(t.uso)}</span>${t.aj?`<span class="d" style="color:#b45309"><b>Ajuste pendente:</b> ${h(t.aj)}. Só a FC vê esta tipologia.</span>`:''}<span class="pe">${t.tec?'<span class="tec-ok">🧊 3D e 📐 desenho técnico →</span>':t.obra?'<span class="tec-ok">🧊 Abrir em 3D com as medidas da obra →</span>':'<span class="tec-em">Desenho técnico em breve</span>'}</span>${fim}`;};
+   return `${go}<div class="des">${desenho(t.id)}</div>${t.aj?`<span class="chip a" title="Oculto para os clientes">⚠ Oculto · ajustar</span>`:''}<h3>${h(t.n)}</h3><span class="d">${t.cd?'<b style="font-weight:600">'+h(t.cd)+'</b> · ':''}${h(t.uso)}</span>${t.aj?`<span class="d" style="color:#b45309"><b>Ajuste pendente:</b> ${h(t.aj)}. Só a FC vê esta tipologia.</span>`:''}<span class="pe">${eqV&&VENTO.includes(t.mo)?`<span class="vt-tag" role="link" tabindex="0" data-vento="${t.mo}" title="Abrir direto no Simular pressão de vento">🌬 Simular pressão de vento</span>`:''}${t.tec?'<span class="tec-ok">🧊 3D e 📐 desenho técnico →</span>':t.obra?'<span class="tec-ok">🧊 Abrir em 3D com as medidas da obra →</span>':'<span class="tec-em">Desenho técnico em breve</span>'}</span>${fim}`;};
   return `<div class="cab"><div><h2>Tipologias</h2><p class="mute">Janelas, portas e fachadas de mercado para escolher e apresentar ao cliente.</p></div>
    <div class="filtros" role="group" aria-label="Filtrar">${[['todas','Todas'],['jan','Janelas'],['por','Portas'],['fac','Fachadas']].map(([k,n])=>`<button type="button" data-f="${k}" aria-pressed="${filtro===k}">${n}</button>`).join('')}</div></div>
    ${vitrine()}
@@ -641,6 +644,7 @@ function ligar(){
   document.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>vaiPara(b.dataset.ir));
   document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{filtro=b.dataset.f;render();});
   document.querySelectorAll('[data-tip]').forEach(b=>b.onclick=()=>detalhe(b.dataset.tip));
+  document.querySelectorAll('[data-vento]').forEach(v=>{const vai=e=>{e.preventDefault();e.stopPropagation();location.href='mostruario/?t='+v.dataset.vento+'&vento=1';};v.onclick=vai;v.onkeydown=e=>{if(e.key==='Enter'||e.key===' ')vai(e);};});
   document.querySelectorAll('[data-ln]').forEach(b=>b.onclick=()=>vaiLinha(b.dataset.ln));
   document.querySelectorAll('[data-topo]').forEach(b=>b.onclick=()=>{const v=document.getElementById('vit');if(v)v.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});});
 }
@@ -649,7 +653,7 @@ function detalhe(id){
   d.innerHTML=`<div class="cx" role="dialog" aria-modal="true" aria-label="${h(t.n)}"><div class="des">${desenho(t.id)}</div><div class="tx">
    <span class="chip t" style="align-self:flex-start">${LINHAS[t.l].n}${t.cd?' · '+h(t.cd):''}</span><h2 style="font-size:21px">${h(t.n)}</h2><p>${h(t.d)}</p>
    <dl><dt>Abertura</dt><dd>${t.ab}</dd><dt>Folhas</dt><dd>${t.f}</dd><dt>Indicada para</dt><dd>${h(t.uso)}</dd></dl>
-   ${(()=>{/* abre direto a tipologia do card, sem escolher linha/tipologia de novo */const eq=papel()!=='arquiteto'&&papel()!=='demo';return eq&&t.mo?`<a class="btn pri" href="mostruario/?t=${t.mo}">🧊 Orientativo 3D · conhecer e montar</a>`:t.m3d?`<a class="btn pri" href="montagens/?m=${t.m3d}&fixo=1#cor">🧊 Ver em 3D</a>`:'';})()}
+   ${(()=>{/* abre direto a tipologia do card, sem escolher linha/tipologia de novo */const eq=papel()!=='arquiteto'&&papel()!=='demo';return eq&&t.mo?`<a class="btn pri" href="mostruario/?t=${t.mo}">🧊 Orientativo 3D · conhecer e montar</a>${VENTO.includes(t.mo)?`<a class="btn sec" href="mostruario/?t=${t.mo}&vento=1">🌬 Simular pressão de vento</a>`:''}`:t.m3d?`<a class="btn pri" href="montagens/?m=${t.m3d}&fixo=1#cor">🧊 Ver em 3D</a>`:'';})()}
    ${t.tec?`<a class="btn pri" href="${t.tec}">📐 Desenho técnico interativo</a>`:''}
    ${t.obra?`<a class="btn pri" href="${OBRA(t.obra)}" target="_blank" rel="noopener">Abrir em 3D com as medidas da obra</a>`:''}
    ${!t.m3d&&!t.obra&&!t.mo?'<button class="btn sec" disabled title="Chega nas próximas etapas">Ver em 3D · em breve</button>':''}   <p class="aviso">Desenho esquemático, sem escala. Medidas, pesos e acabamentos devem ser confirmados com o fornecedor da empresa.</p>

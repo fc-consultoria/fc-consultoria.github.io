@@ -170,4 +170,13 @@ if(typeof window.setMode==='function'){const m0=window.setMode;window.setMode=fu
 if(typeof window.setTypo==='function'){const t0=window.setTypo;window.setTypo=function(t){if(S.vtOn)encerra(false);SAVE=null;const r=t0.apply(this,arguments);visivel();return r;};}
 setInterval(()=>{if(S.vtOn&&(S.mode!=='exp'||S.diaOn||S.wvOn))encerra(false);visivel();},800);
 visivel();
+/* ?vento=1 (selo "🌬 Simular pressão de vento" no card): abre o Conhecer a esquadria já no Simular */
+if(new URLSearchParams(location.search).get('vento')==='1'){const t0=Date.now();const iv=setInterval(()=>{
+  if(Date.now()-t0>20000){clearInterval(iv);return;}
+  if(document.getElementById('pfcGate')||Date.now()-t0<900)return;
+  if(S.mode!=='exp'||S.diaOn||S.wvOn){if(typeof window.setMode==='function')window.setMode('exp');return;}
+  visivel();if(card.hidden)return;
+  clearInterval(iv);conf.open=true;card.open=true;
+  if(innerWidth<900)setTimeout(()=>conf.scrollIntoView({behavior:'smooth',block:'start'}),150);
+},300);}
 })();

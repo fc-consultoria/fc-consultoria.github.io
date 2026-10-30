@@ -52,7 +52,7 @@ s+='<script src="perfis-extra.js?v=1"></script>\n'  # seções dos perfis que fa
 s+='<script src="tipologias-lote2.js?v=1"></script>\n'  # Lote 2 em diante: as tipologias restantes da Suprema e Gold
 s+='<script src="base-tecnica.js?v=8"></script>\n'  # Base técnica: desenho do catálogo + fonte
 s+='<script src="config-cores.js?v=6"></script>\n'  # Configuração compacta e botão Cores
-s+='<script src="vento.js?v=4"></script>\n'  # Simular pressão de vento
+s+='<script src="vento.js?v=5"></script>\n'  # Simular pressão de vento
 s+='<script src="flutuantes.js?v=2"></script>\n'  # painéis flutuantes (Base técnica, Simular) e 3D por cima
 # 5c) Simular pressão de vento (S.vtOn) usa a mesma mão de amigo do catálogo (S.diaOn)
 VT=[
