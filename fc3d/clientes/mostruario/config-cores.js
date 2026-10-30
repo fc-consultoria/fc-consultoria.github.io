@@ -88,6 +88,11 @@ function posiciona(){
   const desk=innerWidth>=900;
   if(desk&&conf.parentNode!==st){st.appendChild(conf);conf.classList.add('cf-flu');if(!aberto){conf.open=false;aberto=true;}}
   else if(!desk&&conf.parentNode===st){casa.p.insertBefore(conf,casa.n&&casa.n.parentNode===casa.p?casa.n:null);conf.classList.remove('cf-flu');conf.style.top=conf.style.maxHeight='';}
+  /* tablet/celular: no Monte a esquadria a Configuração (medidas e cores) fica logo acima do painel do desafio,
+     em todas as tipologias (antes ia para o fim da lista de perfis e "sumia") */
+  if(!desk){const ct=$('c-test'),noTeste=typeof S!=='undefined'&&S.mode==='test'&&ct&&ct.parentNode===casa.p;
+    if(noTeste){if(conf.nextSibling!==ct)casa.p.insertBefore(conf,ct);}
+    else if(conf.parentNode===casa.p&&casa.n&&casa.n.parentNode===casa.p&&conf.nextSibling!==casa.n)casa.p.insertBefore(conf,casa.n);}
   const vt=$('c-vt');
   if(vt){if(!vt.open)vt.open=true;}
   if(h2){const t=vt&&!vt.hidden?'🌬 Simular pressão de vento':'Configuração';if(h2.textContent!==t)h2.textContent=t;}
