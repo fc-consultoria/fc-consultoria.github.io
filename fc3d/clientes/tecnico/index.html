@@ -397,7 +397,7 @@ function comemora(){const seg=Math.round((MONT.fim-MONT.t0)/1000),tempo=`${Math.
 /* ---------- Montar o corte: peças em fila na bandeja; o aluno leva cada uma até o contorno com o código ---------- */
 let MONT=null;
 function bbOf(P){const e=P.g.querySelector('path,rect');return e?e.getBBox():{x:0,y:0,width:0,height:0};}
-function montarCorte(n,vp){const vq=vp||(MONT&&MONT.vp)||'vpH';if(MONT){clearInterval(MONT.tm);MONT=null;desenhar();}const F=document.querySelector('.folha');
+function montarCorte(n,vp){const vq=vp||(MONT&&MONT.vp)||'vpH';if(AJM){/* sai do Ajuste técnico: a peça selecionada (laranja) não pode ir para a bandeja */AJM=false;AJS=null;const ba=document.getElementById('btAj');if(ba){ba.setAttribute('aria-pressed',false);ba.classList.remove('am');}document.getElementById('ajBox').hidden=true;if(!MONT)desenhar();}if(MONT){clearInterval(MONT.tm);MONT=null;desenhar();}const F=document.querySelector('.folha');
   MONT={n:n||1,ac:0,er:0,t0:0,tot:0,tm:null,vp:vq};
   document.querySelectorAll('.vp').forEach(v=>v.classList.toggle('um',v.id===vq));F.classList.add('mont');
   [vq].forEach(vk=>{const V=VPS[vk],ps=PARTS.filter(P=>P.vp===vk&&P.c!=='VID');if(!ps.length)return;
