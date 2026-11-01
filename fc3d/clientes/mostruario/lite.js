@@ -39,7 +39,10 @@ pronto(()=>{
   const giro=on=>{try{controls.autoRotate=!!on;controls.autoRotateSpeed=9;camTarget=null;}catch(_){}avisa({ev:'giro',on:!!on});};
   const evl=document.getElementById('evl');if(evl)evl.addEventListener('pointerdown',()=>{try{if(controls.autoRotate)giro(false);}catch(_){}});
   addEventListener('message',e=>{const m=e.data;if(!m)return;if(m.fc3d==='sair'){hotList.forEach(x=>x.b.classList.remove('apSel'));}if(m.fc3d==='giro')giro(m.on);});
-  if(!foto)giro(true);/* já começa girando, sem esperar a página de fora */
+  if(corte){/* miniatura do corte (cartão do +): aproxima no ponto e gira em volta dele */
+    try{setCut(corte);}catch(_){}
+    if(q.get('giro')==='1'){const w=setInterval(()=>{if(typeof camTarget==='undefined'||!camTarget){clearInterval(w);try{controls.autoRotate=true;controls.autoRotateSpeed=6;}catch(_){}}},100);}
+  }else if(!foto)giro(true);/* já começa girando, sem esperar a página de fora */
   setTimeout(()=>avisa({ev:'pronto',n:TYPOS[S.typo].n||''}),60);
 });
 })();

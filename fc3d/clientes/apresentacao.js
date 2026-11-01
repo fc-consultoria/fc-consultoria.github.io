@@ -42,7 +42,10 @@ const css=`
 .ap-dc{bottom:calc(16px + env(safe-area-inset-bottom,0px));color:#d6e6ea;font-size:13px}
 .ap-pv{position:fixed;z-index:910;width:280px;background:var(--panel);color:var(--ink);border-radius:14px;border:1px solid var(--line);padding:14px;opacity:0;transform:translateY(8px) scale(.97);transition:opacity .22s,transform .22s;pointer-events:none}
 .ap-pv.on{opacity:1;transform:none;pointer-events:auto}
-.ap-ci{display:block;width:100%;aspect-ratio:13/10;object-fit:contain;background:var(--soft);border-radius:10px;margin-bottom:10px}
+.ap-cw{position:relative;width:100%;aspect-ratio:13/10;background:var(--soft);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.ap-ci{display:block;width:100%;height:100%;object-fit:contain}
+.ap-cf{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent;opacity:0;transition:opacity .4s;pointer-events:none}
+.ap-cf.vis{opacity:1}
 .ap-pv small{font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--teal)}
 .ap-pv b{display:block;font:600 17px var(--f-h);margin:2px 0 4px}
 .ap-pv p{margin:0 0 12px;font-size:14px;color:var(--mute)}
@@ -79,7 +82,7 @@ function ligar(){estilo();
 }
 /* passar o mouse na miniatura já carrega o 3D por trás; no clique ele está pronto e girando */
 let pre=null;
-function precarrega(t){if(fr||(pre&&pre.dataset.t===t))return;if(pre)pre.remove();pre=document.createElement('iframe');pre.dataset.t=t;pre.className='ap-fr';pre.title='Esquadria em 3D';pre.tabIndex=-1;pre.setAttribute('aria-hidden','true');poe(pre,area());pre.style.visibility='hidden';pre.src=MO+'?t='+t+'&lite=1&v=8';document.body.appendChild(pre);}
+function precarrega(t){if(fr||(pre&&pre.dataset.t===t))return;if(pre)pre.remove();pre=document.createElement('iframe');pre.dataset.t=t;pre.className='ap-fr';pre.title='Esquadria em 3D';pre.tabIndex=-1;pre.setAttribute('aria-hidden','true');poe(pre,area());pre.style.visibility='hidden';pre.src=MO+'?t='+t+'&lite=1&v=9';document.body.appendChild(pre);}
 const area=()=>{const W=innerWidth,H=innerHeight,m=W<600?12:60;return{x:m,y:70,w:W-2*m,h:H-140};};
 const poe=(el,A)=>Object.assign(el.style,{left:A.x+'px',top:A.y+'px',width:A.w+'px',height:A.h+'px'});
 let ov,hd,ld,dc,pv;
@@ -89,7 +92,7 @@ function monta(){
   ld=document.createElement('div');ld.className='ap-ld';ld.textContent='carregando o 3D…';
   dc=document.createElement('div');dc.className='ap-dc';dc.textContent='Arraste para girar · toque nos + para ver cada ponto';
   pv=document.createElement('div');pv.className='ap-pv';pv.setAttribute('role','dialog');pv.setAttribute('aria-live','polite');
-  pv.innerHTML='<img class="ap-ci" alt="" hidden><small></small><b></b><p></p><div><button type="button" class="ap-m">🧊 Ver este ponto no Orientativo 3D →</button><button type="button" class="ap-f">Fechar detalhes</button></div>';
+  pv.innerHTML='<div class="ap-cw"><img class="ap-ci" alt="" hidden><iframe class="ap-cf" title="Corte em 3D" tabindex="-1"></iframe></div><small></small><b></b><p></p><div><button type="button" class="ap-m">🧊 Ver este ponto no Orientativo 3D →</button><button type="button" class="ap-f">Fechar detalhes</button></div>';
   document.body.append(ov,hd,ld,dc,pv);
   hd.querySelector('.ap-x').onclick=fechar;hd.querySelector('.ap-o3').onclick=()=>{hot=null;completo();};hd.querySelector('.ap-g3').onclick=()=>{const b=hd.querySelector('.ap-g3'),on=b.getAttribute('aria-pressed')!=='true';if(on)fechaPv();if(fr)fr.contentWindow.postMessage({fc3d:'giro',on},'*');};hd.querySelector('.ap-v').onclick=voltar;
   pv.querySelector('.ap-f').onclick=fechaPv;pv.querySelector('.ap-m').onclick=completo;
@@ -110,9 +113,9 @@ function abrir(t,img){
     {duration:matchMedia('(prefers-reduced-motion: reduce)').matches?1:850,easing:'cubic-bezier(.2,.8,.25,1)',fill:'forwards'});
   /* 2) o 3D real, em modo miniatura, carrega por trás e entra quando fica pronto */
   if(pre&&pre.dataset.t===t){fr=pre;pre=null;fr.style.visibility='';fr.removeAttribute('aria-hidden');fr.tabIndex=0;poe(fr,A);if(fr.dataset.ok){fr.classList.add('vis');ld.hidden=true;if(fly){const f=fly;fly=null;setTimeout(()=>{f.style.transition='opacity .35s';f.style.opacity=0;setTimeout(()=>f.remove(),400);},700);}fr.contentWindow.postMessage({fc3d:'giro',on:true},'*');}}
-  else{if(pre){pre.remove();pre=null;}fr=document.createElement('iframe');fr.className='ap-fr';fr.title='Esquadria em 3D';poe(fr,A);fr.src=MO+'?t='+t+'&lite=1&v=8';document.body.appendChild(fr);}
+  else{if(pre){pre.remove();pre=null;}fr=document.createElement('iframe');fr.className='ap-fr';fr.title='Esquadria em 3D';poe(fr,A);fr.src=MO+'?t='+t+'&lite=1&v=9';document.body.appendChild(fr);}
 }
-addEventListener('message',e=>{const m=e.data;if(!m||!m.fc3d)return;if(pre&&e.source===pre.contentWindow){if(m.ev==='pronto')pre.dataset.ok=1;return;}if(!fr||e.source!==fr.contentWindow)return;if(m.ev==='pronto')fr.dataset.ok=1;
+addEventListener('message',e=>{const m=e.data;if(!m||!m.fc3d)return;if(pv&&e.source===pv.querySelector('.ap-cf').contentWindow){if(m.ev==='pronto')setTimeout(()=>pv.querySelector('.ap-cf').classList.add('vis'),900);return;}if(pre&&e.source===pre.contentWindow){if(m.ev==='pronto')pre.dataset.ok=1;return;}if(!fr||e.source!==fr.contentWindow)return;if(m.ev==='pronto')fr.dataset.ok=1;
   if(m.ev==='pronto'){fr.classList.add('vis');ld.hidden=true;if(fly){const f=fly;fly=null;setTimeout(()=>{f.style.transition='opacity .35s';f.style.opacity=0;setTimeout(()=>f.remove(),400);},150);}}
   if(m.ev==='pronto')fr.contentWindow.postMessage({fc3d:'giro',on:true},'*');
   if(m.ev==='giro'){const b=hd.querySelector('.ap-g3');b.setAttribute('aria-pressed',m.on);b.textContent=m.on?'⏸ Parar giro':'⟳ Girar 360°';}
@@ -122,20 +125,22 @@ function mostraPv(m){
   hot=m;const fb=fr.getBoundingClientRect(),x=fb.left+m.x,W=Math.min(340,innerWidth-24),G=24;
   pv.querySelector('small').textContent=(atual.cd?atual.cd+' · ':'')+'DETALHE DO PONTO';pv.querySelector('b').textContent=m.n;pv.querySelector('p').textContent=m.d;
   const im=pv.querySelector('.ap-ci');im.hidden=false;im.alt='Corte '+m.n;im.onerror=()=>{im.hidden=true;};im.src=MO+'cortes/'+atual.mo+'_'+m.k+'.webp?v=1';
+  /* o corte em 3D gira por cima da imagem assim que carrega (a imagem aparece na hora, enquanto isso) */
+  const cf=pv.querySelector('.ap-cf');cf.classList.remove('vis');cf.src=MO+'?t='+atual.mo+'&lite=1&foto=1&giro=1&corte='+encodeURIComponent(m.k)+'&v=9';
   /* fica do lado de fora da janela (x0/x1 = bordas da janela na tela), no lado do + escolhido; a janela continua girando */
   const e0=fb.left+(m.x0!=null?m.x0:m.x),e1=fb.left+(m.x1!=null?m.x1:m.x),dir=x>=(e0+e1)/2,cabe=v=>v>=12&&v+W<=innerWidth-12;
   let L=dir?e1+G:e0-G-W;if(!cabe(L))L=dir?e0-G-W:e1+G;if(!cabe(L))L=innerWidth-W-12;L=Math.max(12,Math.min(innerWidth-W-12,L));
   pv.style.width=W+'px';pv.style.left=L+'px';pv.classList.remove('on');void pv.offsetWidth;
   const H=pv.offsetHeight;pv.style.top=Math.max(70,fb.top+(fb.height-H)/2)+'px';pv.classList.add('on');
 }
-function fechaPv(){if(!pv)return;const on=pv.classList.contains('on');pv.classList.remove('on');
+function fechaPv(){if(!pv)return;{const cf=pv.querySelector('.ap-cf');cf.classList.remove('vis');cf.src='about:blank';}const on=pv.classList.contains('on');pv.classList.remove('on');
   if(fr){fr.classList.remove('zoom');if(on&&fr.src.includes('lite=1'))fr.contentWindow.postMessage({fc3d:'sair'},'*');}}
 /* 3) Mais detalhes: o 3D completo já configurado, direto no corte do ponto */
-function completo(){if(!fr||!podeCompleto())return;pv.classList.remove('on');fr.classList.remove('vis','zoom');fr.classList.add('full');
+function completo(){if(!fr||!podeCompleto())return;fechaPv();fr.classList.remove('vis','zoom');fr.classList.add('full');
   ld.hidden=false;dc.hidden=true;poe(fr,{x:0,y:0,w:innerWidth,h:innerHeight});
-  fr.onload=()=>{fr.classList.add('vis');ld.hidden=true;};fr.src=MO+'?t='+atual.mo+(hot?'&corte='+encodeURIComponent(hot.k):'')+'&v=8';
+  fr.onload=()=>{fr.classList.add('vis');ld.hidden=true;};fr.src=MO+'?t='+atual.mo+(hot?'&corte='+encodeURIComponent(hot.k):'')+'&v=9';
   hd.querySelector('.ap-v').hidden=false;hd.classList.add('baixo');ov.classList.remove('on');}
-function voltar(){hd.classList.remove('baixo');ov.classList.add('on');fr.classList.remove('vis','full');fr.onload=null;poe(fr,area());ld.hidden=false;dc.hidden=false;hd.querySelector('.ap-v').hidden=true;fr.src=MO+'?t='+atual.mo+'&lite=1&v=8';}
+function voltar(){hd.classList.remove('baixo');ov.classList.add('on');fr.classList.remove('vis','full');fr.onload=null;poe(fr,area());ld.hidden=false;dc.hidden=false;hd.querySelector('.ap-v').hidden=true;fr.src=MO+'?t='+atual.mo+'&lite=1&v=9';}
 function fechar(){fechaPv();if(fr){fr.remove();fr=null;}if(fly){fly.remove();fly=null;}if(ov){ov.classList.remove('on');[ov,hd,ld,dc].forEach(e=>e.hidden=true);}document.body.style.overflow='';}
 addEventListener('keydown',e=>{if(e.key!=='Escape'||!fr)return;if(pv.classList.contains('on'))fechaPv();else fechar();});
 window.PFCapr={tela:()=>C()?tela():'',ligar:()=>{if(C())ligar();}};
