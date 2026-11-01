@@ -27,18 +27,22 @@ pronto(()=>{
   dispatchEvent(new Event('resize'));
   const avisa=m=>{try{parent.postMessage(Object.assign({fc3d:1,t:S.typo},m),'*');}catch(_){}};
   /* "+" avisa a página de fora com o nome e a descrição do corte (os mesmos do 3D completo) */
+  /* mostra os detalhes de um ponto: avisa a página de fora (nome, descrição, bordas da janela) e marca o + */
+  let iAuto=-1;
+  const mostra=(it,auto)=>{const b=it.b,r=b.getBoundingClientRect();
+    const xs=hotList.filter(x=>!x.b.hidden).map(x=>{const q=x.b.getBoundingClientRect();return q.left+q.width/2;});
+    avisa({ev:'hot',auto:!!auto,k:it.c.k,n:it.c.n,d:it.c.d,x:r.left+r.width/2,y:r.top+r.height/2,x0:xs.length?Math.min(...xs):r.left,x1:xs.length?Math.max(...xs):r.right});
+    hotList.forEach(x=>x.b.classList.toggle('apSel',x.b===b));iAuto=hotList.indexOf(it);};
   document.getElementById('hots').addEventListener('click',e=>{
     const b=e.target.closest('button');if(!b)return;e.stopImmediatePropagation();e.preventDefault();
-    const it=hotList.find(x=>x.b===b);if(!it)return;const r=b.getBoundingClientRect();
-    const xs=hotList.filter(x=>!x.b.hidden).map(x=>{const q=x.b.getBoundingClientRect();return q.left+q.width/2;});
-    avisa({ev:'hot',k:it.c.k,n:it.c.n,d:it.c.d,x:r.left+r.width/2,y:r.top+r.height/2,x0:Math.min(...xs),x1:Math.max(...xs)});
-    /* o 3D não aproxima mais: só marca o + escolhido e a página de fora mostra os detalhes ao lado */
-    hotList.forEach(x=>x.b.classList.toggle('apSel',x.b===b));
+    const it=hotList.find(x=>x.b===b);if(it)mostra(it,false);
   },true);
+  /* passeio automático: a página de fora pede o próximo ponto */
+  const proximo=()=>{if(!hotList.length)return;iAuto=(iAuto+1)%hotList.length;mostra(hotList[iAuto],true);};
   /* giro 360°: a esquadria gira sozinha; ao arrastar ou tocar num +, para e avisa a página de fora */
   const giro=on=>{try{controls.autoRotate=!!on;controls.autoRotateSpeed=9;camTarget=null;}catch(_){}avisa({ev:'giro',on:!!on});};
   const evl=document.getElementById('evl');if(evl)evl.addEventListener('pointerdown',()=>{try{if(controls.autoRotate)giro(false);}catch(_){}});
-  addEventListener('message',e=>{const m=e.data;if(!m)return;if(m.fc3d==='sair'){hotList.forEach(x=>x.b.classList.remove('apSel'));}if(m.fc3d==='giro')giro(m.on);});
+  addEventListener('message',e=>{const m=e.data;if(!m)return;if(m.fc3d==='sair'){hotList.forEach(x=>x.b.classList.remove('apSel'));}if(m.fc3d==='giro')giro(m.on);if(m.fc3d==='proximo')proximo();});
   if(corte){/* miniatura do corte (cartão do +): aproxima no ponto e gira em volta dele */
     try{setCut(corte);}catch(_){}
     if(q.get('giro')==='1'){const w=setInterval(()=>{if(typeof camTarget==='undefined'||!camTarget){clearInterval(w);try{controls.autoRotate=true;controls.autoRotateSpeed=6;}catch(_){}}},100);}
