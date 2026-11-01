@@ -14,7 +14,7 @@ st.textContent='html,body,.wrap,.grid{background:transparent!important;overflow:
  'body *{visibility:hidden!important;pointer-events:none}'+
  '#stage,#stage>canvas,#evl,#hots,#hots *{visibility:visible!important;pointer-events:auto}'+
  '#stage{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;min-height:0!important;max-width:none!important;aspect-ratio:auto!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;--mx:0px!important;--my:0px!important;overflow:hidden!important;z-index:9999!important}'+
- '#cutbar{visibility:hidden!important}#labels,#labels *{visibility:visible!important}'+
+ '#cutbar{visibility:hidden!important}#labels,#labels *{visibility:visible!important}#labels [visibility="hidden"],#labels [visibility="hidden"] *{visibility:hidden!important}'+
  '#pfcGate,#pfcGate *{visibility:visible!important;pointer-events:auto}'+
  '#stage::before,#stage::after{display:none!important}'+
  (foto?'#hots{display:none!important}':'');

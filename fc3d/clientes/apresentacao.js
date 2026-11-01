@@ -102,7 +102,7 @@ function abrir(t,img){
     {duration:matchMedia('(prefers-reduced-motion: reduce)').matches?1:850,easing:'cubic-bezier(.2,.8,.25,1)',fill:'forwards'});
   /* 2) o 3D real, em modo miniatura, carrega por trás e entra quando fica pronto */
   fr=document.createElement('iframe');fr.className='ap-fr';fr.title='Esquadria em 3D';poe(fr,A);
-  fr.src=MO+'?t='+t+'&lite=1&v=3';document.body.appendChild(fr);
+  fr.src=MO+'?t='+t+'&lite=1&v=4';document.body.appendChild(fr);
 }
 addEventListener('message',e=>{const m=e.data;if(!m||!m.fc3d||!fr||e.source!==fr.contentWindow)return;
   if(m.ev==='pronto'){fr.classList.add('vis');ld.hidden=true;if(fly){const f=fly;fly=null;setTimeout(()=>{f.style.transition='opacity .35s';f.style.opacity=0;setTimeout(()=>f.remove(),400);},150);}}
@@ -122,9 +122,9 @@ function fechaPv(){if(!pv)return;const on=pv.classList.contains('on');pv.classLi
 /* 3) Mais detalhes: o 3D completo já configurado, direto no corte do ponto */
 function completo(){if(!fr||!podeCompleto())return;pv.classList.remove('on');fr.classList.remove('vis','zoom');fr.classList.add('full');
   ld.hidden=false;dc.hidden=true;poe(fr,{x:0,y:0,w:innerWidth,h:innerHeight});
-  fr.onload=()=>{fr.classList.add('vis');ld.hidden=true;};fr.src=MO+'?t='+atual.mo+(hot?'&corte='+encodeURIComponent(hot.k):'')+'&v=3';
+  fr.onload=()=>{fr.classList.add('vis');ld.hidden=true;};fr.src=MO+'?t='+atual.mo+(hot?'&corte='+encodeURIComponent(hot.k):'')+'&v=4';
   hd.querySelector('.ap-v').hidden=false;hd.classList.add('baixo');ov.classList.remove('on');}
-function voltar(){hd.classList.remove('baixo');ov.classList.add('on');fr.classList.remove('vis','full');fr.onload=null;poe(fr,area());ld.hidden=false;dc.hidden=false;hd.querySelector('.ap-v').hidden=true;fr.src=MO+'?t='+atual.mo+'&lite=1&v=3';}
+function voltar(){hd.classList.remove('baixo');ov.classList.add('on');fr.classList.remove('vis','full');fr.onload=null;poe(fr,area());ld.hidden=false;dc.hidden=false;hd.querySelector('.ap-v').hidden=true;fr.src=MO+'?t='+atual.mo+'&lite=1&v=4';}
 function fechar(){fechaPv();if(fr){fr.remove();fr=null;}if(fly){fly.remove();fly=null;}if(ov){ov.classList.remove('on');[ov,hd,ld,dc].forEach(e=>e.hidden=true);}document.body.style.overflow='';}
 addEventListener('keydown',e=>{if(e.key!=='Escape'||!fr)return;if(pv.classList.contains('on'))fechaPv();else fechar();});
 window.PFCapr={tela:()=>C()?tela():'',ligar:()=>{if(C())ligar();}};
