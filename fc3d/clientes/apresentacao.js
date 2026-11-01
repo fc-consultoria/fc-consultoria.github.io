@@ -63,7 +63,7 @@ function tela(){estilo();
   const L=lista(),bt=(f,n)=>`<button type="button" data-apf="${f}" aria-pressed="${filtro===f}">${n}</button>`;
   const bloco=l=>{const it=L.filter(t=>t.l===l);if(!it.length)return'';
     return `<h3 class="ap-h">${h(C().LINHAS[l].n)}</h3><div class="ap-g">${it.map(t=>`<button type="button" class="ap-c" data-apt="${t.mo}"><div class="ap-th"><img loading="lazy" alt="" src="${MO}mini/${t.mo}.webp?v=1"></div><b>${h(t.n)}</b><span>${t.cd?h(t.cd)+' · ':''}${h(t.uso||'')}</span><i>Abrir em 3D</i></button>`).join('')}</div>`;};
-  return `<div class="cab"><div><h2>Apresentação</h2><p class="mute">Toque na esquadria para ela sair da tela e girar em 3D. Nos <b>+</b> aparece a prévia de cada ponto${podeCompleto()?'; em “Mais detalhes” abre o 3D completo':''}.</p></div></div>
+  return `<div class="cab"><div><h2>Apresentação</h2><p class="mute">Toque na esquadria para ela sair da tela e girar em 3D. Nos <b>+</b> aparece a prévia de cada ponto${podeCompleto()?'; em “Ver este corte no Orientativo” abre o 3D completo':''}.</p></div></div>
   <div class="ap-fl">${bt('todas','Todas')}${bt('jan','Janelas')}${bt('por','Portas')}</div>${bloco('res')}${bloco('gld')}
   <p class="mute" style="font-size:13px;margin-top:18px">A fachada continua em <a href="#" data-ir="tip">Tipologias → Fachadas</a>, com as medidas da obra.</p>`;}
 function ligar(){estilo();
@@ -84,7 +84,7 @@ function monta(){
   ld=document.createElement('div');ld.className='ap-ld';ld.textContent='carregando o 3D…';
   dc=document.createElement('div');dc.className='ap-dc';dc.textContent='Arraste para girar · toque nos + para ver cada ponto';
   pv=document.createElement('div');pv.className='ap-pv';pv.setAttribute('role','dialog');pv.setAttribute('aria-live','polite');
-  pv.innerHTML='<small></small><b></b><p></p><div><button type="button" class="ap-m">Mais detalhes →</button><button type="button" class="ap-f">Fechar</button></div>';
+  pv.innerHTML='<small></small><b></b><p></p><div><button type="button" class="ap-m">Ver este corte no Orientativo →</button><button type="button" class="ap-f">Fechar</button></div>';
   document.body.append(ov,hd,ld,dc,pv);
   hd.querySelector('.ap-x').onclick=fechar;hd.querySelector('.ap-o3').onclick=()=>{hot=null;completo();};hd.querySelector('.ap-g3').onclick=()=>{const b=hd.querySelector('.ap-g3'),on=b.getAttribute('aria-pressed')!=='true';if(on)fechaPv();if(fr)fr.contentWindow.postMessage({fc3d:'giro',on},'*');};hd.querySelector('.ap-v').onclick=voltar;
   pv.querySelector('.ap-f').onclick=fechaPv;pv.querySelector('.ap-m').onclick=completo;
