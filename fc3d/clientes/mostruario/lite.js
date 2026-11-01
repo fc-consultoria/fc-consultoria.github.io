@@ -16,6 +16,7 @@ st.textContent='html,body,.wrap,.grid{background:transparent!important;overflow:
  '#stage{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;min-height:0!important;max-width:none!important;aspect-ratio:auto!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;--mx:0px!important;--my:0px!important;overflow:hidden!important;z-index:9999!important}'+
  '#cutbar{visibility:hidden!important}#labels,#labels *{visibility:visible!important}#labels [visibility="hidden"],#labels [visibility="hidden"] *{visibility:hidden!important}'+
  '#pfcGate,#pfcGate *{visibility:visible!important;pointer-events:auto}'+
+ '#hots .apSel{background:#e8a33d!important;transform:translate(-50%,-50%) scale(1.25)!important;box-shadow:0 0 0 6px rgba(232,163,61,.35)!important}'+
  '#stage::before,#stage::after{display:none!important}'+
  (foto?'#hots{display:none!important}':'');
 document.head.appendChild(st);
@@ -29,15 +30,16 @@ pronto(()=>{
   document.getElementById('hots').addEventListener('click',e=>{
     const b=e.target.closest('button');if(!b)return;e.stopImmediatePropagation();e.preventDefault();
     const it=hotList.find(x=>x.b===b);if(!it)return;const r=b.getBoundingClientRect();
-    avisa({ev:'hot',k:it.c.k,n:it.c.n,d:it.c.d,x:r.left+r.width/2,y:r.top+r.height/2});
-    try{setCut(it.c.k);}catch(_){}/* prévia: a câmera do próprio 3D aproxima no ponto */
+    const xs=hotList.filter(x=>!x.b.hidden).map(x=>{const q=x.b.getBoundingClientRect();return q.left+q.width/2;});
+    avisa({ev:'hot',k:it.c.k,n:it.c.n,d:it.c.d,x:r.left+r.width/2,y:r.top+r.height/2,x0:Math.min(...xs),x1:Math.max(...xs)});
+    /* o 3D não aproxima mais: só marca o + escolhido e a página de fora mostra os detalhes ao lado */
+    hotList.forEach(x=>x.b.classList.toggle('apSel',x.b===b));
   },true);
   /* giro 360°: a esquadria gira sozinha; ao arrastar ou tocar num +, para e avisa a página de fora */
   const giro=on=>{try{controls.autoRotate=!!on;controls.autoRotateSpeed=9;camTarget=null;}catch(_){}avisa({ev:'giro',on:!!on});};
   const evl=document.getElementById('evl');if(evl)evl.addEventListener('pointerdown',()=>{try{if(controls.autoRotate)giro(false);}catch(_){}});
-  document.getElementById('hots').addEventListener('pointerdown',()=>{try{if(controls.autoRotate)giro(false);}catch(_){}},true);
-  addEventListener('message',e=>{const m=e.data;if(!m)return;if(m.fc3d==='sair'){try{setCut(null);}catch(_){}}if(m.fc3d==='giro')giro(m.on);});
-  giro(true);/* já começa girando, sem esperar a página de fora */
+  addEventListener('message',e=>{const m=e.data;if(!m)return;if(m.fc3d==='sair'){hotList.forEach(x=>x.b.classList.remove('apSel'));}if(m.fc3d==='giro')giro(m.on);});
+  if(!foto)giro(true);/* já começa girando, sem esperar a página de fora */
   setTimeout(()=>avisa({ev:'pronto',n:TYPOS[S.typo].n||''}),60);
 });
 })();
