@@ -33,7 +33,9 @@ const css=`
 .ap-hd{position:fixed;z-index:903;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));top:calc(14px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px;color:#fff;pointer-events:none}
 .ap-hd b{font:600 18px var(--f-h)}.ap-hd small{font-size:12px;color:#b9d3d8;margin-left:6px}
 .ap-hd button{pointer-events:auto;font:600 14px var(--f-b);border:0;border-radius:8px;padding:8px 14px;cursor:pointer;background:#fff;color:#14212a}
-.ap-hd .ap-x{margin-left:auto}
+.ap-hd .ap-g3{margin-left:auto}
+.ap-hd .ap-o3{background:var(--teal);color:#fff;font-size:15px;padding:9px 16px}
+.ap-hd .ap-o3:hover{filter:brightness(1.1)}
 .ap-ld,.ap-dc{position:fixed;z-index:903;left:50%;transform:translateX(-50%);color:#fff;font-size:12px;pointer-events:none;white-space:nowrap}
 .ap-ld{bottom:46px;background:rgba(0,0,0,.4);padding:4px 10px;border-radius:20px}
 .ap-dc{bottom:calc(16px + env(safe-area-inset-bottom,0px));color:#d6e6ea;font-size:13px}
@@ -49,9 +51,9 @@ img.mini3d{max-width:88%;max-height:150px;object-fit:contain;cursor:zoom-in;tran
 .card:hover img.mini3d{transform:rotateY(10deg) scale(1.06)}
 .des:has(img.mini3d){perspective:800px;display:grid;place-items:center}
 [class^="ap-"][hidden]{display:none!important}
-.ap-hd.baixo{top:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px))}.ap-hd.baixo div{display:none}.ap-hd.baixo .ap-v{margin-left:auto}.ap-hd.baixo .ap-x{margin-left:0}
+.ap-hd.baixo{top:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px))}.ap-hd.baixo div{display:none}.ap-hd.baixo .ap-v{margin-left:auto}.ap-hd.baixo .ap-g3,.ap-hd.baixo .ap-o3{display:none}
 .ap-hd.baixo button{box-shadow:0 2px 10px rgba(0,0,0,.25)}
-@media (max-width:600px){.ap-hd b{font-size:15px}.ap-dc{display:none}.ap-pv{left:16px!important;right:16px;width:auto;top:auto!important;bottom:16px}}
+@media (max-width:600px){.ap-hd b{font-size:15px}.ap-hd div{display:none}.ap-hd button{padding:7px 10px;font-size:13px}.ap-dc{display:none}.ap-pv{left:16px!important;right:16px;width:auto;top:auto!important;bottom:16px}}
 @media (prefers-reduced-motion:reduce){.ap-th img,.ap-c{transition:none}}`;
 function estilo(){if(document.getElementById('apCss'))return;const s=document.createElement('style');s.id='apCss';s.textContent=css;document.head.appendChild(s);}
 const lista=()=>TIPS_().filter(t=>t.mo&&(!t.aj||(C().sessao()||{}).matriz)&&(filtro==='todas'||t.g===filtro));
@@ -74,19 +76,19 @@ const poe=(el,A)=>Object.assign(el.style,{left:A.x+'px',top:A.y+'px',width:A.w+'
 let ov,hd,ld,dc,pv;
 function monta(){
   ov=document.createElement('div');ov.className='ap-ov';ov.onclick=fechar;
-  hd=document.createElement('div');hd.className='ap-hd';hd.innerHTML='<button type="button" class="ap-v" hidden>← Voltar à prévia</button><div><b></b><small></small></div><button type="button" class="ap-x">Fechar ✕</button>';
+  hd=document.createElement('div');hd.className='ap-hd';hd.innerHTML='<button type="button" class="ap-v" hidden>← Voltar à prévia</button><div><b></b><small></small></div><button type="button" class="ap-g3" aria-pressed="true">⟳ Girar 360°</button><button type="button" class="ap-o3">🧊 Ir para o Orientativo 3D</button><button type="button" class="ap-x">Fechar ✕</button>';
   ld=document.createElement('div');ld.className='ap-ld';ld.textContent='carregando o 3D…';
   dc=document.createElement('div');dc.className='ap-dc';dc.textContent='Arraste para girar · toque nos + para ver cada ponto';
   pv=document.createElement('div');pv.className='ap-pv';pv.setAttribute('role','dialog');pv.setAttribute('aria-live','polite');
   pv.innerHTML='<small></small><b></b><p></p><div><button type="button" class="ap-m">Mais detalhes →</button><button type="button" class="ap-f">Fechar</button></div>';
   document.body.append(ov,hd,ld,dc,pv);
-  hd.querySelector('.ap-x').onclick=fechar;hd.querySelector('.ap-v').onclick=voltar;
+  hd.querySelector('.ap-x').onclick=fechar;hd.querySelector('.ap-o3').onclick=()=>{hot=null;completo();};hd.querySelector('.ap-g3').onclick=()=>{const b=hd.querySelector('.ap-g3'),on=b.getAttribute('aria-pressed')!=='true';if(on)fechaPv();if(fr)fr.contentWindow.postMessage({fc3d:'giro',on},'*');};hd.querySelector('.ap-v').onclick=voltar;
   pv.querySelector('.ap-f').onclick=fechaPv;pv.querySelector('.ap-m').onclick=completo;
 }
 function abrir(t,img){
   atual=TIPS_().find(x=>x.mo===t);if(!atual)return;if(!ov)monta();
   hd.querySelector('b').textContent=atual.n;hd.querySelector('small').textContent=atual.cd||'';hd.querySelector('.ap-v').hidden=true;hd.classList.remove('baixo');
-  pv.querySelector('.ap-m').hidden=!podeCompleto();
+  pv.querySelector('.ap-m').hidden=!podeCompleto();hd.querySelector('.ap-o3').hidden=!podeCompleto();
   [ov,hd,ld,dc].forEach(e=>e.hidden=false);void ov.offsetWidth;ov.classList.add('on');document.body.style.overflow='hidden';
   /* 1) a miniatura voa do card para o centro, girando como se saísse da tela */
   const r=img.getBoundingClientRect(),A=area(),ar=img.naturalWidth/img.naturalHeight||1.4;
@@ -103,6 +105,8 @@ function abrir(t,img){
 }
 addEventListener('message',e=>{const m=e.data;if(!m||!m.fc3d||!fr||e.source!==fr.contentWindow)return;
   if(m.ev==='pronto'){fr.classList.add('vis');ld.hidden=true;if(fly){const f=fly;fly=null;setTimeout(()=>{f.style.transition='opacity .35s';f.style.opacity=0;setTimeout(()=>f.remove(),400);},150);}}
+  if(m.ev==='pronto')fr.contentWindow.postMessage({fc3d:'giro',on:true},'*');
+  if(m.ev==='giro'){const b=hd.querySelector('.ap-g3');b.setAttribute('aria-pressed',m.on);b.textContent=m.on?'⏸ Parar giro':'⟳ Girar 360°';}
   if(m.ev==='hot')mostraPv(m);
 });
 function mostraPv(m){
@@ -115,9 +119,9 @@ function mostraPv(m){
 function fechaPv(){if(!pv)return;const on=pv.classList.contains('on');pv.classList.remove('on');
   if(fr){fr.classList.remove('zoom');if(on&&fr.src.includes('lite=1'))fr.contentWindow.postMessage({fc3d:'sair'},'*');}}
 /* 3) Mais detalhes: o 3D completo já configurado, direto no corte do ponto */
-function completo(){if(!hot||!fr||!podeCompleto())return;pv.classList.remove('on');fr.classList.remove('vis','zoom');fr.classList.add('full');
+function completo(){if(!fr||!podeCompleto())return;pv.classList.remove('on');fr.classList.remove('vis','zoom');fr.classList.add('full');
   ld.hidden=false;dc.hidden=true;poe(fr,{x:0,y:0,w:innerWidth,h:innerHeight});
-  fr.onload=()=>{fr.classList.add('vis');ld.hidden=true;};fr.src=MO+'?t='+atual.mo+'&corte='+encodeURIComponent(hot.k);
+  fr.onload=()=>{fr.classList.add('vis');ld.hidden=true;};fr.src=MO+'?t='+atual.mo+(hot?'&corte='+encodeURIComponent(hot.k):'');
   hd.querySelector('.ap-v').hidden=false;hd.classList.add('baixo');ov.classList.remove('on');}
 function voltar(){hd.classList.remove('baixo');ov.classList.add('on');fr.classList.remove('vis','full');fr.onload=null;poe(fr,area());ld.hidden=false;dc.hidden=false;hd.querySelector('.ap-v').hidden=true;fr.src=MO+'?t='+atual.mo+'&lite=1';}
 function fechar(){fechaPv();if(fr){fr.remove();fr=null;}if(fly){fly.remove();fly=null;}if(ov){ov.classList.remove('on');[ov,hd,ld,dc].forEach(e=>e.hidden=true);}document.body.style.overflow='';}

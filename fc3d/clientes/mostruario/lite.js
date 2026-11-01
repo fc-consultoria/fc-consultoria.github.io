@@ -32,7 +32,11 @@ pronto(()=>{
     avisa({ev:'hot',k:it.c.k,n:it.c.n,d:it.c.d,x:r.left+r.width/2,y:r.top+r.height/2});
     try{setCut(it.c.k);}catch(_){}/* prévia: a câmera do próprio 3D aproxima no ponto */
   },true);
-  addEventListener('message',e=>{const m=e.data;if(m&&m.fc3d==='sair'){try{setCut(null);}catch(_){}}});
+  /* giro 360°: a esquadria gira sozinha; ao arrastar ou tocar num +, para e avisa a página de fora */
+  const giro=on=>{try{controls.autoRotate=!!on;controls.autoRotateSpeed=4;camTarget=null;}catch(_){}avisa({ev:'giro',on:!!on});};
+  const evl=document.getElementById('evl');if(evl)evl.addEventListener('pointerdown',()=>{try{if(controls.autoRotate)giro(false);}catch(_){}});
+  document.getElementById('hots').addEventListener('pointerdown',()=>{try{if(controls.autoRotate)giro(false);}catch(_){}},true);
+  addEventListener('message',e=>{const m=e.data;if(!m)return;if(m.fc3d==='sair'){try{setCut(null);}catch(_){}}if(m.fc3d==='giro')giro(m.on);});
   setTimeout(()=>avisa({ev:'pronto',n:TYPOS[S.typo].n||''}),350);
 });
 })();
