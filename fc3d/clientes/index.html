@@ -595,7 +595,7 @@ function render(){
   $('#menu').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();scrollTo(0,0);});
   if(S&&S.matriz)setTimeout(async()=>{const el=document.getElementById('demoPend');if(!el)return;try{const D=await rpc('pfc_adm_demo_lista',{p_token:S.token});const n=D.filter(d=>d.status==='pendente').length;if(n){el.hidden=false;el.textContent=n+' demonstrativo'+(n>1?'s':'')+' aguardando';}}catch(_){}},50);
   $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaAmb,apr:telaApr,ges:telaGes}[tab]||telaInicio)();
-  ligar();
+  ligar();if(tab==='apr'&&window.PFCapr)PFCapr.ligar();
   if(tab==='inicio')dicasPl();
   if(window.PFCtut)PFCtut.atualiza();
 }
@@ -707,7 +707,7 @@ function telaAmb(){const casa=`<a class="card" href="ambientes/casa.html"><span 
  return `<div class="cab"><div><h2>Ambientes</h2><p class="mute">Monte a obra do seu cliente com as esquadrias escolhidas.</p></div></div>
   <div class="grid">${casa}${prox.map(([i,n,d])=>`<div class="card"><span class="ic">${i}</span><h3>${n}</h3><span class="d">${d}</span><span class="pe"><span class="chip a">Em construção</span></span></div>`).join('')}</div>
   <p class="aviso" style="margin-top:18px">É uma apresentação e simulação. Medidas, pesos e cortes são aproximados; o cálculo final vem do sistema de cálculo da empresa e do fornecedor.</p>`;}
-function telaApr(){return `<div class="cab"><div><h2>Modo apresentação</h2><p class="mute">Tela cheia, sem menus, para mostrar na TV ou no telão.</p></div></div>
+function telaApr(){if(window.PFCapr)return PFCapr.tela();return `<div class="cab"><div><h2>Modo apresentação</h2><p class="mute">Tela cheia, sem menus, para mostrar na TV ou no telão.</p></div></div>
   <div class="hero" style="margin-bottom:12px"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Logo logo · novidade</span><h2 style="margin-top:8px">Novo módulo de apresentação</h2><p>Abra a tipologia ou o ambiente em tela cheia, gire o 3D com o dedo ou o mouse e mostre os detalhes na reunião com o cliente ou o arquiteto.</p></div><div class="bts"><span class="btn sec" style="border-color:rgba(255,255,255,.4);color:#dbe3e8;cursor:default">Em breve</span></div></div>
   <p class="mute" style="font-size:13px">A fachada continua em <a href="#" data-ir="tip">Tipologias → Fachadas</a>, com as medidas da obra.</p>`;}
 function telaGes(){return `<div class="cab"><div><h2>Gestão</h2><p class="mute">Área do gestor da empresa.</p></div></div>`+emBreve('⚙','Gestão em construção','Aqui ficarão os acessos da equipe, o uso de cada pessoa e os dados da licença da empresa.',[['👥','Acessos da equipe','Vendedores e arquitetos com login próprio.'],['📊','Uso da plataforma','Quem acessou e o que apresentou.'],['📄','Licença','Prazo da licença e contrato.']]);}
@@ -750,9 +750,12 @@ if(tk)(async()=>{
     if(s0&&s0.matriz){if(s0.empresa!==IR.emp)await rpc('pfc_matriz_empresa',{p_token:tk,p_empresa:IR.emp});papelVer=IR.ver;tab='inicio';}}catch(_){}}
   abrir(tk);})();
 else mostrarEntrada('');
+/* contexto para apresentacao.js (tela Apresentação) */
+window.PFCaprCtx={TIPS,LINHAS,h,papel:()=>papel(),sessao:()=>S,render:()=>render()};
 })();
 </script>
 <script src="toque.js?v=1"></script>
+<script src="apresentacao.js?v=1"></script>
 <script src="tutorial.js?v=4"></script>
 </body>
 </html>
