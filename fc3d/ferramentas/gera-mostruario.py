@@ -46,7 +46,7 @@ s=re.sub(r"\bAlcoa\b","fabricante",s)
 s=s.replace('</style>','.guiabtn{display:none!important}\n</style>',1)
 s=s.replace('<title>FC Mostruário 3D</title>','<title>Mostruário 3D · Plataforma FC 3D</title>')
 # 5b) mover peças (todos) e ajuste técnico (Matriz)
-s+='\n<script src="ajustes.js?v=8"></script>\n'
+s+='\n<script src="ajustes.js?v=9"></script>\n'
 s+='<script src="tipologias-extra.js?v=3"></script>\n'  # tipologias novas no formato completo (lotes)
 s+='<script src="perfis-extra.js?v=1"></script>\n'  # seções dos perfis que faltavam (catálogos técnicos)
 s+='<script src="tipologias-lote2.js?v=1"></script>\n'  # Lote 2 em diante: as tipologias restantes da Suprema e Gold
