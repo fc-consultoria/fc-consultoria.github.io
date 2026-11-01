@@ -68,10 +68,13 @@ function tela(){estilo();
   <p class="mute" style="font-size:13px;margin-top:18px">A fachada continua em <a href="#" data-ir="tip">Tipologias → Fachadas</a>, com as medidas da obra.</p>`;}
 function ligar(){estilo();
   /* Tipologias: a miniatura 3D do card abre a esquadria saindo da tela; o resto do card continua abrindo o detalhe */
-  document.querySelectorAll('[data-ap3d]').forEach(i=>{i.onclick=e=>{e.preventDefault();e.stopPropagation();abrir(i.dataset.ap3d,i);};});
+  document.querySelectorAll('[data-ap3d]').forEach(i=>{i.onclick=e=>{e.preventDefault();e.stopPropagation();abrir(i.dataset.ap3d,i);};i.onpointerenter=()=>{clearTimeout(i._pt);i._pt=setTimeout(()=>precarrega(i.dataset.ap3d),250);};i.onpointerleave=()=>clearTimeout(i._pt);});
   document.querySelectorAll('[data-apf]').forEach(b=>b.onclick=()=>{filtro=b.dataset.apf;render();});
   document.querySelectorAll('[data-apt]').forEach(c=>c.onclick=()=>abrir(c.dataset.apt,c.querySelector('img')));
 }
+/* passar o mouse na miniatura já carrega o 3D por trás; no clique ele está pronto e girando */
+let pre=null;
+function precarrega(t){if(fr||(pre&&pre.dataset.t===t))return;if(pre)pre.remove();pre=document.createElement('iframe');pre.dataset.t=t;pre.className='ap-fr';pre.title='Esquadria em 3D';pre.tabIndex=-1;pre.setAttribute('aria-hidden','true');poe(pre,area());pre.style.visibility='hidden';pre.src=MO+'?t='+t+'&lite=1&v=5';document.body.appendChild(pre);}
 const area=()=>{const W=innerWidth,H=innerHeight,m=W<600?12:60;return{x:m,y:70,w:W-2*m,h:H-140};};
 const poe=(el,A)=>Object.assign(el.style,{left:A.x+'px',top:A.y+'px',width:A.w+'px',height:A.h+'px'});
 let ov,hd,ld,dc,pv;
@@ -101,10 +104,10 @@ function abrir(t,img){
     {transform:'perspective(1400px) scale(1) rotateY(-6deg) rotateX(2deg)'}],
     {duration:matchMedia('(prefers-reduced-motion: reduce)').matches?1:850,easing:'cubic-bezier(.2,.8,.25,1)',fill:'forwards'});
   /* 2) o 3D real, em modo miniatura, carrega por trás e entra quando fica pronto */
-  fr=document.createElement('iframe');fr.className='ap-fr';fr.title='Esquadria em 3D';poe(fr,A);
-  fr.src=MO+'?t='+t+'&lite=1&v=4';document.body.appendChild(fr);
+  if(pre&&pre.dataset.t===t){fr=pre;pre=null;fr.style.visibility='';fr.removeAttribute('aria-hidden');fr.tabIndex=0;poe(fr,A);if(fr.dataset.ok){fr.classList.add('vis');ld.hidden=true;if(fly){const f=fly;fly=null;setTimeout(()=>{f.style.transition='opacity .35s';f.style.opacity=0;setTimeout(()=>f.remove(),400);},700);}fr.contentWindow.postMessage({fc3d:'giro',on:true},'*');}}
+  else{if(pre){pre.remove();pre=null;}fr=document.createElement('iframe');fr.className='ap-fr';fr.title='Esquadria em 3D';poe(fr,A);fr.src=MO+'?t='+t+'&lite=1&v=5';document.body.appendChild(fr);}
 }
-addEventListener('message',e=>{const m=e.data;if(!m||!m.fc3d||!fr||e.source!==fr.contentWindow)return;
+addEventListener('message',e=>{const m=e.data;if(!m||!m.fc3d)return;if(pre&&e.source===pre.contentWindow){if(m.ev==='pronto')pre.dataset.ok=1;return;}if(!fr||e.source!==fr.contentWindow)return;if(m.ev==='pronto')fr.dataset.ok=1;
   if(m.ev==='pronto'){fr.classList.add('vis');ld.hidden=true;if(fly){const f=fly;fly=null;setTimeout(()=>{f.style.transition='opacity .35s';f.style.opacity=0;setTimeout(()=>f.remove(),400);},150);}}
   if(m.ev==='pronto')fr.contentWindow.postMessage({fc3d:'giro',on:true},'*');
   if(m.ev==='giro'){const b=hd.querySelector('.ap-g3');b.setAttribute('aria-pressed',m.on);b.textContent=m.on?'⏸ Parar giro':'⟳ Girar 360°';}
@@ -122,9 +125,9 @@ function fechaPv(){if(!pv)return;const on=pv.classList.contains('on');pv.classLi
 /* 3) Mais detalhes: o 3D completo já configurado, direto no corte do ponto */
 function completo(){if(!fr||!podeCompleto())return;pv.classList.remove('on');fr.classList.remove('vis','zoom');fr.classList.add('full');
   ld.hidden=false;dc.hidden=true;poe(fr,{x:0,y:0,w:innerWidth,h:innerHeight});
-  fr.onload=()=>{fr.classList.add('vis');ld.hidden=true;};fr.src=MO+'?t='+atual.mo+(hot?'&corte='+encodeURIComponent(hot.k):'')+'&v=4';
+  fr.onload=()=>{fr.classList.add('vis');ld.hidden=true;};fr.src=MO+'?t='+atual.mo+(hot?'&corte='+encodeURIComponent(hot.k):'')+'&v=5';
   hd.querySelector('.ap-v').hidden=false;hd.classList.add('baixo');ov.classList.remove('on');}
-function voltar(){hd.classList.remove('baixo');ov.classList.add('on');fr.classList.remove('vis','full');fr.onload=null;poe(fr,area());ld.hidden=false;dc.hidden=false;hd.querySelector('.ap-v').hidden=true;fr.src=MO+'?t='+atual.mo+'&lite=1&v=4';}
+function voltar(){hd.classList.remove('baixo');ov.classList.add('on');fr.classList.remove('vis','full');fr.onload=null;poe(fr,area());ld.hidden=false;dc.hidden=false;hd.querySelector('.ap-v').hidden=true;fr.src=MO+'?t='+atual.mo+'&lite=1&v=5';}
 function fechar(){fechaPv();if(fr){fr.remove();fr=null;}if(fly){fly.remove();fly=null;}if(ov){ov.classList.remove('on');[ov,hd,ld,dc].forEach(e=>e.hidden=true);}document.body.style.overflow='';}
 addEventListener('keydown',e=>{if(e.key!=='Escape'||!fr)return;if(pv.classList.contains('on'))fechaPv();else fechar();});
 window.PFCapr={tela:()=>C()?tela():'',ligar:()=>{if(C())ligar();}};

@@ -6,7 +6,7 @@
 (function(){
 const q=new URLSearchParams(location.search),lite=q.get('lite')==='1',foto=q.get('foto')==='1',corte=q.get('corte');
 const tq=q.get('t');/* espera a tipologia pedida já montada (a entrada da plataforma monta depois de conferir o acesso) */
-const pronto=f=>{let n=0;const t=setInterval(()=>{n++;const ok=typeof S!=='undefined'&&S.typo&&(!tq||typeof TYPOS==='undefined'||!TYPOS[tq]||S.typo===tq)&&typeof hotList!=='undefined'&&hotList.length;if(ok||n>400){clearInterval(t);setTimeout(f,250);}},50);};
+const pronto=f=>{let n=0;const t=setInterval(()=>{n++;const ok=typeof S!=='undefined'&&S.typo&&(!tq||typeof TYPOS==='undefined'||!TYPOS[tq]||S.typo===tq)&&typeof hotList!=='undefined'&&hotList.length;if(ok||n>400){clearInterval(t);setTimeout(f,60);}},50);};
 if(corte&&!lite)pronto(()=>{try{setCut(corte);}catch(_){}});
 if(!lite)return;
 const st=document.createElement('style');
@@ -33,10 +33,11 @@ pronto(()=>{
     try{setCut(it.c.k);}catch(_){}/* prévia: a câmera do próprio 3D aproxima no ponto */
   },true);
   /* giro 360°: a esquadria gira sozinha; ao arrastar ou tocar num +, para e avisa a página de fora */
-  const giro=on=>{try{controls.autoRotate=!!on;controls.autoRotateSpeed=4;camTarget=null;}catch(_){}avisa({ev:'giro',on:!!on});};
+  const giro=on=>{try{controls.autoRotate=!!on;controls.autoRotateSpeed=9;camTarget=null;}catch(_){}avisa({ev:'giro',on:!!on});};
   const evl=document.getElementById('evl');if(evl)evl.addEventListener('pointerdown',()=>{try{if(controls.autoRotate)giro(false);}catch(_){}});
   document.getElementById('hots').addEventListener('pointerdown',()=>{try{if(controls.autoRotate)giro(false);}catch(_){}},true);
   addEventListener('message',e=>{const m=e.data;if(!m)return;if(m.fc3d==='sair'){try{setCut(null);}catch(_){}}if(m.fc3d==='giro')giro(m.on);});
-  setTimeout(()=>avisa({ev:'pronto',n:TYPOS[S.typo].n||''}),350);
+  giro(true);/* já começa girando, sem esperar a página de fora */
+  setTimeout(()=>avisa({ev:'pronto',n:TYPOS[S.typo].n||''}),60);
 });
 })();
