@@ -74,6 +74,8 @@ function tela(){estilo();
   <p class="mute" style="font-size:13px;margin-top:18px">A fachada continua em <a href="#" data-ir="tip">Tipologias → Fachadas</a>, com as medidas da obra.</p>`;}
 function ligar(){estilo();
   /* Tipologias: a miniatura 3D do card abre a esquadria saindo da tela; o resto do card continua abrindo o detalhe */
+  /* selo "Clique para ver em 3D" em cima da miniatura: abre igual a clicar na imagem */
+  document.querySelectorAll('[data-ap3db]').forEach(b=>{const img=b.parentElement.querySelector('img[data-ap3d]');const vai=e=>{e.preventDefault();e.stopPropagation();abrir(b.dataset.ap3db,img);};b.onclick=vai;b.onkeydown=e=>{if(e.key==='Enter'||e.key===' ')vai(e);};b.onpointerenter=()=>{if(img&&img.onpointerenter)img.onpointerenter();};});
   document.querySelectorAll('[data-ap3d]').forEach(i=>{i.onclick=e=>{e.preventDefault();e.stopPropagation();abrir(i.dataset.ap3d,i);};i.onpointerenter=()=>{clearTimeout(i._pt);i._pt=setTimeout(()=>precarrega(i.dataset.ap3d),250);};i.onpointerleave=()=>clearTimeout(i._pt);});
   document.querySelectorAll('[data-apf]').forEach(b=>b.onclick=()=>{filtro=b.dataset.apf;render();});
   document.querySelectorAll('[data-apt]').forEach(c=>c.onclick=()=>abrir(c.dataset.apt,c.querySelector('img')));
