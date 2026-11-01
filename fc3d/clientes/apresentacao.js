@@ -82,7 +82,7 @@ function ligar(){estilo();
 }
 /* passar o mouse na miniatura já carrega o 3D por trás; no clique ele está pronto e girando */
 let pre=null;
-function precarrega(t){if(fr||(pre&&pre.dataset.t===t))return;if(pre)pre.remove();pre=document.createElement('iframe');pre.dataset.t=t;pre.className='ap-fr';pre.title='Esquadria em 3D';pre.tabIndex=-1;pre.setAttribute('aria-hidden','true');poe(pre,area());pre.style.visibility='hidden';pre.src=MO+'?t='+t+'&lite=1&v=10';document.body.appendChild(pre);}
+function precarrega(t){if(fr||(pre&&pre.dataset.t===t))return;if(pre)pre.remove();pre=document.createElement('iframe');pre.dataset.t=t;pre.className='ap-fr';pre.title='Esquadria em 3D';pre.tabIndex=-1;pre.setAttribute('aria-hidden','true');poe(pre,area());pre.style.visibility='hidden';pre.src=MO+'?t='+t+'&lite=1&v=11';document.body.appendChild(pre);}
 const area=()=>{const W=innerWidth,H=innerHeight,m=W<600?12:60;return{x:m,y:70,w:W-2*m,h:H-140};};
 const poe=(el,A)=>Object.assign(el.style,{left:A.x+'px',top:A.y+'px',width:A.w+'px',height:A.h+'px'});
 let ov,hd,ld,dc,pv;
@@ -99,7 +99,7 @@ function monta(){
 }
 /* passeio automático pelos pontos: a cada 6 s mostra os detalhes do próximo + ao lado da janela.
    Tocar num + pausa o passeio por 15 s; "Fechar detalhes" encerra até a pessoa tocar num + de novo. */
-let tour=null,pausa=0;
+let tour=null,pausa=0,lado=false;
 function iniciaTour(){paraTour();pausa=Date.now()+2500;tour=setInterval(()=>{if(!fr||!fr.dataset.ok||!fr.src.includes('lite=1')||document.hidden||Date.now()<pausa)return;fr.contentWindow.postMessage({fc3d:'proximo'},'*');},6000);
   setTimeout(()=>{if(tour&&fr&&fr.dataset.ok&&fr.src.includes('lite=1')&&!pv.classList.contains('on'))fr.contentWindow.postMessage({fc3d:'proximo'},'*');},3000);}
 function paraTour(){if(tour){clearInterval(tour);tour=null;}}
@@ -119,7 +119,7 @@ function abrir(t,img){
     {duration:matchMedia('(prefers-reduced-motion: reduce)').matches?1:850,easing:'cubic-bezier(.2,.8,.25,1)',fill:'forwards'});
   /* 2) o 3D real, em modo miniatura, carrega por trás e entra quando fica pronto */
   if(pre&&pre.dataset.t===t){fr=pre;pre=null;fr.style.visibility='';fr.removeAttribute('aria-hidden');fr.tabIndex=0;poe(fr,A);if(fr.dataset.ok){fr.classList.add('vis');ld.hidden=true;if(fly){const f=fly;fly=null;setTimeout(()=>{f.style.transition='opacity .35s';f.style.opacity=0;setTimeout(()=>f.remove(),400);},700);}fr.contentWindow.postMessage({fc3d:'giro',on:true},'*');}}
-  else{if(pre){pre.remove();pre=null;}fr=document.createElement('iframe');fr.className='ap-fr';fr.title='Esquadria em 3D';poe(fr,A);fr.src=MO+'?t='+t+'&lite=1&v=10';document.body.appendChild(fr);}
+  else{if(pre){pre.remove();pre=null;}fr=document.createElement('iframe');fr.className='ap-fr';fr.title='Esquadria em 3D';poe(fr,A);fr.src=MO+'?t='+t+'&lite=1&v=11';document.body.appendChild(fr);}
 }
 addEventListener('message',e=>{const m=e.data;if(!m||!m.fc3d)return;if(pv&&e.source===pv.querySelector('.ap-cf').contentWindow){if(m.ev==='pronto')setTimeout(()=>pv.querySelector('.ap-cf').classList.add('vis'),900);return;}if(pre&&e.source===pre.contentWindow){if(m.ev==='pronto')pre.dataset.ok=1;return;}if(!fr||e.source!==fr.contentWindow)return;if(m.ev==='pronto')fr.dataset.ok=1;
   if(m.ev==='pronto'){fr.classList.add('vis');ld.hidden=true;if(fly){const f=fly;fly=null;setTimeout(()=>{f.style.transition='opacity .35s';f.style.opacity=0;setTimeout(()=>f.remove(),400);},150);}}
@@ -132,10 +132,11 @@ function mostraPv(m){
   pv.querySelector('small').textContent=(atual.cd?atual.cd+' · ':'')+'DETALHE DO PONTO';pv.querySelector('b').textContent=m.n;pv.querySelector('p').textContent=m.d;
   const im=pv.querySelector('.ap-ci');im.hidden=false;im.alt='Corte '+m.n;im.onerror=()=>{im.hidden=true;};im.src=MO+'cortes/'+atual.mo+'_'+m.k+'.webp?v=1';
   /* o corte em 3D gira por cima da imagem assim que carrega (a imagem aparece na hora, enquanto isso) */
-  const cf=pv.querySelector('.ap-cf');cf.classList.remove('vis');cf.src=MO+'?t='+atual.mo+'&lite=1&foto=1&giro=1&corte='+encodeURIComponent(m.k)+'&v=10';
-  /* fica do lado de fora da janela (x0/x1 = bordas da janela na tela), no lado do + escolhido; a janela continua girando */
-  const e0=fb.left+(m.x0!=null?m.x0:m.x),e1=fb.left+(m.x1!=null?m.x1:m.x),dir=x>=(e0+e1)/2,cabe=v=>v>=12&&v+W<=innerWidth-12;
-  let L=dir?e1+G:e0-G-W;if(!cabe(L))L=dir?e0-G-W:e1+G;if(!cabe(L))L=innerWidth-W-12;L=Math.max(12,Math.min(innerWidth-W-12,L));
+  const cf=pv.querySelector('.ap-cf');cf.classList.remove('vis');cf.src=MO+'?t='+atual.mo+'&lite=1&foto=1&giro=1&corte='+encodeURIComponent(m.k)+'&v=11';
+  /* cada ponto no seu lado da tela: + da metade esquerda → cartão na borda esquerda; direita → borda direita.
+     Pontos do meio (encontro, superior, inferior) alternam os lados para os cartões não ficarem sempre no mesmo lugar */
+  const e0=fb.left+(m.x0!=null?m.x0:m.x),e1=fb.left+(m.x1!=null?m.x1:m.x),c=(e0+e1)/2,meio=Math.abs(x-c)<(e1-e0)*.12;
+  const dir=meio?(lado=!lado):x>c;let L=dir?innerWidth-W-16:16;
   pv.style.width=W+'px';pv.style.left=L+'px';pv.classList.remove('on');void pv.offsetWidth;
   const H=pv.offsetHeight;pv.style.top=Math.max(70,fb.top+(fb.height-H)/2)+'px';pv.classList.add('on');
 }
@@ -144,9 +145,9 @@ function fechaPv(){if(!pv)return;{const cf=pv.querySelector('.ap-cf');cf.classLi
 /* 3) Mais detalhes: o 3D completo já configurado, direto no corte do ponto */
 function completo(){if(!fr||!podeCompleto())return;paraTour();fechaPv();fr.classList.remove('vis','zoom');fr.classList.add('full');
   ld.hidden=false;dc.hidden=true;poe(fr,{x:0,y:0,w:innerWidth,h:innerHeight});
-  fr.onload=()=>{fr.classList.add('vis');ld.hidden=true;};fr.src=MO+'?t='+atual.mo+(hot?'&corte='+encodeURIComponent(hot.k):'')+'&v=10';
+  fr.onload=()=>{fr.classList.add('vis');ld.hidden=true;};fr.src=MO+'?t='+atual.mo+(hot?'&corte='+encodeURIComponent(hot.k):'')+'&v=11';
   hd.querySelector('.ap-v').hidden=false;hd.classList.add('baixo');ov.classList.remove('on');}
-function voltar(){iniciaTour();hd.classList.remove('baixo');ov.classList.add('on');fr.classList.remove('vis','full');fr.onload=null;poe(fr,area());ld.hidden=false;dc.hidden=false;hd.querySelector('.ap-v').hidden=true;fr.src=MO+'?t='+atual.mo+'&lite=1&v=10';}
+function voltar(){iniciaTour();hd.classList.remove('baixo');ov.classList.add('on');fr.classList.remove('vis','full');fr.onload=null;poe(fr,area());ld.hidden=false;dc.hidden=false;hd.querySelector('.ap-v').hidden=true;fr.src=MO+'?t='+atual.mo+'&lite=1&v=11';}
 function fechar(){paraTour();fechaPv();if(fr){fr.remove();fr=null;}if(fly){fly.remove();fly=null;}if(ov){ov.classList.remove('on');[ov,hd,ld,dc].forEach(e=>e.hidden=true);}document.body.style.overflow='';}
 addEventListener('keydown',e=>{if(e.key!=='Escape'||!fr)return;if(pv.classList.contains('on')){paraTour();fechaPv();}else fechar();});
 window.PFCapr={tela:()=>C()?tela():'',ligar:()=>{if(C())ligar();}};

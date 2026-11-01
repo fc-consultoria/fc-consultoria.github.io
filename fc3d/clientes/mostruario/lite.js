@@ -45,7 +45,11 @@ pronto(()=>{
   addEventListener('message',e=>{const m=e.data;if(!m)return;if(m.fc3d==='sair'){hotList.forEach(x=>x.b.classList.remove('apSel'));}if(m.fc3d==='giro')giro(m.on);if(m.fc3d==='proximo')proximo();});
   if(corte){/* miniatura do corte (cartão do +): aproxima no ponto e gira em volta dele */
     try{setCut(corte);}catch(_){}
-    if(q.get('giro')==='1'){const w=setInterval(()=>{if(typeof camTarget==='undefined'||!camTarget){clearInterval(w);try{controls.autoRotate=true;controls.autoRotateSpeed=6;}catch(_){}}},100);}
+    if(q.get('giro')==='1'){/* vai e volta em volta do corte (±40°), sem dar a volta inteira: assim não aparece a janela inteira por trás */
+      const w=setInterval(()=>{if(typeof camTarget!=='undefined'&&camTarget)return;clearInterval(w);
+        try{controls.autoRotate=false;const T=controls.target,o=camera.position.clone().sub(T),r=Math.hypot(o.x,o.z),a0=Math.atan2(o.x,o.z),y=o.y,t0=performance.now();
+          (function osc(){requestAnimationFrame(osc);if(typeof camTarget!=='undefined'&&camTarget)return;const a=a0+Math.sin((performance.now()-t0)/1000*0.9)*0.7;
+            camera.position.set(T.x+r*Math.sin(a),T.y+y,T.z+r*Math.cos(a));camera.lookAt(T);})();}catch(_){}},100);}
   }else if(!foto)giro(true);/* já começa girando, sem esperar a página de fora */
   setTimeout(()=>avisa({ev:'pronto',n:TYPOS[S.typo].n||''}),60);
 });
