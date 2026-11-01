@@ -45,6 +45,9 @@ const css=`
 .ap-pv div{display:flex;gap:8px}
 .ap-pv button{font:600 14px var(--f-b);border-radius:8px;padding:9px 12px;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--ink)}
 .ap-pv .ap-m{flex:1;border:0;background:var(--teal);color:#fff}
+img.mini3d{max-width:88%;max-height:150px;object-fit:contain;cursor:zoom-in;transition:transform .45s cubic-bezier(.2,.9,.3,1.1)}
+.card:hover img.mini3d{transform:rotateY(10deg) scale(1.06)}
+.des:has(img.mini3d){perspective:800px;display:grid;place-items:center}
 [class^="ap-"][hidden]{display:none!important}
 .ap-hd.baixo{top:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px))}.ap-hd.baixo div{display:none}.ap-hd.baixo .ap-v{margin-left:auto}.ap-hd.baixo .ap-x{margin-left:0}
 .ap-hd.baixo button{box-shadow:0 2px 10px rgba(0,0,0,.25)}
@@ -60,7 +63,9 @@ function tela(){estilo();
   return `<div class="cab"><div><h2>Apresentação</h2><p class="mute">Toque na esquadria para ela sair da tela e girar em 3D. Nos <b>+</b> aparece a prévia de cada ponto${podeCompleto()?'; em “Mais detalhes” abre o 3D completo':''}.</p></div></div>
   <div class="ap-fl">${bt('todas','Todas')}${bt('jan','Janelas')}${bt('por','Portas')}</div>${bloco('res')}${bloco('gld')}
   <p class="mute" style="font-size:13px;margin-top:18px">A fachada continua em <a href="#" data-ir="tip">Tipologias → Fachadas</a>, com as medidas da obra.</p>`;}
-function ligar(){
+function ligar(){estilo();
+  /* Tipologias: a miniatura 3D do card abre a esquadria saindo da tela; o resto do card continua abrindo o detalhe */
+  document.querySelectorAll('[data-ap3d]').forEach(i=>{i.onclick=e=>{e.preventDefault();e.stopPropagation();abrir(i.dataset.ap3d,i);};});
   document.querySelectorAll('[data-apf]').forEach(b=>b.onclick=()=>{filtro=b.dataset.apf;render();});
   document.querySelectorAll('[data-apt]').forEach(c=>c.onclick=()=>abrir(c.dataset.apt,c.querySelector('img')));
 }
