@@ -119,6 +119,9 @@ button.card:hover{border-color:var(--teal);transform:translateY(-1px)}
 .filtros button{all:unset;cursor:pointer;padding:7px 13px;border-radius:999px;border:1px solid var(--line);font-size:13.5px;font-weight:600;background:var(--panel)}
 .filtros button[aria-pressed="true"]{background:var(--teal);color:#fff;border-color:var(--teal)}
 .tip .des{background:var(--soft);border-radius:12px;height:170px;display:grid;place-items:center;margin-bottom:4px}
+.tip .des{overflow:hidden;perspective:800px}
+.tip .des img.mini3d{display:block;width:auto;height:auto;max-width:88%;max-height:150px;object-fit:contain;cursor:zoom-in;transition:transform .45s cubic-bezier(.2,.9,.3,1.1)}
+.tip:hover .des img.mini3d{transform:rotateY(10deg) scale(1.06)}
 .tip .des svg{height:auto;max-height:140px;width:auto;max-width:88%;color:var(--ink)}
 .tip.breve{opacity:.62}
 .linha-tit{display:flex;align-items:center;gap:10px;margin:26px 0 12px}
@@ -690,7 +693,7 @@ function telaTip(){
   /* tipologias com Simular pressão de vento no Mostruário (mesma lista do mostruario/vento.js: DIAG + VTX) */
   const eqV=papel()!=='arquiteto'&&papel()!=='demo';
   const card=t=>{const go=t.obra&&!t.tec?`<a class="card tip" href="${OBRA(t.obra)}" target="_blank" rel="noopener">`:`<button class="card tip" data-tip="${t.id}">`,fim=t.obra?'</a>':'</button>';
-   return `${go}<div class="des">${t.mo?`<img class="mini3d" loading="lazy" alt="${h(t.n)} em 3D" title="Toque para ver em 3D" src="mostruario/mini/${t.mo}.webp?v=1" data-ap3d="${t.mo}">`:desenho(t.id)}</div>${t.aj?`<span class="chip a" title="Oculto para os clientes">⚠ Oculto · ajustar</span>`:''}<h3>${h(t.n)}</h3><span class="d">${t.cd?'<b style="font-weight:600">'+h(t.cd)+'</b> · ':''}${h(t.uso)}</span>${t.aj?`<span class="d" style="color:#b45309"><b>Ajuste pendente:</b> ${h(t.aj)}. Só a FC vê esta tipologia.</span>`:''}<span class="pe">${eqV&&VENTO.includes(t.mo)?`<span class="vt-tag" role="link" tabindex="0" data-vento="${t.mo}" title="Abrir direto no Simular pressão de vento">🌬 Simular pressão de vento</span>`:''}${t.tec?'<span class="tec-ok">🧊 3D e 📐 desenho técnico →</span>':t.obra?'<span class="tec-ok">🧊 Abrir em 3D com as medidas da obra →</span>':'<span class="tec-em">Desenho técnico em breve</span>'}</span>${fim}`;};
+   return `${go}<div class="des">${t.mo?`<img class="mini3d" style="max-width:88%;max-height:150px" loading="lazy" alt="${h(t.n)} em 3D" title="Toque para ver em 3D" src="mostruario/mini/${t.mo}.webp?v=1" data-ap3d="${t.mo}">`:desenho(t.id)}</div>${t.aj?`<span class="chip a" title="Oculto para os clientes">⚠ Oculto · ajustar</span>`:''}<h3>${h(t.n)}</h3><span class="d">${t.cd?'<b style="font-weight:600">'+h(t.cd)+'</b> · ':''}${h(t.uso)}</span>${t.aj?`<span class="d" style="color:#b45309"><b>Ajuste pendente:</b> ${h(t.aj)}. Só a FC vê esta tipologia.</span>`:''}<span class="pe">${eqV&&VENTO.includes(t.mo)?`<span class="vt-tag" role="link" tabindex="0" data-vento="${t.mo}" title="Abrir direto no Simular pressão de vento">🌬 Simular pressão de vento</span>`:''}${t.tec?'<span class="tec-ok">🧊 3D e 📐 desenho técnico →</span>':t.obra?'<span class="tec-ok">🧊 Abrir em 3D com as medidas da obra →</span>':'<span class="tec-em">Desenho técnico em breve</span>'}</span>${fim}`;};
   return `<div class="cab"><div><h2>Tipologias</h2><p class="mute">Janelas, portas e fachadas de mercado para escolher e apresentar ao cliente.</p></div>
    <div class="filtros" role="group" aria-label="Filtrar">${[['todas','Todas'],['jan','Janelas'],['por','Portas'],['fac','Fachadas']].map(([k,n])=>`<button type="button" data-f="${k}" aria-pressed="${filtro===k}">${n}</button>`).join('')}</div></div>
    ${vitrine()}
@@ -755,7 +758,7 @@ window.PFCaprCtx={TIPS,LINHAS,h,papel:()=>papel(),sessao:()=>S,render:()=>render
 })();
 </script>
 <script src="toque.js?v=1"></script>
-<script src="apresentacao.js?v=12"></script>
+<script src="apresentacao.js?v=13"></script>
 <script src="tutorial.js?v=4"></script>
 </body>
 </html>
