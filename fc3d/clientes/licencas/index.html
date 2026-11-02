@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Painel de Licenças · FC 3D</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Plataforma FC 3D · Painel de Licenças (pagamentos, licenças, renovações, demonstrativos).
+   © FC Consultoria em Esquadria */
+:root{--bg:#f2f4f6;--panel:#fff;--soft:#e8edf0;--ink:#14212a;--mute:#5a6872;--line:#d5dde2;--teal:#02717d;--teal2:#025a67;--tealSoft:#d8f0f1;
+  --amberSoft:#fbefd6;--amberInk:#8a5a08;--ok:#1f7a48;--okSoft:#dff2e6;--red:#b42318;--redSoft:#fde8e6;
+  --f-h:'Space Grotesk',system-ui,sans-serif;--f-b:'Inter',system-ui,sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11181d;--panel:#182229;--soft:#1f2c34;--ink:#e6efed;--mute:#97aaa7;--line:#2a3943;--teal:#22c3c9;--teal2:#0aa0a8;--tealSoft:#143a3e;--amberSoft:#3a2d12;--amberInk:#f0c87a;--ok:#6fd39a;--okSoft:#173523;--red:#ff8a80;--redSoft:#3b1714;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#11181d;--panel:#182229;--soft:#1f2c34;--ink:#e6efed;--mute:#97aaa7;--line:#2a3943;--teal:#22c3c9;--teal2:#0aa0a8;--tealSoft:#143a3e;--amberSoft:#3a2d12;--amberInk:#f0c87a;--ok:#6fd39a;--okSoft:#173523;--red:#ff8a80;--redSoft:#3b1714;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.5 var(--f-b)}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--f-h);margin:0;letter-spacing:-.01em}p{margin:0}[hidden]{display:none!important}
+.mute{color:var(--mute)}
+.wrap{max-width:1040px;margin:0 auto;padding:18px 16px 60px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+header h1{font-size:22px}header .sp{flex:1}
+.lg{width:42px;height:42px;border-radius:11px;background:#2b3942 url(../img/logo-fc-marca.png) center/cover no-repeat;flex:none}
+.btn{appearance:none;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 14px;font-weight:600;cursor:pointer;min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;color:var(--ink)}
+.btn:hover{border-color:var(--teal)}.btn.pri{background:var(--teal);border-color:var(--teal);color:#fff}.btn.pri:hover{background:var(--teal2)}
+:root[data-theme="dark"] .btn.pri{color:#0b1a1e}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.pri{color:#0b1a1e}}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}.btn.sm{min-height:34px;padding:4px 10px;font-size:13px}.btn.red{color:var(--red)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.chip{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--soft);color:var(--mute);white-space:nowrap}
+.chip.o{background:var(--okSoft);color:var(--ok)}.chip.a{background:var(--amberSoft);color:var(--amberInk)}.chip.r{background:var(--redSoft);color:var(--red)}.chip.t{background:var(--tealSoft);color:var(--teal)}
+nav.tabs{display:flex;gap:6px;overflow-x:auto;margin:0 0 16px;padding-bottom:2px;scrollbar-width:thin}
+nav.tabs button{appearance:none;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:8px 14px;font-weight:600;cursor:pointer;white-space:nowrap;display:inline-flex;gap:6px;align-items:center;min-height:40px}
+nav.tabs button[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+nav.tabs .n{background:var(--amberSoft);color:var(--amberInk);border-radius:999px;font-size:11.5px;padding:0 7px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:18px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.kpi b{display:block;font:700 26px var(--f-h);margin-top:2px}.kpi span{font-size:13px;color:var(--mute)}
+.sec{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:16px}
+.sec>.eh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--line)}
+.sec>.eh h2{font-size:17px}.sec>.eh .sp{flex:1}
+.it{padding:14px 16px;border-bottom:1px solid var(--line);display:grid;gap:8px}.it:last-child{border-bottom:0}
+.it .t{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.it .t b{font-size:16px}
+.it .d{display:flex;gap:4px 16px;flex-wrap:wrap;font-size:13.5px;color:var(--mute)}
+.it .a{display:flex;gap:8px;flex-wrap:wrap}
+.vazio{padding:22px 16px;color:var(--mute);text-align:center}
+.pess{display:grid;gap:6px;margin-top:2px}
+.pe{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;border-radius:10px;background:var(--soft);font-size:14px}.pe .sp{flex:1}
+table{width:100%;border-collapse:collapse;font-size:13.5px}th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12px;color:var(--mute);font-weight:600;white-space:nowrap}.tw{overflow-x:auto}
+.msg{color:var(--red);font-size:13.5px;min-height:20px}
+/* entrada */
+#gate{min-height:100vh;display:grid;place-items:center;padding:20px}
+#gate form{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 22px;width:100%;max-width:380px}
+label.f{display:block;font-size:13px;font-weight:600;margin:0 0 6px}
+input.in,textarea.in{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:11px 13px;min-height:44px;margin-bottom:12px}
+input.in:focus,textarea.in:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:transparent}
+textarea.in{font-size:13.5px;line-height:1.45;resize:vertical}
+/* janela */
+#ov{position:fixed;inset:0;z-index:50;background:rgba(10,18,22,.6);display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow:auto}
+#ov .cx{background:var(--panel);border-radius:16px;width:100%;max-width:520px;padding:22px;position:relative}
+#ov .x{position:absolute;top:8px;right:8px;width:40px;height:40px;border:0;background:transparent;font-size:22px;cursor:pointer;color:var(--mute)}
+#ov h2{font-size:19px;padding-right:34px;margin-bottom:10px}#ov .a{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin:6px 0 12px}.chk input{width:20px;height:20px;margin:1px 0 0;flex:none;accent-color:var(--teal)}
+.box{padding:12px 14px;border-radius:12px;background:var(--soft);font-size:14px;margin:0 0 12px}
+/* tutorial */
+.tut{padding:6px 16px 16px}.tut h3{font-size:16px;margin:16px 0 6px;color:var(--teal)}.tut ol{margin:0;padding-left:22px;display:grid;gap:5px}.tut li{font-size:14.5px}
+.tut .dica{margin-top:8px;font-size:13.5px;color:var(--mute)}
+@media (max-width:560px){.kpi b{font-size:22px}header h1{font-size:19px}}
+</style>
+</head>
+<body>
+<div id="gate" hidden>
+  <form id="gForm" autocomplete="on">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><span class="lg" aria-hidden="true"></span><div><b style="font-family:var(--f-h)">Painel de Licenças</b><div class="mute" style="font-size:13px">Plataforma FC 3D · FC Consultoria</div></div></div>
+    <label class="f" for="gSenha">Senha do painel</label>
+    <input class="in" id="gSenha" type="password" autocomplete="current-password" required>
+    <div class="msg" id="gMsg" role="alert"></div>
+    <button class="btn pri" style="width:100%">Entrar</button>
+  </form>
+</div>
+
+<div class="wrap" id="app" hidden>
+  <header><span class="lg" aria-hidden="true"></span><div><h1>Painel de Licenças</h1><div class="mute" style="font-size:13px" id="quem"></div></div><span class="sp"></span>
+    <button class="btn sm" type="button" id="btAtu">↻ Atualizar</button><button class="btn sm" type="button" id="btSenha">🔑 Trocar senha</button><button class="btn sm" type="button" id="btSair">Sair</button></header>
+  <nav class="tabs" id="tabs" aria-label="Seções"></nav>
+  <main id="tela"><p class="mute">Carregando…</p></main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="../licenca.js?v=2"></script>
+<script>
+const sb=window.supabase.createClient('https://pawwncmfadzxfahfvhry.supabase.co','sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs',{auth:{persistSession:false,storageKey:'pfc-auth'}});
+const $=s=>document.querySelector(s);
+const h=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ls={get(k){try{return localStorage.getItem(k)}catch(_){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(_){}},del(k){try{localStorage.removeItem(k)}catch(_){}}};
+const LK='pfc-lic-token';let TOK=ls.get(LK)||ls.get('pfc-token'),D=null,tab=ls.get('pfc-lic-aba')||'resumo';
+async function rpc(fn,a){const r=await sb.rpc(fn,Object.assign({p_token:TOK},a||{}));if(r.error){if(/Sessão expirada/i.test(r.error.message)){sair(true);}throw new Error(r.error.message);}return r.data;}
+const brl=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const dt=s=>{if(!s)return '—';const d=String(s).length===10?new Date(s+'T12:00:00'):new Date(s);return d.toLocaleDateString('pt-BR');};
+const dth=s=>s?new Date(s).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+const dig=w=>String(w||'').replace(/\D/g,'');
+const fone=w=>{const d=dig(w).replace(/^55(?=\d{10,11}$)/,'');return d.length===11?`(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`:d.length===10?`(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`:w||'';};
+const wa=(w,t)=>{let d=dig(w);if(d.length<=11)d='55'+d;return 'https://wa.me/'+d+'?text='+encodeURIComponent(t);};
+const doc=s=>{const d=dig(s);return d.length===14?d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,'$1.$2.$3/$4-$5'):d.length===11?d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4'):s||'';};
+const prim=n=>String(n||'').trim().split(/\s+/)[0]||'';
+const ASS='\n\nFC Consultoria em Esquadria';
+
+/* ---------- entrada ---------- */
+$('#gForm').addEventListener('submit',async e=>{e.preventDefault();const m=$('#gMsg');m.textContent='';
+  const r=await sb.rpc('pfc_lic_login',{p_senha:$('#gSenha').value});
+  if(r.error){m.textContent=r.error.message;return;}if(r.data.erro){m.textContent=r.data.erro;return;}
+  TOK=r.data.token;ls.set(LK,TOK);$('#gSenha').value='';iniciar();});
+function sair(silencioso){const t=TOK;if(t===ls.get(LK)){ls.del(LK);if(!silencioso)sb.rpc('pfc_sair',{p_token:t});}TOK=null;D=null;$('#app').hidden=true;$('#gate').hidden=false;}
+$('#btSair').onclick=()=>sair(false);
+$('#btAtu').onclick=()=>carregar();
+
+async function iniciar(){
+  if(!TOK){$('#gate').hidden=false;return;}
+  try{const r=await sb.rpc('pfc_lic_eu',{p_token:TOK});if(r.error)throw 0;$('#quem').textContent=r.data.matriz?'Entrando como FC Consultoria':'Plataforma FC 3D · FC Consultoria';}
+  catch(_){if(TOK===ls.get(LK))ls.del(LK);TOK=null;$('#gate').hidden=false;return;}
+  $('#gate').hidden=true;$('#app').hidden=false;carregar();
+}
+async function carregar(){try{D=await rpc('pfc_lic_painel');render();}catch(e){$('#tela').innerHTML='<div class="sec"><p class="vazio">'+h(e.message)+'</p></div>';}}
+
+/* ---------- abas ---------- */
+const pend=()=>D.pedidos.filter(p=>p.status==='aguardando'||p.status==='comprovante');
+const vencendo=()=>D.licencas.filter(l=>l.dias!=null&&l.dias<=30);
+function render(){
+  const ABAS=[['resumo','📊 Resumo',0],['pag','💰 Pagamentos',pend().filter(p=>p.status==='comprovante').length],['lic','📄 Licenças ativas',0],['ren','🔁 Renovações',vencendo().length],['demo','🧪 Demonstrativos',0],['tut','❓ Como usar',0]];
+  if(!ABAS.some(a=>a[0]===tab))tab='resumo';
+  $('#tabs').innerHTML=ABAS.map(([k,n,c])=>`<button type="button" data-tab="${k}" aria-pressed="${tab===k}">${n}${c?` <span class="n">${c}</span>`:''}</button>`).join('');
+  $('#tabs').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;ls.set('pfc-lic-aba',tab);render();window.scrollTo(0,0);});
+  $('#tela').innerHTML=({resumo:tResumo,pag:tPag,lic:tLic,ren:tRen,demo:tDemo,tut:tTut}[tab])();
+  ligar();
+}
+
+function tResumo(){const m=D.mes,P=pend(),V=vencendo(),mesN=new Date(m.inicio+'T12:00:00').toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  const fazer=[];
+  P.filter(p=>p.status==='comprovante').forEach(p=>fazer.push(`<div class="it"><div class="t"><span class="chip a">Comprovante enviado</span><b>${h(p.empresa)}</b></div><div class="d"><span>Conferir no Sicoob o Pix de ${brl(p.valor)} e liberar a licença.</span></div><div class="a"><button class="btn sm pri" data-ir="pag">Ver pagamento</button></div></div>`));
+  V.forEach(l=>fazer.push(`<div class="it"><div class="t"><span class="chip ${l.dias<0?'r':'a'}">${l.dias<0?'Vencida':'Vence em '+l.dias+' dia'+(l.dias===1?'':'s')}</span><b>${h(l.empresa)}</b></div><div class="d"><span>Mandar a mensagem de renovação de ${brl(D.info.renovacao)}.</span></div><div class="a"><button class="btn sm pri" data-ir="ren">Ver renovação</button></div></div>`));
+  return `<div class="kpis">
+    <div class="kpi"><span>Recebido em ${h(mesN)}</span><b>${brl(Number(m.novas_valor)+Number(m.renov_valor))}</b></div>
+    <div class="kpi"><span>Licenças novas no mês</span><b>${m.novas}</b><span>${brl(m.novas_valor)}</span></div>
+    <div class="kpi"><span>Renovações no mês</span><b>${m.renov}</b><span>${brl(m.renov_valor)}</span></div>
+    <div class="kpi"><span>Demonstrativos no mês</span><b>${m.demos}</b></div>
+    <div class="kpi"><span>Licenças ativas</span><b>${D.licencas.filter(l=>l.dias>=0).length}</b></div>
+    <div class="kpi"><span>Aguardando pagamento</span><b>${m.aguardando}</b></div></div>
+   <div class="sec"><div class="eh"><h2>O que fazer agora</h2></div>${fazer.join('')||'<p class="vazio">Nada pendente. ✅</p>'}</div>`;}
+
+function tPag(){const P=pend(),H=D.pedidos.filter(p=>p.status==='liberada'||p.status==='cancelada');
+  const card=p=>`<div class="it"><div class="t">${p.status==='comprovante'?'<span class="chip a">Comprovante enviado</span>':'<span class="chip">Gerou o Pix · ainda não avisou</span>'}<b>${h(p.empresa)}</b><span class="mute" style="font-size:13px">${dth(p.criado)}</span></div>
+     <div class="d"><span>CNPJ/CPF ${h(doc(p.documento))}</span><span>${h(p.responsavel)} · ${h(fone(p.whats))}</span>${p.cidade?`<span>${h(p.cidade)}</span>`:''}${p.email?`<span>${h(p.email)}</span>`:''}</div>
+     <div class="d"><span><b style="color:var(--ink)">${brl(p.valor)}</b> · ${p.acessos} acessos</span><span>Identificador no extrato: <b style="color:var(--ink)">${h(p.txid)}</b></span></div>
+     <div class="a"><button class="btn sm ok" data-lib="${p.id}">✅ Liberar licença</button><a class="btn sm" target="_blank" rel="noopener" href="${wa(p.whats,'Olá, '+prim(p.responsavel)+'! Aqui é da FC Consultoria, sobre a licença da Plataforma FC 3D da '+p.empresa+'.')}">💬 WhatsApp</a><button class="btn sm red" data-canc="${p.id}">Cancelar pedido</button></div></div>`;
+  return `<div class="sec"><div class="eh"><h2>Pagamentos para conferir</h2><span class="sp"></span><span class="mute" style="font-size:13px">Licença nova: ${brl(D.info.valor)} no Pix</span></div>${P.map(card).join('')||'<p class="vazio">Nenhum pagamento aguardando.</p>'}</div>
+   <div class="sec"><div class="eh"><h2>Histórico (60 dias)</h2></div>${H.length?`<div class="tw"><table><thead><tr><th>Empresa</th><th>Valor</th><th>Pedido</th><th>Situação</th><th>Data</th></tr></thead><tbody>${H.map(p=>`<tr><td>${h(p.empresa)}</td><td>${brl(p.valor)}</td><td>${h(p.txid)}</td><td>${p.status==='liberada'?'<span class="chip o">Liberada</span>':'<span class="chip r">Cancelada</span>'+(p.obs?' <span class="mute">'+h(p.obs)+'</span>':'')}</td><td>${dt(p.liberado_em||p.criado)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="vazio">Ainda sem histórico.</p>'}</div>`;}
+
+function situacao(l){return l.dias<0?`<span class="chip r">Vencida em ${dt(l.licenca_ate)}</span>`:l.dias<=30?`<span class="chip a">Vence em ${dt(l.licenca_ate)}</span>`:`<span class="chip o">Válida até ${dt(l.licenca_ate)}</span>`;}
+function tLic(){const L=D.licencas;
+  return `<div class="sec"><div class="eh"><h2>Licenças ativas</h2><span class="sp"></span><span class="mute" style="font-size:13px">${L.length} empresa${L.length===1?'':'s'}</span></div>${L.map(l=>{const at=l.acessos.filter(a=>a.ativo).length;
+    return `<div class="it"><div class="t"><b>${h(l.empresa)}</b>${situacao(l)}<span class="chip t">${at} de ${l.limite} acessos</span></div>
+     <div class="d"><span>CNPJ/CPF ${h(doc(l.documento))}</span><span>Responsável: ${h(l.responsavel)} · ${h(fone(l.whats))}</span>${l.cidade?`<span>${h(l.cidade)}</span>`:''}<span>Cliente desde ${dt(l.desde)}</span></div>
+     <div class="pess">${l.acessos.map(a=>`<div class="pe"><b>${h(a.nome)}</b><span class="mute">${a.papel==='gestor'?'Responsável':'Equipe'} · login ${h(fone(a.login))}</span>${a.ativo?'':'<span class="chip r">Pausado</span>'}<span class="sp"></span><span class="mute" style="font-size:12.5px">último uso ${a.ultimo?dt(a.ultimo):'—'}</span>
+        <button class="btn sm" data-cod="${a.id}">Novo código</button><button class="btn sm" data-pau="${a.id}" data-v="${a.ativo?'pausar':'ativar'}">${a.ativo?'Pausar':'Reativar'}</button></div>`).join('')}</div>
+     <div class="a">${at<l.limite?`<button class="btn sm pri" data-add="${h(l.empresa_id)}">➕ Adicionar pessoa</button>`:`<span class="mute" style="font-size:13px">Todos os acessos em uso. Mais acessos: combinar com o Fernando.</span>`}</div></div>`;}).join('')||'<p class="vazio">Nenhuma licença liberada ainda.</p>'}</div>`;}
+
+function tRen(){const V=vencendo(),O=D.licencas.filter(l=>!(l.dias<=30));
+  return `<div class="sec"><div class="eh"><h2>Vencendo em até 30 dias ou vencidas</h2><span class="sp"></span><span class="mute" style="font-size:13px">Renovação: ${brl(D.info.renovacao)} · 1 ano</span></div>${V.map(l=>`<div class="it"><div class="t"><b>${h(l.empresa)}</b>${situacao(l)}</div>
+     <div class="d"><span>${h(l.responsavel)} · ${h(fone(l.whats))}</span><span>${l.acessos.filter(a=>a.ativo).length} de ${l.limite} acessos</span></div>
+     <div class="a"><button class="btn sm pri" data-rmsg="${h(l.empresa_id)}">💬 Mensagem de renovação</button><button class="btn sm ok" data-ren="${h(l.empresa_id)}">✅ Renovação recebida · +1 ano</button></div></div>`).join('')||'<p class="vazio">Nenhuma renovação nos próximos 30 dias.</p>'}</div>
+   ${O.length?`<div class="sec"><div class="eh"><h2>Próximos vencimentos</h2></div><div class="tw"><table><thead><tr><th>Empresa</th><th>Vence em</th><th>Faltam</th><th></th></tr></thead><tbody>${O.map(l=>`<tr><td>${h(l.empresa)}</td><td>${dt(l.licenca_ate)}</td><td>${l.dias} dias</td><td><button class="btn sm" data-ren="${h(l.empresa_id)}">Renovação antecipada</button></td></tr>`).join('')}</tbody></table></div></div>`:''}`;}
+
+function estDemo(d){if(d.comprou)return '<span class="chip o">Comprou</span>';if(d.pedido==='comprovante')return '<span class="chip a">Pagou · conferir</span>';if(d.pedido==='aguardando')return '<span class="chip a">Gerou o Pix</span>';
+  if(d.status==='pendente')return '<span class="chip">Aguardando liberação</span>';if(d.status==='recusado')return '<span class="chip r">Recusado</span>';
+  return d.ativo&&new Date(d.expira)>new Date()?'<span class="chip t">Testando</span>':'<span class="chip">Terminou</span>';}
+function msgDemo(d){const n=prim(d.nome),fim=!(d.ativo&&new Date(d.expira)>new Date());
+  return fim?`Olá, ${n}! Aqui é da FC Consultoria. Seu demonstrativo da Plataforma FC 3D terminou. O que achou?\n\nA licença é de ${brl(D.info.valor)} no Pix, vale 1 ano e tem até ${D.info.acessos} acessos para a sua equipe. Se quiser, te mando o Pix por aqui.${ASS}`
+   :`Olá, ${n}! Aqui é da FC Consultoria. Vi que você está testando a Plataforma FC 3D. Ficou alguma dúvida? Posso te ajudar por aqui.${ASS}`;}
+function tDemo(){const L=D.demos;
+  return `<div class="sec"><div class="eh"><h2>Demonstrativos (90 dias)</h2><span class="sp"></span><span class="mute" style="font-size:13px">${L.length} cadastro${L.length===1?'':'s'}</span></div>${L.length?`<div class="tw"><table><thead><tr><th>Nome</th><th>WhatsApp</th><th>Cadastro</th><th>Termina</th><th>Último uso</th><th>Uso</th><th>Situação</th><th></th></tr></thead><tbody>${L.map(d=>`<tr><td><b>${h(d.nome)}</b>${d.empresa?`<div class="mute" style="font-size:12.5px">${h(d.empresa)}</div>`:''}${d.cidade?`<div class="mute" style="font-size:12.5px">${h(d.cidade)}</div>`:''}</td><td>${h(fone(d.whats))}</td><td>${dt(d.criado)}</td><td>${dt(d.expira)}</td><td>${d.ultimo?dth(d.ultimo):'—'}</td><td>${d.uso_seg?Math.round(d.uso_seg/60)+' min':'—'}</td><td>${estDemo(d)}</td><td><a class="btn sm" target="_blank" rel="noopener" href="${wa(d.whats,msgDemo(d))}">💬</a></td></tr>`).join('')}</tbody></table></div>`:'<p class="vazio">Nenhum demonstrativo nos últimos 90 dias.</p>'}</div>`;}
+
+function tTut(){return `<div class="sec"><div class="eh"><h2>Como usar o painel</h2></div><div class="tut">
+ <h3>1. Quando chegar um pagamento</h3><ol>
+  <li>A aba <b>💰 Pagamentos</b> mostra um número quando alguém avisa que pagou. Abra a aba.</li>
+  <li>Veja o <b>valor</b> e o <b>identificador</b> (começa com FC3D) do pedido.</li>
+  <li>Abra o aplicativo do <b>Sicoob</b> e procure o Pix com esse valor. O identificador costuma aparecer no detalhe do Pix.</li>
+  <li>Achou o Pix? Volte aqui e toque em <b>✅ Liberar licença</b>. Marque a caixa de confirmação e toque em <b>Liberar</b>.</li>
+  <li>Vai aparecer a mensagem pronta com o login e o código. Toque em <b>Enviar no WhatsApp</b> e mande para o cliente.</li></ol>
+  <p class="dica">Não achou o Pix no Sicoob? Não libere. Toque em 💬 WhatsApp e peça o comprovante ao cliente.</p>
+ <h3>2. Cadastrar mais pessoas da empresa</h3><ol>
+  <li>Abra <b>📄 Licenças ativas</b> e encontre a empresa.</li>
+  <li>Toque em <b>➕ Adicionar pessoa</b>, escreva o nome e o WhatsApp com DDD e toque em <b>Criar acesso</b>.</li>
+  <li>Envie a mensagem pronta para a pessoa pelo WhatsApp.</li></ol>
+  <p class="dica">Cada licença tem até ${D.info.acessos} acessos. Para mais acessos, fale com o Fernando.</p>
+ <h3>3. Cliente esqueceu o código</h3><ol>
+  <li>Em <b>📄 Licenças ativas</b>, ache a pessoa e toque em <b>Novo código</b>.</li>
+  <li>Envie a mensagem pronta. O código antigo deixa de funcionar.</li></ol>
+ <h3>4. Trocar uma pessoa da equipe</h3><ol>
+  <li>Toque em <b>Pausar</b> na pessoa que saiu. O acesso dela para na hora.</li>
+  <li>Depois toque em <b>➕ Adicionar pessoa</b> para cadastrar quem entrou.</li></ol>
+ <h3>5. Renovação (todo ano)</h3><ol>
+  <li>A aba <b>🔁 Renovações</b> mostra as licenças que vencem em até 30 dias.</li>
+  <li>Toque em <b>💬 Mensagem de renovação</b>. A mensagem já vai com o Pix de ${brl(D.info.renovacao)}.</li>
+  <li>Quando o Pix cair no Sicoob, toque em <b>✅ Renovação recebida · +1 ano</b>. Os logins continuam os mesmos.</li></ol>
+  <p class="dica">Se a licença vencer sem renovação, o acesso do cliente é pausado sozinho. Ao renovar, ele volta a funcionar.</p>
+ <h3>6. Demonstrativos</h3><ol>
+  <li>A aba <b>🧪 Demonstrativos</b> mostra quem testou a plataforma, quanto usou e se comprou.</li>
+  <li>O botão 💬 abre o WhatsApp com uma mensagem pronta: para quem está testando, oferece ajuda; para quem terminou, oferece a licença.</li></ol>
+ <h3>7. Resumo do mês</h3><ol><li>A aba <b>📊 Resumo</b> mostra o que entrou no mês e o que precisa ser feito agora.</li></ol>
+</div></div>`;}
+
+/* ---------- janela ---------- */
+function janela(tit,html){let o=$('#ov');if(!o){o=document.createElement('div');o.id='ov';o.addEventListener('click',e=>{if(e.target===o)fecha();});document.body.appendChild(o);}
+  o.innerHTML=`<div class="cx" role="dialog" aria-modal="true" aria-label="${h(tit)}"><button class="x" type="button" aria-label="Fechar">×</button><h2>${h(tit)}</h2>${html}</div>`;o.querySelector('.x').onclick=fecha;return o;}
+function fecha(){const o=$('#ov');if(o)o.remove();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')fecha();});
+function janelaMsg(tit,whats,texto,topo){const o=janela(tit,`${topo||''}<label class="f" for="mTx">Mensagem pronta</label><textarea class="in" id="mTx" rows="11">${h(texto)}</textarea>
+  <div class="a"><a class="btn pri" id="mZap" target="_blank" rel="noopener" href="#">💬 Enviar no WhatsApp</a><button class="btn" type="button" id="mCop">📋 Copiar</button><button class="btn" type="button" id="mOk">Fechar</button></div>`);
+  const tx=o.querySelector('#mTx'),z=o.querySelector('#mZap');const atu=()=>{z.href=wa(whats,tx.value);};atu();tx.oninput=atu;
+  o.querySelector('#mCop').onclick=async e=>{try{await navigator.clipboard.writeText(tx.value);}catch(_){tx.select();document.execCommand('copy');}e.currentTarget.textContent='✓ Copiado';};
+  o.querySelector('#mOk').onclick=fecha;}
+const msgAcesso=(nome,empresa,login,codigo,extra)=>`Olá, ${prim(nome)}! ${extra}\n\nAcesse: ${D.link}\nLogin: ${fone(login)}\nCódigo: ${codigo}\n\nGuarde este código. Ele é pessoal, não repasse para outra pessoa.${ASS}`;
+
+/* ---------- ações ---------- */
+function ligar(){
+  document.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>{tab=b.dataset.ir;ls.set('pfc-lic-aba',tab);render();});
+  document.querySelectorAll('[data-lib]').forEach(b=>b.onclick=()=>{const p=D.pedidos.find(x=>x.id===b.dataset.lib);
+    const o=janela('Liberar licença',`<div class="box"><b>${h(p.empresa)}</b><br>CNPJ/CPF ${h(doc(p.documento))}<br>${brl(p.valor)} · ${p.acessos} acessos · 1 ano<br>Identificador: <b>${h(p.txid)}</b></div>
+      <label class="chk"><input type="checkbox" id="lOk"><span>Conferi no Sicoob: o Pix de <b>${brl(p.valor)}</b> entrou na conta da FC.</span></label><div class="msg" id="lMsg"></div>
+      <div class="a"><button class="btn ok" type="button" id="lBt" disabled>✅ Liberar</button><button class="btn" type="button" id="lNo">Voltar</button></div>`);
+    o.querySelector('#lOk').onchange=e=>{o.querySelector('#lBt').disabled=!e.target.checked;};o.querySelector('#lNo').onclick=fecha;
+    o.querySelector('#lBt').onclick=async e=>{e.target.disabled=true;try{const r=await rpc('pfc_lic_liberar',{p_pedido:p.id});if(r.erro){o.querySelector('#lMsg').textContent=r.erro;e.target.disabled=false;return;}
+      await carregar();
+      if(r.erro_acesso){janela('Licença liberada',`<div class="box">A licença da <b>${h(r.empresa)}</b> foi liberada até ${dt(r.licenca_ate)}, mas o acesso do responsável não foi criado: ${h(r.erro_acesso)}<br>Avise o Fernando.</div>`);return;}
+      janelaMsg('Licença liberada ✅',r.whats,msgAcesso(r.responsavel,r.empresa,r.login,r.codigo,`🎉 A licença da Plataforma FC 3D da ${r.empresa} está liberada.`)+'',
+        `<div class="box">Válida até <b>${dt(r.licenca_ate)}</b> · até ${r.acessos} acessos. Agora envie o login para o cliente.</div>`);
+      const tx=$('#mTx');tx.value=tx.value.replace(ASS,`\n\nA licença vale até ${dt(r.licenca_ate)}, com até ${r.acessos} acessos. Para cadastrar mais pessoas da equipe, me mande o nome e o WhatsApp de cada uma.`+ASS);tx.oninput();
+    }catch(err){o.querySelector('#lMsg').textContent=err.message;e.target.disabled=false;}};});
+  document.querySelectorAll('[data-canc]').forEach(b=>b.onclick=()=>{const p=D.pedidos.find(x=>x.id===b.dataset.canc);
+    const o=janela('Cancelar pedido',`<p style="margin-bottom:10px">Cancelar o pedido da <b>${h(p.empresa)}</b>? Use quando o cliente desistiu ou o pedido foi feito errado.</p><label class="f" for="cObs">Motivo (opcional)</label><input class="in" id="cObs" maxlength="120"><div class="msg" id="cMsg"></div><div class="a"><button class="btn red" type="button" id="cBt">Cancelar pedido</button><button class="btn" type="button" id="cNo">Voltar</button></div>`);
+    o.querySelector('#cNo').onclick=fecha;o.querySelector('#cBt').onclick=async()=>{try{const r=await rpc('pfc_lic_cancelar',{p_pedido:p.id,p_obs:o.querySelector('#cObs').value});if(r.erro){o.querySelector('#cMsg').textContent=r.erro;return;}fecha();carregar();}catch(err){o.querySelector('#cMsg').textContent=err.message;}};});
+  document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{const l=D.licencas.find(x=>x.empresa_id===b.dataset.add);
+    const o=janela('Adicionar pessoa',`<p class="mute" style="margin-bottom:12px">${h(l.empresa)} · ${l.acessos.filter(a=>a.ativo).length} de ${l.limite} acessos em uso</p><label class="f" for="aNome">Nome</label><input class="in" id="aNome" maxlength="80" autocomplete="off"><label class="f" for="aZap">WhatsApp com DDD</label><input class="in" id="aZap" type="tel" inputmode="tel" maxlength="20" placeholder="(66) 9 9999-9999" autocomplete="off"><div class="msg" id="aMsg"></div><div class="a"><button class="btn pri" type="button" id="aBt">Criar acesso</button><button class="btn" type="button" id="aNo">Voltar</button></div>`);
+    o.querySelector('#aNo').onclick=fecha;o.querySelector('#aBt').onclick=async e=>{e.target.disabled=true;try{const r=await rpc('pfc_lic_acesso_novo',{p_empresa:l.empresa_id,p_nome:o.querySelector('#aNome').value,p_whats:o.querySelector('#aZap').value,p_gestor:false});
+      if(r.erro){o.querySelector('#aMsg').textContent=r.erro;e.target.disabled=false;return;}await carregar();
+      janelaMsg('Acesso criado ✅',r.whats,msgAcesso(r.nome,l.empresa,r.login,r.codigo,`Seu acesso à Plataforma FC 3D, pela ${l.empresa}, está pronto.`));}catch(err){o.querySelector('#aMsg').textContent=err.message;e.target.disabled=false;}};});
+  document.querySelectorAll('[data-cod]').forEach(b=>b.onclick=async()=>{const l=D.licencas.find(x=>x.acessos.some(a=>a.id===b.dataset.cod)),a=l.acessos.find(x=>x.id===b.dataset.cod);
+    if(!confirm('Gerar um novo código para '+a.nome+'? O código antigo deixa de funcionar.'))return;
+    try{const r=await rpc('pfc_lic_acesso',{p_acesso:a.id,p_acao:'codigo'});if(r.erro)return alert(r.erro);janelaMsg('Novo código',a.login,msgAcesso(r.nome,l.empresa,r.login,r.codigo,'Aqui está o seu novo código da Plataforma FC 3D.'));}catch(err){alert(err.message);}});
+  document.querySelectorAll('[data-pau]').forEach(b=>b.onclick=async()=>{const v=b.dataset.v;if(v==='pausar'&&!confirm('Pausar este acesso? A pessoa sai da plataforma na hora.'))return;
+    try{const r=await rpc('pfc_lic_acesso',{p_acesso:b.dataset.pau,p_acao:v});if(r.erro)return alert(r.erro);carregar();}catch(err){alert(err.message);}});
+  document.querySelectorAll('[data-rmsg]').forEach(b=>b.onclick=()=>{const l=D.licencas.find(x=>x.empresa_id===b.dataset.rmsg),I=D.info;
+    const txid='FC3DR'+dig(l.documento).slice(-6)+String(new Date().getFullYear()).slice(-2);
+    const cod=window.FCPIX?FCPIX({pix_chave:I.pix_chave,pix_nome:I.pix_nome,pix_cidade:I.pix_cidade,valor:I.renovacao,txid}):'';
+    const t=`Olá, ${prim(l.responsavel)}! A licença da Plataforma FC 3D da ${l.empresa} ${l.dias<0?'venceu em':'vence em'} ${dt(l.licenca_ate)}.\n\nPara renovar por mais 1 ano, com os mesmos acessos: ${brl(I.renovacao)} no Pix.\n\nPix copia e cola:\n${cod}\n\nOu pela chave CNPJ 52.985.682/0001-32 (FC Consultoria). Depois do pagamento, me mande o comprovante por aqui.${ASS}`;
+    janelaMsg('Mensagem de renovação',l.whats,t,`<div class="box">${h(l.empresa)} · ${l.dias<0?'vencida em':'vence em'} ${dt(l.licenca_ate)}</div>`);});
+  document.querySelectorAll('[data-ren]').forEach(b=>b.onclick=()=>{const l=D.licencas.find(x=>x.empresa_id===b.dataset.ren);
+    const base=l.dias<0?new Date():new Date(l.licenca_ate+'T12:00:00');const nova=new Date(base);nova.setFullYear(nova.getFullYear()+1);
+    const o=janela('Renovação recebida',`<div class="box"><b>${h(l.empresa)}</b><br>Hoje: ${l.dias<0?'vencida em':'válida até'} ${dt(l.licenca_ate)}<br>Depois da renovação: <b>válida até ${nova.toLocaleDateString('pt-BR')}</b></div>
+      <label class="chk"><input type="checkbox" id="rOk"><span>Conferi no Sicoob: o Pix de <b>${brl(D.info.renovacao)}</b> da renovação entrou na conta da FC.</span></label><div class="msg" id="rMsg"></div>
+      <div class="a"><button class="btn ok" type="button" id="rBt" disabled>✅ Renovar por 1 ano</button><button class="btn" type="button" id="rNo">Voltar</button></div>`);
+    o.querySelector('#rOk').onchange=e=>{o.querySelector('#rBt').disabled=!e.target.checked;};o.querySelector('#rNo').onclick=fecha;
+    o.querySelector('#rBt').onclick=async e=>{e.target.disabled=true;try{const r=await rpc('pfc_lic_renovar',{p_empresa:l.empresa_id});if(r.erro){o.querySelector('#rMsg').textContent=r.erro;e.target.disabled=false;return;}
+      await carregar();janelaMsg('Renovação feita ✅',l.whats,`Olá, ${prim(l.responsavel)}! Recebemos o Pix da renovação. ✅\n\nA licença da Plataforma FC 3D da ${l.empresa} agora vale até ${dt(r.licenca_ate)}. Os logins e códigos continuam os mesmos.\n\nObrigado pela confiança!${ASS}`);}
+      catch(err){o.querySelector('#rMsg').textContent=err.message;e.target.disabled=false;}};});
+}
+
+$('#btSenha').onclick=()=>{const o=janela('Trocar senha do painel',`<label class="f" for="sA">Senha atual</label><input class="in" id="sA" type="password" autocomplete="current-password"><label class="f" for="sN">Nova senha (mínimo 6 caracteres)</label><input class="in" id="sN" type="password" autocomplete="new-password"><div class="msg" id="sMsg"></div><div class="a"><button class="btn pri" type="button" id="sBt">Salvar</button><button class="btn" type="button" id="sNo">Voltar</button></div>`);
+  o.querySelector('#sNo').onclick=fecha;o.querySelector('#sBt').onclick=async()=>{try{const r=await rpc('pfc_lic_trocar_senha',{p_atual:o.querySelector('#sA').value,p_nova:o.querySelector('#sN').value});if(r.erro){o.querySelector('#sMsg').textContent=r.erro;return;}janela('Senha trocada ✅','<p>A nova senha já vale. Outros aparelhos que estavam no painel vão pedir a senha de novo.</p>');}catch(err){o.querySelector('#sMsg').textContent=err.message;}};};
+
+iniciar();
+</script>
+</body>
+</html>

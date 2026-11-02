@@ -108,6 +108,7 @@ function passo3(linkZap){
   o.querySelector('#lVer').onclick=passo2;
 }
 
+window.FCPIX=pix;
 window.FCLIC={
   async abrir(c){ctx=c||{};
     const pid=ls.get(PK);
