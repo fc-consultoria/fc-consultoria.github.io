@@ -90,7 +90,7 @@ function quando(t){if(!t)return 'nunca entrou';const d=new Date(t),m=Math.round(
 /* ---------- demonstrativos (link único /fc3d/clientes/demo/) ---------- */
 const LINKDEMO='https://fc-consultoria.github.io/fc3d/clientes/demo/';
 const zapDe=w=>{let n=String(w||'').replace(/\D/g,'');if(n.length<=11)n='55'+n;return 'https://wa.me/'+n;};
-const CONVITE='Olá! 👋 A FC Consultoria convida você para conhecer a *Plataforma FC 3D*: janelas, portas e fachadas em 3D, com desenho técnico de cada montagem, para apresentar ao seu cliente.\n\n✅ *3 dias de acesso grátis*, no celular, notebook ou TV.\n📝 É só informar nome e WhatsApp — o acesso é liberado em até 3 minutos.\n\n👉 '+LINKDEMO+'\n\nFC Consultoria em Esquadria · @fc__consultoria';
+const CONVITE='Olá! 👋 A FC Consultoria convida você para conhecer a *Plataforma FC 3D*: janelas, portas e fachadas em 3D, com desenho técnico de cada montagem, para apresentar ao seu cliente.\n\n✅ *3 dias de acesso grátis*, no celular, notebook ou TV.\n📝 É só informar nome e WhatsApp — o acesso é liberado em até 1 minuto.\n\n👉 '+LINKDEMO+'\n\nFC Consultoria em Esquadria · @fc__consultoria';
 let pendVistos=null,demoT=null;
 function avisaNovos(D){const p=D.filter(d=>d.status==='pendente');document.title=(p.length?'('+p.length+') ':'')+'Empresas e acessos · FC 3D';
   const ids=p.map(d=>d.id);if(pendVistos){const novos=p.filter(d=>!pendVistos.includes(d.id));
