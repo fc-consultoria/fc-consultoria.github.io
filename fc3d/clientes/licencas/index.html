@@ -194,9 +194,9 @@ function usoDe(d){const u=(U&&U.demos&&U.demos[d.id])||{telas:[],sessoes:[],dias
   else if(aberta<3&&nA<=1)nv=['Só olhou','r'];else nv=['Explorou','a'];
   return {u,aberta:Math.round(aberta),vis,ok,tips,nv,telas};}
 function grafHoras(arr,cor,un){const mx=Math.max(1,...arr),W=24*26;
-  return `<svg viewBox="0 0 ${W} 120" style="width:100%;height:auto;display:block" role="img" aria-label="Gráfico por horário">${arr.map((v,i)=>{const hgt=Math.round(v/mx*86);
-   return `<g><title>${i}h às ${i+1}h: ${String(v).replace('.',',')} ${un}</title><rect x="${i*26+4}" y="${94-hgt}" width="18" height="${Math.max(hgt,v?2:0)}" rx="3" fill="${cor}"/>${v?`<text x="${i*26+13}" y="${90-hgt}" text-anchor="middle" font-size="10" fill="var(--ink)">${String(v).replace('.',',')}</text>`:''}${i%3===0?`<text x="${i*26+13}" y="112" text-anchor="middle" font-size="10" fill="var(--mute)">${i}h</text>`:''}</g>`;}).join('')}<line x1="0" y1="94.5" x2="${W}" y2="94.5" stroke="var(--line)"/></svg>`;}
-function pico(arr){const mx=Math.max(...arr);if(!mx)return '';const hs=arr.map((v,i)=>v===mx?i:-1).filter(i=>i>=0);return hs.map(i=>`${i}h às ${i+1}h`).join(', ');}
+  return `<svg viewBox="0 0 ${W} 132" style="width:100%;height:auto;display:block" role="img" aria-label="Gráfico por horário">${arr.map((v,i)=>{const hgt=Math.round(v/mx*80),B=114;
+   return `<g><title>${i}h às ${i+1}h: ${String(v).replace('.',',')} ${un}</title><rect x="${i*26+4}" y="${B-hgt}" width="18" height="${Math.max(hgt,v?2:0)}" rx="3" fill="${cor}"/>${v?`<text x="${i*26+13}" y="${B-4-hgt}" text-anchor="middle" font-size="10" fill="var(--ink)">${String(v).replace('.',',')}</text>`:''}${i%3===0?`<text x="${i*26+13}" y="128" text-anchor="middle" font-size="10" fill="var(--mute)">${i}h</text>`:''}</g>`;}).join('')}<line x1="0" y1="114.5" x2="${W}" y2="114.5" stroke="var(--line)"/></svg>`;}
+function pico(arr){const mx=Math.max(...arr);if(!mx)return '';const hs=arr.map((v,i)=>v===mx?i:-1).filter(i=>i>=0);if(hs.length>2)return 'ainda com poucos dados';return hs.map(i=>`${i}h às ${i+1}h`).join(', ');}
 function tDemo(){const L=D.demos;carregaUso();
   const HE=(U&&U.horas_entradas)||Array(24).fill(0),HM=(U&&U.horas_min)||Array(24).fill(0),des=U&&U.medicao_desde;
   const graf=`<div class="sec"><div class="eh"><h2>Horários em que mais abrem a plataforma</h2></div><div style="padding:14px 16px 16px;display:grid;gap:18px">
