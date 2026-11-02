@@ -1,4 +1,8 @@
 {
+ "amostra": [
+  "jc2",
+  "g_jc2"
+ ],
  "_nota": "Gerado automaticamente da base da Plataforma FC 3D (tecnico/montagens.js). Só montagens liberadas para os clientes. Não editar à mão: rode fc3d/clientes/ferramentas/gera-aplicacao.js.",
  "modelos": {
   "jc2": {

@@ -326,6 +326,6 @@ const qs=new URLSearchParams(location.search);{const l=LN.find(x=>x.id===qs.get(
 {const p=qs.get('p');if(p){const k=nz(p),l=LN.find(x=>x.p.some(y=>nz(y.c)===k));if(l){LI=l;desenha();setTimeout(()=>{const el=document.getElementById('p-'+k);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('hl');}},300);}}}
 </script>
 
-<script src="/fc3d/clientes/aplicacao.js?v=3"></script>
+<script src="/fc3d/clientes/aplicacao.js?v=4"></script>
 </body>
 </html>

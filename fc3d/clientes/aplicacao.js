@@ -5,13 +5,18 @@
 const BASE='/fc3d/clientes/';
 const L3=['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js'];
 /* base única: as mesmas montagens e seções da Plataforma FC 3D (desenho técnico e Montagens em 3D) */
-let DADOS=null,SEC=null,LIBS=null;
+let DADOS=null,SEC=null,AM=null,LIBS=null;
+/* Completo: Matriz (window.FCAPL_FULL) e equipe logada na Plataforma FC 3D (mesma regra do Substituir perfil).
+   Amostra: site aberto e link que as empresas mandam aos clientes. Só a janela de correr 2 folhas fica liberada; o resto vira convite para a plataforma. */
+const FULL=(()=>{if(window.FCAPL_FULL)return true;try{return !!localStorage.getItem('pfc-token');}catch(_){return false;}})();
+const ZAP='5566999867984';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const dados=()=>DADOS||(DADOS=fetch(BASE+'aplicacao.json?v=2',{cache:'no-cache'}).then(r=>r.json()).catch(()=>({modelos:{},perfis:{}})));
+const dados=()=>DADOS||(DADOS=fetch(BASE+'aplicacao.json?v=3',{cache:'no-cache'}).then(r=>r.json()).catch(()=>({modelos:{},perfis:{}})));
 const sc=u=>new Promise((ok,er)=>{const s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=er;document.head.appendChild(s);});
 const libs=()=>LIBS||(LIBS=(window.THREE&&THREE.REVISION==='128'?Promise.resolve():sc(L3[0])).then(()=>THREE.OrbitControls?null:sc(L3[1]))
- .then(()=>window.FCM?null:sc(BASE+'tecnico/montagens.js?v=3'))
- .then(()=>Promise.all([fetch(BASE+'tecnico/secoes.json?v=3').then(r=>r.json()).then(j=>{SEC=j;}),FCM.carregarAjustes()])).catch(e=>{LIBS=null;throw e;}));
+ .then(()=>FULL?(window.FCM?null:sc(BASE+'tecnico/montagens.js?v=3')).then(()=>Promise.all([fetch(BASE+'tecnico/secoes.json?v=3').then(r=>r.json()).then(j=>{SEC=j;}),FCM.carregarAjustes()]))
+  :fetch(BASE+'aplicacao-amostra.json?v=1').then(r=>r.json()).then(j=>{AM=j;})).catch(e=>{LIBS=null;throw e;}));
+const livre=(D,k)=>FULL||(D.amostra||[]).includes(k);
 /* código do card pode vir composto ("LG-024 / LG-115") */
 const partes=c=>String(c||'').toUpperCase().split('/').map(x=>x.trim()).filter(Boolean);
 const usos=(D,c)=>{const v=[],k={};partes(c).forEach(p=>((D.perfis||{})[p]||[]).forEach(a=>{if(!k[a.m]){k[a.m]=1;v.push(a);}}));return v;};
@@ -44,15 +49,27 @@ function estilo(){if(css)return;css=true;const s=document.createElement('style')
 .apl .apr b{color:#17222a}
 .apl .aav{font-size:13px;line-height:1.45;color:#7a4a00;background:#fff4e1;border:1.5px solid #f2a024;border-radius:10px;padding:8px 10px}
 .apl .aav b{color:#5c3600}
+.apl .aap.lk{background:#f7f9fa}.apl .aap.lk b::after{content:' 🔒';font-size:13px}
+.apl .aap .alk{font-size:11.5px;font-weight:700;color:#17606b}
+.apl .ams{font-size:12.5px;line-height:1.4;color:#17606b;background:#e8f4f5;border-radius:9px;padding:7px 9px}
+.apl .acta{position:absolute;inset:0;z-index:3;display:grid;place-items:center;padding:18px;text-align:center;background:radial-gradient(circle at 50% 35%,#fff,#e9eef0)}
+.apl .acta[hidden]{display:none}.apl .acta>div{max-width:400px;display:grid;gap:10px;justify-items:center}
+.apl .acta .ic{font-size:34px}.apl .acta>div>b{font:800 21px/1.15 'Barlow Condensed',Barlow,sans-serif;text-transform:uppercase;letter-spacing:.02em}
+.apl .acta p{margin:0;font-size:14.5px;line-height:1.45;color:#3a4a52}
+.apl .acta a.z{display:inline-flex;align-items:center;gap:6px;background:#f2a024;color:#1b1206;font-weight:800;font-size:15px;text-decoration:none;border-radius:99px;padding:11px 18px;box-shadow:0 6px 16px #f2a02455}
+.apl .acta a.v{font-size:13.5px;font-weight:700;color:#17606b}
+.apl .acta small{font-size:12px;color:#55636c}
 @media (max-width:720px){.apl{grid-template-columns:1fr;grid-template-rows:minmax(240px,58%) auto;overflow:auto}.apl aside{border-left:0;border-top:1px solid #dfe5e8}}`;document.head.appendChild(s);}
 
 /* ---------- montagem 3D: qualquer tipologia liberada, gerada pela base da plataforma (mm) ---------- */
-function montagem(SC,mats,key){const M=FCM.MONT[key],W=M.def[0],H=M.def[1],R=FCM.pecas(SEC,M,W,H),V=a=>new THREE.Vector3(a[0],a[1],a[2]);
+function montagem(SC,mats,key){let W,H,R,secOf;if(FULL){const M=FCM.MONT[key];W=M.def[0];H=M.def[1];R=FCM.pecas(SEC,M,W,H);secOf=c=>FCM.secOf(SEC,c);}
+ else{const A=AM.m[key];W=A.W;H=A.H;R=A;secOf=c=>AM.sec[c];}
+ const V=a=>new THREE.Vector3(a[0],a[1],a[2]);
  const ROOT=new THREE.Group();SC.add(ROOT);const GR=[ROOT],FOL=[],MS=[],GEO=[];
  R.folhas.forEach(f=>{const F=new THREE.Group();ROOT.add(F);F.userData={ox:f.ox,oy:f.oy||0,z:f.z,abre:(f.dir||0)*(f.curso||0),rot:f.rot||null,n:f.n};F.position.set(f.ox,f.oy||0,f.z);FOL.push(F);GR.push(F);});
  R.P.forEach(o=>{if(o.vz||o.oc)return;const par=GR[o.g+1]||ROOT;let m;
   if(o.vid){m=new THREE.Mesh(new THREE.BoxGeometry(o.w,o.h,o.d),mats.vd);m.userData.nm=o.nm||'Vidro';}
-  else{const k=o.sc||[1,1],sec=FCM.secOf(SEC,o.c);if(!sec)return;
+  else{const k=o.sc||[1,1],sec=secOf(o.c);if(!sec)return;
    const sh=sec.s.map(x=>{const q=new THREE.Shape(x.o.map(([a,b])=>new THREE.Vector2(a*k[0],b*k[1])));(x.h||[]).forEach(h=>q.holes.push(new THREE.Path(h.map(([a,b])=>new THREE.Vector2(a*k[0],b*k[1])))));return q;});
    const g=new THREE.ExtrudeGeometry(sh,{depth:o.len,bevelEnabled:false,curveSegments:1});g.translate(0,0,-o.len/2);g.applyMatrix4(new THREE.Matrix4().makeBasis(V(o.ex),V(o.ey),V(o.ez)));g.computeVertexNormals();
    m=new THREE.Mesh(g,mats.gr);m.userData.code=o.c;const fn=o.g>=0&&R.folhas[o.g]?R.folhas[o.g].n:'Marco';m.userData.nm=o.c+' · '+(sec.n||'')+' · '+fn;MS.push(m);}
@@ -120,18 +137,28 @@ async function liga(o,code){if(!o||!code)return;let D;try{D=await dados();}catch
  const vb=o.querySelector('.vb'),wr=o.querySelector('.wr');if(!vb||!wr)return;estilo();
  const bt=document.createElement('button');bt.type='button';bt.className='apb';bt.textContent='🧩 Aplicação';bt.title='Onde este perfil é aplicado na tipologia';bt.setAttribute('aria-pressed','false');vb.appendChild(bt);
  const pn=document.createElement('div');pn.className='apl';pn.hidden=true;
- const lista=L.map((a,k)=>{const m=(D.modelos||{})[a.m]||{};return `<button type="button" class="aap" data-k="${k}" aria-pressed="${k===0}"><small>Tipologia · ${esc(m.linha||'')}</small><b>${esc(m.n||a.m)}</b><span>${esc(a.pos)}</span>${m.ref?`<em>Referência: ${esc(m.ref)}</em>`:''}</button>`;}).join('');
- pn.innerHTML=`<div class="ast"><div class="acv"></div><svg><defs><marker id="apMk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#f2a024"/></marker></defs><line stroke="#f2a024" stroke-width="2.5" marker-end="url(#apMk)"/></svg><div class="alb" hidden></div><div class="atp" hidden></div><div class="aload">Montando a tipologia…</div>
+ const LV=L.map(a=>livre(D,a.m)),k0=Math.max(0,LV.indexOf(true)),nLk=LV.filter(v=>!v).length;
+ const lista=L.map((a,k)=>{const m=(D.modelos||{})[a.m]||{};return `<button type="button" class="aap${LV[k]?'':' lk'}" data-k="${k}" aria-pressed="${k===k0}"><small>Tipologia · ${esc(m.linha||'')}</small><b>${esc(m.n||a.m)}</b><span>${esc(a.pos)}</span>${m.ref?`<em>Referência: ${esc(m.ref)}</em>`:''}${LV[k]?'':'<span class="alk">Montagem em 3D na Plataforma FC 3D</span>'}</button>`;}).join('');
+ const ams=FULL||!nLk?'':`<div class="ams">🧩 Aqui você testa a <b>janela de correr 2 folhas</b> em 3D. ${nLk>1?`As outras ${nLk} tipologias deste perfil estão`:'A outra tipologia deste perfil está'} na <b>Plataforma FC 3D</b>.</div>`;
+ pn.innerHTML=`<div class="ast"><div class="acv"></div><svg><defs><marker id="apMk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#f2a024"/></marker></defs><line stroke="#f2a024" stroke-width="2.5" marker-end="url(#apMk)"/></svg><div class="alb" hidden></div><div class="atp" hidden></div><div class="aload">Montando a tipologia…</div><div class="acta" hidden></div>
   <button type="button" class="avt">↺ Voltar ao 3D</button>
   <div class="alg"><span><i style="background:#f2a024"></i>Este perfil</span><span><i style="background:#a7b1b6"></i>Demais perfis</span></div>
   <div class="act"><button type="button" data-a="enc">🔍 Ver o encaixe</button><button type="button" data-a="td">↺ Esquadria inteira</button><button type="button" data-a="ab">↔ Abrir a folha</button></div></div>
-  <aside><h3>Onde é aplicado</h3>${lista}<div class="apr"><b>Outras tipologias</b><br>Aplicação em preparação. Entra quando a montagem for conferida e liberada na Plataforma FC 3D.</div>
+  <aside><h3>Onde é aplicado</h3>${ams}${lista}<div class="apr"><b>Outras tipologias</b><br>Aplicação em preparação. Entra quando a montagem for conferida e liberada na Plataforma FC 3D.</div>
   <div class="aav">⚠ <b>Aplicação orientativa.</b> Mostra onde o perfil costuma ser usado, conforme o catálogo técnico. <b>A confirmação é sempre do serralheiro</b> antes de comprar, cortar ou usinar.</div></aside>`;
  wr.appendChild(pn);let fim=null,atual=-1;
- const mostra=k=>{if(k===atual&&fim)return;atual=k;pn.querySelectorAll('.aap').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k==k));if(fim)fim();
-  const ld=pn.querySelector('.aload');ld.hidden=false;ld.textContent='Montando a tipologia…';
+ const cta=pn.querySelector('.acta'),vis=on=>['.act','.alg','.alb','svg','.acv'].forEach(q=>{const e=pn.querySelector(q);if(e)e.style.visibility=on?'':'hidden';});
+ const mostra=k=>{if(k===atual&&(fim||!LV[k]))return;atual=k;pn.querySelectorAll('.aap').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k==k));if(fim){fim();fim=null;}
+  const ld=pn.querySelector('.aload');
+  if(!LV[k]){const m=(D.modelos||{})[L[k].m]||{},onde=(window.CAT_SLUG||new URLSearchParams(location.search).get('c')||(location.pathname.match(/\/catalogo\/([^\/?#]+)/)||[])[1]||'');
+   const msg='Olá! Vi a aplicação do perfil '+code+' na '+(m.n||'tipologia')+' ('+(m.ref||'')+')'+(onde?' no catálogo '+onde:' no catálogo da FC')+' e quero conhecer a Plataforma FC 3D.';
+   pn.querySelector('.acv').innerHTML='';ld.hidden=true;vis(false);
+   cta.innerHTML=`<div><span class="ic">🔒</span><b>${esc(m.n||'')}</b><p>A montagem em 3D desta tipologia, com o perfil <b>${esc(code)}</b> destacado, o encaixe e a abertura das folhas, faz parte da <b>Plataforma FC 3D</b>.</p><a class="z" target="_blank" rel="noopener" href="https://wa.me/${ZAP}?text=${encodeURIComponent(msg)}">💬 Quero conhecer a Plataforma FC 3D</a><a class="v" target="_blank" rel="noopener" href="/fc3d/">Ver o que a plataforma oferece ↗</a><small>FC Consultoria em Esquadria</small></div>`;
+   cta.hidden=false;cta.querySelector('a.z').addEventListener('click',()=>{try{window.hit&&hit('perfis_aplicacao_cta',code+' '+L[k].m);}catch(_){}});
+   try{window.hit&&hit('perfis_aplicacao_lk',code+' '+L[k].m);}catch(_){}return;}
+  cta.hidden=true;vis(true);ld.hidden=false;ld.textContent='Montando a tipologia…';
   libs().then(()=>{fim=cena(pn,CODES,L[k].m,()=>{ld.hidden=true;});}).catch(()=>{ld.textContent='Não foi possível abrir a aplicação agora. Atualize a página.';});};
- const abre=v=>{pn.hidden=!v;bt.setAttribute('aria-pressed',v);if(v){vb.querySelectorAll('button[aria-pressed="true"]').forEach(b=>{if(b!==bt)b.dataset.apw='1';});mostra(atual<0?0:atual);try{window.hit&&hit('perfis_aplicacao',code);}catch(_){}}};
+ const abre=v=>{pn.hidden=!v;bt.setAttribute('aria-pressed',v);if(v){vb.querySelectorAll('button[aria-pressed="true"]').forEach(b=>{if(b!==bt)b.dataset.apw='1';});mostra(atual<0?k0:atual);try{window.hit&&hit('perfis_aplicacao',code);}catch(_){}}};
  bt.addEventListener('click',()=>abre(pn.hidden));
  pn.querySelector('.avt').onclick=()=>abre(false);
  vb.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b!==bt&&!pn.hidden)abre(false);});
