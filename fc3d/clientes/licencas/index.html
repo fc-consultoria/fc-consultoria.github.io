@@ -103,6 +103,8 @@ const dth=s=>s?new Date(s).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit'
 const dig=w=>String(w||'').replace(/\D/g,'');
 const fone=w=>{const d=dig(w).replace(/^55(?=\d{10,11}$)/,'');return d.length===11?`(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`:d.length===10?`(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`:w||'';};
 const wa=(w,t)=>{let d=dig(w);if(d.length<=11)d='55'+d;return 'https://wa.me/'+d+'?text='+encodeURIComponent(t);};
+/* login guardado sem o 9 do celular: mostra como o WhatsApp completo (os dois jeitos entram) */
+const lgf=l=>{const d=dig(l);return fone(d.length===10&&/[6-9]/.test(d[2])?d.slice(0,2)+'9'+d.slice(2):d);};
 const doc=s=>{const d=dig(s);return d.length===14?d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,'$1.$2.$3/$4-$5'):d.length===11?d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4'):s||'';};
 const prim=n=>String(n||'').trim().split(/\s+/)[0]||'';
 const ASS='\n\nFC Consultoria em Esquadria';
@@ -162,7 +164,7 @@ function tLic(){const L=D.licencas;
   return `<div class="sec"><div class="eh"><h2>Licenças ativas</h2><span class="sp"></span><span class="mute" style="font-size:13px">${L.length} empresa${L.length===1?'':'s'}</span></div>${L.map(l=>{const at=l.acessos.filter(a=>a.ativo).length;
     return `<div class="it"><div class="t"><b>${h(l.empresa)}</b>${situacao(l)}<span class="chip t">${at} de ${l.limite} acessos</span></div>
      <div class="d"><span>CNPJ/CPF ${h(doc(l.documento))}</span><span>Responsável: ${h(l.responsavel)} · ${h(fone(l.whats))}</span>${l.cidade?`<span>${h(l.cidade)}</span>`:''}<span>Cliente desde ${dt(l.desde)}</span></div>
-     <div class="pess">${l.acessos.map(a=>`<div class="pe"><b>${h(a.nome)}</b><span class="mute">${a.papel==='gestor'?'Responsável':'Equipe'} · login ${h(fone(a.login))}</span>${a.ativo?'':'<span class="chip r">Pausado</span>'}<span class="sp"></span><span class="mute" style="font-size:12.5px">último uso ${a.ultimo?dt(a.ultimo):'—'}</span>
+     <div class="pess">${l.acessos.map(a=>`<div class="pe"><b>${h(a.nome)}</b><span class="mute">${a.papel==='gestor'?'Responsável':'Equipe'} · login ${h(lgf(a.login))}</span>${a.ativo?'':'<span class="chip r">Pausado</span>'}<span class="sp"></span><span class="mute" style="font-size:12.5px">último uso ${a.ultimo?dt(a.ultimo):'—'}</span>
         <button class="btn sm" data-cod="${a.id}">Novo código</button><button class="btn sm" data-pau="${a.id}" data-v="${a.ativo?'pausar':'ativar'}">${a.ativo?'Pausar':'Reativar'}</button></div>`).join('')}</div>
      <div class="a">${at<l.limite?`<button class="btn sm pri" data-add="${h(l.empresa_id)}">➕ Adicionar pessoa</button>`:`<span class="mute" style="font-size:13px">Todos os acessos em uso. Mais acessos: combinar com o Fernando.</span>`}</div></div>`;}).join('')||'<p class="vazio">Nenhuma licença liberada ainda.</p>'}</div>`;}
 
@@ -182,6 +184,7 @@ function tDemo(){const L=D.demos;
   return `<div class="sec"><div class="eh"><h2>Demonstrativos (90 dias)</h2><span class="sp"></span><span class="mute" style="font-size:13px">${L.length} cadastro${L.length===1?'':'s'}</span></div>${L.length?`<div class="tw"><table><thead><tr><th>Nome</th><th>WhatsApp</th><th>Cadastro</th><th>Termina</th><th>Último uso</th><th>Uso</th><th>Situação</th><th></th></tr></thead><tbody>${L.map(d=>`<tr><td><b>${h(d.nome)}</b>${d.empresa?`<div class="mute" style="font-size:12.5px">${h(d.empresa)}</div>`:''}${d.cidade?`<div class="mute" style="font-size:12.5px">${h(d.cidade)}</div>`:''}</td><td>${h(fone(d.whats))}</td><td>${dt(d.criado)}</td><td>${dt(d.expira)}</td><td>${d.ultimo?dth(d.ultimo):'—'}</td><td>${d.uso_seg?Math.round(d.uso_seg/60)+' min':'—'}</td><td>${estDemo(d)}</td><td><a class="btn sm" target="_blank" rel="noopener" href="${wa(d.whats,msgDemo(d))}">💬</a></td></tr>`).join('')}</tbody></table></div>`:'<p class="vazio">Nenhum demonstrativo nos últimos 90 dias.</p>'}</div>`;}
 
 function tTut(){return `<div class="sec"><div class="eh"><h2>Como usar o painel</h2></div><div class="tut">
+ <video controls preload="none" poster="tutorial-capa.jpg" src="tutorial-painel-licencas.mp4" style="width:100%;border-radius:12px;margin-top:12px;background:#000;aspect-ratio:16/9"></video><p class="dica">Vídeo de 3 minutos com o passo a passo. Pode pausar quando quiser.</p>
  <h3>1. Quando chegar um pagamento</h3><ol>
   <li>A aba <b>💰 Pagamentos</b> mostra um número quando alguém avisa que pagou. Abra a aba.</li>
   <li>Veja o <b>valor</b> e o <b>identificador</b> (começa com FC3D) do pedido.</li>
@@ -221,7 +224,7 @@ function janelaMsg(tit,whats,texto,topo){const o=janela(tit,`${topo||''}<label c
   const tx=o.querySelector('#mTx'),z=o.querySelector('#mZap');const atu=()=>{z.href=wa(whats,tx.value);};atu();tx.oninput=atu;
   o.querySelector('#mCop').onclick=async e=>{try{await navigator.clipboard.writeText(tx.value);}catch(_){tx.select();document.execCommand('copy');}e.currentTarget.textContent='✓ Copiado';};
   o.querySelector('#mOk').onclick=fecha;}
-const msgAcesso=(nome,empresa,login,codigo,extra)=>`Olá, ${prim(nome)}! ${extra}\n\nAcesse: ${D.link}\nLogin: ${fone(login)}\nCódigo: ${codigo}\n\nGuarde este código. Ele é pessoal, não repasse para outra pessoa.${ASS}`;
+const msgAcesso=(nome,empresa,login,codigo,extra)=>`Olá, ${prim(nome)}! ${extra}\n\nAcesse: ${D.link}\nLogin: ${lgf(login)}\nCódigo: ${codigo}\n\nGuarde este código. Ele é pessoal, não repasse para outra pessoa.${ASS}`;
 
 /* ---------- ações ---------- */
 function ligar(){
