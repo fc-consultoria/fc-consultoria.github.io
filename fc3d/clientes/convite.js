@@ -17,7 +17,8 @@
   const q=new URLSearchParams(location.search),pg=location.pathname;
   const eh3d=/\/(mostruario|orientativo|montagens)\//.test(pg),tip=/\/mostruario\//.test(pg)?(q.get('t')||'jcr200'):'';
   const tela=()=>{if(tip)return 'Orientativo 3D · '+tip.toUpperCase();if(/\/orientativo\//.test(pg))return 'Tipologias'+(location.hash.length>1?' · '+location.hash.slice(1).toUpperCase():'');
-    if(/\/montagens\//.test(pg))return 'Montagens';if(/\/tecnico\//.test(pg))return 'Desenho técnico';return 'Início';};
+    if(/\/montagens\//.test(pg))return 'Montagens';if(/\/tecnico\//.test(pg))return 'Desenho técnico';
+    const m=document.querySelector('#menu [aria-current]');return m?(m.textContent||'').replace(/^[^A-Za-zÀ-ú]+/,'').trim()||'Início':'Início';};
   let tips=[];try{tips=JSON.parse(lg('pfc-cv-tips'))||[];}catch(_){}
   if(tip&&!tips.includes(tip)){tips.push(tip);ls('pfc-cv-tips',JSON.stringify(tips.slice(-50)));}
   let mexeu=Date.now(),aberto=null,mostrou=false,ST=null;
@@ -58,4 +59,7 @@
   async function ciclo(){if(document.hidden)return;const r=await ping();if(!r)return;ST=r;if(!r.demo||r.fim){clearInterval(T);return;}tenta();}
   const T=setInterval(ciclo,30000);setTimeout(ciclo,1500);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)ciclo();});
+  /* registra o tempo da tela atual antes de trocar de tela ou de página (relatório de uso no Painel de Licenças) */
+  document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#menu [data-tab]'))ping();},true);
+  addEventListener('pagehide',()=>{ping();});
 })();

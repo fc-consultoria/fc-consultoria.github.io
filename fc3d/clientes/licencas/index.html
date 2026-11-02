@@ -116,7 +116,8 @@ $('#gForm').addEventListener('submit',async e=>{e.preventDefault();const m=$('#g
   TOK=r.data.token;ls.set(LK,TOK);$('#gSenha').value='';iniciar();});
 function sair(silencioso){const t=TOK;if(t===ls.get(LK)){ls.del(LK);if(!silencioso)sb.rpc('pfc_sair',{p_token:t});}TOK=null;D=null;$('#app').hidden=true;$('#gate').hidden=false;}
 $('#btSair').onclick=()=>sair(false);
-$('#btAtu').onclick=()=>carregar();
+$('#btAtu').onclick=()=>{Uc=false;carregar();};
+$('#tela').addEventListener('click',e=>{const b=e.target.closest('[data-dab]');if(!b)return;DAB[b.dataset.dab]=!DAB[b.dataset.dab];render();});
 
 async function iniciar(){
   if(!TOK){$('#gate').hidden=false;return;}
@@ -180,8 +181,40 @@ function estDemo(d){if(d.comprou)return '<span class="chip o">Comprou</span>';if
 function msgDemo(d){const n=prim(d.nome),fim=!(d.ativo&&new Date(d.expira)>new Date());
   return fim?`Olá, ${n}! Aqui é da FC Consultoria. Seu demonstrativo da Plataforma FC 3D terminou. O que achou?\n\nA licença é de ${brl(D.info.valor)} no Pix, vale 1 ano e tem até ${D.info.acessos} acessos para a sua equipe. Se quiser, te mando o Pix por aqui.${ASS}`
    :`Olá, ${n}! Aqui é da FC Consultoria. Vi que você está testando a Plataforma FC 3D. Ficou alguma dúvida? Posso te ajudar por aqui.${ASS}`;}
-function tDemo(){const L=D.demos;
-  return `<div class="sec"><div class="eh"><h2>Demonstrativos (90 dias)</h2><span class="sp"></span><span class="mute" style="font-size:13px">${L.length} cadastro${L.length===1?'':'s'}</span></div>${L.length?`<div class="tw"><table><thead><tr><th>Nome</th><th>WhatsApp</th><th>Cadastro</th><th>Termina</th><th>Último uso</th><th>Uso</th><th>Situação</th><th></th></tr></thead><tbody>${L.map(d=>`<tr><td><b>${h(d.nome)}</b>${d.empresa?`<div class="mute" style="font-size:12.5px">${h(d.empresa)}</div>`:''}${d.cidade?`<div class="mute" style="font-size:12.5px">${h(d.cidade)}</div>`:''}</td><td>${h(fone(d.whats))}</td><td>${dt(d.criado)}</td><td>${dt(d.expira)}</td><td>${d.ultimo?dth(d.ultimo):'—'}</td><td>${d.uso_seg?Math.round(d.uso_seg/60)+' min':'—'}</td><td>${estDemo(d)}</td><td><a class="btn sm" target="_blank" rel="noopener" href="${wa(d.whats,msgDemo(d))}">💬</a></td></tr>`).join('')}</tbody></table></div>`:'<p class="vazio">Nenhum demonstrativo nos últimos 90 dias.</p>'}</div>`;}
+/* ---------- relatório de uso dos demonstrativos (pfc_lic_demo_uso) ---------- */
+let U=null,Uc=false,DAB={};
+async function carregaUso(){if(Uc)return;Uc=true;try{U=await rpc('pfc_lic_demo_uso');}catch(_){U=null;}if(tab==='demo')render();}
+const AREAS=[['Início',t=>t==='Início'],['Tipologias',t=>/^Tipologias/.test(t)],['3D aberto',t=>/^Orientativo 3D/.test(t)],['Desenho técnico',t=>t==='Desenho técnico'],['Montagens',t=>t==='Montagens'],['Apresentação',t=>t==='Apresentação']];
+function usoDe(d){const u=(U&&U.demos&&U.demos[d.id])||{telas:[],sessoes:[],dias:0};
+  const aberta=u.sessoes.reduce((a,x)=>a+Math.max(0,(new Date(x.fim)-new Date(x.ini))/6e4),0);
+  const telas=u.telas||[],ok=AREAS.map(([n,f])=>telas.some(t=>f(t.tela)&&t.seg>0)||(n==='Início'&&u.sessoes.length>0));
+  const tips=[...new Set(telas.filter(t=>/^Orientativo 3D · /.test(t.tela)).map(t=>t.tela.split(' · ')[1]))];
+  const vis=Math.round((d.uso_seg||0)/60),nA=ok.filter(Boolean).length;
+  let nv;if(!u.sessoes.length)nv=['Não abriu',''];else if(nA>=4||tips.length>=2||vis>=15)nv=['Testou bem','o'];
+  else if(aberta<3&&nA<=1)nv=['Só olhou','r'];else nv=['Explorou','a'];
+  return {u,aberta:Math.round(aberta),vis,ok,tips,nv,telas};}
+function grafHoras(arr,cor,un){const mx=Math.max(1,...arr),W=24*26;
+  return `<svg viewBox="0 0 ${W} 120" style="width:100%;height:auto;display:block" role="img" aria-label="Gráfico por horário">${arr.map((v,i)=>{const hgt=Math.round(v/mx*86);
+   return `<g><title>${i}h às ${i+1}h: ${String(v).replace('.',',')} ${un}</title><rect x="${i*26+4}" y="${94-hgt}" width="18" height="${Math.max(hgt,v?2:0)}" rx="3" fill="${cor}"/>${v?`<text x="${i*26+13}" y="${90-hgt}" text-anchor="middle" font-size="10" fill="var(--ink)">${String(v).replace('.',',')}</text>`:''}${i%3===0?`<text x="${i*26+13}" y="112" text-anchor="middle" font-size="10" fill="var(--mute)">${i}h</text>`:''}</g>`;}).join('')}<line x1="0" y1="94.5" x2="${W}" y2="94.5" stroke="var(--line)"/></svg>`;}
+function pico(arr){const mx=Math.max(...arr);if(!mx)return '';const hs=arr.map((v,i)=>v===mx?i:-1).filter(i=>i>=0);return hs.map(i=>`${i}h às ${i+1}h`).join(', ');}
+function tDemo(){const L=D.demos;carregaUso();
+  const HE=(U&&U.horas_entradas)||Array(24).fill(0),HM=(U&&U.horas_min)||Array(24).fill(0),des=U&&U.medicao_desde;
+  const graf=`<div class="sec"><div class="eh"><h2>Horários em que mais abrem a plataforma</h2></div><div style="padding:14px 16px 16px;display:grid;gap:18px">
+   <div><div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap"><b style="font-size:14.5px">Entradas por horário</b><span class="mute" style="font-size:13px">todos os demonstrativos dos últimos 90 dias${pico(HE)?` · pico: <b>${pico(HE)}</b>`:''}</span></div>${U?grafHoras(HE,'var(--teal)','entradas'):'<p class="mute">Carregando…</p>'}</div>
+   <div><div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap"><b style="font-size:14.5px">Minutos de uso por horário</b><span class="mute" style="font-size:13px">tempo com a plataforma na tela${des?` · medido desde ${dt(des)}`:''}${pico(HM)?` · pico: <b>${pico(HM)}</b>`:''}</span></div>${U?grafHoras(HM,'#d98a1c','min'):''}</div>
+  </div></div>`;
+  const leg=`<p class="mute" style="font-size:12.5px;padding:10px 16px 0;margin:0"><b>Avanço:</b> <span class="chip o">Testou bem</span> abriu 4 áreas ou mais, 2 tipologias em 3D ou 15 min na tela · <span class="chip a">Explorou</span> entrou e mexeu um pouco · <span class="chip r">Só olhou</span> menos de 3 min, só a tela inicial · <span class="chip">Não abriu</span> cadastrou e não entrou. Toque em 📊 para ver o detalhe.</p>`;
+  const lin=d=>{const x=usoDe(d),ab=!!DAB[d.id];
+   return `<tr><td><b>${h(d.nome)}</b>${d.empresa?`<div class="mute" style="font-size:12.5px">${h(d.empresa)}</div>`:''}${d.cidade?`<div class="mute" style="font-size:12.5px">${h(d.cidade)}</div>`:''}</td><td>${h(fone(d.whats))}</td><td>${dt(d.criado)}</td><td>${dt(d.expira)}</td><td>${d.ultimo?dth(d.ultimo):'—'}</td><td>${U?`<span class="chip ${x.nv[1]}">${x.nv[0]}</span>`:'…'}</td><td>${estDemo(d)}</td><td style="white-space:nowrap"><button type="button" class="btn sm" data-dab="${d.id}" aria-expanded="${ab}" title="Ver o que testou">📊</button> <a class="btn sm" target="_blank" rel="noopener" href="${wa(d.whats,msgDemo(d))}" title="WhatsApp">💬</a></td></tr>${ab?`<tr><td colspan="8" style="background:var(--soft)">${detalhe(d,x)}</td></tr>`:''}`;};
+  return graf+`<div class="sec"><div class="eh"><h2>Demonstrativos (90 dias)</h2><span class="sp"></span><span class="mute" style="font-size:13px">${L.length} cadastro${L.length===1?'':'s'}</span></div>${L.length?leg+`<div class="tw"><table><thead><tr><th>Nome</th><th>WhatsApp</th><th>Cadastro</th><th>Termina</th><th>Último uso</th><th>Avanço</th><th>Situação</th><th></th></tr></thead><tbody>${L.map(lin).join('')}</tbody></table></div>`:'<p class="vazio">Nenhum demonstrativo nos últimos 90 dias.</p>'}</div>`;}
+function detalhe(d,x){const mx=Math.max(1,...x.telas.map(t=>t.seg));
+  const ses=x.u.sessoes.map(s=>{const m=Math.max(0,Math.round((new Date(s.fim)-new Date(s.ini))/6e4));return `<li>${dth(s.ini)} até ${new Date(s.fim).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})} · ${m<1?'menos de 1 min':m+' min'} aberta</li>`;}).join('');
+  return `<div style="display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));padding:4px 0">
+   <div><b style="font-size:13.5px">Resumo</b><div style="font-size:13.5px;margin-top:6px;line-height:1.7">Entradas: <b>${x.u.sessoes.length}</b><br>Plataforma aberta: <b>${x.aberta} min</b><br>Com a tela à vista: <b>${x.vis} min</b><br>Dias com uso: <b>${x.u.dias||(x.u.sessoes.length?'—':0)}</b></div></div>
+   <div><b style="font-size:13.5px">Áreas que abriu</b><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">${AREAS.map(([n],i)=>`<span class="chip ${x.ok[i]?'o':''}">${x.ok[i]?'✓':'—'} ${n}</span>`).join('')}</div>${x.tips.length?`<div style="font-size:13px;margin-top:8px">Tipologias em 3D: <b>${x.tips.map(h).join(', ')}</b></div>`:''}</div>
+   <div><b style="font-size:13.5px">Tempo por tela</b>${x.telas.length?`<div style="display:grid;gap:5px;margin-top:6px">${x.telas.map(t=>`<div style="font-size:12.5px"><div style="display:flex;justify-content:space-between;gap:8px"><span>${h(t.tela)}</span><b>${Math.max(1,Math.round(t.seg/60))} min</b></div><div style="height:6px;border-radius:3px;background:var(--line)"><div style="height:6px;border-radius:3px;background:var(--teal);width:${Math.round(t.seg/mx*100)}%"></div></div></div>`).join('')}</div>`:`<p class="mute" style="font-size:12.5px;margin-top:6px">Sem detalhe por tela${U&&U.medicao_desde&&new Date(d.criado)<new Date(U.medicao_desde+'T00:00:00')?': a medição por tela começou depois deste teste':''}.</p>`}</div>
+   <div><b style="font-size:13.5px">Entradas</b>${ses?`<ul style="margin:6px 0 0;padding-left:18px;font-size:12.5px;line-height:1.6">${ses}</ul>`:'<p class="mute" style="font-size:12.5px;margin-top:6px">Não entrou na plataforma.</p>'}</div>
+  </div>`;}
 
 function tTut(){return `<div class="sec"><div class="eh"><h2>Como usar o painel</h2></div><div class="tut">
  <video controls preload="none" poster="tutorial-capa.jpg" src="tutorial-painel-licencas.mp4?v=3" style="width:100%;border-radius:12px;margin-top:12px;background:#000;aspect-ratio:16/9"></video><p class="dica">Vídeo de 3 minutos, narrado, com o passo a passo. Pode pausar quando quiser.</p>
