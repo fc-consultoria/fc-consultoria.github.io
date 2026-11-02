@@ -143,7 +143,28 @@ async function liga(o,code){if(!o||!code)return;let D;try{D=await dados();}catch
  bt.addEventListener('click',()=>abre(pn.hidden));
  pn.querySelector('.avt').onclick=()=>abre(false);
  vb.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b!==bt&&!pn.hidden)abre(false);});
- pn.querySelector('aside').addEventListener('click',e=>{const b=e.target.closest('.aap');if(b)mostra(+b.dataset.k);});}
+ pn.querySelector('aside').addEventListener('click',e=>{const b=e.target.closest('.aap');if(b)mostra(+b.dataset.k);});
+ if(PEND&&PEND.c===String(code).toUpperCase()&&Date.now()-PEND.t<180000){PEND=null;abre(true);}}
+
+/* ---------- "Usa em: …" nos cards do catálogo (lê o mesmo aplicacao.json) ---------- */
+let PEND=null;
+function cssCard(){if(document.getElementById('aplUsaCss'))return;const s=document.createElement('style');s.id='aplUsaCss';s.textContent=`
+.cd .usa{margin-top:7px;align-self:flex-start;max-width:100%;font:700 12px/1.3 Barlow,system-ui,sans-serif;color:#7a4a00;background:#fff4e1;border:1px solid #f2c27a;border-radius:9px;padding:4px 9px;cursor:pointer;text-align:left}
+.cd .usa:hover{background:#ffe9c4;border-color:#f2a024}.cd .usa:focus-visible{outline:2px solid #f2a024;outline-offset:2px}
+.cd .usa small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#a0661a;margin-bottom:1px}
+@media(max-width:560px){.cd .usa{font-size:11.5px;padding:3px 7px}}
+@media print{.cd .usa{border:0;background:none;padding:0;color:#55636c}}`;document.head.appendChild(s);}
+function usaEm(){const lst=document.getElementById('lst');if(!lst)return;
+ dados().then(D=>{const P=D.perfis||{},M=D.modelos||{};if(!Object.keys(P).length)return;cssCard();
+  const nomes=c=>{const v=[];(P[c]||[]).forEach(a=>{const n=(M[a.m]||{}).n||a.m;if(!v.includes(n))v.push(n);});return v;};
+  const marca=()=>lst.querySelectorAll('.cd[data-c]:not([data-usa])').forEach(cd=>{cd.dataset.usa='1';const c=String(cd.dataset.c).toUpperCase(),v=nomes(c);if(!v.length)return;
+   const tx=v.length>2?v.slice(0,2).join(' · ')+' +'+(v.length-2):v.join(' · ');
+   const b=document.createElement('button');b.type='button';b.className='usa nov3';b.title='Ver onde este perfil é aplicado';b.setAttribute('aria-label','Usa em: '+v.join(', ')+'. Ver a aplicação');
+   b.innerHTML='<small>🧩 Usa em</small>'+esc(tx);
+   b.addEventListener('click',e=>{e.stopPropagation();PEND={c,t:Date.now()};try{window.hit&&hit('perfis_usaem',c);}catch(_){}cd.click();});
+   cd.appendChild(b);});
+  marca();let q=0;new MutationObserver(()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;marca();});}).observe(lst,{childList:true,subtree:true});});}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',usaEm);else usaEm();
 
 window.FCAPL={liga};
 })();
