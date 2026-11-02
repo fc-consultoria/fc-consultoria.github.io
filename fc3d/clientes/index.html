@@ -530,7 +530,10 @@ const ZAPDEMO='https://wa.me/5566999867984?text='+encodeURIComponent('Olá, FC! 
 let modoDemo=/[?&]demo=1/.test(location.search);
 function formDemo(on){modoDemo=on;$('#liAmb').hidden=on;$('#entForm').hidden=on;$('#demoForm').hidden=!on;const cf=$('#cadForm');if(cf)cf.hidden=true;}
 $('#demoTroca').onclick=()=>formDemo(false);
-function demoFim(t){const f=$('#demoFim');f.hidden=false;f.innerHTML=h(t)+`<br><a class="btn pri" style="margin-top:10px;display:inline-block" href="${ZAPDEMO}" target="_blank" rel="noopener">Falar com a FC no WhatsApp</a>`;}
+function demoFim(t){const f=$('#demoFim');f.hidden=false;f.innerHTML=h(t)+`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn pri" type="button" data-lic>Adquirir licença</button><a class="btn sec" href="${ZAPDEMO}" target="_blank" rel="noopener">Falar com a FC no WhatsApp</a></div>`;}
+/* compra da licença (licenca.js): botões data-lic na barra do demonstrativo e no aviso de fim */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-lic]');if(!b||!window.FCLIC)return;e.preventDefault();
+  FCLIC.abrir({token:S&&S.demo?S.token:null,nome:(S&&S.nome)||($('#dNome')&&$('#dNome').value)||'',whats:ls.get('pfc-demo-whats')||($('#dZap')&&$('#dZap').value)||''});});
 const PEDK='pfc-demo-pedido';let espT=null;
 function esperaDemo(r){const box=$('#demoEsp');clearTimeout(espT);box.hidden=false;$('#demoBt').hidden=true;$('#dNome').disabled=$('#dZap').disabled=true;ls.set(PEDK,r.pedido);
   let seg=r.segundos||0;const zap='https://wa.me/5566999867984?text='+encodeURIComponent('Olá, FC! Sou '+(r.nome||'')+' e fiz o cadastro no demonstrativo da Plataforma FC 3D.');
@@ -548,7 +551,7 @@ $('#demoForm').addEventListener('submit',async e=>{
   if(v('#dNome').length<2){msg.textContent='Informe o seu nome.';return;}
   if(v('#dZap').replace(/\D/g,'').length<10){msg.textContent='Informe o WhatsApp com DDD.';return;}
   bt.disabled=true;bt.textContent='Enviando…';
-  try{const r=await rpc('pfc_demo_entrar',{p_nome:v('#dNome'),p_empresa:'',p_cidade:'',p_whats:v('#dZap')});
+  ls.set('pfc-demo-whats',v('#dZap'));try{const r=await rpc('pfc_demo_entrar',{p_nome:v('#dNome'),p_empresa:'',p_cidade:'',p_whats:v('#dZap')});
     if(r.erro){if(r.fim)demoFim(r.erro);else msg.textContent=r.erro;return;}
     if(r.pendente){esperaDemo(r);return;}
     ls.set(TK,r.token);history.replaceState(null,'',location.pathname);await abrir(r.token);
@@ -559,7 +562,7 @@ $('#demoForm').addEventListener('submit',async e=>{
 (async()=>{const pid=ls.get(PEDK);if(!pid||ls.get(TK))return;try{const q=await rpc('pfc_demo_aguardar',{p_pedido:pid});if(q.pendente){formDemo(true);esperaDemo(q);}else if(q.token){ls.del(PEDK);ls.set(TK,q.token);await abrir(q.token);}else ls.del(PEDK);}catch(_){}})();
 function faltaDemo(){if(!S||!S.demo)return '';const ms=new Date(S.expira)-Date.now();if(ms<=0)return 'termina agora';const hs=Math.floor(ms/36e5),d=Math.floor(hs/24),r=hs%24;
   return 'termina em '+(d?d+(d>1?' dias':' dia')+(r?' e '+r+' h':''):Math.max(1,hs)+' h');}
-const barraDemo=()=>S&&S.demo?`<div class="demo-bar"><span><b>Demonstrativo</b> · ${faltaDemo()}</span><span class="sp"></span><span class="mute">Gostou? Conheça os planos para a sua equipe.</span><a class="btn pri" href="${ZAPDEMO}" target="_blank" rel="noopener">Falar com a FC</a></div>`:'';
+const barraDemo=()=>S&&S.demo?`<div class="demo-bar"><span><b>Demonstrativo</b> · ${faltaDemo()}</span><span class="sp"></span><span class="mute">Gostou? Licença de 1 ano para a sua empresa.</span><button class="btn pri" type="button" data-lic>Adquirir licença</button><a class="btn sec" href="${ZAPDEMO}" target="_blank" rel="noopener">Falar com a FC</a></div>`:'';
 const escH=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function abrir(token){
   try{S=await rpc('pfc_sessao',{p_token:token});S.token=token;}
@@ -764,5 +767,6 @@ window.PFCaprCtx={TIPS,LINHAS,h,papel:()=>papel(),sessao:()=>S,render:()=>render
 <script src="apresentacao.js?v=16"></script>
 <script src="tutorial.js?v=4"></script>
 <script src="convite.js?v=1" defer></script>
+<script src="licenca.js?v=1" defer></script>
 </body>
 </html>
