@@ -1,0 +1,16 @@
+{
+ "_nota": "Aplicação dos perfis nas tipologias. Só entra aqui o que está conferido no catálogo técnico (índice de montagens). Sem chute: o que não estiver confirmado fica fora e aparece como 'aplicação em preparação'.",
+ "modelos": {
+  "jcr2": {"n": "Janela de correr 2 folhas", "linha": "Suprema", "ref": "Catálogo técnico Suprema · SUP JCR 200"}
+ },
+ "perfis": {
+  "SU-001": [{"m": "jcr2", "pos": "Marco superior da janela"}],
+  "SU-002": [{"m": "jcr2", "pos": "Trilho inferior (marco de baixo)"}],
+  "SU-003": [{"m": "jcr2", "pos": "Marco lateral, nos dois lados"}],
+  "SU-039": [{"m": "jcr2", "pos": "Montante lateral da folha, na folha interna e na folha externa"}],
+  "SU-040": [{"m": "jcr2", "pos": "Mão de amigo da folha interna"}],
+  "SU-041": [{"m": "jcr2", "pos": "Mão de amigo da folha externa"}],
+  "SU-053": [{"m": "jcr2", "pos": "Travessa superior e inferior das duas folhas"}],
+  "SU-102": [{"m": "jcr2", "pos": "Baguete do vidro, nos quatro lados de cada folha"}]
+ }
+}
