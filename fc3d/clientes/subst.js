@@ -33,7 +33,7 @@ function base(q){q=String(q||'').trim().toUpperCase().replace(/\s+/g,'');if(!q)r
 const cod=c=>{const e=st.it[c];const cc=e&&(e.cg||e.c);return cc&&cc!==c?cc:c;};
 function lin(c,tag,mat,b){const p=F(c);if(!p)return '';const img=p.img||IMG+(p.d3?p.i:'c'+p.i)+'.webp',peso=num(p.p);
  return `<div class="fsr"><button type="button" class="fsrow" data-fspick="${esc(cod(c))}" data-fsbase="${esc(c)}" title="Ver no catálogo"><img loading="lazy" src="${img}" alt=""><div><small>${esc(tag)}</small><b>${esc(cod(c))}</b><small>${esc(p.n)}</small>${Array.isArray(p.d)?`<small>📐 ${mm(p.d[0])} × ${mm(p.d[1])} mm</small>`:''}</div><div class="w">${peso!=null?kg(peso)+'<small> kg/m</small>':''}</div></button>
- <div class="fsm">${mat&&b?bts(b,c,mat):''}<span class="fst">sob consulta</span></div></div>`;}
+ <div class="fsm">${mat&&b?bts(b,c,mat):''}${st.pub?'':'<span class="fst">sob consulta</span>'}</div></div>`;}
 /* Acesso FC: aprovar, deixar pendente (oculto) ou recusar cada substituição */
 function bts(b,c,k){const B=(s,t,ti)=>`<button type="button" data-fsap="${esc(b)}|${esc(c)}|${s}" title="${ti}">${t}</button>`;
  if(k==='ok')return B('pend','⏳ Pendente','Ocultar da equipe até aprovar de novo')+B('','✕ Remover','Tirar a indicação');
@@ -45,9 +45,9 @@ function pendTodas(){const L=st.ap.filter(x=>x.st==='pend'&&F(x.b)&&F(x.s));
 function res(){const box=document.getElementById('fsRes');const q=st.q.trim();
  const mat=false; /* botões de aprovação desligados: todos veem só 'sob consulta' */
  if(!q){box.innerHTML=mat?pendTodas():'';return;}
- const b=base(q);if(!b){box.innerHTML='<p class="fsn fsw">Código não encontrado na base Suprema/Gold.<br><b>Confirme com o serralheiro ou com compras.</b></p>';return;}
+ const b=base(q);if(!b){box.innerHTML='<p class="fsn fsw">Código não encontrado na base Suprema/Gold.<br><b>'+(st.pub?'Confira o código ou confirme com o seu fornecedor.':'Confirme com o serralheiro ou com compras.')+'</b></p>';return;}
  const d=disp(b),ok=st.ap.filter(x=>x.b===b&&x.st==='ok'&&F(x.s)).map(x=>F(x.s).k),au=auto(b).filter(c=>!ok.includes(c)),okD=ok.filter(disp);
- let h=`<div class="fsh"><span class="fst ${d?'ok':'no'}">${d?'Trabalhamos com este perfil':'Não trabalhamos com este perfil'}</span></div>${lin(b,'Pesquisado',false)}`;
+ let h=(st.pub?'':`<div class="fsh"><span class="fst ${d?'ok':'no'}">${d?'Trabalhamos com este perfil':'Não trabalhamos com este perfil'}</span></div>`)+lin(b,'Pesquisado',false);
  if(okD.length)h+='<h4>Indicado para substituir</h4>'+okD.map(c=>lin(c,'Indicação',mat&&'ok',b)).join('');
  if(au.length)h+=`<h4>${okD.length?'Outras opções':'Possível substituição'}</h4>`+au.map(c=>lin(c,'Sugestão',mat&&'sug',b)).join('');
  if(mat){const pe=st.ap.filter(x=>x.b===b&&x.st==='pend'&&F(x.s)).map(x=>F(x.s).k);
@@ -55,8 +55,8 @@ function res(){const box=document.getElementById('fsRes');const q=st.q.trim();
   h+=`<form id="fsAdd" class="fsadd"><input name="c" placeholder="Indicar outro código para ${esc(b)}" autocomplete="off"><button type="submit">＋ Indicar</button></form>`;}
  
  
- if(!okD.length&&!au.length)h+=`<p class="fsn fsw">Sem indicação de substituição para ${esc(b)}.<br><b>Verifique com o serralheiro ou com compras qual perfil usar.</b></p>`;
- h+='<p class="fsn fsw">⚠ Substituição é sugestão. <b>Confirme com o serralheiro</b> antes de fechar o pedido.<br>📸 <b>Faça um print desta tela e encaminhe ao cliente para ele confirmar.</b></p>';box.innerHTML=h;}
+ if(!okD.length&&!au.length)h+=`<p class="fsn fsw">Sem indicação de substituição para ${esc(b)}.<br><b>${st.pub?'Confirme com o seu fornecedor qual perfil usar.':'Verifique com o serralheiro ou com compras qual perfil usar.'}</b></p>`;
+ h+=st.pub?'<p class="fsn fsw">⚠ Substituição é sugestão. <b>Confirme com o seu fornecedor</b> antes de comprar, cortar ou usinar.</p>':'<p class="fsn fsw">⚠ Substituição é sugestão. <b>Confirme com o serralheiro</b> antes de fechar o pedido.<br>📸 <b>Faça um print desta tela e encaminhe ao cliente para ele confirmar.</b></p>';box.innerHTML=h;}
 function ui(abrir,alvo){const css=document.createElement('style');css.textContent=`#fsBt{position:fixed;left:16px;bottom:16px;z-index:9990;border:0;border-radius:99px;background:#02717d;color:#fff;font:700 14px system-ui,sans-serif;padding:10px 15px;box-shadow:0 6px 18px #0003;cursor:pointer}
 #fsPn{position:fixed;left:16px;bottom:16px;z-index:9991;width:min(380px,calc(100vw - 32px));max-height:min(72vh,640px);display:flex;flex-direction:column;background:#fff;color:#1d2a30;border:1px solid #dde3e6;border-radius:16px;box-shadow:0 14px 40px #0003;overflow:hidden;font:14px system-ui,sans-serif}
 #fsPn[hidden]{display:none}#fsPn .hd{display:flex;align-items:center;gap:8px;padding:12px 14px 8px}#fsPn .hd b{flex:1;font-weight:800;font-size:15px}#fsPn .hd button{border:0;background:none;font-size:18px;cursor:pointer;color:#5d6b72}
@@ -118,7 +118,11 @@ function ui(abrir,alvo){const css=document.createElement('style');css.textConten
   repoe();if(abrir)document.getElementById('fsQ').focus();return;}
  let fech=false;try{fech=localStorage.getItem('fcsub_fechado')==='1';}catch(_){}
  if(abrir||!fech){tog(true,!abrir);repoe();}}
-window.FCSUB={async init(o){o=o||{};try{st.tk=localStorage.getItem('pfc-token');}catch(_){}if(!st.tk)return false;
+window.FCSUB={async publico(o){o=o||{};st.pub=true;st.pick=o.pick||null;
+ try{const j=await fetch('/fc3d/clientes/orientativo/perfis.json?v=1',{cache:'no-cache'}).then(r=>r.json());Object.entries(j.P).forEach(([k,v])=>{const x=Object.assign({k},v);st.P[k]=x;st.IDX[k]=x;});}catch(_){return false;}
+ try{st.ap=await rpc('pfc_subst_publica',{})||[];}catch(_){}
+ ui(!!o.abrir,(typeof o.alvo==='function'?o.alvo():o.alvo)||null);return true;},
+ async init(o){o=o||{};try{st.tk=localStorage.getItem('pfc-token');}catch(_){}if(!st.tk)return false;
  try{st.S=await rpc('pfc_sessao',{p_token:st.tk});}catch(_){return false;}const S=st.S;
  if(!S||S.demo||!(S.matriz||((S.papel==='gestor'||S.papel==='vendedor')&&EMP.includes(S.empresa))))return false;
  if(o.slug&&!S.matriz&&S.catalogo!==o.slug)return false;

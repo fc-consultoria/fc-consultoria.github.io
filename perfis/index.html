@@ -272,6 +272,10 @@ const qs=new URLSearchParams(location.search);{const l=LN.find(x=>x.id===qs.get(
  if(PAG==='demo'){const uso=()=>{hit('demo_uso',1);};document.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('canvas,#evl,.stage,select,.tb button,[data-t]'))uso();},true);}
 }catch(_){}})();
 </script>
+<script>/* Substituir perfil · aberto a todo visitante (sugestões; só a FC aprova) */
+(function(){const alvo=()=>{const w=document.querySelector('.hero .w');if(!w)return null;const d=document.createElement('div');d.style.cssText='display:grid;min-width:0';w.appendChild(d);return d;};
+ const pick=c=>{const q=document.getElementById('q'),l=LN.find(l=>l.p.some(p=>p.c===c));if(l)LI=l;G='all';Q=c;q.value=c;desenha();q.scrollIntoView({behavior:'smooth',block:'center'});};
+ const sc=document.createElement('script');sc.src='/fc3d/clientes/subst.js?v=16';sc.onload=()=>{try{FCSUB.publico({alvo,pick});}catch(e){}};document.head.appendChild(sc);})();</script>
 <script>window.BANC_URL="banc.json?v=1792076962";</script><script src="bancada.js?v=1793630500"></script>
 <script>/* modo incorporado: o Treinamento em Esquadrias da FC abre o 3D do perfil direto (?ver=CODIGO&embed=1) */
 (function(){const q=new URLSearchParams(location.search),V=q.get('ver');if(!V||q.get('embed')!=='1'||!/\/treinamento\//.test(document.referrer||'')||window.top===window)return;
