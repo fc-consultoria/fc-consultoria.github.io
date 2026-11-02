@@ -7,7 +7,11 @@ const h=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt
 const ls={get(k){try{return localStorage.getItem(k)}catch(_){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(_){}},del(k){try{localStorage.removeItem(k)}catch(_){}}};
 const brl=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const zap=t=>'https://wa.me/'+ZAP+'?text='+encodeURIComponent(t);
-const call=(fn,a)=>window.rpc(fn,a);
+/* chamada própria ao banco: a página principal guarda a função rpc dentro dela, sem expor para este módulo */
+const SB_URL='https://pawwncmfadzxfahfvhry.supabase.co',SB_KEY='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs';
+async function call(fn,a){if(typeof window.rpc==='function')return window.rpc(fn,a);
+  const r=await fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(a||{})});
+  let d=null;try{d=await r.json();}catch(_){}if(!r.ok)throw new Error((d&&(d.message||d.hint))||('Erro '+r.status));return d;}
 
 /* ---- Pix copia e cola (BR Code estático com valor) ---- */
 const tlv=(id,v)=>id+String(v.length).padStart(2,'0')+v;
