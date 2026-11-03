@@ -733,8 +733,10 @@ function telaApr(){return `<div class="cab"><div><h2>Modo apresentação</h2><p 
   <p class="mute" style="font-size:13px">A fachada continua em <a href="#" data-ir="tip">Tipologias → Fachadas</a>, com as medidas da obra.</p>`;}
 /* ---------- Equipe (03/11/2026): andamento da empresa por setor, para o gestor de qualquer empresa ---------- */
 let eqDias=7,eqAberto=null,eqDados=null;
+const EQ_INICIO=new Date('2026-11-03T00:00:00-04:00');/* registro do uso começou aqui: antes disso não mostra nada, para ninguém */
+const eqUlt=x=>x.ultimo&&new Date(x.ultimo)>=EQ_INICIO?x.ultimo:null;
 const eqT=s=>{s=Math.round(s||0);if(s<60)return s?'menos de 1 min':'—';const m=Math.round(s/60);return m<60?m+' min':Math.floor(m/60)+' h'+(m%60?' '+String(m%60).padStart(2,'0'):'');};
-const eqHa=d=>{if(!d)return 'nunca entrou';const m=(Date.now()-new Date(d))/6e4;if(m<60)return 'há '+Math.max(1,Math.round(m))+' min';const hr=m/60;if(hr<24)return 'há '+Math.round(hr)+' h';const dd=Math.round(hr/24);return dd===1?'ontem':'há '+dd+' dias';};
+const eqHa=d=>{if(!d)return '';const m=(Date.now()-new Date(d))/6e4;if(m<60)return 'há '+Math.max(1,Math.round(m))+' min';const hr=m/60;if(hr<24)return 'há '+Math.round(hr)+' h';const dd=Math.round(hr/24);return dd===1?'ontem':'há '+dd+' dias';};
 const EQ_ORD=['gestor','gerente','vendas','compras','marketing','estoque','fabrica'];
 function telaGes(){return `<div class="cab"><div><h2>Equipe</h2><p class="mute">O que cada setor está fazendo na plataforma: quem entrou, quem está on-line, quanto tempo e o que cada pessoa abriu.</p></div>
  <div class="filtros" role="group" aria-label="Período">${[[1,'Hoje'],[7,'7 dias'],[30,'30 dias']].map(([d,n])=>`<button type="button" data-eqd="${d}" aria-pressed="${eqDias===d}">${n}</button>`).join('')}<button type="button" data-eqr title="Atualizar">⟳</button></div></div>
@@ -749,17 +751,17 @@ function equipeDesenha(){
   const box=$('#eqBox'),D=eqDados;if(!box||!D)return;
   if(!D.empresa){box.innerHTML='<div class="aviso">Escolha a empresa em <b>Dentro de</b>, no topo, para ver a equipe dela.</div>';return;}
   const P=D.pessoas||[],per=eqDias===1?'hoje':'nos últimos '+eqDias+' dias';
-  const usou=x=>x.seg>0||(x.ultimo&&new Date(x.ultimo)>=new Date(D.desde+'T00:00:00-04:00'));
+  const usou=x=>x.seg>0||(eqUlt(x)&&new Date(eqUlt(x))>=new Date(D.desde+'T00:00:00-04:00'));
   const on=P.filter(x=>x.online),ent=P.filter(usou),tot=P.reduce((a,x)=>a+(x.seg||0),0);
-  const parados=P.filter(x=>x.papel!=='gestor'&&(!x.ultimo||Date.now()-new Date(x.ultimo)>7*864e5));
+  const parados=Date.now()-EQ_INICIO<7*864e5?[]:P.filter(x=>x.papel!=='gestor'&&(!eqUlt(x)||Date.now()-new Date(eqUlt(x))>7*864e5));
   const g={};P.forEach(x=>{(g[x.setor]=g[x.setor]||[]).push(x);});
   const ord=Object.keys(g).sort((a,b)=>(EQ_ORD.indexOf(a)+99)%99-(EQ_ORD.indexOf(b)+99)%99||a.localeCompare(b));
   const nomeT=t=>h(t).replace(/^Orientativo 3D · /,'🧊 ').replace(/^Catálogo de Perfis/,'▤ Catálogo de Perfis').replace(/^Ambientes/,'◫ Ambientes');
-  const pessoa=x=>{const tops=(x.telas||[]).slice(0,3),tips=(x.telas||[]).filter(t=>/^Orientativo 3D · /.test(t.t)).length,ab=eqAberto===x.id;
+  const pessoa=x=>{x={...x,telas:(x.telas||[]).filter(t=>t.s>=60)};const tops=x.telas.slice(0,3),tips=(x.telas||[]).filter(t=>/^Orientativo 3D · /.test(t.t)).length,ab=eqAberto===x.id;
     return `<div class="eq-p${ab?' ab':''}"><button type="button" class="eq-l" data-eqp="${x.id}" aria-expanded="${ab}">
-     <span class="eq-n"><b>${h(x.nome)}</b><span class="mute">${x.online?`<span class="eq-on">● on-line</span> agora em ${nomeT(x.online)}`:'último acesso '+eqHa(x.ultimo)}</span></span>
-     <span class="eq-c"><b>${eqT(x.seg)}</b><span class="mute">${x.dias?x.dias+(x.dias>1?' dias':' dia')+' de uso':'sem uso '+per}</span></span>
-     <span class="eq-c eq-hide"><b>${tips||'—'}</b><span class="mute">tipologia${tips===1?'':'s'} 3D</span></span>
+     <span class="eq-n"><b>${h(x.nome)}</b><span class="mute">${x.online?`<span class="eq-on">● on-line</span> agora em ${nomeT(x.online)}`:eqUlt(x)?'último acesso '+eqHa(eqUlt(x)):''}</span></span>
+     <span class="eq-c"><b>${eqT(x.seg)}</b><span class="mute">${x.seg>=60?x.dias+(x.dias>1?' dias':' dia')+' de uso':''}</span></span>
+     <span class="eq-c eq-hide"><b>${tips||'—'}</b><span class="mute">${tips?'tipologia'+(tips===1?'':'s')+' 3D':''}</span></span>
      <span class="eq-t eq-hide">${tops.length?tops.map(t=>`<span class="chip">${nomeT(t.t)} · ${eqT(t.s)}</span>`).join(''):'<span class="mute">—</span>'}</span></button>
      ${ab?`<div class="eq-d">${(x.telas||[]).length?`<table><thead><tr><th>Onde ficou</th><th>Tempo</th><th>Dias</th></tr></thead><tbody>${x.telas.map(t=>`<tr><td>${nomeT(t.t)}</td><td>${eqT(t.s)}</td><td>${t.v}</td></tr>`).join('')}</tbody></table>`:`<p class="mute">Nada registrado ${per}.</p>`}${eqDias>1?eqBarras(x.por_dia,D):''}</div>`:''}</div>`;};
   box.innerHTML=`<div class="eq-k">
@@ -769,8 +771,8 @@ function equipeDesenha(){
     <div class="card"><span class="mute">Tempo de uso da equipe</span><b>${eqT(tot)}</b></div></div>
    ${parados.length?`<div class="aviso" style="margin-top:14px">⚠ <b>${parados.length} ${parados.length>1?'pessoas sem entrar':'pessoa sem entrar'} há mais de 7 dias:</b> ${parados.map(x=>h(x.nome)+' ('+h(SETORES[x.setor]||x.setor)+')').join(', ')}.</div>`:''}
    ${ord.map(k=>{const L=g[k],e=L.filter(usou).length,t=L.reduce((a,x)=>a+(x.seg||0),0),o=L.filter(x=>x.online).length;
-     return `<div class="linha-tit"><h3>${h(SETORES[k]||k)}</h3><span class="chip ${e?'o':''}">${e} de ${L.length} entraram</span><span class="chip t">${eqT(t)}</span>${o?`<span class="chip o">● ${o} on-line</span>`:''}</div><div class="eq-lista">${L.sort((a,b)=>(b.online?1:0)-(a.online?1:0)||b.seg-a.seg||String(b.ultimo||'').localeCompare(String(a.ultimo||''))).map(pessoa).join('')}</div>`;}).join('')}
-   <p class="mute" style="font-size:12.5px;margin-top:18px">Toque na pessoa para ver tudo o que ela abriu. O tempo conta enquanto a tela da plataforma está aberta no aparelho. ${D.inicio_registro?'Registro do que cada pessoa abre desde '+new Date(D.inicio_registro+'T12:00:00').toLocaleDateString('pt-BR')+'.':'O registro do que cada pessoa abre começou agora; antes disso aparece só o último acesso.'}</p>`;
+     return `<div class="linha-tit"><h3>${h(SETORES[k]||k)}</h3>${e?`<span class="chip o">${e} de ${L.length} ${e>1?'entraram':'entrou'}</span>`:''}${t>=60?`<span class="chip t">${eqT(t)}</span>`:''}${o?`<span class="chip o">● ${o} on-line</span>`:''}</div><div class="eq-lista">${L.sort((a,b)=>(b.online?1:0)-(a.online?1:0)||b.seg-a.seg||String(b.ultimo||'').localeCompare(String(a.ultimo||''))).map(pessoa).join('')}</div>`;}).join('')}
+   <p class="mute" style="font-size:12.5px;margin-top:18px">Toque na pessoa para ver tudo o que ela abriu. O tempo conta enquanto a tela da plataforma está aberta no aparelho. Os dados contam a partir de 03/11/2026, para todas as pessoas.</p>`;
   box.querySelectorAll('[data-eqp]').forEach(b=>b.onclick=()=>{eqAberto=eqAberto===b.dataset.eqp?null:b.dataset.eqp;equipeDesenha();});}
 function eqBarras(pd,D){const dias=[];for(let d=new Date(D.desde+'T12:00:00');d<=new Date(D.hoje+'T12:00:00');d.setDate(d.getDate()+1))dias.push(d.toISOString().slice(0,10));
   const mx=Math.max(60,...dias.map(d=>(pd||{})[d]||0));
