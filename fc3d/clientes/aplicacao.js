@@ -8,7 +8,8 @@ const L3=['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','h
 let DADOS=null,SEC=null,AM=null,LIBS=null;
 /* Completo: Matriz (window.FCAPL_FULL) e equipe logada na Plataforma FC 3D (mesma regra do Substituir perfil).
    Amostra: site aberto e link que as empresas mandam aos clientes. Só a janela de correr 2 folhas fica liberada; o resto vira convite para a plataforma. */
-const FULL=(()=>{if(window.FCAPL_FULL)return true;try{return !!localStorage.getItem('pfc-token');}catch(_){return false;}})();
+/* Link do cliente (?cliente): sempre amostra, mesmo em aparelho com a equipe logada — é o link que a empresa encaminha aos clientes dela. */
+const FULL=(()=>{try{if(new URLSearchParams(location.search).has('cliente'))return false;}catch(_){}if(window.FCAPL_FULL)return true;try{return !!localStorage.getItem('pfc-token');}catch(_){return false;}})();
 const ZAP='5566999867984';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const dados=()=>DADOS||(DADOS=fetch(BASE+'aplicacao.json?v=3',{cache:'no-cache'}).then(r=>r.json()).catch(()=>({modelos:{},perfis:{}})));
