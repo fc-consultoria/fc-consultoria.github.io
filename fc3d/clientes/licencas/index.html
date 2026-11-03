@@ -57,6 +57,8 @@ label.f{display:block;font-size:13px;font-weight:600;margin:0 0 6px}
 input.in,textarea.in{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:11px 13px;min-height:44px;margin-bottom:12px}
 input.in:focus,textarea.in:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:transparent}
 textarea.in{font-size:13.5px;line-height:1.45;resize:vertical}
+select.in{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:10px 12px;min-height:44px;margin-bottom:12px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}@media(max-width:480px){.g2{grid-template-columns:1fr}}
 /* janela */
 #ov{position:fixed;inset:0;z-index:50;background:rgba(10,18,22,.6);display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow:auto}
 #ov .cx{background:var(--panel);border-radius:16px;width:100%;max-width:520px;padding:22px;position:relative}
@@ -128,6 +130,9 @@ async function iniciar(){
 async function carregar(){try{D=await rpc('pfc_lic_painel');render();}catch(e){$('#tela').innerHTML='<div class="sec"><p class="vazio">'+h(e.message)+'</p></div>';}}
 
 /* ---------- abas ---------- */
+const FORMA={pix:'Pix',boleto:'Boleto',cartao:'Cartão'};
+const venceTag=p=>{if(!p.vencimento)return '';const d=Math.round((new Date(p.vencimento+'T12:00:00')-new Date(D.hoje+'T12:00:00'))/864e5);
+  return d<0?`<span class="chip r">${FORMA[p.forma]||''} venceu em ${dt(p.vencimento)}</span>`:d===0?`<span class="chip a">${FORMA[p.forma]||''} vence hoje</span>`:`<span class="chip">${FORMA[p.forma]||''} vence ${dt(p.vencimento)}</span>`;};
 const pend=()=>D.pedidos.filter(p=>p.status==='aguardando'||p.status==='comprovante');
 const vencendo=()=>D.licencas.filter(l=>l.dias!=null&&l.dias<=30);
 function render(){
@@ -142,6 +147,7 @@ function render(){
 function tResumo(){const m=D.mes,P=pend(),V=vencendo(),mesN=new Date(m.inicio+'T12:00:00').toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
   const fazer=[];
   P.filter(p=>p.status==='comprovante').forEach(p=>fazer.push(`<div class="it"><div class="t"><span class="chip a">Comprovante enviado</span><b>${h(p.empresa)}</b></div><div class="d"><span>Conferir no Sicoob o Pix de ${brl(p.valor)} e liberar a licença.</span></div><div class="a"><button class="btn sm pri" data-ir="pag">Ver pagamento</button></div></div>`));
+  P.filter(p=>p.status==='aguardando'&&p.vencimento&&p.vencimento<=D.hoje).forEach(p=>fazer.push(`<div class="it"><div class="t">${venceTag(p)}<b>${h(p.empresa)}</b></div><div class="d"><span>Conferir no Sicoob se o ${(FORMA[p.forma]||'pagamento').toLowerCase()} de ${brl(p.valor)} foi pago e liberar a licença.</span></div><div class="a"><button class="btn sm pri" data-ir="pag">Ver pagamento</button></div></div>`));
   V.forEach(l=>fazer.push(`<div class="it"><div class="t"><span class="chip ${l.dias<0?'r':'a'}">${l.dias<0?'Vencida':'Vence em '+l.dias+' dia'+(l.dias===1?'':'s')}</span><b>${h(l.empresa)}</b></div><div class="d"><span>Mandar a mensagem de renovação de ${brl(D.info.renovacao)}.</span></div><div class="a"><button class="btn sm pri" data-ir="ren">Ver renovação</button></div></div>`));
   return `<div class="kpis">
     <div class="kpi"><span>Recebido em ${h(mesN)}</span><b>${brl(Number(m.novas_valor)+Number(m.renov_valor))}</b></div>
@@ -153,12 +159,12 @@ function tResumo(){const m=D.mes,P=pend(),V=vencendo(),mesN=new Date(m.inicio+'T
    <div class="sec"><div class="eh"><h2>O que fazer agora</h2></div>${fazer.join('')||'<p class="vazio">Nada pendente. ✅</p>'}</div>`;}
 
 function tPag(){const P=pend(),H=D.pedidos.filter(p=>p.status==='liberada'||p.status==='cancelada');
-  const card=p=>`<div class="it"><div class="t">${p.status==='comprovante'?'<span class="chip a">Comprovante enviado</span>':'<span class="chip">Gerou o Pix · ainda não avisou</span>'}<b>${h(p.empresa)}</b><span class="mute" style="font-size:13px">${dth(p.criado)}</span></div>
-     <div class="d"><span>CNPJ/CPF ${h(doc(p.documento))}</span><span>${h(p.responsavel)} · ${h(fone(p.whats))}</span>${p.cidade?`<span>${h(p.cidade)}</span>`:''}${p.email?`<span>${h(p.email)}</span>`:''}</div>
-     <div class="d"><span><b style="color:var(--ink)">${brl(p.valor)}</b> · ${p.acessos} acessos</span><span>Identificador no extrato: <b style="color:var(--ink)">${h(p.txid)}</b></span></div>
+  const card=p=>`<div class="it"><div class="t">${p.status==='comprovante'?'<span class="chip a">Comprovante enviado</span>':p.txid&&p.txid.startsWith('FC3DW')?`<span class="chip t">Venda pelo WhatsApp · ${FORMA[p.forma]||''}</span>${venceTag(p)}`:'<span class="chip">Gerou o Pix · ainda não avisou</span>'}<b>${h(p.empresa)}</b><span class="mute" style="font-size:13px">${dth(p.criado)}</span></div>
+     <div class="d"><span>CNPJ/CPF ${p.documento?h(doc(p.documento)):'<i>não informado</i>'}</span><span>${h(p.responsavel)} · ${h(fone(p.whats))}</span>${p.cidade?`<span>${h(p.cidade)}</span>`:''}${p.email?`<span>${h(p.email)}</span>`:''}</div>
+     <div class="d"><span><b style="color:var(--ink)">${brl(p.valor)}</b> · ${p.acessos} acessos</span><span>Identificador: <b style="color:var(--ink)">${h(p.txid)}</b></span></div>${p.obs?`<div class="d"><span>📝 ${h(p.obs)}</span></div>`:''}
      <div class="a"><button class="btn sm ok" data-lib="${p.id}">✅ Liberar licença</button><a class="btn sm" target="_blank" rel="noopener" href="${wa(p.whats,'Olá, '+prim(p.responsavel)+'! Aqui é da FC Consultoria, sobre a licença da Plataforma FC 3D da '+p.empresa+'.')}">💬 WhatsApp</a><button class="btn sm red" data-canc="${p.id}">Cancelar pedido</button></div></div>`;
-  return `<div class="sec"><div class="eh"><h2>Pagamentos para conferir</h2><span class="sp"></span><span class="mute" style="font-size:13px">Licença nova: ${brl(D.info.valor)} no Pix</span></div>${P.map(card).join('')||'<p class="vazio">Nenhum pagamento aguardando.</p>'}</div>
-   <div class="sec"><div class="eh"><h2>Histórico (60 dias)</h2></div>${H.length?`<div class="tw"><table><thead><tr><th>Empresa</th><th>Valor</th><th>Pedido</th><th>Situação</th><th>Data</th></tr></thead><tbody>${H.map(p=>`<tr><td>${h(p.empresa)}</td><td>${brl(p.valor)}</td><td>${h(p.txid)}</td><td>${p.status==='liberada'?'<span class="chip o">Liberada</span>':'<span class="chip r">Cancelada</span>'+(p.obs?' <span class="mute">'+h(p.obs)+'</span>':'')}</td><td>${dt(p.liberado_em||p.criado)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="vazio">Ainda sem histórico.</p>'}</div>`;}
+  return `<div class="sec"><div class="eh"><h2>Pagamentos para conferir</h2><span class="sp"></span><button class="btn sm pri" type="button" id="btVenda">＋ Venda pelo WhatsApp</button></div><p class="mute" style="font-size:13px;margin:-4px 0 10px">Licença nova: ${brl(D.info.valor)} no Pix. Venda fechada na conversa (boleto, cartão ou Pix combinado)? Registre em <b>＋ Venda pelo WhatsApp</b>.</p>${P.map(card).join('')||'<p class="vazio">Nenhum pagamento aguardando.</p>'}</div>
+   <div class="sec"><div class="eh"><h2>Histórico (60 dias)</h2></div>${H.length?`<div class="tw"><table><thead><tr><th>Empresa</th><th>Valor</th><th>Forma</th><th>Pedido</th><th>Situação</th><th>Data</th></tr></thead><tbody>${H.map(p=>`<tr><td>${h(p.empresa)}</td><td>${brl(p.valor)}</td><td>${h(FORMA[p.forma]||p.forma)}</td><td>${h(p.txid)}</td><td>${p.status==='liberada'?'<span class="chip o">Liberada</span>':'<span class="chip r">Cancelada</span>'+(p.obs?' <span class="mute">'+h(p.obs)+'</span>':'')}</td><td>${dt(p.liberado_em||p.criado)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="vazio">Ainda sem histórico.</p>'}</div>`;}
 
 function situacao(l){return l.dias<0?`<span class="chip r">Vencida em ${dt(l.licenca_ate)}</span>`:l.dias<=30?`<span class="chip a">Vence em ${dt(l.licenca_ate)}</span>`:`<span class="chip o">Válida até ${dt(l.licenca_ate)}</span>`;}
 function tLic(){const L=D.licencas;
@@ -220,6 +226,7 @@ function tTut(){return `<div class="sec"><div class="eh"><h2>Como usar o painel<
  <video controls preload="none" poster="tutorial-capa.jpg" src="tutorial-painel-licencas.mp4?v=3" style="width:100%;border-radius:12px;margin-top:12px;background:#000;aspect-ratio:16/9"></video><p class="dica">Vídeo de 3 minutos, narrado, com o passo a passo. Pode pausar quando quiser.</p>
  <h3>1. Quando chegar um pagamento</h3><ol>
   <li>A aba <b>💰 Pagamentos</b> mostra um número quando alguém avisa que pagou. Abra a aba.</li>
+  <li>Venda fechada pelo WhatsApp (boleto, cartão ou Pix combinado)? Clique em <b>＋ Venda pelo WhatsApp</b>, preencha empresa, responsável, forma e vencimento e clique em <b>Registrar venda</b>. Quando o pagamento entrar no Sicoob, clique em <b>✅ Liberar licença</b>.</li>
   <li>Veja o <b>valor</b> e o <b>identificador</b> (começa com FC3D) do pedido.</li>
   <li>Abra o aplicativo do <b>Sicoob</b> e procure o Pix com esse valor. O identificador costuma aparecer no detalhe do Pix.</li>
   <li>Achou o Pix? Volte aqui e toque em <b>✅ Liberar licença</b>. Marque a caixa de confirmação e toque em <b>Liberar</b>.</li>
@@ -248,6 +255,31 @@ function tTut(){return `<div class="sec"><div class="eh"><h2>Como usar o painel<
 </div></div>`;}
 
 /* ---------- janela ---------- */
+function novaVenda(){
+  const hj=new Date(D.hoje+'T12:00:00');hj.setDate(hj.getDate()+7);const v7=hj.toISOString().slice(0,10);
+  const DM=D.demos.filter(d=>!d.comprou);
+  const o=janela('＋ Venda pelo WhatsApp',`<p class="mute" style="font-size:13.5px;margin-bottom:12px">Para venda fechada na conversa. O pedido fica em <b>Pagamentos</b> aguardando. Quando o pagamento entrar no Sicoob, clique em <b>✅ Liberar licença</b>.</p>
+   ${DM.length?`<label class="f" for="vDm">Interessado do demonstrativo (preenche nome e WhatsApp)</label><select class="in" id="vDm"><option value="">— escolher (opcional) —</option>${DM.map(d=>`<option value="${d.id}">${h(d.nome)}${d.empresa?' · '+h(d.empresa):''} · ${h(fone(d.whats))}</option>`).join('')}</select>`:''}
+   <label class="f" for="vEmp">Empresa</label><input class="in" id="vEmp" maxlength="120">
+   <div class="g2"><div><label class="f" for="vDoc">CNPJ ou CPF (pode deixar em branco)</label><input class="in" id="vDoc" inputmode="numeric" maxlength="20"></div>
+   <div><label class="f" for="vCid">Cidade</label><input class="in" id="vCid" maxlength="80"></div></div>
+   <div class="g2"><div><label class="f" for="vRes">Responsável</label><input class="in" id="vRes" maxlength="80"></div>
+   <div><label class="f" for="vWa">WhatsApp com DDD</label><input class="in" id="vWa" inputmode="tel" maxlength="20"></div></div>
+   <label class="f" for="vEm">E-mail (opcional)</label><input class="in" id="vEm" type="email" maxlength="120">
+   <div class="g2"><div><label class="f" for="vFo">Forma de pagamento</label><select class="in" id="vFo"><option value="boleto">Boleto</option><option value="pix">Pix</option><option value="cartao">Cartão</option></select></div>
+   <div><label class="f" for="vVe">Vencimento</label><input class="in" id="vVe" type="date" value="${v7}"></div></div>
+   <label class="f" for="vVa">Valor (R$)</label><input class="in" id="vVa" inputmode="decimal" value="${String(D.info.valor).replace('.',',')}">
+   <label class="f" for="vOb">Observação (opcional)</label><input class="in" id="vOb" maxlength="160" placeholder="Ex.: boleto Sicoob nº ..., cartão 3x pela Sipag">
+   <div class="msg" id="vMsg"></div><div class="a"><button class="btn ok" type="button" id="vBt">Registrar venda</button><button class="btn" type="button" id="vNo">Voltar</button></div>`);
+  const q=x=>o.querySelector(x);q('#vNo').onclick=fecha;
+  if(q('#vDm'))q('#vDm').onchange=e=>{const d=DM.find(x=>x.id===e.target.value);if(!d)return;q('#vRes').value=d.nome||'';q('#vWa').value=fone(d.whats);if(d.empresa)q('#vEmp').value=d.empresa;if(d.cidade)q('#vCid').value=d.cidade;};
+  q('#vBt').onclick=async e=>{e.target.disabled=true;q('#vMsg').textContent='';
+    try{const r=await rpc('pfc_lic_venda_whats',{p_empresa:q('#vEmp').value,p_documento:q('#vDoc').value,p_responsavel:q('#vRes').value,p_whats:q('#vWa').value,
+      p_email:q('#vEm').value,p_cidade:q('#vCid').value,p_valor:Number(q('#vVa').value.replace(/\./g,'').replace(',','.'))||0,p_forma:q('#vFo').value,p_vencimento:q('#vVe').value||null,p_obs:q('#vOb').value});
+      if(r.erro){q('#vMsg').textContent=r.erro;e.target.disabled=false;return;}
+      fecha();tab='pag';ls.set('pfc-lic-aba',tab);await carregar();}
+    catch(err){q('#vMsg').textContent=err.message;e.target.disabled=false;}};
+}
 function janela(tit,html){let o=$('#ov');if(!o){o=document.createElement('div');o.id='ov';o.addEventListener('click',e=>{if(e.target===o)fecha();});document.body.appendChild(o);}
   o.innerHTML=`<div class="cx" role="dialog" aria-modal="true" aria-label="${h(tit)}"><button class="x" type="button" aria-label="Fechar">×</button><h2>${h(tit)}</h2>${html}</div>`;o.querySelector('.x').onclick=fecha;return o;}
 function fecha(){const o=$('#ov');if(o)o.remove();}
@@ -261,10 +293,11 @@ const msgAcesso=(nome,empresa,login,codigo,extra)=>`Olá, ${prim(nome)}! ${extra
 
 /* ---------- ações ---------- */
 function ligar(){
+  const bv=$('#btVenda');if(bv)bv.onclick=()=>novaVenda();
   document.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>{tab=b.dataset.ir;ls.set('pfc-lic-aba',tab);render();});
   document.querySelectorAll('[data-lib]').forEach(b=>b.onclick=()=>{const p=D.pedidos.find(x=>x.id===b.dataset.lib);
-    const o=janela('Liberar licença',`<div class="box"><b>${h(p.empresa)}</b><br>CNPJ/CPF ${h(doc(p.documento))}<br>${brl(p.valor)} · ${p.acessos} acessos · 1 ano<br>Identificador: <b>${h(p.txid)}</b></div>
-      <label class="chk"><input type="checkbox" id="lOk"><span>Conferi no Sicoob: o Pix de <b>${brl(p.valor)}</b> entrou na conta da FC.</span></label><div class="msg" id="lMsg"></div>
+    const o=janela('Liberar licença',`<div class="box"><b>${h(p.empresa)}</b><br>CNPJ/CPF ${p.documento?h(doc(p.documento)):'não informado'}<br>${brl(p.valor)} · ${h(FORMA[p.forma]||'Pix')} · ${p.acessos} acessos · 1 ano<br>Identificador: <b>${h(p.txid)}</b></div>
+      <label class="chk"><input type="checkbox" id="lOk"><span>Conferi no Sicoob: o ${(FORMA[p.forma]||'Pix').toLowerCase()} de <b>${brl(p.valor)}</b> entrou na conta da FC.</span></label><div class="msg" id="lMsg"></div>
       <div class="a"><button class="btn ok" type="button" id="lBt" disabled>✅ Liberar</button><button class="btn" type="button" id="lNo">Voltar</button></div>`);
     o.querySelector('#lOk').onchange=e=>{o.querySelector('#lBt').disabled=!e.target.checked;};o.querySelector('#lNo').onclick=fecha;
     o.querySelector('#lBt').onclick=async e=>{e.target.disabled=true;try{const r=await rpc('pfc_lic_liberar',{p_pedido:p.id});if(r.erro){o.querySelector('#lMsg').textContent=r.erro;e.target.disabled=false;return;}
