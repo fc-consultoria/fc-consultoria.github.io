@@ -10,7 +10,7 @@
   const q=new URLSearchParams(location.search),pg=location.pathname,hs=()=>location.hash.slice(1);
   const tela=()=>{
     if(/\/mostruario\//.test(pg))return 'Orientativo 3D · '+(q.get('t')||'jcr200').toUpperCase()+(q.get('vento')?' · vento':'');
-    if(/\/orientativo\//.test(pg))return /^cat/i.test(hs())?'Catálogo de Perfis':'Orientativo · módulos'+(hs()?' · '+hs().toUpperCase().slice(0,20):'');
+    if(/\/orientativo\//.test(pg))return /^cat/i.test(hs())?'Catálogo 3D':'Orientativo · módulos'+(hs()?' · '+hs().toUpperCase().slice(0,20):'');
     if(/\/montagens\//.test(pg))return 'Montagens 3D'+(q.get('m')?' · '+q.get('m').toUpperCase():'');
     if(/\/tecnico\//.test(pg))return 'Desenho técnico';
     if(/\/ambientes\//.test(pg))return 'Ambientes · Monte sua Casa';
