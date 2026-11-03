@@ -134,7 +134,7 @@ function trava(c,por){hit('perfis_trava',(por||'lim')+':'+c);let o=document.getE
  document.body.appendChild(o);const fx=()=>o.remove();o.querySelector('.x').onclick=fx;o.querySelector('.x2').onclick=fx;o.addEventListener('click',e=>{if(e.target===o)fx();});
  o.querySelector('[data-q]').onclick=()=>{fx();const m='Olá! Quero conhecer o Catálogo de Perfis da Plataforma FC 3D (vi o perfil '+c+' no site).';if(window.FCRC&&FCRC.abrir)FCRC.abrir(m);else window.open('https://wa.me/5566999867984?text='+encodeURIComponent(m),'_blank');};}
 
-const COR={trs:'#1f8a96',tri:'#2a6fb0',mon:'#e08a1e',tra:'#7b4fb5',arr:'#3c9a5f'};
+const COR={trs:'#1f8a96',tri:'#2a6fb0',mar:'#b5523b',mon:'#e08a1e',tra:'#7b4fb5',arr:'#3c9a5f'};
 const esc=v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const nz=s=>String(s).toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[\s\-\/.]/g,'');
 function hit(ev,ref){if(window.HITX)return HITX(ev,ref);try{if(localStorage.getItem('fc_eu')==='1')return;}catch(_){}try{fetch('https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/rpc/site_hit',{method:'POST',keepalive:true,headers:{apikey:'sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg','Content-Type':'application/json'},body:JSON.stringify({p_s:sessionStorage.getItem('fc_s')||'x',p_pag:'perfis',p_ev:ev,p_o:sessionStorage.getItem('fc_o')||'direto',p_ref:ref||''})}).catch(()=>{});}catch(_){}}
