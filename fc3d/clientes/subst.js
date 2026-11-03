@@ -123,7 +123,7 @@ function ui(abrir,alvo){const css=document.createElement('style');css.textConten
  let fech=false;try{fech=localStorage.getItem('fcsub_fechado')==='1';}catch(_){}
  if(abrir||!fech){tog(true,!abrir);repoe();}}
 window.FCSUB={async publico(o){o=o||{};st.pub=true;st.pick=o.pick||null;
- try{const j=await fetch('/fc3d/clientes/orientativo/perfis.json?v=2',{cache:'no-cache'}).then(r=>r.json());Object.entries(j.P).forEach(([k,v])=>{const x=Object.assign({k},v);st.P[k]=x;st.IDX[k]=x;});}catch(_){return false;}
+ try{const j=await fetch('/fc3d/clientes/orientativo/perfis.json?v=3',{cache:'no-cache'}).then(r=>r.json());Object.entries(j.P).forEach(([k,v])=>{const x=Object.assign({k},v);st.P[k]=x;st.IDX[k]=x;});}catch(_){return false;}
  try{st.ap=await rpc('pfc_subst_publica',{})||[];}catch(_){}
  ui(!!o.abrir,(typeof o.alvo==='function'?o.alvo():o.alvo)||null);return true;},
  async init(o){o=o||{};try{st.tk=localStorage.getItem('pfc-token');}catch(_){}if(!st.tk)return false;
@@ -131,7 +131,7 @@ window.FCSUB={async publico(o){o=o||{};st.pub=true;st.pick=o.pick||null;
  if(!S||S.demo||!(S.matriz||((S.papel==='gestor'||S.papel==='vendedor')&&EMP.includes(S.empresa))))return false;
  if(o.slug&&!S.matriz&&S.catalogo!==o.slug)return false;
  st.pick=o.pick||null;const slug=o.slug||S.catalogo;
- try{const j=await fetch('/fc3d/clientes/orientativo/perfis.json?v=2',{cache:'no-cache'}).then(r=>r.json());Object.entries(j.P).forEach(([k,v])=>{const x=Object.assign({k},v);st.P[k]=x;st.IDX[k]=x;});}catch(_){return false;}
+ try{const j=await fetch('/fc3d/clientes/orientativo/perfis.json?v=3',{cache:'no-cache'}).then(r=>r.json());Object.entries(j.P).forEach(([k,v])=>{const x=Object.assign({k},v);st.P[k]=x;st.IDX[k]=x;});}catch(_){return false;}
  try{st.ap=await rpc('pfc_subst_lista',{p_token:st.tk})||[];}catch(_){}
  if(slug){try{const H={apikey:CBK};const c=(await fetch(CBU+'cat_clientes?select=id,linhas&slug=eq.'+encodeURIComponent(slug),{headers:H}).then(r=>r.json()))[0];
   if(c){const it=await fetch(CBU+'cat_itens?select=base,c,cg,oc,sc&cliente_id=eq.'+encodeURIComponent(c.id),{headers:H}).then(r=>r.json());st.temCat=true;const L=c.linhas||[];
