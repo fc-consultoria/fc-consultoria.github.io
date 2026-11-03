@@ -127,6 +127,16 @@ button.card:hover{border-color:var(--teal);transform:translateY(-1px)}
 .tip:hover .des img.mini3d{transform:rotateY(10deg) scale(1.06)}
 .tip .des svg{height:auto;max-height:140px;width:auto;max-width:88%;color:var(--ink)}
 .tip.breve{opacity:.62}
+.eq-k{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}.eq-k .card{gap:4px}.eq-k b{font-size:26px}
+.eq-on{color:var(--ok)!important;font-weight:700}
+.eq-lista{display:flex;flex-direction:column;gap:8px}
+.eq-p{background:var(--panel);border:1px solid var(--line);border-radius:14px}.eq-p.ab{border-color:var(--teal)}
+.eq-l{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:grid;grid-template-columns:minmax(150px,1.3fr) 110px 90px 2fr;gap:14px;align-items:center;padding:12px 16px}
+.eq-l>span{display:flex;flex-direction:column;gap:2px;min-width:0}.eq-l .mute{font-size:12.5px}
+.eq-t{flex-direction:row!important;flex-wrap:wrap;gap:6px!important}.eq-t .chip{font-weight:500}
+.eq-d{padding:0 16px 14px}.eq-d table{width:100%;border-collapse:collapse;font-size:13.5px}.eq-d th{text-align:left;color:var(--mute);font-weight:600;font-size:12px;padding:6px 4px;border-bottom:1px solid var(--line)}.eq-d td{padding:6px 4px;border-bottom:1px solid var(--line)}
+.eq-b{display:flex;align-items:flex-end;gap:3px;height:56px;margin-top:12px}.eq-b span{flex:1;height:100%;display:flex;align-items:flex-end;background:var(--soft);border-radius:3px}.eq-b i{display:block;width:100%;background:var(--teal);border-radius:3px;min-height:0}
+@media(max-width:760px){.eq-l{grid-template-columns:1fr auto}.eq-hide{display:none!important}}
 .linha-tit{display:flex;align-items:center;gap:10px;margin:26px 0 12px}
 .linha-tit h3{font-size:18px}
 .vazio{background:var(--panel);border:1px dashed var(--line);border-radius:16px;padding:28px;text-align:center}
@@ -317,7 +327,7 @@ const MENU=[
   {k:'tip',n:'Tipologias',i:'▦',p:['gestor','vendedor','arquiteto','demo']},
   {k:'amb',n:'Ambientes',i:'◫',p:['gestor','vendedor']},
   {k:'apr',n:'Apresentação',i:'▶',p:['gestor','vendedor','arquiteto']/* fora do demonstrativo: lá ficam só Tipologias e Catálogo 3D */},
-  {k:'ges',n:'Gestão',i:'⚙',p:[]/* desligada: acessos e uso ficam na Central do Gestor de cada cliente */}];
+  {k:'ges',n:'Equipe',i:'👥',p:['gestor']/* 03/11/2026: andamento da equipe por setor (só o gestor e a FC dentro da empresa) */}];
 /* Etapas de construção da plataforma (a etapa 1 está pronta) */
 const ETAPAS=[['1','Estrutura','Entrada, painel e menu'],['2','Tipologias 3D','Modelos de mercado'],['3','Ambiente residência','Montar a casa'],['4','Modo apresentação','TV e telão'],['5','Equipe','Orientativo 3D']];
 /* Tipologias de mercado: nomes genéricos, sem marca de fabricante */
@@ -607,6 +617,7 @@ function render(){
   $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaAmb,apr:telaApr,ges:telaGes}[tab]||telaInicio)();
   ligar();if(tab==='tip'&&window.PFCapr)PFCapr.ligar();
   if(tab==='inicio')dicasPl();
+  if(tab==='ges')equipeCarregar();
   if(window.PFCtut)PFCtut.atualiza();
 }
 const vaiPara=k=>{tab=k;render();scrollTo(0,0);};
@@ -662,9 +673,9 @@ function telaInicio(){
   const p=papel(),nome=S.matriz?'FC':(S.nome||'').split(' ')[0];
   const txt={gestor:'Acompanhe a equipe e use a plataforma para apresentar as esquadrias aos seus clientes.',vendedor:'Escolha a tipologia, monte o ambiente e apresente ao seu cliente em 3D.',arquiteto:'Veja os projetos, as plantas e as esquadrias preparadas para a sua obra.',demo:'Conheça a plataforma: abra as tipologias em 3D e veja o desenho técnico de cada montagem.'}[p];
   const mods=itens().filter(m=>m.k!=='inicio'&&m.k!=='apr');
-  const desc={tip:'Janelas, portas e fachadas em 3D, com desenho técnico e o Orientativo da equipe.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ges:'Acessos da equipe, licença e contrato da empresa.'};
+  const desc={tip:'Janelas, portas e fachadas em 3D, com desenho técnico e o Orientativo da equipe.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ges:'O que cada setor está fazendo: quem entrou, quem está on-line, quanto tempo e o que cada pessoa abriu.'};
   return `<div class="hero"><div><h2>Olá, ${h(nome)}!</h2><p>${txt}</p></div><div class="bts"><button class="btn cl" data-ir="tip">Ver tipologias</button></div></div>
-  <div class="grid">${mods.map(m=>`<button class="card" data-ir="${m.k}"><span class="ic" aria-hidden="true">${m.i}</span><h3>${m.n}</h3><span class="d">${desc[m.k]}</span><span class="pe">${m.k==='tip'||m.k==='apr'||m.k==='amb'?'<span class="chip o">Disponível</span>':'<span class="chip a">Em construção</span>'}</span></button>`+(m.k==='tip'&&p!=='arquiteto'?`<a class="card" href="orientativo/?foco=1#cat" style="text-decoration:none;color:inherit"><span class="ic" aria-hidden="true">▤</span><h3>${p==='demo'?'Catálogo 3D':'Catálogo de Perfis'}</h3><span class="d">${p==='demo'?'Os perfis das linhas Suprema e Gold com código, desenho e peso, para girar em 3D.':'Todos os perfis da linha com código e desenho, para consultar na hora do atendimento.'}</span><span class="pe"><span class="chip o">Disponível</span></span></a>`:'')).join('')}</div>
+  <div class="grid">${mods.map(m=>`<button class="card" data-ir="${m.k}"><span class="ic" aria-hidden="true">${m.i}</span><h3>${m.n}</h3><span class="d">${desc[m.k]}</span><span class="pe">${m.k==='tip'||m.k==='apr'||m.k==='amb'||m.k==='ges'?'<span class="chip o">Disponível</span>':'<span class="chip a">Em construção</span>'}</span></button>`+(m.k==='tip'&&p!=='arquiteto'?`<a class="card" href="orientativo/?foco=1#cat" style="text-decoration:none;color:inherit"><span class="ic" aria-hidden="true">▤</span><h3>${p==='demo'?'Catálogo 3D':'Catálogo de Perfis'}</h3><span class="d">${p==='demo'?'Os perfis das linhas Suprema e Gold com código, desenho e peso, para girar em 3D.':'Todos os perfis da linha com código e desenho, para consultar na hora do atendimento.'}</span><span class="pe"><span class="chip o">Disponível</span></span></a>`:'')).join('')}</div>
   <div id="dicasPl"></div>
   ${S.matriz&&papel()==='gestor'?`<div style="margin:18px 0 6px"><a class="btn pri" href="empresas/">👥 Empresas e acessos <span id="demoPend" class="chip a" hidden></span></a> <span class="mute" style="margin-left:8px">cadastro das empresas, pessoas, licença e mensagem para o WhatsApp · só a FC vê</span></div>`:''}${S.matriz&&papel()==='gestor'?`<div class="linha-tit"><h3>Etapas da plataforma</h3><span class="chip t">só a FC vê</span></div><div class="etapas">${ETAPAS.map(([n,t,d])=>`<div class="etp ${n==='1'?'on':''}"><span class="chip ${n==='1'?'o':''}">${n==='1'?'Pronta':'Etapa '+n}</span><b>${t}</b><span class="mute">${d}</span></div>`).join('')}</div>`:''}`;
 }
@@ -720,7 +731,50 @@ function telaAmb(){const casa=`<a class="card" href="ambientes/casa.html"><span 
 function telaApr(){return `<div class="cab"><div><h2>Modo apresentação</h2><p class="mute">Tela cheia, sem menus, para mostrar na TV ou no telão.</p></div></div>
   <div class="hero" style="margin-bottom:12px"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Logo logo · novidade</span><h2 style="margin-top:8px">Novo módulo de apresentação</h2><p>Abra a tipologia ou o ambiente em tela cheia, gire o 3D com o dedo ou o mouse e mostre os detalhes na reunião com o cliente ou o arquiteto.</p></div><div class="bts"><span class="btn sec" style="border-color:rgba(255,255,255,.4);color:#dbe3e8;cursor:default">Em breve</span></div></div>
   <p class="mute" style="font-size:13px">A fachada continua em <a href="#" data-ir="tip">Tipologias → Fachadas</a>, com as medidas da obra.</p>`;}
-function telaGes(){return `<div class="cab"><div><h2>Gestão</h2><p class="mute">Área do gestor da empresa.</p></div></div>`+emBreve('⚙','Gestão em construção','Aqui ficarão os acessos da equipe, o uso de cada pessoa e os dados da licença da empresa.',[['👥','Acessos da equipe','Vendedores e arquitetos com login próprio.'],['📊','Uso da plataforma','Quem acessou e o que apresentou.'],['📄','Licença','Prazo da licença e contrato.']]);}
+/* ---------- Equipe (03/11/2026): andamento da empresa por setor, para o gestor de qualquer empresa ---------- */
+let eqDias=7,eqAberto=null,eqDados=null;
+const eqT=s=>{s=Math.round(s||0);if(s<60)return s?'menos de 1 min':'—';const m=Math.round(s/60);return m<60?m+' min':Math.floor(m/60)+' h'+(m%60?' '+String(m%60).padStart(2,'0'):'');};
+const eqHa=d=>{if(!d)return 'nunca entrou';const m=(Date.now()-new Date(d))/6e4;if(m<60)return 'há '+Math.max(1,Math.round(m))+' min';const hr=m/60;if(hr<24)return 'há '+Math.round(hr)+' h';const dd=Math.round(hr/24);return dd===1?'ontem':'há '+dd+' dias';};
+const EQ_ORD=['gestor','gerente','vendas','compras','marketing','estoque','fabrica'];
+function telaGes(){return `<div class="cab"><div><h2>Equipe</h2><p class="mute">O que cada setor está fazendo na plataforma: quem entrou, quem está on-line, quanto tempo e o que cada pessoa abriu.</p></div>
+ <div class="filtros" role="group" aria-label="Período">${[[1,'Hoje'],[7,'7 dias'],[30,'30 dias']].map(([d,n])=>`<button type="button" data-eqd="${d}" aria-pressed="${eqDias===d}">${n}</button>`).join('')}<button type="button" data-eqr title="Atualizar">⟳</button></div></div>
+ <div id="eqBox"><p class="mute">Carregando a equipe…</p></div>`;}
+async function equipeCarregar(){
+  document.querySelectorAll('[data-eqd]').forEach(b=>b.onclick=()=>{eqDias=+b.dataset.eqd;render();});
+  const r0=document.querySelector('[data-eqr]');if(r0)r0.onclick=()=>equipeCarregar();
+  const box=$('#eqBox');if(!box)return;
+  try{eqDados=await rpc('pfc_gestor_equipe',{p_token:S.token,p_dias:eqDias});}catch(err){box.innerHTML=`<div class="aviso">${h(err.message||'Não foi possível carregar a equipe.')}</div>`;return;}
+  if(!$('#eqBox'))return;equipeDesenha();}
+function equipeDesenha(){
+  const box=$('#eqBox'),D=eqDados;if(!box||!D)return;
+  if(!D.empresa){box.innerHTML='<div class="aviso">Escolha a empresa em <b>Dentro de</b>, no topo, para ver a equipe dela.</div>';return;}
+  const P=D.pessoas||[],per=eqDias===1?'hoje':'nos últimos '+eqDias+' dias';
+  const usou=x=>x.seg>0||(x.ultimo&&new Date(x.ultimo)>=new Date(D.desde+'T00:00:00-04:00'));
+  const on=P.filter(x=>x.online),ent=P.filter(usou),tot=P.reduce((a,x)=>a+(x.seg||0),0);
+  const parados=P.filter(x=>x.papel!=='gestor'&&(!x.ultimo||Date.now()-new Date(x.ultimo)>7*864e5));
+  const g={};P.forEach(x=>{(g[x.setor]=g[x.setor]||[]).push(x);});
+  const ord=Object.keys(g).sort((a,b)=>(EQ_ORD.indexOf(a)+99)%99-(EQ_ORD.indexOf(b)+99)%99||a.localeCompare(b));
+  const nomeT=t=>h(t).replace(/^Orientativo 3D · /,'🧊 ').replace(/^Catálogo de Perfis/,'▤ Catálogo de Perfis').replace(/^Ambientes/,'◫ Ambientes');
+  const pessoa=x=>{const tops=(x.telas||[]).slice(0,3),tips=(x.telas||[]).filter(t=>/^Orientativo 3D · /.test(t.t)).length,ab=eqAberto===x.id;
+    return `<div class="eq-p${ab?' ab':''}"><button type="button" class="eq-l" data-eqp="${x.id}" aria-expanded="${ab}">
+     <span class="eq-n"><b>${h(x.nome)}</b><span class="mute">${x.online?`<span class="eq-on">● on-line</span> agora em ${nomeT(x.online)}`:'último acesso '+eqHa(x.ultimo)}</span></span>
+     <span class="eq-c"><b>${eqT(x.seg)}</b><span class="mute">${x.dias?x.dias+(x.dias>1?' dias':' dia')+' de uso':'sem uso '+per}</span></span>
+     <span class="eq-c eq-hide"><b>${tips||'—'}</b><span class="mute">tipologia${tips===1?'':'s'} 3D</span></span>
+     <span class="eq-t eq-hide">${tops.length?tops.map(t=>`<span class="chip">${nomeT(t.t)} · ${eqT(t.s)}</span>`).join(''):'<span class="mute">—</span>'}</span></button>
+     ${ab?`<div class="eq-d">${(x.telas||[]).length?`<table><thead><tr><th>Onde ficou</th><th>Tempo</th><th>Dias</th></tr></thead><tbody>${x.telas.map(t=>`<tr><td>${nomeT(t.t)}</td><td>${eqT(t.s)}</td><td>${t.v}</td></tr>`).join('')}</tbody></table>`:`<p class="mute">Nada registrado ${per}.</p>`}${eqDias>1?eqBarras(x.por_dia,D):''}</div>`:''}</div>`;};
+  box.innerHTML=`<div class="eq-k">
+    <div class="card"><span class="mute">Pessoas com acesso</span><b>${P.length}</b></div>
+    <div class="card"><span class="mute">Entraram ${per}</span><b>${ent.length}</b></div>
+    <div class="card"><span class="mute">On-line agora</span><b class="${on.length?'eq-on':''}">${on.length}</b></div>
+    <div class="card"><span class="mute">Tempo de uso da equipe</span><b>${eqT(tot)}</b></div></div>
+   ${parados.length?`<div class="aviso" style="margin-top:14px">⚠ <b>${parados.length} ${parados.length>1?'pessoas sem entrar':'pessoa sem entrar'} há mais de 7 dias:</b> ${parados.map(x=>h(x.nome)+' ('+h(SETORES[x.setor]||x.setor)+')').join(', ')}.</div>`:''}
+   ${ord.map(k=>{const L=g[k],e=L.filter(usou).length,t=L.reduce((a,x)=>a+(x.seg||0),0),o=L.filter(x=>x.online).length;
+     return `<div class="linha-tit"><h3>${h(SETORES[k]||k)}</h3><span class="chip ${e?'o':''}">${e} de ${L.length} entraram</span><span class="chip t">${eqT(t)}</span>${o?`<span class="chip o">● ${o} on-line</span>`:''}</div><div class="eq-lista">${L.sort((a,b)=>(b.online?1:0)-(a.online?1:0)||b.seg-a.seg||String(b.ultimo||'').localeCompare(String(a.ultimo||''))).map(pessoa).join('')}</div>`;}).join('')}
+   <p class="mute" style="font-size:12.5px;margin-top:18px">Toque na pessoa para ver tudo o que ela abriu. O tempo conta enquanto a tela da plataforma está aberta no aparelho. ${D.inicio_registro?'Registro do que cada pessoa abre desde '+new Date(D.inicio_registro+'T12:00:00').toLocaleDateString('pt-BR')+'.':'O registro do que cada pessoa abre começou agora; antes disso aparece só o último acesso.'}</p>`;
+  box.querySelectorAll('[data-eqp]').forEach(b=>b.onclick=()=>{eqAberto=eqAberto===b.dataset.eqp?null:b.dataset.eqp;equipeDesenha();});}
+function eqBarras(pd,D){const dias=[];for(let d=new Date(D.desde+'T12:00:00');d<=new Date(D.hoje+'T12:00:00');d.setDate(d.getDate()+1))dias.push(d.toISOString().slice(0,10));
+  const mx=Math.max(60,...dias.map(d=>(pd||{})[d]||0));
+  return `<div class="eq-b" aria-label="Tempo por dia">${dias.map(d=>{const v=(pd||{})[d]||0;return `<span title="${d.slice(8,10)}/${d.slice(5,7)} · ${eqT(v)}"><i style="height:${Math.round(v/mx*100)}%"></i></span>`;}).join('')}</div><div class="mute" style="font-size:11.5px;display:flex;justify-content:space-between"><span>${D.desde.slice(8,10)}/${D.desde.slice(5,7)}</span><span>hoje</span></div>`;}
 
 function ligar(){
   const gm=k=>{document.querySelectorAll('[data-g]').forEach(e=>e.classList.toggle('on',e.dataset.g===k));document.querySelectorAll('[data-gb]').forEach(e=>e.classList.toggle('on',e.dataset.gb===k));};
@@ -766,8 +820,9 @@ window.PFCaprCtx={TIPS,LINHAS,h,papel:()=>papel(),sessao:()=>S,render:()=>render
 </script>
 <script src="toque.js?v=1"></script>
 <script src="apresentacao.js?v=16"></script>
-<script src="tutorial.js?v=4"></script>
+<script src="tutorial.js?v=5"></script>
 <script src="convite.js?v=2" defer></script>
 <script src="licenca.js?v=3" defer></script>
+<script src="uso.js?v=1" defer></script>
 </body>
 </html>

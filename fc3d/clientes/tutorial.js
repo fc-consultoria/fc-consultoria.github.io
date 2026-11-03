@@ -61,8 +61,8 @@
   var mais=function(o,n){var r={};for(var k in o)r[k]=o[k];for(k in n)r[k]=n[k];return r;};
   GUIAS.gestor={nome:'Gestor',passos:[
     {tab:'inicio',t:'Bem-vindo, gestor',
-     x:'Este é o painel do Gestor. Você tem tudo o que a equipe usa para apresentar as esquadrias ao cliente e, além disso, a área de Gestão. Vamos passar por cada parte. Leva uns 3 minutos.'},
-    mais(pc('Menu do painel'),{x:'Por aqui você troca de tela: Início, Tipologias, Ambientes, Apresentação e Gestão. Gestão só aparece para o gestor; a equipe não vê.'}),
+     x:'Este é o painel do Gestor. Você tem tudo o que a equipe usa para apresentar as esquadrias ao cliente e, além disso, a aba Equipe, onde acompanha o que cada setor está fazendo. Vamos passar por cada parte. Leva uns 3 minutos.'},
+    mais(pc('Menu do painel'),{x:'Por aqui você troca de tela: Início, Tipologias, Ambientes, Apresentação e Equipe. Equipe só aparece para o gestor; a equipe não vê.'}),
     pc('Atalhos rápidos'),
     mais(pc('Cartões das ferramentas'),{x:'Cada cartão leva a uma ferramenta. O selo verde "Disponível" mostra o que já está pronto; "Em construção" é o que a FC ainda vai liberar.'}),
     pc('Catálogo de Perfis'),
@@ -75,8 +75,8 @@
     pc('Ambientes · Monte sua Casa'),
     pc('Modo apresentação'),
     mais(pc('Sempre é simulação'),{x:'Tudo na plataforma é apresentação e simulação. Medidas, pesos e cálculo final são confirmados no sistema de cálculo da empresa e com o fornecedor. Reforce isso com a equipe.'}),
-    {tab:'ges',alvo:'main .vazio',t:'Gestão',
-     x:'Aqui ficarão os acessos da equipe, o uso de cada pessoa (quem entrou e o que apresentou) e os dados da licença. Enquanto a área está em construção, para incluir, trocar ou tirar alguém da equipe, fale com a FC.'},
+    {tab:'ges',alvo:'#eqBox',t:'Equipe',
+     x:'Aqui você acompanha cada setor (vendas, compras, marketing e os demais): quem está on-line agora, quem entrou no período, quanto tempo usou e o que cada pessoa abriu. Toque na pessoa para ver o detalhe. Para incluir, trocar ou tirar alguém da equipe, fale com a FC.'},
     {tab:'inicio',t:'Guia da equipe',
      x:'Cada colaborador tem o próprio guia "Como usar", que abre sozinho no primeiro acesso dele. Se alguém tiver dúvida, peça para tocar no "?" no topo da tela.'},
     pc('Fundo claro ou escuro'),
