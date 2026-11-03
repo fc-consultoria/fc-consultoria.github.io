@@ -8,8 +8,9 @@ const L3=['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','h
 let DADOS=null,SEC=null,AM=null,LIBS=null;
 /* Completo: Matriz (window.FCAPL_FULL) e equipe logada na Plataforma FC 3D (mesma regra do Substituir perfil).
    Amostra: site aberto e link que as empresas mandam aos clientes. Só a janela de correr 2 folhas fica liberada; o resto vira convite para a plataforma. */
-/* Link do cliente (?cliente): sempre amostra, mesmo em aparelho com a equipe logada — é o link que a empresa encaminha aos clientes dela. */
-const FULL=(()=>{try{if(new URLSearchParams(location.search).has('cliente'))return false;}catch(_){}if(window.FCAPL_FULL)return true;try{return !!localStorage.getItem('pfc-token');}catch(_){return false;}})();
+/* Link do cliente (?cliente): é o link que a empresa encaminha aos clientes dela — sem Aplicação e sem "Usa em" (exclusivo da Plataforma FC 3D), mesmo em aparelho com a equipe logada. */
+const CLIENTE=(()=>{try{return new URLSearchParams(location.search).has('cliente');}catch(_){return false;}})();
+const FULL=(()=>{if(CLIENTE)return false;if(window.FCAPL_FULL)return true;try{return !!localStorage.getItem('pfc-token');}catch(_){return false;}})();
 const ZAP='5566999867984';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const dados=()=>DADOS||(DADOS=fetch(BASE+'aplicacao.json?v=3',{cache:'no-cache'}).then(r=>r.json()).catch(()=>({modelos:{},perfis:{}})));
@@ -134,7 +135,7 @@ function cena(pn,codes,key,onDone){const st=pn.querySelector('.ast'),cv=pn.query
  requestAnimationFrame(loop);onDone&&onDone();return fim;}
 
 /* ---------- liga o botão na janela do perfil ---------- */
-async function liga(o,code){if(!o||!code)return;let D;try{D=await dados();}catch(_){return;}const L=usos(D,code),CODES=partes(code);if(!L.length)return;
+async function liga(o,code){if(CLIENTE||!o||!code)return;let D;try{D=await dados();}catch(_){return;}const L=usos(D,code),CODES=partes(code);if(!L.length)return;
  const vb=o.querySelector('.vb'),wr=o.querySelector('.wr');if(!vb||!wr)return;estilo();
  const bt=document.createElement('button');bt.type='button';bt.className='apb';bt.textContent='🧩 Aplicação';bt.title='Onde este perfil é aplicado na tipologia';bt.setAttribute('aria-pressed','false');vb.appendChild(bt);
  const pn=document.createElement('div');pn.className='apl';pn.hidden=true;
@@ -174,7 +175,7 @@ function cssCard(){if(document.getElementById('aplUsaCss'))return;const s=docume
 .cd .usa small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#a0661a;margin-bottom:1px}
 @media(max-width:560px){.cd .usa{font-size:11.5px;padding:3px 7px}}
 @media print{.cd .usa{border:0;background:none;padding:0;color:#55636c}}`;document.head.appendChild(s);}
-function usaEm(){const lst=document.getElementById('lst');if(!lst)return;
+function usaEm(){if(CLIENTE)return;const lst=document.getElementById('lst');if(!lst)return;
  dados().then(D=>{const P=D.perfis||{},M=D.modelos||{};if(!Object.keys(P).length)return;cssCard();
   const nomes=c=>{const v=[];usos(D,c).forEach(a=>{const m=M[a.m]||{},n=m.n||a.m;if(!v.includes(n))v.push(n);});return v;};
   const marca=()=>lst.querySelectorAll('.cd[data-c]:not([data-usa])').forEach(cd=>{cd.dataset.usa='1';const c=String(cd.dataset.c).toUpperCase(),v=nomes(c);if(!v.length)return;
