@@ -618,6 +618,7 @@ function render(){
   ligar();if(tab==='tip'&&window.PFCapr)PFCapr.ligar();
   if(tab==='inicio')dicasPl();
   if(tab==='ges')equipeCarregar();
+  if(window.PFCo3d){PFCo3d._re=tab==='apr'?()=>PFCo3d.carregar(S,cen,rpc,render):null;if(PFCo3d._re)PFCo3d._re();}/* 04/11/2026 · Obra em 3D (teste) */
   if(window.PFCtut)PFCtut.atualiza();
 }
 const vaiPara=k=>{tab=k;render();scrollTo(0,0);};
@@ -728,7 +729,7 @@ function telaAmb(){const casa=`<a class="card" href="ambientes/casa.html"><span 
  return `<div class="cab"><div><h2>Ambientes</h2><p class="mute">Monte a obra do seu cliente com as esquadrias escolhidas.</p></div></div>
   <div class="grid">${casa}${prox.map(([i,n,d])=>`<div class="card"><span class="ic">${i}</span><h3>${n}</h3><span class="d">${d}</span><span class="pe"><span class="chip a">Em construção</span></span></div>`).join('')}</div>
   <p class="aviso" style="margin-top:18px">É uma apresentação e simulação. Medidas, pesos e cortes são aproximados; o cálculo final vem do sistema de cálculo da empresa e do fornecedor.</p>`;}
-function telaApr(){return `<div class="cab"><div><h2>Modo apresentação</h2><p class="mute">Tela cheia, sem menus, para mostrar na TV ou no telão.</p></div></div>
+function telaApr(){return (window.PFCo3d?PFCo3d.html(S):'')+`<div class="cab"><div><h2>Modo apresentação</h2><p class="mute">Tela cheia, sem menus, para mostrar na TV ou no telão.</p></div></div>
   <div class="hero" style="margin-bottom:12px"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Logo logo · novidade</span><h2 style="margin-top:8px">Novo módulo de apresentação</h2><p>Abra a tipologia ou o ambiente em tela cheia, gire o 3D com o dedo ou o mouse e mostre os detalhes na reunião com o cliente ou o arquiteto.</p></div><div class="bts"><span class="btn sec" style="border-color:rgba(255,255,255,.4);color:#dbe3e8;cursor:default">Em breve</span></div></div>
   <p class="mute" style="font-size:13px">A fachada continua em <a href="#" data-ir="tip">Tipologias → Fachadas</a>, com as medidas da obra.</p>`;}
 /* ---------- Equipe (03/11/2026): andamento da empresa por setor, para o gestor de qualquer empresa ---------- */
@@ -826,5 +827,6 @@ window.PFCaprCtx={TIPS,LINHAS,h,papel:()=>papel(),sessao:()=>S,render:()=>render
 <script src="convite.js?v=2" defer></script>
 <script src="licenca.js?v=3" defer></script>
 <script src="uso.js?v=2" defer></script>
+<script src="obra3d.js?v=1"></script>
 </body>
 </html>

@@ -1,0 +1,76 @@
+/* FC Consultoria em Esquadria · Plataforma FC 3D · Obra em 3D (teste)
+   A empresa anexa o orçamento em PDF, o pedido chega ao card Obra em 3D do Painel da Matriz,
+   a FC faz os ajustes e o link 3D (sem preço) aparece aqui pronto para encaminhar ao cliente.
+   Liga por empresa: o Acesso FC cola o código do link de envio (Painel da Matriz → Obra em 3D → Código p/ Plataforma).
+   Plano (teste de 3 dias ou pacote de projetos) é controlado no Painel da Matriz. Nenhum preço aparece aqui.
+   © FC Consultoria em Esquadria (FC Desenvolvimento de Projetos de Compra e Venda LTDA · CNPJ 52.985.682/0001-32) · uso exclusivo */
+(function(){
+"use strict";
+const BASE='https://fc-consultoria.github.io/treinamento/orcamentos/';
+const ENVIO=t=>BASE+'obra3d-envio.html?t='+encodeURIComponent(t);
+const LINK=t=>BASE+'apresentacao.html?t='+encodeURIComponent(t);
+const ZAP='5566999867984';
+const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dt=v=>v?new Date(v).toLocaleDateString('pt-BR'):'';
+const ST={recebido:['Recebido','a','A FC está conferindo o orçamento.'],ajuste:['Em ajuste','a','A FC está montando o 3D.'],pronto:['Pronto','o','Link pronto para encaminhar ao cliente.']};
+let D=null,carregando=false;
+
+const CSS=`.o3p{margin:0 0 18px}.o3p .hero{margin-bottom:12px}
+.o3p .pl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.o3p .pas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0 4px}
+.o3p .pas div{border:1px solid var(--line,#dfe6e7);border-radius:12px;padding:10px 12px;background:var(--card,#fff)}
+.o3p .pas b{display:block;font-size:13.5px;margin-bottom:2px}.o3p .pas span{font-size:12.5px;color:var(--mute,#5d6e73)}
+.o3p .pas i{font-style:normal;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#02717d;color:#fff;font:700 12px system-ui;margin-right:6px}
+.o3p .lst{display:grid;gap:8px;margin-top:10px}
+.o3p .pj{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--line,#dfe6e7);border-radius:12px;padding:10px 12px;background:var(--card,#fff)}
+.o3p .pj b{display:block;overflow-wrap:anywhere}.o3p .pj small{display:block;color:var(--mute,#5d6e73);font-size:12px}
+.o3p .pj .ac{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.o3p .pj .ac .btn{padding:7px 11px;font-size:12.5px}
+.o3p .fc{border:1px dashed #02717d;border-radius:12px;padding:12px;margin-top:12px}
+.o3p .fc input{width:100%;padding:9px 10px;border:1px solid var(--line,#dfe6e7);border-radius:8px;font:inherit;margin:6px 0}
+.o3p .msg{font-size:13px;color:var(--mute,#5d6e73);min-height:1em}
+@media (max-width:640px){.o3p .pas{grid-template-columns:1fr}.o3p .pj{grid-template-columns:1fr}.o3p .pj .ac{justify-content:flex-start}}`;
+function css(){if(document.getElementById('o3p-css'))return;const s=document.createElement('style');s.id='o3p-css';s.textContent=CSS;document.head.appendChild(s);}
+
+/* quem vê: gestor e colaborador da empresa, e a FC dentro da empresa. Fora do demonstrativo. */
+function pode(S){return !!S&&!S.demo&&!!S.empresa&&(S.matriz||S.papel==='gestor'||S.papel==='vendedor');}
+function planoTx(d){if(!d)return'';const us=+d.usados||0;
+ if(d.plano==='teste'){const fim=d.validade&&new Date(d.validade)<new Date();return fim?{t:'Teste encerrado',c:'a',fim:true}:{t:'Teste até '+dt(d.validade),c:'o'};}
+ if(d.limite!=null){const fim=us>=d.limite;return{t:`Pacote · ${us} de ${d.limite} projetos`,c:fim?'a':'o',fim};}
+ return{t:'Liberado',c:'o'};}
+
+function html(S){if(!pode(S))return'';css();
+ const pas=`<div class="pas"><div><b><i>1</i>Anexe o orçamento</b><span>O PDF criado pelo sistema, com local, tipologia e medidas.</span></div><div><b><i>2</i>A FC ajusta</b><span>Conferimos e montamos o 3D com a marca da sua empresa.</span></div><div><b><i>3</i>Encaminhe o link</b><span>No mesmo dia o link fica pronto aqui, sem preço, para o seu cliente.</span></div></div>`;
+ if(!S.obra3d){
+  const pedir=`https://wa.me/${ZAP}?text=${encodeURIComponent('Olá, FC! Sou da '+(S.empresa_nome||'empresa')+' e quero testar a Obra em 3D por 3 dias na Plataforma FC 3D.')}`;
+  return `<section class="o3p" id="o3p"><div class="hero"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Novo · teste de 3 dias</span><h2 style="margin-top:8px">Obra em 3D</h2><p>Transforme o orçamento da obra numa apresentação em 3D, com a marca da sua empresa, para o cliente abrir no celular. Sem preço no link.</p></div><div class="bts"><a class="btn pri" href="${pedir}" target="_blank" rel="noopener">Quero testar por 3 dias</a></div></div>${pas}
+  ${S.matriz?`<div class="fc"><b>Acesso FC · ligar a Obra em 3D desta empresa</b><p class="mute" style="font-size:13px;margin:4px 0 0">Crie o link de envio no Painel da Matriz (Obra em 3D → Links de envio, plano Teste ou Pacote), toque em <b>Código p/ Plataforma</b> e cole aqui.</p><input id="o3pCod" placeholder="Código do link de envio" autocomplete="off"><button class="btn pri" type="button" id="o3pSalvar">Ligar Obra em 3D</button> <span class="msg" id="o3pMsg" role="status"></span></div>`:''}</section>`;}
+ return `<section class="o3p" id="o3p"><div class="hero"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Novo</span><h2 style="margin-top:8px">Obra em 3D</h2><p>Anexe o orçamento criado pelo sistema. A FC faz os ajustes e o link 3D, sem preço, aparece aqui pronto para encaminhar ao seu cliente.</p><div class="pl" id="o3pPl"><span class="chip">Carregando…</span></div></div><div class="bts"><a class="btn pri" id="o3pEnv" href="${ENVIO(S.obra3d)}" target="_blank" rel="noopener">⬆ Anexar orçamento (PDF)</a></div></div>
+  ${pas}<div class="cab" style="margin-top:14px"><div><h2 style="font-size:18px">Projetos enviados</h2></div><button class="btn sec" type="button" id="o3pAtu">↻ Atualizar</button></div><div class="lst" id="o3pLst"><p class="mute">Carregando…</p></div>
+  ${S.matriz?`<div class="fc"><b>Acesso FC</b><p class="mute" style="font-size:13px;margin:4px 0 0">Plano e liberação de projetos ficam no Painel da Matriz → Obra em 3D. Para trocar o link desta empresa, cole outro código; deixe vazio para desligar.</p><input id="o3pCod" placeholder="Código do link de envio" autocomplete="off" value="${e(S.obra3d)}"><button class="btn sec" type="button" id="o3pSalvar">Salvar</button> <span class="msg" id="o3pMsg" role="status"></span></div>`:''}</section>`;}
+
+function pinta(S){const pl=document.getElementById('o3pPl'),ls=document.getElementById('o3pLst');if(!pl||!ls)return;
+ if(D===false){pl.innerHTML='<span class="chip a">Sem conexão</span>';ls.innerHTML='<p class="mute">Não foi possível carregar os projetos. Confira a internet e toque em Atualizar.</p>';return;}
+ if(!D){pl.innerHTML='<span class="chip a">Link de envio desligado</span>';ls.innerHTML='<p class="mute">A Obra em 3D desta empresa está pausada. Fale com a FC Consultoria.</p>';const b=document.getElementById('o3pEnv');if(b){b.removeAttribute('href');b.classList.add('sec');b.classList.remove('pri');b.setAttribute('aria-disabled','true');}return;}
+ const p=planoTx(D);const pedir=`https://wa.me/${ZAP}?text=${encodeURIComponent('Olá, FC! Sou da '+(S.empresa_nome||'empresa')+' e quero liberar o pacote de projetos da Obra em 3D.')}`;
+ pl.innerHTML=`<span class="chip ${p.c}">${e(p.t)}</span>${p.fim?`<a class="btn sec" style="padding:6px 11px;font-size:12.5px" href="${pedir}" target="_blank" rel="noopener">Falar com a FC para liberar</a>`:''}`;
+ const env=document.getElementById('o3pEnv');if(env&&p.fim){env.removeAttribute('href');env.classList.add('sec');env.classList.remove('pri');env.setAttribute('aria-disabled','true');env.title=p.t;}
+ const P=D.projetos||[];
+ ls.innerHTML=P.length?P.map(x=>{const st=ST[x.status]||ST.recebido;const u=x.link?LINK(x.link):'';
+  const zap=u?`https://wa.me/?text=${encodeURIComponent('Segue a apresentação 3D da sua obra'+(x.obra?' ('+x.obra+')':'')+': '+u)}`:'';
+  return `<div class="pj"><div><b>${e(x.obra||x.cliente||'Obra')}</b><small>${x.numero?'Orçamento '+e(x.numero)+' · ':''}${x.itens} ${x.itens===1?'item':'itens'} · enviado em ${dt(x.criado)}</small><small><span class="chip ${st[1]}" style="margin-top:4px">${st[0]}</span> ${st[2]}</small></div>
+   <div class="ac">${u?`<a class="btn pri" href="${e(u)}" target="_blank" rel="noopener">Abrir</a><button class="btn sec" type="button" data-o3c="${e(u)}">Copiar link</button><a class="btn sec" href="${e(zap)}" target="_blank" rel="noopener">WhatsApp</a>`:''}</div></div>`}).join('')
+  :`<p class="mute">Nenhum orçamento enviado ainda. Toque em <b>Anexar orçamento (PDF)</b> para começar.</p>`;
+ ls.querySelectorAll('[data-o3c]').forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(b.dataset.o3c);b.textContent='✓ Copiado';setTimeout(()=>{if(b.isConnected)b.textContent='Copiar link'},1800);}catch(_){prompt('Copie o link:',b.dataset.o3c);}});}
+
+async function carregar(S,cen,rpc,refazer){if(!pode(S)||!document.getElementById('o3p'))return;
+ const sv=document.getElementById('o3pSalvar');
+ if(sv)sv.onclick=async()=>{const m=document.getElementById('o3pMsg');m.textContent='Salvando…';try{const r=await rpc('pfc_obra3d_definir',{p_token:S.token,p_cod:document.getElementById('o3pCod').value});S.obra3d=r.obra3d;D=null;refazer();}catch(err){m.textContent=err.message||'Não foi possível salvar.';}};
+ if(!S.obra3d||carregando)return;
+ const at=document.getElementById('o3pAtu');if(at)at.onclick=()=>carregar(S,cen,rpc,refazer);
+ carregando=true;try{D=await cen('obra3d_envio_meus',{tok:S.obra3d});}catch(_){D=false;}carregando=false;pinta(S);}
+
+/* ao voltar da aba do envio, atualiza a lista sozinho */
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&window.PFCo3d&&PFCo3d._re)PFCo3d._re();});
+window.PFCo3d={html,carregar,pode};
+})();
