@@ -499,14 +499,21 @@ async function carregaConteudos(){
 }
 function pubConteudo(c){
   dialogo(c?'Atualizar conteúdo':'Publicar conteúdo protegido',`<label class="f" for="pcE">Empresa dona<select id="pcE">${EMPS.map(e=>`<option value="${esc(e.id)}" ${(c?c.empresa_id:EMP)===e.id?'selected':''}>${esc(e.nome)}</option>`).join('')}</select></label>
-    <div class="grid2"><label class="f" for="pcI">Código (sem espaço)<input id="pcI" required pattern="[a-z0-9-]{2,60}" value="${esc(c?c.id:'')}" ${c?'readonly':''} placeholder="cliente-produto"></label>
-    <label class="f" for="pcT">Título<input id="pcT" required value="${esc(c?c.titulo:'')}" placeholder="Nome do produto em 3D"></label></div>
-    <label class="f" for="pcF">Arquivo .html da linha<input id="pcF" type="file" accept=".html,.htm,text/html" required></label>
-    <p class="mute" style="font-size:12.5px">O arquivo vai para o banco. O link de abertura fica <code>porta.html?c=código</code>. Na entrega, coloque esse mesmo link para o cliente abrir pelo portal.</p>`,
-    async()=>{const f=$('#pcF').files[0];if(!f)throw new Error('Escolha o arquivo');if(f.size>8*1048576)throw new Error('Arquivo acima de 8 MB');
-      const html=await f.text();if(!/<html|<script|<body/i.test(html))throw new Error('Esse arquivo não parece ser uma página .html');
-      const r=await rpc('fc3d_conteudo_salvar',{p_token:SES.token,p_id:$('#pcI').value.trim().toLowerCase(),p_empresa:$('#pcE').value,p_titulo:$('#pcT').value.trim(),p_html:html});
-      toast('Publicado · versão '+r.versao)},c?'Atualizar':'Publicar');
+    <label class="f" for="pcF">Arquivo(s) .html${c?'':' · pode escolher vários de uma vez'}<input id="pcF" type="file" accept=".html,.htm,text/html" ${c?'':'multiple'} required></label>
+    <div class="grid2" id="pcUm"><label class="f" for="pcI">Código (sem espaço)<input id="pcI" pattern="[a-z0-9-]{2,60}" value="${esc(c?c.id:'')}" ${c?'readonly':''} placeholder="vazio = nome do arquivo"></label>
+    <label class="f" for="pcT">Título<input id="pcT" value="${esc(c?c.titulo:'')}" placeholder="vazio = título do arquivo"></label></div>
+    <p class="mute" style="font-size:12.5px">Com vários arquivos, o código de cada um é o nome do arquivo (sem .html). O link de abertura fica <code>porta.html?c=código</code>.</p><p class="mute" id="pcP" style="font-size:12.5px"></p>`,
+    async()=>{const fs=[...$('#pcF').files];if(!fs.length)throw new Error('Escolha o arquivo');
+      const varios=fs.length>1;let ok=0;
+      for(const f of fs){
+        if(f.size>8*1048576)throw new Error(f.name+': acima de 8 MB');
+        const html=await f.text();if(!/<html|<script|<body/i.test(html))throw new Error(f.name+': não parece ser uma página .html');
+        const id=(!varios&&$('#pcI').value.trim()?$('#pcI').value.trim():f.name.replace(/\.html?$/i,'')).toLowerCase().replace(/[^a-z0-9-]/g,'-');
+        const tt=(!varios&&$('#pcT').value.trim())||((html.match(/<title>([^<]*)<\/title>/i)||[])[1]||id).trim();
+        $('#pcP').textContent='Enviando '+(ok+1)+' de '+fs.length+' · '+f.name+'…';
+        await rpc('fc3d_conteudo_salvar',{p_token:SES.token,p_id:id,p_empresa:$('#pcE').value,p_titulo:tt.slice(0,120),p_html:html});ok++;
+      }
+      toast(ok>1?ok+' arquivos publicados':'Publicado')},c?'Atualizar':'Publicar');
 }
 
 /* ---------- diálogo ---------- */
