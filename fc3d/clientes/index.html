@@ -612,6 +612,9 @@ function render(){
   $('#euPapel').textContent=S.matriz?'vendo como '+PAPEIS[papel()]:(S.setor&&S.setor!=='gestor'?(SETORES[S.setor]||S.setor):(PAPEIS[S.papel]||S.papel));
   $('#menu').innerHTML=itens().map(m=>`<button type="button" data-tab="${m.k}" ${m.k===tab?'aria-current="page"':''}><span aria-hidden="true">${m.i}</span>${m.n}</button>`).join('')+(['demo','gestor','vendedor'].includes(papel())?`<button type="button" data-cat3d><span aria-hidden="true">▤</span>Catálogo 3D</button>`:'');/* 03/11: gestor e colaborador também, com o catálogo da própria empresa */
   {const c3=$('#menu').querySelector('[data-cat3d]');if(c3)c3.onclick=()=>{location.href='orientativo/?foco=1#cat';};}
+  /* 04/11/2026 · Simulado de Obra 3D no menu, ao lado do Catálogo 3D (só onde ele está ligado) */
+  if(window.PFCo3d&&['gestor','vendedor'].includes(papel())&&!S.demo&&((S.matriz&&!S.empresa)||PFCo3d.pode(S))){$('#menu').insertAdjacentHTML('beforeend',`<button type="button" data-o3dm ${tab==='apr'?'':''}><span aria-hidden="true">⬆</span>Simulado de Obra 3D</button>`);
+   $('#menu').querySelector('[data-o3dm]').onclick=()=>{tab='apr';render();setTimeout(()=>{const o=document.getElementById('o3p');if(o)o.scrollIntoView({behavior:'smooth',block:'start'});},60);};}
   $('#menu').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();scrollTo(0,0);});
   if(S&&S.matriz)setTimeout(async()=>{const el=document.getElementById('demoPend');if(!el)return;try{const D=await rpc('pfc_adm_demo_lista',{p_token:S.token});const n=D.filter(d=>d.status==='pendente').length;if(n){el.hidden=false;el.textContent=n+' demonstrativo'+(n>1?'s':'')+' aguardando';}}catch(_){}},50);
   $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaAmb,apr:telaApr,ges:telaGes}[tab]||telaInicio)();
