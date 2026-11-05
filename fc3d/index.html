@@ -217,7 +217,7 @@ const brDT=d=>new Date(d).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',
 const tamF=b=>b>1048576?(b/1048576).toFixed(1).replace('.',',')+' MB':Math.max(1,Math.round(b/1024))+' KB';
 const ext=n=>{const m=String(n).match(/\.([a-z0-9]{1,4})$/i);return m?m[1].toUpperCase():'ARQ'};
 const ST={revisar:'Para revisar',aprovado:'Aprovado',ajuste:'Ajuste pedido',entregue:'Entregue',andamento:'Em desenvolvimento',fazer:'A fazer',aguardando:'Aguardando material'};
-const ETAPAS=[['Demonstrativo do evento','Residência, porta e modo apresentação'],['Ambientes e proposta','Link para o arquiteto e pedido de orçamento'],['Painel do gestor completo','Vendas, equipe e licença']];
+const ETAPAS=[['Demonstrativo do evento','Residência, tipologias e modo apresentação'],['Ambientes e proposta','Link para o arquiteto e pedido de orçamento'],['Painel do gestor completo','Vendas, equipe e licença']];
 const ger=()=>SES&&(SES.matriz||SES.papel==='gestor');
 
 /* ===================== ENTRADA ===================== */
@@ -249,11 +249,11 @@ async function carregar(){if(!EMP){D=null;render();return}D=await rpc('fc3d_pain
 window.addEventListener('hashchange',()=>{VIEW=(location.hash||'#projeto').slice(1);if(D||SES&&SES.matriz)render()});
 function header(){
   const e=D&&D.empresa;
-  $('#empBox').innerHTML=SES.matriz?`<div class="bdg" style="background:var(--gold)">FC</div><label for="selEmp" class="mute" style="position:absolute;left:-9999px">Empresa</label><select id="selEmp">${EMPS.map(x=>`<option value="${esc(x.id)}" ${x.id===EMP?'selected':''}>${esc(x.nome)}</option>`).join('')}</select>`
+  $('#empBox').innerHTML=SES.matriz?`<div class="bdg" style="background:var(--gold)">FC</div><label for="selEmp" class="mute" style="position:absolute;left:-9999px">Empresa</label><select id="selEmp">${EMPS.map(x=>`<option value="${esc(x.id)}" ${x.id===EMP?'selected':''}>${esc(x.nome)}${x.ativo?'':' · pausado'}</option>`).join('')}</select>`
     :`<div class="bdg">${esc(e?e.sigla||e.nome.slice(0,2):'')}</div><b>${esc(e?e.nome:'')}</b>`;
   if(SES.matriz)$('#selEmp').onchange=async ev=>{EMP=ev.target.value;ls.set('fc3d.emp',EMP);await carregar()};
   const rev=D?D.entregas.filter(x=>x.status==='revisar').length:0;
-  const it=[['projeto','Projeto',!SES.matriz&&ger()&&rev?rev:0],['porta','Porta 3D'],ger()&&['equipe','Equipe e acessos'],ger()&&['contrato','Contrato e licença'],SES.matriz&&['empresas','Empresas']].filter(Boolean);
+  const it=[['projeto','Projeto',!SES.matriz&&ger()&&rev?rev:0],['porta','Visualização 3D'],ger()&&['equipe','Equipe e acessos'],ger()&&['contrato','Contrato e licença'],SES.matriz&&['empresas','Empresas']].filter(Boolean);
   if(!it.some(x=>x[0]===VIEW))VIEW='projeto';
   $('#nav').innerHTML=it.map(([k,l,n])=>`<a href="#${k}" class="${k===VIEW?'on':''}" ${k===VIEW?'aria-current="page"':''}>${l}${n?`<span class="n">${n}</span>`:''}</a>`).join('');
 }
@@ -268,7 +268,8 @@ function vProjeto(m){
   const e=D.empresa,adm=SES.matriz;
   m.innerHTML=`<div class="cols"><div class="c-main">
     <section class="card"><div class="hd"><div><p class="eb">Projeto em desenvolvimento</p><h1 style="margin-top:6px">Plataforma comercial ${esc(e.nome.split('·').pop().trim())} 3D</h1></div>
-      <div class="row"><span class="chip c-revisar">Etapa ${e.etapa} de 3</span>${adm?`<button class="btn sm ghost" type="button" id="btEtapa">Mudar etapa</button>`:''}</div></div>
+      <div class="row"><span class="chip c-revisar">Etapa ${e.etapa} de 3</span>${adm?`<button class="btn sm ghost" type="button" id="btEtapa">Mudar etapa</button><button class="btn sm ghost" type="button" id="btPausa">${e.ativo?'Pausar projeto':'Reativar projeto'}</button>`:''}</div></div>
+      ${adm&&!e.ativo?`<p class="chip c-ajuste" style="margin-top:10px;display:inline-block">Projeto pausado · os acessos desta empresa não entram até reativar</p>`:''}
       <div class="etapas">${ETAPAS.map((x,i)=>`<div><i><b style="width:${i+1<e.etapa?100:i+1===e.etapa?55:0}%"></b></i><strong ${i+1>e.etapa?'class="mute"':''}>${i+1} · ${x[0]}</strong><span>${x[1]}</span></div>`).join('')}</div>
       ${e.linhas&&e.linhas.length?`<div class="row" style="margin-top:16px">${e.linhas.map(l=>`<span class="chip" style="${l.exclusiva?'background:var(--ink);color:var(--bg)':'border:1px solid var(--line)'}">${esc(l.nome)}${l.exclusiva?' · exclusiva':''}${l.obs?' · '+esc(l.obs):''}</span>`).join('')}</div>`:''}
     </section>
@@ -295,6 +296,7 @@ function vProjeto(m){
     $('#btNovaEnt').onclick=()=>editEnt(null);
     $$('[data-ed]').forEach(b=>b.onclick=()=>editEnt(D.entregas.find(x=>x.id===+b.dataset.ed)));
     $('#btEtapa').onclick=()=>dialogo('Etapa do projeto',`<label class="f" for="dEt">Etapa atual<select id="dEt">${ETAPAS.map((x,i)=>`<option value="${i+1}" ${i+1===e.etapa?'selected':''}>${i+1} · ${x[0]}</option>`).join('')}</select></label>`,async()=>{await rpc('fc3d_admin_salvar',{p_token:SES.token,p_tipo:'empresa',p:{...e,etapa:+$('#dEt').value}})});
+    $('#btPausa').onclick=()=>dialogo(e.ativo?'Pausar projeto':'Reativar projeto',`<p>${e.ativo?'Pausar':'Reativar'} <b>${esc(e.nome)}</b>? ${e.ativo?'O histórico fica guardado; os acessos desta empresa deixam de entrar.':'Os acessos desta empresa voltam a entrar.'}</p>`,async()=>{await rpc('fc3d_admin_salvar',{p_token:SES.token,p_tipo:'empresa',p:{...e,ativo:!e.ativo}});EMPS=await rpc('fc3d_empresas_lista',{p_token:SES.token})},e.ativo?'Pausar':'Reativar');
     $('#fPend').onsubmit=async ev=>{ev.preventDefault();const t=$('#pendTx').value.trim();if(!t)return;await rpc('fc3d_admin_salvar',{p_token:SES.token,p_tipo:'pendencia',p:{empresa_id:EMP,texto:t}});await carregar()};
     $$('[data-pdel]').forEach(b=>b.onclick=async ev=>{ev.preventDefault();await rpc('fc3d_admin_salvar',{p_token:SES.token,p_tipo:'pendencia',p:{id:+b.dataset.pdel,excluir:true}});await carregar()});
   }
