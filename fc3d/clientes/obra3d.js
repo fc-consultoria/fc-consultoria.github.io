@@ -46,7 +46,8 @@ function planoTx(d){if(!d)return'';const us=+d.usados||0;
  if(d.limite!=null){const fim=us>=d.limite;return{t:`Pacote · ${us} de ${d.limite} projetos`,c:fim?'a':'o',fim};}
  return{t:'Liberado',c:'o'};}
 
-function html(S){if(!pode(S))return'';css();
+function html(S){if(S&&S.matriz&&!S.empresa){css();return `<section class="o3p" id="o3p"><div class="hero"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Novo · teste · só a FC vê esta orientação</span><h2 style="margin-top:8px">Simulado de Obra 3D</h2><p>Cada empresa tem o seu link de envio e o seu plano (teste de 3 dias ou pacote). Escolha a empresa em <b>Dentro de</b>, no topo, para ver como ela vê e ligar o Simulado com o código do Painel da Matriz → Obra em 3D.</p></div><div class="bts"><a class="btn pri" href="https://fc-consultoria.github.io/treinamento/orcamentos/obra3d.html" target="_blank" rel="noopener">Abrir Obra em 3D na Matriz</a></div></div></section>`;}
+ if(!pode(S))return'';css();
  const pas=`<div class="pas"><div><b><i>1</i>Anexe o orçamento</b><span>O PDF criado pelo sistema, com local, tipologia e medidas.</span></div><div><b><i>2</i>Filtro FC</b><span>A FC confere e monta o 3D com a marca da sua empresa e libera para a sua avaliação.</span></div><div><b><i>3</i>Avalie e encaminhe</b><span>Você confere e aprova. O link, sem preço, fica liberado para o seu cliente.</span></div></div>`;
  if(!S.obra3d){
   const pedir=`https://wa.me/${ZAP}?text=${encodeURIComponent('Olá, FC! Sou da '+(S.empresa_nome||'empresa')+' e quero testar o Simulado de Obra 3D por 3 dias na Plataforma FC 3D.')}`;
