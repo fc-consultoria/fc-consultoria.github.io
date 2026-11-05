@@ -1,7 +1,7 @@
 /* Plataforma FC 3D · Como usar (tutorial guiado por painel)
    © FC Consultoria em Esquadria — criação da FC, uso exclusivo de empresas licenciadas.
    Cada painel tem o seu passo a passo, separado: cada pessoa vê só o guia do próprio painel.
-   Hoje: Colaborador (chave interna "vendedor"), Gestor e Demonstrativo (curto, ~1 min). Portal do Cliente entra depois em GUIAS.
+   Hoje: Colaborador (chave interna "vendedor"), Gestor e Demonstrativo (curto, ~1 min). 04/11/2026: passos do Simulado de Obra 3D (pulados nas empresas onde ele está oculto). Portal do Cliente entra depois em GUIAS.
    1ª entrada: tela de boas-vindas (Ver agora / Depois); "Ver agora" passa sozinho com voz feminina (modo automático).
    Ao mudar a tela, revise os passos do painel aqui. Passo cujo alvo não existe na tela é pulado sozinho. */
 (function(){
@@ -12,6 +12,8 @@
   var ehToque=function(){return document.documentElement.classList.contains('toque');};
   var fechaFicha=function(){var b=$('#detFecha');if(b&&!$('#det').hidden)b.click();};
   var cardHero=function(k){return $('.hero [data-ir="'+k+'"]');};
+  /* 04/11/2026 · a aba Apresentação agora começa pelo Simulado de Obra 3D: o hero do modo apresentação é o que fica fora dele */
+  var heroApr=function(){var L=document.querySelectorAll('main .hero');for(var i=0;i<L.length;i++)if(!L[i].closest('#o3p'))return L[i];return null;};
 
   /* ============ GUIAS POR PAINEL ============ */
   var GUIAS={
@@ -42,7 +44,15 @@
        x:'Fachada Cortina e Pele de Vidro Atlanta abrem em 3D a partir das medidas da obra. Bom para mostrar ao arquiteto e ao engenheiro.'},
       {tab:'amb',alvo:function(){return $('main a.card[href*="ambientes"]')||$('main .grid');},t:'Ambientes · Monte sua Casa',
        x:'Coloque as esquadrias na planta da casa, troque telhado, paredes e cor dos perfis e passeie pela casa com o cliente. Os outros ambientes aparecem como "Em construção" até serem liberados.'},
-      {tab:'apr',alvo:'main .hero',t:'Modo apresentação',
+      {tab:'inicio',alvo:function(){return porTexto('main .card','Simulado de Obra 3D');},t:'Novidade · Simulado de Obra 3D',
+       x:'O orçamento da obra vira uma apresentação em 3D, com a marca da sua empresa, para o cliente abrir no celular. O link vai sem preço. Toque aqui para abrir.'},
+      {tab:'apr',alvo:'#o3p .hero',t:'Anexe o orçamento',
+       x:'Toque em Anexar orçamento (PDF) e envie o mesmo orçamento criado no sistema, com local, tipologia e medidas de cada item. O selo mostra o seu plano: o teste de 3 dias ou o pacote de projetos.'},
+      {tab:'apr',alvo:'#o3p .pas',t:'Filtro FC e a sua avaliação',
+       x:'Depois do envio, o projeto passa pelo filtro da FC: conferimos e montamos o 3D. Assim que avaliado, ele é liberado para a sua avaliação. O link só fica liberado para o cliente depois que você aprovar.'},
+      {tab:'apr',alvo:'#o3pLst',t:'Projetos enviados',
+       x:'Acompanhe cada obra aqui. Em filtro FC: a FC está conferindo. Liberado para sua avaliação: abra, confira e toque em Aprovar, ou em Pedir ajuste e escreva o que mudar. Aprovado: copie o link ou mande direto pelo WhatsApp para o cliente.'},
+      {tab:'apr',alvo:heroApr,t:'Modo apresentação',
        x:'Abra a Apresentação de Obra, coloque as medidas e mostre em tela cheia na TV ou no telão, sem menus atrapalhando.'},
       {tab:'apr',alvo:'main .aviso',t:'Sempre é simulação',
        x:'Tudo na plataforma é apresentação e simulação. Medidas, pesos e cálculo final são confirmados no sistema de cálculo da empresa e com o fornecedor. Fale isso ao cliente.'},
@@ -73,6 +83,10 @@
     pc('Ficha da tipologia'),
     pc('Fachadas'),
     pc('Ambientes · Monte sua Casa'),
+    pc('Novidade · Simulado de Obra 3D'),
+    pc('Anexe o orçamento'),
+    pc('Filtro FC e a sua avaliação'),
+    mais(pc('Projetos enviados'),{x:'Aqui ficam todas as obras enviadas pela empresa. Em filtro FC: a FC está conferindo. Liberado para sua avaliação: abra, confira e aprove, ou peça ajuste dizendo o que mudar. Aprovado: o link sai sem preço para o cliente. Quando o teste ou o pacote terminar, aparece o botão para falar com a FC.'}),
     pc('Modo apresentação'),
     mais(pc('Sempre é simulação'),{x:'Tudo na plataforma é apresentação e simulação. Medidas, pesos e cálculo final são confirmados no sistema de cálculo da empresa e com o fornecedor. Reforce isso com a equipe.'}),
     {tab:'ges',alvo:'#eqBox',t:'Equipe',
