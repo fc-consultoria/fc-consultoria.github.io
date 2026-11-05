@@ -618,6 +618,7 @@ function render(){
   ligar();if(tab==='tip'&&window.PFCapr)PFCapr.ligar();
   if(tab==='inicio')dicasPl();
   if(tab==='ges')equipeCarregar();
+  if(window.PFCo3d){PFCo3d._re=tab==='apr'?()=>PFCo3d.carregar(S,cen,rpc,render):null;if(PFCo3d._re)PFCo3d._re();}/* 04/11/2026 · Obra em 3D (teste) */
   if(window.PFCtut)PFCtut.atualiza();
 }
 const vaiPara=k=>{tab=k;render();scrollTo(0,0);};
@@ -675,7 +676,7 @@ function telaInicio(){
   const mods=itens().filter(m=>m.k!=='inicio'&&m.k!=='apr');
   const desc={tip:'Janelas, portas e fachadas em 3D, com desenho técnico e o Orientativo da equipe.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ges:'O que cada setor está fazendo: quem entrou, quem está on-line, quanto tempo e o que cada pessoa abriu.'};
   return `<div class="hero"><div><h2>Olá, ${h(nome)}!</h2><p>${txt}</p></div><div class="bts"><button class="btn cl" data-ir="tip">Ver tipologias</button></div></div>
-  <div class="grid">${mods.map(m=>`<button class="card" data-ir="${m.k}"><span class="ic" aria-hidden="true">${m.i}</span><h3>${m.n}</h3><span class="d">${desc[m.k]}</span><span class="pe">${m.k==='tip'||m.k==='apr'||m.k==='amb'||m.k==='ges'?'<span class="chip o">Disponível</span>':'<span class="chip a">Em construção</span>'}</span></button>`+(m.k==='tip'&&p!=='arquiteto'?`<a class="card" href="orientativo/?foco=1#cat" style="text-decoration:none;color:inherit"><span class="ic" aria-hidden="true">▤</span><h3>Catálogo 3D</h3><span class="d">${p==='demo'?'Os perfis das linhas Suprema e Gold com código, desenho e peso, para girar em 3D.':S.catalogo?'O catálogo de perfis da '+h(S.empresa_nome||'empresa')+', com os códigos da empresa. Toque no perfil para ver em 3D.':'Todos os perfis da linha com código e desenho, para consultar na hora do atendimento.'}</span><span class="pe"><span class="chip o">Disponível</span></span></a>`:'')).join('')}</div>
+  <div class="grid">${mods.map(m=>`<button class="card" data-ir="${m.k}"><span class="ic" aria-hidden="true">${m.i}</span><h3>${m.n}</h3><span class="d">${desc[m.k]}</span><span class="pe">${m.k==='tip'||m.k==='apr'||m.k==='amb'||m.k==='ges'?'<span class="chip o">Disponível</span>':'<span class="chip a">Em construção</span>'}</span></button>`+(m.k==='tip'&&p!=='arquiteto'?`<a class="card" href="orientativo/?foco=1#cat" style="text-decoration:none;color:inherit"><span class="ic" aria-hidden="true">▤</span><h3>Catálogo 3D</h3><span class="d">${p==='demo'?'Os perfis das linhas Suprema e Gold com código, desenho e peso, para girar em 3D.':S.catalogo?'O catálogo de perfis da '+h(S.empresa_nome||'empresa')+', com os códigos da empresa. Toque no perfil para ver em 3D.':'Todos os perfis da linha com código e desenho, para consultar na hora do atendimento.'}</span><span class="pe"><span class="chip o">Disponível</span></span></a>`:'')).join('')}${['gestor','vendedor'].includes(p)&&!S.demo?`<button class="card" data-ir="apr"><span class="ic" aria-hidden="true">⬆</span><h3>Simulado de Obra 3D</h3><span class="d">Anexe o orçamento em PDF. O projeto passa pelo filtro da FC, volta para a sua avaliação e, aprovado, vira link 3D sem preço para o seu cliente.</span><span class="pe"><span class="chip" style="background:#F2C14E;color:#4A3300">Novo · teste</span></span></button>`:''}</div>
   <div id="dicasPl"></div>
   ${S.matriz&&papel()==='gestor'?`<div style="margin:18px 0 6px"><a class="btn pri" href="empresas/">👥 Empresas e acessos <span id="demoPend" class="chip a" hidden></span></a> <span class="mute" style="margin-left:8px">cadastro das empresas, pessoas, licença e mensagem para o WhatsApp · só a FC vê</span></div>`:''}${S.matriz&&papel()==='gestor'?`<div class="linha-tit"><h3>Etapas da plataforma</h3><span class="chip t">só a FC vê</span></div><div class="etapas">${ETAPAS.map(([n,t,d])=>`<div class="etp ${n==='1'?'on':''}"><span class="chip ${n==='1'?'o':''}">${n==='1'?'Pronta':'Etapa '+n}</span><b>${t}</b><span class="mute">${d}</span></div>`).join('')}</div>`:''}`;
 }
@@ -728,7 +729,7 @@ function telaAmb(){const casa=`<a class="card" href="ambientes/casa.html"><span 
  return `<div class="cab"><div><h2>Ambientes</h2><p class="mute">Monte a obra do seu cliente com as esquadrias escolhidas.</p></div></div>
   <div class="grid">${casa}${prox.map(([i,n,d])=>`<div class="card"><span class="ic">${i}</span><h3>${n}</h3><span class="d">${d}</span><span class="pe"><span class="chip a">Em construção</span></span></div>`).join('')}</div>
   <p class="aviso" style="margin-top:18px">É uma apresentação e simulação. Medidas, pesos e cortes são aproximados; o cálculo final vem do sistema de cálculo da empresa e do fornecedor.</p>`;}
-function telaApr(){return `<div class="cab"><div><h2>Modo apresentação</h2><p class="mute">Tela cheia, sem menus, para mostrar na TV ou no telão.</p></div></div>
+function telaApr(){return (window.PFCo3d?PFCo3d.html(S):'')+`<div class="cab"><div><h2>Modo apresentação</h2><p class="mute">Tela cheia, sem menus, para mostrar na TV ou no telão.</p></div></div>
   <div class="hero" style="margin-bottom:12px"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Logo logo · novidade</span><h2 style="margin-top:8px">Novo módulo de apresentação</h2><p>Abra a tipologia ou o ambiente em tela cheia, gire o 3D com o dedo ou o mouse e mostre os detalhes na reunião com o cliente ou o arquiteto.</p></div><div class="bts"><span class="btn sec" style="border-color:rgba(255,255,255,.4);color:#dbe3e8;cursor:default">Em breve</span></div></div>
   <p class="mute" style="font-size:13px">A fachada continua em <a href="#" data-ir="tip">Tipologias → Fachadas</a>, com as medidas da obra.</p>`;}
 /* ---------- Equipe (03/11/2026): andamento da empresa por setor, para o gestor de qualquer empresa ---------- */
@@ -826,5 +827,6 @@ window.PFCaprCtx={TIPS,LINHAS,h,papel:()=>papel(),sessao:()=>S,render:()=>render
 <script src="convite.js?v=2" defer></script>
 <script src="licenca.js?v=3" defer></script>
 <script src="uso.js?v=2" defer></script>
+<script src="obra3d.js?v=2"></script>
 </body>
 </html>
