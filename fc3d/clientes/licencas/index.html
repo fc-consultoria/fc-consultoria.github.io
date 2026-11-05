@@ -127,7 +127,11 @@ async function iniciar(){
   catch(_){if(TOK===ls.get(LK))ls.del(LK);TOK=null;$('#gate').hidden=false;return;}
   $('#gate').hidden=true;$('#app').hidden=false;carregar();
 }
-async function carregar(){try{D=await rpc('pfc_lic_painel');render();}catch(e){$('#tela').innerHTML='<div class="sec"><p class="vazio">'+h(e.message)+'</p></div>';}}
+/* 05/11/2026 · Simulador de Obra 3D avulso: cobranças ficam no banco do Simulador, lidas com a chave do painel */
+const sbS=window.supabase.createClient('https://cpkjphodruyxfouirhpd.supabase.co','sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg',{auth:{persistSession:false,storageKey:'pfc-o3d'}});
+let O3=[],O3K='';
+async function o3Carregar(){try{if(!O3K)O3K=await rpc('pfc_lic_o3d_chave');const r=await sbS.rpc('obra3d_cob_lista',{chave:O3K});O3=r.error?[]:(r.data||[]);}catch(_){O3=[];}}
+async function carregar(){try{await o3Carregar();D=await rpc('pfc_lic_painel');render();}catch(e){$('#tela').innerHTML='<div class="sec"><p class="vazio">'+h(e.message)+'</p></div>';}}
 
 /* ---------- abas ---------- */
 const FORMA={pix:'Pix',boleto:'Boleto',cartao:'Cartão'};
@@ -136,14 +140,31 @@ const venceTag=p=>{if(!p.vencimento)return '';const d=Math.round((new Date(p.ven
 const pend=()=>D.pedidos.filter(p=>p.status==='aguardando'||p.status==='comprovante');
 const vencendo=()=>D.licencas.filter(l=>l.dias!=null&&l.dias<=30);
 function render(){
-  const ABAS=[['resumo','📊 Resumo',0],['pag','💰 Pagamentos',pend().filter(p=>p.status==='comprovante').length],['lic','📄 Licenças ativas',0],['ren','🔁 Renovações',vencendo().length],['demo','🧪 Demonstrativos',0],['tut','❓ Como usar',0]];
+  const ABAS=[['resumo','📊 Resumo',0],['pag','💰 Pagamentos',pend().filter(p=>p.status==='comprovante').length],['lic','📄 Licenças ativas',0],['ren','🔁 Renovações',vencendo().length],['sim','⬆ Simulador avulso',O3.filter(x=>(x.cobs||[]).some(k=>k.status==='enviado')).length],['demo','🧪 Demonstrativos',0],['tut','❓ Como usar',0]];
   if(!ABAS.some(a=>a[0]===tab))tab='resumo';
   $('#tabs').innerHTML=ABAS.map(([k,n,c])=>`<button type="button" data-tab="${k}" aria-pressed="${tab===k}">${n}${c?` <span class="n">${c}</span>`:''}</button>`).join('');
   $('#tabs').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;ls.set('pfc-lic-aba',tab);render();window.scrollTo(0,0);});
-  $('#tela').innerHTML=({resumo:tResumo,pag:tPag,lic:tLic,ren:tRen,demo:tDemo,tut:tTut}[tab])();
+  $('#tela').innerHTML=({resumo:tResumo,pag:tPag,lic:tLic,ren:tRen,sim:tSim,demo:tDemo,tut:tTut}[tab])();
   ligar();
 }
 
+function tSim(){const cnpj=c=>String(c||'').replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,'$1.$2.$3/$4-$5');
+  const st=x=>{const c=x.cad||{};if(x.plano==='avulso')return c.liberado||c.pedido&&new Date(c.pedido)<new Date(Date.now()-6e4)?'<span class="chip a">Preenchendo os dados da empresa</span>':c.pedido?'<span class="chip a">Aguardando liberação</span>':'<span class="chip">Link enviado · sem cadastro</span>';
+    if(x.plano==='teste'){const fim=x.validade&&new Date(x.validade)<new Date();return `<span class="chip ${fim?'r':'t'}">${fim?'Teste encerrado':'Teste até '+dt(String(x.validade).slice(0,10))} · ${x.usados} de ${x.limite} projetos</span>`;}
+    if(x.plano==='pacote')return `<span class="chip t">Pacote · ${x.usados} de ${x.limite} projetos</span>`;return '<span class="chip">Sem limite</span>';};
+  const card=x=>{const c=x.cad||{},pd=(x.cobs||[]).find(k=>k.status==='enviado');
+    return `<div class="it"><div class="t">${pd?'<span class="chip a">Comprovante enviado</span>':''}${st(x)}<b>${h(c.razao||x.empresa)}</b></div>
+     <div class="d"><span>CNPJ ${c.cnpj?h(cnpj(c.cnpj)):'<i>não informado</i>'}</span><span>${h(c.nome||'—')} · ${c.whats?h(fone(c.whats)):''}</span>${c.email?`<span>NF: ${h(c.email)}</span>`:''}</div>
+     ${pd?`<div class="d"><span><b style="color:var(--ink)">${brl(pd.valor)}</b> · ${pd.projetos} projetos · ${pd.tipo==='renovacao'?'renovação':'contratação'} · enviado em ${new Date(pd.enviado).toLocaleString('pt-BR')}</span></div>`:''}
+     ${c.nao?`<div class="d"><span>✗ Não quis contratar agora (${new Date(c.nao.em).toLocaleDateString('pt-BR')})${c.nao.motivo?': '+h(c.nao.motivo):''}</span></div>`:''}
+     ${(x.cobs||[]).filter(k=>k.status!=='enviado').slice(0,4).map(k=>`<div class="d"><span>${k.status==='confirmado'?'✓ Pago':'✗ Recusado'} · ${k.tipo==='renovacao'?'renovação':'contratação'} · ${brl(k.valor)} · ${k.conferido?new Date(k.conferido).toLocaleDateString('pt-BR'):''}${k.nota?' · '+h(k.nota):''}</span></div>`).join('')}
+     <div class="a">${pd?`<button class="btn sm" data-o3v="${pd.id}">Ver comprovante</button><button class="btn sm ok" data-o3ok="${pd.id}">✅ Confirmar pagamento (+${pd.projetos} projetos)</button><button class="btn sm" data-o3no="${pd.id}">Recusar</button>`:''}
+      ${x.plano==='avulso'&&c.pedido&&!c.liberado?`<button class="btn sm ok" data-o3lib="${h(x.token)}">Liberar acesso agora</button>`:''}
+      ${c.whats?`<a class="btn sm" target="_blank" rel="noopener" href="${wa(c.whats,'Olá, '+prim(c.nome||'')+'! Aqui é da FC Consultoria, sobre o Simulador de Obra 3D da '+(c.razao||x.empresa)+'.')}">WhatsApp</a>`:''}</div></div>`;};
+  const P=O3.filter(x=>(x.cobs||[]).some(k=>k.status==='enviado')),R=O3.filter(x=>!P.includes(x));
+  return `<div class="sec"><div class="eh"><h2>Simulador de Obra 3D · avulso</h2></div><p class="mute" style="font-size:13.5px;margin-bottom:10px">Empresas com link de envio avulso: cadastro, teste de 3 dias (6 projetos) e pacotes de 20 projetos por R$ 200,00 no Pix. Confira o Pix no Sicoob antes de confirmar.</p>
+   ${P.length?'<h3 style="margin:8px 0">Comprovantes para conferir</h3>'+P.map(card).join(''):''}
+   <h3 style="margin:12px 0 8px">Empresas</h3>${R.map(card).join('')||'<p class="vazio">Nenhuma empresa avulsa ainda.</p>'}</div>`;}
 function tResumo(){const m=D.mes,P=pend(),V=vencendo(),mesN=new Date(m.inicio+'T12:00:00').toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
   const fazer=[];
   P.filter(p=>p.status==='comprovante').forEach(p=>fazer.push(`<div class="it"><div class="t"><span class="chip a">Comprovante enviado</span><b>${h(p.empresa)}</b></div><div class="d"><span>Conferir no Sicoob o Pix de ${brl(p.valor)} e liberar a licença.</span></div><div class="a"><button class="btn sm pri" data-ir="pag">Ver pagamento</button></div></div>`));
@@ -293,6 +314,10 @@ const msgAcesso=(nome,empresa,login,codigo,extra)=>`Olá, ${prim(nome)}! ${extra
 
 /* ---------- ações ---------- */
 function ligar(){
+  document.querySelectorAll('[data-o3v]').forEach(b=>b.onclick=async()=>{const r=await sbS.rpc('obra3d_cob_comprovante',{chave:O3K,id:b.dataset.o3v});const u=r.data;if(!u){alert('Comprovante não encontrado.');return}const w=window.open('','_blank');if(w)w.document.write(/^data:application\/pdf/.test(u)?`<iframe src="${u}" style="border:0;width:100%;height:100vh"></iframe>`:`<img src="${u}" style="max-width:100%">`);});
+  document.querySelectorAll('[data-o3ok]').forEach(b=>b.onclick=async()=>{if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Confirmar: o Pix entrou no Sicoob';return}b.disabled=true;const r=await sbS.rpc('obra3d_cob_conferir',{chave:O3K,id:b.dataset.o3ok,ok:true,nota:''});if(r.error){b.disabled=false;alert('Não foi possível confirmar.');return}await o3Carregar();render();});
+  document.querySelectorAll('[data-o3no]').forEach(b=>b.onclick=async()=>{const nota=prompt('Motivo da recusa (a empresa vê esta mensagem):','Comprovante ilegível ou valor diferente');if(nota===null)return;await sbS.rpc('obra3d_cob_conferir',{chave:O3K,id:b.dataset.o3no,ok:false,nota});await o3Carregar();render();});
+  document.querySelectorAll('[data-o3lib]').forEach(b=>b.onclick=async()=>{await sbS.rpc('obra3d_cad_liberar',{chave:O3K,tok:b.dataset.o3lib});await o3Carregar();render();});
   const bv=$('#btVenda');if(bv)bv.onclick=()=>novaVenda();
   document.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>{tab=b.dataset.ir;ls.set('pfc-lic-aba',tab);render();});
   document.querySelectorAll('[data-lib]').forEach(b=>b.onclick=()=>{const p=D.pedidos.find(x=>x.id===b.dataset.lib);
