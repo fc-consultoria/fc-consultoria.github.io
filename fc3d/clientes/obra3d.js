@@ -40,7 +40,9 @@ const CSS=`.o3p{margin:0 0 18px}.o3p .hero{margin-bottom:12px}
 function css(){if(document.getElementById('o3p-css'))return;const s=document.createElement('style');s.id='o3p-css';s.textContent=CSS;document.head.appendChild(s);}
 
 /* quem vê: gestor e colaborador da empresa, e a FC dentro da empresa. Fora do demonstrativo. */
-function pode(S){return !!S&&!S.demo&&!!S.empresa&&(S.matriz||S.papel==='gestor'||S.papel==='vendedor');}
+/* 04/11/2026 · clientes que já usam a plataforma não veem o Simulado (nem o teste), a não ser que a FC ligue o código para eles */
+const OCULTO=['cde','cde-vidros','casa-bandeirante','guapore-vidros','guapore-sinop'];
+function pode(S){return !!S&&!S.demo&&!!S.empresa&&(S.matriz||S.papel==='gestor'||S.papel==='vendedor')&&(!OCULTO.includes(S.empresa)||!!S.obra3d);}
 function planoTx(d){if(!d)return'';const us=+d.usados||0;
  if(d.plano==='teste'){const fim=d.validade&&new Date(d.validade)<new Date();return fim?{t:'Teste encerrado',c:'a',fim:true}:{t:'Teste até '+dt(d.validade),c:'o'};}
  if(d.limite!=null){const fim=us>=d.limite;return{t:`Pacote · ${us} de ${d.limite} projetos`,c:fim?'a':'o',fim};}
