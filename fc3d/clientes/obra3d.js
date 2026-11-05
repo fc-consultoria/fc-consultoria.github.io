@@ -1,4 +1,4 @@
-/* FC Consultoria em Esquadria · Plataforma FC 3D · Simulado de Obra 3D (teste)
+/* FC Consultoria em Esquadria · Plataforma FC 3D · Simulador de Obra 3D (teste)
    Etapas: Em filtro FC → Liberado para sua avaliação → Aprovado (só então o link pode ir ao cliente final); Pedir ajuste volta para a FC.
    A empresa anexa o orçamento em PDF, o pedido chega ao card Obra em 3D do Painel da Matriz,
    a FC faz os ajustes e o link 3D (sem preço) aparece aqui pronto para encaminhar ao cliente.
@@ -40,29 +40,33 @@ const CSS=`.o3p{margin:0 0 18px}.o3p .hero{margin-bottom:12px}
 function css(){if(document.getElementById('o3p-css'))return;const s=document.createElement('style');s.id='o3p-css';s.textContent=CSS;document.head.appendChild(s);}
 
 /* quem vê: gestor e colaborador da empresa, e a FC dentro da empresa. Fora do demonstrativo. */
-/* 04/11/2026 · clientes que já usam a plataforma não veem o Simulado (nem o teste), a não ser que a FC ligue o código para eles */
-const OCULTO=['cde','cde-vidros','casa-bandeirante','guapore-vidros','guapore-sinop'];
-function pode(S){return !!S&&!S.demo&&!!S.empresa&&(S.matriz||S.papel==='gestor'||S.papel==='vendedor')&&(!OCULTO.includes(S.empresa)||!!S.obra3d);}
+/* 04/11/2026 · clientes que já usam a plataforma não veem o Simuladorr (nem o teste), a não ser que a FC ligue o código para eles */
+const OCULTO=[];/* 04/11/2026 · todas as empresas da plataforma têm o Simulador; o Demonstrativo mostra a vitrine com o botão de testar */
+function ehDemo(S,p){return !!S&&(S.demo||p==='demo');}
+function pode(S,p){if(ehDemo(S,p))return true;return !!S&&!!S.empresa&&(S.matriz||S.papel==='gestor'||S.papel==='vendedor')&&(!OCULTO.includes(S.empresa)||!!S.obra3d);}
 function planoTx(d){if(!d)return'';const us=+d.usados||0;
  if(d.plano==='teste'){const fim=d.validade&&new Date(d.validade)<new Date();return fim?{t:'Teste encerrado',c:'a',fim:true}:{t:'Teste até '+dt(d.validade),c:'o'};}
  if(d.limite!=null){const fim=us>=d.limite;return{t:`Pacote · ${us} de ${d.limite} projetos`,c:fim?'a':'o',fim};}
  return{t:'Liberado',c:'o'};}
 
-function html(S){if(S&&S.matriz&&!S.empresa){css();return `<section class="o3p" id="o3p"><div class="hero"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Novo · teste · só a FC vê esta orientação</span><h2 style="margin-top:8px">Simulado de Obra 3D</h2><p>Cada empresa tem o seu link de envio e o seu plano (teste de 3 dias ou pacote). Escolha a empresa em <b>Dentro de</b>, no topo, para ver como ela vê e ligar o Simulado com o código do Painel da Matriz → Obra em 3D.</p></div><div class="bts"><a class="btn pri" href="https://fc-consultoria.github.io/treinamento/orcamentos/obra3d.html" target="_blank" rel="noopener">Abrir Obra em 3D na Matriz</a></div></div></section>`;}
- if(!pode(S))return'';css();
+function html(S,p){if(ehDemo(S,p)){css();const pedir=`https://wa.me/${ZAP}?text=${encodeURIComponent('Olá, FC! Conheci a Plataforma FC 3D pelo demonstrativo e quero saber do Simulador de Obra 3D para a '+(S.empresa_nome||'minha empresa')+'.')}`;
+  return `<section class="o3p" id="o3p"><div class="hero"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Novidade da plataforma</span><h2 style="margin-top:8px">Simulador de Obra 3D</h2><p>O orçamento da obra vira uma apresentação em 3D, com a marca da sua empresa, para o cliente abrir no celular. O link vai sem preço, e você aprova antes de enviar.</p></div><div class="bts"><a class="btn pri" href="${pedir}" target="_blank" rel="noopener">Quero conhecer</a></div></div>
+  <div class="pas"><div><b><i>1</i>Anexe o orçamento</b><span>O PDF criado pelo sistema, com local, tipologia e medidas.</span></div><div><b><i>2</i>Filtro FC</b><span>A FC confere e monta o 3D com a marca da sua empresa e libera para a sua avaliação.</span></div><div><b><i>3</i>Avalie e encaminhe</b><span>Você confere e aprova. O link, sem preço, fica liberado para o seu cliente.</span></div></div></section>`;}
+ if(S&&S.matriz&&!S.empresa){css();return `<section class="o3p" id="o3p"><div class="hero"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Novo · teste · só a FC vê esta orientação</span><h2 style="margin-top:8px">Simulador de Obra 3D</h2><p>Cada empresa tem o seu link de envio e o seu plano (teste de 3 dias ou pacote). Escolha a empresa em <b>Dentro de</b>, no topo, para ver como ela vê e ligar o Simulador com o código do Painel da Matriz → Obra em 3D.</p></div><div class="bts"><a class="btn pri" href="https://fc-consultoria.github.io/treinamento/orcamentos/obra3d.html" target="_blank" rel="noopener">Abrir Obra em 3D na Matriz</a></div></div></section>`;}
+ if(!pode(S,p))return'';css();
  const pas=`<div class="pas"><div><b><i>1</i>Anexe o orçamento</b><span>O PDF criado pelo sistema, com local, tipologia e medidas.</span></div><div><b><i>2</i>Filtro FC</b><span>A FC confere e monta o 3D com a marca da sua empresa e libera para a sua avaliação.</span></div><div><b><i>3</i>Avalie e encaminhe</b><span>Você confere e aprova. O link, sem preço, fica liberado para o seu cliente.</span></div></div>`;
  if(!S.obra3d){
-  const pedir=`https://wa.me/${ZAP}?text=${encodeURIComponent('Olá, FC! Sou da '+(S.empresa_nome||'empresa')+' e quero testar o Simulado de Obra 3D por 3 dias na Plataforma FC 3D.')}`;
-  return `<section class="o3p" id="o3p"><div class="hero"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Novo · teste de 3 dias</span><h2 style="margin-top:8px">Simulado de Obra 3D</h2><p>Transforme o orçamento da obra numa apresentação em 3D, com a marca da sua empresa, para o cliente abrir no celular. Sem preço no link.</p></div><div class="bts"><a class="btn pri" href="${pedir}" target="_blank" rel="noopener">Quero testar por 3 dias</a></div></div>${pas}
-  ${S.matriz?`<div class="fc"><b>Acesso FC · ligar o Simulado de Obra 3D desta empresa</b><p class="mute" style="font-size:13px;margin:4px 0 0">Crie o link de envio no Painel da Matriz (Obra em 3D → Links de envio, plano Teste ou Pacote), toque em <b>Código p/ Plataforma</b> e cole aqui.</p><input id="o3pCod" placeholder="Código do link de envio" autocomplete="off"><button class="btn pri" type="button" id="o3pSalvar">Ligar Simulado de Obra 3D</button> <span class="msg" id="o3pMsg" role="status"></span></div>`:''}</section>`;}
- return `<section class="o3p" id="o3p"><div class="hero"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Novo</span><h2 style="margin-top:8px">Simulado de Obra 3D</h2><p>Anexe o orçamento criado pelo sistema. O projeto passa pelo filtro da FC e volta para a sua avaliação. Depois de aprovado, o link 3D, sem preço, fica liberado para o seu cliente.</p><div class="pl" id="o3pPl"><span class="chip">Carregando…</span></div></div><div class="bts"><a class="btn pri" id="o3pEnv" href="${ENVIO(S.obra3d)}" target="_blank" rel="noopener">⬆ Anexar orçamento (PDF)</a></div></div>
+  const pedir=`https://wa.me/${ZAP}?text=${encodeURIComponent('Olá, FC! Sou da '+(S.empresa_nome||'empresa')+' e quero testar o Simulador de Obra 3D por 3 dias na Plataforma FC 3D.')}`;
+  return `<section class="o3p" id="o3p"><div class="hero"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Novo · teste de 3 dias</span><h2 style="margin-top:8px">Simulador de Obra 3D</h2><p>Transforme o orçamento da obra numa apresentação em 3D, com a marca da sua empresa, para o cliente abrir no celular. Sem preço no link.</p></div><div class="bts"><a class="btn pri" href="${pedir}" target="_blank" rel="noopener">Quero testar por 3 dias</a></div></div>${pas}
+  ${S.matriz?`<div class="fc"><b>Acesso FC · ligar o Simulador de Obra 3D desta empresa</b><p class="mute" style="font-size:13px;margin:4px 0 0">Crie o link de envio no Painel da Matriz (Obra em 3D → Links de envio, plano Teste ou Pacote), toque em <b>Código p/ Plataforma</b> e cole aqui.</p><input id="o3pCod" placeholder="Código do link de envio" autocomplete="off"><button class="btn pri" type="button" id="o3pSalvar">Ligar Simulador de Obra 3D</button> <span class="msg" id="o3pMsg" role="status"></span></div>`:''}</section>`;}
+ return `<section class="o3p" id="o3p"><div class="hero"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Novo</span><h2 style="margin-top:8px">Simulador de Obra 3D</h2><p>Anexe o orçamento criado pelo sistema. O projeto passa pelo filtro da FC e volta para a sua avaliação. Depois de aprovado, o link 3D, sem preço, fica liberado para o seu cliente.</p><div class="pl" id="o3pPl"><span class="chip">Carregando…</span></div></div><div class="bts"><a class="btn pri" id="o3pEnv" href="${ENVIO(S.obra3d)}" target="_blank" rel="noopener">⬆ Anexar orçamento (PDF)</a></div></div>
   ${pas}<div class="cab" style="margin-top:14px"><div><h2 style="font-size:18px">Projetos enviados</h2></div><button class="btn sec" type="button" id="o3pAtu">↻ Atualizar</button></div><div class="lst" id="o3pLst"><p class="mute">Carregando…</p></div>
   ${S.matriz?`<div class="fc"><b>Acesso FC</b><p class="mute" style="font-size:13px;margin:4px 0 0">Plano e liberação de projetos ficam no Painel da Matriz → Obra em 3D. Para trocar o link desta empresa, cole outro código; deixe vazio para desligar.</p><input id="o3pCod" placeholder="Código do link de envio" autocomplete="off" value="${e(S.obra3d)}"><button class="btn sec" type="button" id="o3pSalvar">Salvar</button> <span class="msg" id="o3pMsg" role="status"></span></div>`:''}</section>`;}
 
 function pinta(S){const pl=document.getElementById('o3pPl'),ls=document.getElementById('o3pLst');if(!pl||!ls)return;
  if(D===false){pl.innerHTML='<span class="chip a">Sem conexão</span>';ls.innerHTML='<p class="mute">Não foi possível carregar os projetos. Confira a internet e toque em Atualizar.</p>';return;}
- if(!D){pl.innerHTML='<span class="chip a">Link de envio desligado</span>';ls.innerHTML='<p class="mute">O Simulado de Obra 3D desta empresa está pausado. Fale com a FC Consultoria.</p>';const b=document.getElementById('o3pEnv');if(b){b.removeAttribute('href');b.classList.add('sec');b.classList.remove('pri');b.setAttribute('aria-disabled','true');}return;}
- const p=planoTx(D);const pedir=`https://wa.me/${ZAP}?text=${encodeURIComponent('Olá, FC! Sou da '+(S.empresa_nome||'empresa')+' e quero liberar o pacote de projetos do Simulado de Obra 3D.')}`;
+ if(!D){pl.innerHTML='<span class="chip a">Link de envio desligado</span>';ls.innerHTML='<p class="mute">O Simulador de Obra 3D desta empresa está pausado. Fale com a FC Consultoria.</p>';const b=document.getElementById('o3pEnv');if(b){b.removeAttribute('href');b.classList.add('sec');b.classList.remove('pri');b.setAttribute('aria-disabled','true');}return;}
+ const p=planoTx(D);const pedir=`https://wa.me/${ZAP}?text=${encodeURIComponent('Olá, FC! Sou da '+(S.empresa_nome||'empresa')+' e quero liberar o pacote de projetos do Simulador de Obra 3D.')}`;
  pl.innerHTML=`<span class="chip ${p.c}">${e(p.t)}</span>${p.fim?`<a class="btn sec" style="padding:6px 11px;font-size:12.5px" href="${pedir}" target="_blank" rel="noopener">Falar com a FC para liberar</a>`:''}`;
  const env=document.getElementById('o3pEnv');if(env&&p.fim){env.removeAttribute('href');env.classList.add('sec');env.classList.remove('pri');env.setAttribute('aria-disabled','true');env.title=p.t;}
  const P=D.projetos||[];
@@ -81,12 +85,12 @@ function pinta(S){const pl=document.getElementById('o3pPl'),ls=document.getEleme
   const aj=card.querySelector('.aj'),ta=aj.querySelector('textarea'),m=aj.querySelector('.msg');ta.focus();
   aj.querySelector('button').onclick=()=>{if(ta.value.trim().length<3){m.textContent='Descreva o ajuste.';ta.focus();return;}m.textContent='Enviando…';avaliar(card.dataset.pj,false,ta.value,m);};});}
 
-async function carregar(S,cen,rpc,refazer){if(!pode(S)||!document.getElementById('o3p'))return;
- CEN=cen;RE=()=>carregar(S,cen,rpc,refazer);
+async function carregar(S,cen,rpc,refazer,p){if(ehDemo(S,p)||!pode(S,p)||!document.getElementById('o3p'))return;
+ CEN=cen;RE=()=>carregar(S,cen,rpc,refazer,p);
  const sv=document.getElementById('o3pSalvar');
  if(sv)sv.onclick=async()=>{const m=document.getElementById('o3pMsg');m.textContent='Salvando…';try{const r=await rpc('pfc_obra3d_definir',{p_token:S.token,p_cod:document.getElementById('o3pCod').value});S.obra3d=r.obra3d;D=null;refazer();}catch(err){m.textContent=err.message||'Não foi possível salvar.';}};
  if(!S.obra3d||carregando)return;
- const at=document.getElementById('o3pAtu');if(at)at.onclick=()=>carregar(S,cen,rpc,refazer);
+ const at=document.getElementById('o3pAtu');if(at)at.onclick=()=>carregar(S,cen,rpc,refazer,p);
  carregando=true;try{D=await cen('obra3d_envio_meus',{tok:S.obra3d});}catch(_){D=false;}carregando=false;pinta(S);}
 
 /* ao voltar da aba do envio, atualiza a lista sozinho */
