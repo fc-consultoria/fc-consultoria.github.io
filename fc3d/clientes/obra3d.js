@@ -8,8 +8,9 @@
 (function(){
 "use strict";
 const BASE='https://fc-consultoria.github.io/treinamento/orcamentos/';
-const ENVIO=t=>BASE+'obra3d-envio.html?t='+encodeURIComponent(t);
+const ENVIO=t=>BASE+'obra3d-envio.html?t='+encodeURIComponent(t)+'&de=fc3d';/* de=fc3d: a página mostra Voltar para o painel */
 const LINK=t=>BASE+'apresentacao.html?t='+encodeURIComponent(t);
+const VER=t=>LINK(t)+'&de=fc3d';/* só para abrir daqui (com Voltar); o link copiado ou enviado ao cliente é o LINK limpo */
 const ZAP='5566999867984';
 const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const dt=v=>v?new Date(v).toLocaleDateString('pt-BR'):'';
@@ -59,7 +60,7 @@ function html(S,p){if(ehDemo(S,p)){css();const pedir=`https://wa.me/${ZAP}?text=
   const pedir=`https://wa.me/${ZAP}?text=${encodeURIComponent('Olá, FC! Sou da '+(S.empresa_nome||'empresa')+' e quero testar o Simulador de Obra 3D por 3 dias na Plataforma FC 3D.')}`;
   return `<section class="o3p" id="o3p"><div class="hero"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Novo · teste de 3 dias</span><h2 style="margin-top:8px">Simulador de Obra 3D</h2><p>Transforme o orçamento da obra numa apresentação em 3D, com a marca da sua empresa, para o cliente abrir no celular. Sem preço no link.</p></div><div class="bts"><a class="btn pri" href="${pedir}" target="_blank" rel="noopener">Quero testar por 3 dias</a></div></div>${pas}
   ${S.matriz?`<div class="fc"><b>Acesso FC · ligar o Simulador de Obra 3D desta empresa</b><p class="mute" style="font-size:13px;margin:4px 0 0">Crie o link de envio no Painel da Matriz (Obra em 3D → Links de envio, plano Teste ou Pacote), toque em <b>Código p/ Plataforma</b> e cole aqui.</p><input id="o3pCod" placeholder="Código do link de envio" autocomplete="off"><button class="btn pri" type="button" id="o3pSalvar">Ligar Simulador de Obra 3D</button> <span class="msg" id="o3pMsg" role="status"></span></div>`:''}</section>`;}
- return `<section class="o3p" id="o3p"><div class="hero"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Novo</span><h2 style="margin-top:8px">Simulador de Obra 3D</h2><p>Anexe o orçamento criado pelo sistema. O projeto passa pelo filtro da FC e volta para a sua avaliação. Depois de aprovado, o link 3D, sem preço, fica liberado para o seu cliente.</p><div class="pl" id="o3pPl"><span class="chip">Carregando…</span></div></div><div class="bts"><a class="btn pri" id="o3pEnv" href="${ENVIO(S.obra3d)}" target="_blank" rel="noopener">⬆ Anexar orçamento (PDF)</a></div></div>
+ return `<section class="o3p" id="o3p"><div class="hero"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Novo</span><h2 style="margin-top:8px">Simulador de Obra 3D</h2><p>Anexe o orçamento criado pelo sistema. O projeto passa pelo filtro da FC e volta para a sua avaliação. Depois de aprovado, o link 3D, sem preço, fica liberado para o seu cliente.</p><div class="pl" id="o3pPl"><span class="chip">Carregando…</span></div></div><div class="bts"><a class="btn pri" id="o3pEnv" href="${ENVIO(S.obra3d)}">⬆ Anexar orçamento (PDF)</a></div></div>
   ${pas}<div class="cab" style="margin-top:14px"><div><h2 style="font-size:18px">Projetos enviados</h2></div><button class="btn sec" type="button" id="o3pAtu">↻ Atualizar</button></div><div class="lst" id="o3pLst"><p class="mute">Carregando…</p></div>
   ${S.matriz?`<div class="fc"><b>Acesso FC</b><p class="mute" style="font-size:13px;margin:4px 0 0">Plano e liberação de projetos ficam no Painel da Matriz → Obra em 3D. Para trocar o link desta empresa, cole outro código; deixe vazio para desligar.</p><input id="o3pCod" placeholder="Código do link de envio" autocomplete="off" value="${e(S.obra3d)}"><button class="btn sec" type="button" id="o3pSalvar">Salvar</button> <span class="msg" id="o3pMsg" role="status"></span></div>`:''}</section>`;}
 
@@ -72,8 +73,8 @@ function pinta(S){const pl=document.getElementById('o3pPl'),ls=document.getEleme
  const P=D.projetos||[];
  ls.innerHTML=P.length?P.map(x=>{const st=ST[x.status]||ST.filtro;const u=x.link?LINK(x.link):'';
   const zap=u?`https://wa.me/?text=${encodeURIComponent('Segue a apresentação 3D da sua obra'+(x.obra?' ('+x.obra+')':'')+': '+u)}`:'';
-  const ac=x.status==='avaliar'?`<a class="btn sec" href="${e(u)}" target="_blank" rel="noopener">Abrir para avaliar</a><button class="btn pri" type="button" data-o3ok="${e(x.id)}">✓ Aprovar</button><button class="btn sec" type="button" data-o3aj="${e(x.id)}">Pedir ajuste</button>`
-   :x.status==='aprovado'?`<a class="btn sec" href="${e(u)}" target="_blank" rel="noopener">Abrir</a><button class="btn sec" type="button" data-o3c="${e(u)}">Copiar link</button><a class="btn pri" href="${e(zap)}" target="_blank" rel="noopener">WhatsApp</a>`:'';
+  const ac=x.status==='avaliar'?`<a class="btn sec" href="${e(VER(x.link))}">Abrir para avaliar</a><button class="btn pri" type="button" data-o3ok="${e(x.id)}">✓ Aprovar</button><button class="btn sec" type="button" data-o3aj="${e(x.id)}">Pedir ajuste</button>`
+   :x.status==='aprovado'?`<a class="btn sec" href="${e(VER(x.link))}">Abrir</a><button class="btn sec" type="button" data-o3c="${e(u)}">Copiar link</button><a class="btn pri" href="${e(zap)}" target="_blank" rel="noopener">WhatsApp</a>`:'';
   return `<div class="pj" data-pj="${e(x.id)}"><div><b>${e(x.obra||x.cliente||'Obra')}</b><small>${x.numero?'Orçamento '+e(x.numero)+' · ':''}${x.itens} ${x.itens===1?'item':'itens'} · enviado em ${dt(x.criado)}</small><small><span class="chip ${st[1]}" style="margin-top:4px">${st[0]}</span> ${st[2]}</small>${x.nota?`<div class="nt"><b>Seu pedido de ajuste:</b> ${e(x.nota)}</div>`:''}</div>
    <div class="ac">${ac}</div></div>`}).join('')
   :`<p class="mute">Nenhum orçamento enviado ainda. Toque em <b>Anexar orçamento (PDF)</b> para começar.</p>`;
