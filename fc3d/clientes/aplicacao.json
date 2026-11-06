@@ -760,16 +760,6 @@
     "pos": "Trilho inferior janela de correr 2 folhas com parapeito · no marco · 1 peça"
    }
   ],
-  "SU-103": [
-   {
-    "m": "jc4p",
-    "pos": "Baguete grande · na fixo · 16 peças"
-   },
-   {
-    "m": "jc4pa",
-    "pos": "Baguete grande · na fixo · 16 peças"
-   }
-  ],
   "SU-086": [
    {
     "m": "jc4p",
@@ -938,12 +928,6 @@
     "pos": "Trilho inferior porta/janela de correr camarão · no marco · 1 peça"
    }
   ],
-  "SU-071": [
-   {
-    "m": "jvc7",
-    "pos": "Componente camarão · no marco · 4 peças"
-   }
-  ],
   "SU-072": [
    {
     "m": "jvc7",
@@ -1092,24 +1076,6 @@
     "pos": "Trilho inferior porta de correr 3/6 folhas · no marco · 1 peça"
    }
   ],
-  "SU-203": [
-   {
-    "m": "pvz3",
-    "pos": "Baguete inferior veneziana · na folha veneziana ventilada e folha veneziana cega · 2 peças"
-   }
-  ],
-  "SU-279": [
-   {
-    "m": "pg1",
-    "pos": "Marco da porta de giro · no marco · 3 peças"
-   }
-  ],
-  "SU-111": [
-   {
-    "m": "pg1",
-    "pos": "Montante da folha porta de giro (variação) · na folha de giro · 2 peças"
-   }
-  ],
   "SU-110": [
    {
     "m": "pg1",
@@ -1130,12 +1096,6 @@
    {
     "m": "mx2p",
     "pos": "Travessa folha 90° da maxim-ar com olhal · na folha maxim-ar · 2 peças"
-   }
-  ],
-  "SU-292": [
-   {
-    "m": "mx2p",
-    "pos": "Inversor de baguete · na fixo · 4 peças"
    }
   ],
   "LG-044": [

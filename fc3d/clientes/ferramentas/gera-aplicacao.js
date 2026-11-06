@@ -12,7 +12,9 @@ vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(T,'montagens.js'
 const FCM=ctx.window.FCM,S=JSON.parse(fs.readFileSync(path.join(T,'secoes.json'),'utf8'));
 FCM.carregarAjustes().then(()=>{if(AJD)console.log('Ajustes técnicos aplicados: '+Object.keys(AJD).length);
 const lista=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' e '+a[a.length-1];
-const AMOSTRA=['jc2','g_jc2'];/* janela de correr 2 folhas Suprema e Gold */
+const AMOSTRA=['jc2','g_jc2'];
+/* Aplicações escondidas de todos os acessos enquanto a FC corrige a posição no Ajuste técnico (tipologia:perfil). Tirar daqui quando corrigir. */
+const OCULTAR=new Set(['pg1:SU-279','pg1:SU-111','jc4p:SU-103','jc4pa:SU-103','pvz3:SU-203','mx2p:SU-292','jvc7:SU-071']);/* janela de correr 2 folhas Suprema e Gold */
 const modelos={},perfis={},fora=[];
 Object.entries(FCM.MONT).forEach(([k,m])=>{
  if(m.aj){fora.push(m.cd+' ('+m.aj+')');return;}
@@ -22,6 +24,7 @@ Object.entries(FCM.MONT).forEach(([k,m])=>{
  modelos[k]={n:m.n,linha:m.linha.replace(/^Linha\s+/,''),ref:m.cd};
  Object.entries(U).forEach(([c,u])=>{const onde=[];if(u.marco)onde.push('no marco');
   if(u.f.length)onde.push(u.f.length===R.folhas.length&&u.f.length>1?'em todas as folhas':'na '+lista(u.f.map(x=>x.toLowerCase())));
+  if(OCULTAR.has(k+':'+c))return;
   (perfis[c]=perfis[c]||[]).push({m:k,pos:((S[c]||{}).n||'Perfil')+' · '+onde.join(' e ')+' · '+u.q+(u.q>1?' peças':' peça')});});
 });
 /* amostra pronta: peças já calculadas e só as seções usadas */

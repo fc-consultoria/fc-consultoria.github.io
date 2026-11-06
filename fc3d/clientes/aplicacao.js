@@ -13,7 +13,7 @@ const CLIENTE=(()=>{try{return new URLSearchParams(location.search).has('cliente
 const FULL=(()=>{if(CLIENTE)return false;if(window.FCAPL_FULL)return true;try{return !!localStorage.getItem('pfc-token');}catch(_){return false;}})();
 const ZAP='5566999867984';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const dados=()=>DADOS||(DADOS=fetch(BASE+'aplicacao.json?v=3',{cache:'no-cache'}).then(r=>r.json()).catch(()=>({modelos:{},perfis:{}})));
+const dados=()=>DADOS||(DADOS=fetch(BASE+'aplicacao.json?v=4',{cache:'no-cache'}).then(r=>r.json()).catch(()=>({modelos:{},perfis:{}})));
 const sc=u=>new Promise((ok,er)=>{const s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=er;document.head.appendChild(s);});
 const libs=()=>LIBS||(LIBS=(window.THREE&&THREE.REVISION==='128'?Promise.resolve():sc(L3[0])).then(()=>THREE.OrbitControls?null:sc(L3[1]))
  .then(()=>FULL?(window.FCM?null:sc(BASE+'tecnico/montagens.js?v=3')).then(()=>Promise.all([fetch(BASE+'tecnico/secoes.json?v=3').then(r=>r.json()).then(j=>{SEC=j;}),FCM.carregarAjustes()]))
