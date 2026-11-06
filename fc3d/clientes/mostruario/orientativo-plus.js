@@ -149,6 +149,7 @@ body.oxnovo #side>details.card.oxsel>summary{display:none!important}
 #oxPane .swc table{width:100%;border-collapse:collapse;margin-top:6px}#oxPane .swc th,#oxPane .swc td{padding:3px 4px;border-bottom:1px solid #eef1f3;text-align:right;font-weight:500}#oxPane .swc th{text-align:left;color:var(--muted,#5b6770);font-weight:400}
 #oxPane .swc .up{color:#b45309}#oxPane .swc .dn{color:#047857}
 #oxPane .sw3{margin:6px 0;position:relative}#oxPane .sw3o{position:absolute;left:0;top:0;width:100%;height:170px;pointer-events:none}#oxPane .swc .sw3o svg{position:absolute;inset:0;width:100%;height:100%;max-height:none;background:none;border-radius:0;overflow:visible}#oxPane .sw3o line{stroke:#24313a;stroke-width:1.4}#oxPane .sw3o b{position:absolute;font:600 12px var(--f-mono,monospace);padding:3px 7px;border-radius:5px;white-space:nowrap}#oxPane .sw3o .t0{left:8px;top:8px;background:#fff;border:1.5px solid #24313a;color:#24313a}#oxPane .sw3o .t1{right:8px;top:8px;background:#6fd6cb;color:#08332f}#oxPane .sw3l{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:5px;font-size:11.5px;color:var(--muted,#5b6770)}#oxPane .sw3l i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}#oxPane .sw3l .dc{margin-left:auto;opacity:.8}
+#oxPane .us small{display:block;font:400 12px var(--f-mono,monospace);color:var(--muted,#5b6770);margin-top:2px}#oxPane .us[aria-pressed="true"]{background:#fff1e0;box-shadow:inset 3px 0 0 #ff8a00}
 #oxPane .oxlnk{background:none;border:0;color:#02717d;font:600 13px var(--f-body,system-ui);cursor:pointer;padding:4px 0 8px}
 #oxPinfo dl.cmpf{display:block}#oxPinfo dl.cmpf dt{margin-top:8px}#oxPinfo dl.cmpf dd{text-align:left;font:400 13.5px/1.45 var(--f-body,system-ui);margin:2px 0 0}
 #oxPinfo img{max-width:100%;max-height:120px;object-fit:contain;display:block;margin:6px 0;background:#fff;border-radius:6px}
@@ -199,7 +200,7 @@ function semDiagrama(){const st=estado(),on=!!(ACESSO&&st&&tipoNovo(st.typo)),bt
  if(bt.dataset.oxdia!==String(on)){bt.dataset.oxdia=String(on);bt.style.display=on?'none':'';}}
 let NOVO=false,medindo=false,abaAt='p',confCasa=null;
 function querNovo(){const st=estado();return !!(ACESSO&&st&&tipoNovo(st.typo)&&st.mode==='exp'&&!st.wvOn&&!st.diaOn);}
-const ABAS=[['p','Peças',null],['c','Componentes',null],['s','Trocar perfil',null],['u','Usinagens','c-us'],['v','Vento','c-conf'],['b','Base técnica',null]];
+const ABAS=[['p','Peças',null],['c','Componentes',null],['s','Trocar perfil',null],['u','Usinagens',null],['v','Vento','c-conf'],['b','Base técnica',null]];
 function ligaNovo(){NOVO=true;document.body.classList.add('oxnovo');
  const side=document.getElementById('side');
  if(side&&!document.getElementById('oxTabs')){
@@ -216,7 +217,7 @@ function desligaNovo(){NOVO=false;document.body.classList.remove('oxnovo');
  document.querySelectorAll('#side>details.oxsel').forEach(e=>e.classList.remove('oxsel'));
  const cf=document.getElementById('c-conf');if(cf&&confCasa){if(confCasa.flu)cf.classList.add('cf-flu');confCasa.pai.insertBefore(cf,confCasa.prox);confCasa=null;}
  if(APP){APP.novo=false;APP.classico(false);}fecharCamada();}
-function aba(k){if(abaAt==='v'&&k!=='v'&&typeof window.FC_VT_END==='function'){try{window.FC_VT_END();}catch(_){}}abaAt=k;if(APP&&APP.comps&&k!=='c')APP.comps(false);if(APP&&APP.trocas&&k!=='s')APP.trocas(false);if(APP&&APP.vento&&k!=='v')APP.vento(false);const def=ABAS.find(a=>a[0]===k);
+function aba(k){if(abaAt==='v'&&k!=='v'&&typeof window.FC_VT_END==='function'){try{window.FC_VT_END();}catch(_){}}abaAt=k;if(APP&&APP.comps&&k!=='c')APP.comps(false);if(APP&&APP.trocas&&k!=='s')APP.trocas(false);if(APP&&APP.vento&&k!=='v')APP.vento(false);if(APP&&APP.usin&&k!=='u')APP.usin(false);const def=ABAS.find(a=>a[0]===k);
  document.querySelectorAll('#oxTabs [data-aba]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.aba===k)));
  document.querySelectorAll('#side>details.oxsel').forEach(e=>e.classList.remove('oxsel'));
  const pn=document.getElementById('oxPane');if(!pn)return;
@@ -224,6 +225,7 @@ function aba(k){if(abaAt==='v'&&k!=='v'&&typeof window.FC_VT_END==='function'){t
  pn.hidden=false;if(APP)APP.classico(false);
  if(k==='c'){compPane();return;}
  if(k==='s'){trocaPane();return;}
+ if(k==='u'){usinPane();return;}
  if(k==='b'){pn.innerHTML='<p class="nt">Desenho do catálogo técnico que serviu de base para o 3D.</p><img src="base/jcr200.webp" alt="Folha de montagem da SUP JCR 200 com elevação e cortes" loading="lazy"><p class="nt" style="margin-top:8px">Folha de montagem · elevação e cortes · catálogo p. 117. Fonte técnica: catálogo da Linha Suprema, SUP JCR 200.</p>';return;}
  pecasPane();}
 function compPane(){const pn=document.getElementById('oxPane');if(!pn||abaAt!=='c')return;
@@ -254,6 +256,16 @@ function trocaPane(){const pn=document.getElementById('oxPane');if(!pn||abaAt!==
  if(at)requestAnimationFrame(()=>APP.miniComp(at,at.dataset.b));
  pn.onmouseleave=()=>APP.trocaFoco(null,false);
  APP.aoTroca=trocaPane;APP.aoTrocaFoco=b=>pn.querySelectorAll('.swr').forEach(r=>{if(r.dataset.b===b)r.scrollIntoView({block:'nearest',behavior:'smooth'});});}
+function usinPane(){const pn=document.getElementById('oxPane');if(!pn||abaAt!=='u')return;
+ if(!APP){pn.innerHTML='<p class="nt">Abrindo as usinagens…</p>';return;}
+ APP.usin(true);const L=APP.usinLista();
+ if(!L.length){pn.innerHTML='<p class="nt">Esta tipologia não tem usinagens cadastradas no catálogo.</p>';return;}
+ pn.innerHTML='<p class="nt">Toque numa usinagem para ver no 3D onde ela é feita · o ponto laranja marca o lugar</p><div id="oxUs">'
+  +L.map(u=>`<button type="button" class="lin us" data-u="${esc(u.id)}" aria-pressed="false"><b>${esc(u.id)}</b><span>${esc(u.s)}<small>${esc(u.p.join(' · '))}</small></span></button>`).join('')+'</div>';
+ const box=document.getElementById('oxUs');
+ box.querySelectorAll('[data-u]').forEach(b=>{b.onmouseenter=()=>APP.usinHover(b.dataset.u);b.onclick=()=>{const u=APP.usinAtual()===b.dataset.u?null:b.dataset.u;APP.usinSel(u);if(u&&innerWidth<900){const st=document.getElementById('stage');if(st)st.scrollIntoView({behavior:'smooth',block:'start'});}};});
+ box.onmouseleave=()=>APP.usinHover(null);
+ APP.aoUsin=u=>box.querySelectorAll('[data-u]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.u===u)));}
 function pecasPane(){const pn=document.getElementById('oxPane');if(!pn||abaAt!=='p')return;
  if(!APP){pn.innerHTML='<p class="nt">Abrindo as peças…</p>';return;}
  const L=APP.lista(),n=L.reduce((a,x)=>a+x.q,0);
@@ -441,14 +453,14 @@ function pick(ev){const r=RN.domElement.getBoundingClientRect();PT.set((ev.clien
  const h=hits.find(x=>!x.object.userData.hd.userData.o.vid)||hits[0];return h?h.object.userData.hd:null;}
 RN.domElement.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY};arrastaIni(e);});
 RN.domElement.addEventListener('pointerup',e=>{if(!down)return;const mv=Math.hypot(e.clientX-down.x,e.clientY-down.y);down=null;if(mv>6||seq>=0||cAt)return;
- if(CMODO){const c=pickComp(e);if(c)compSel(c);return;}const p=pick(e);if(TMODO){if(p&&!p.userData.o.vid){tFoco=doB(p);trocaPinta();trocaCard(tFoco);if(API.aoTrocaFoco)API.aoTrocaFoco(tFoco);}return;}
+ if(CMODO){const c=pickComp(e);if(c)compSel(c);return;}const p=pick(e);if(UMODO){if(p&&!p.userData.o.vid){const u=usinLista().find(x=>x.p.includes(doB(p))||x.p.includes(p.userData.o.c));if(u)usinSel(u.id);}return;}if(TMODO){if(p&&!p.userData.o.vid){tFoco=doB(p);trocaPinta();trocaCard(tFoco);if(API.aoTrocaFoco)API.aoTrocaFoco(tFoco);}return;}
  if(!p)return;const agora=performance.now();
  if(toque&&toque.p===p&&agora-toque.t<330){clearTimeout(toque.tm);toque=null;if(p.userData.solto)devolve(p);else solta(p);return;}
  if(toque)clearTimeout(toque.tm);toque={p,t:agora,tm:setTimeout(()=>{toque=null;if(!p.userData.solto)abrePalco(p);else soltoCard(p);},300)};});
 RN.domElement.addEventListener('pointermove',e=>{if(arrasto){arrastaMove(e);return;}if(e.pointerType!=='mouse'||down||seq>=0||cAt)return;
  if(NSOLTO){const q=pick(e);sobreJanela=!!(q&&!q.userData.solto);CT.enableZoom=!(q&&q.userData.solto);}
  if(CMODO){const c=pickComp(e);if(c!==cHov){cHov=c;compPinta();}RN.domElement.style.cursor=c?'pointer':'grab';return;}const p=pick(e);if(p===hov)return;
- if(TMODO){RN.domElement.style.cursor=p?'pointer':'grab';return;}if(hov)hov.userData.ms.material=matBase(hov);hov=p&&!p.userData.o.vid?p:null;if(hov)hov.userData.ms.material=MHOV;RN.domElement.style.cursor=p?'pointer':'grab';});
+ if(TMODO||UMODO){RN.domElement.style.cursor=p?'pointer':'grab';return;}if(hov)hov.userData.ms.material=matBase(hov);hov=p&&!p.userData.o.vid?p:null;if(hov)hov.userData.ms.material=MHOV;RN.domElement.style.cursor=p?'pointer':'grab';});
 function tiraHover(){if(hov){hov.userData.ms.material=matBase(hov);hov=null;}}
 
 /* ---------- ver de perto: a peça sai da janela, de frente para a seção, com as cotas ---------- */
@@ -568,11 +580,11 @@ let ab=0,abT=0,jun=true,CLS=false,CMODO=false;
 function aplicaFolhas(){FOL.forEach(F=>{F.position.x=F.userData.ox+F.userData.ab*ab;});}
 function fechaFolhas(){ab=abT=0;aplicaFolhas();$('oxAbr').setAttribute('aria-pressed','false');}
 /* qualquer comando da barra volta do 3D clássico (abas Componentes, Trocar perfil, Usinagens, Vento) */
-function usa(){devolveTodas(true);if((CLS||CMODO||TMODO||VMODO)&&API.aoVoltar)API.aoVoltar();classico(false);fechaDD();}
+function usa(){devolveTodas(true);if((CLS||CMODO||TMODO||VMODO||UMODO)&&API.aoVoltar)API.aoVoltar();classico(false);fechaDD();}
 function classico(on){CLS=!!on;L0.classList.toggle('cls',CLS);$('oxVolta').hidden=!CLS;
  if(CLS){fechaPalco(true);if(seq>=0)seqFim();sairCorte(true);fechaMed();}else{tam();retoma();}}
-const vista=v=>{if(CMODO||TMODO||VMODO)classico(false);else usa();VISTA=v;L0.querySelectorAll('[data-v]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===v)));
- if(cAt){const id=cAt.id;cAt=null;abreCorte(id);}else if(CMODO&&cSel)compVoa(cSel);else if(TMODO&&tFoco)trocaVoa(tFoco);else enquadra(true);};
+const vista=v=>{if(CMODO||TMODO||VMODO||UMODO)classico(false);else usa();VISTA=v;L0.querySelectorAll('[data-v]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===v)));
+ if(cAt){const id=cAt.id;cAt=null;abreCorte(id);}else if(CMODO&&cSel)compVoa(cSel);else if(TMODO&&tFoco)trocaVoa(tFoco);else if(UMODO&&uSel)usinVoa(usinDe(uSel));else enquadra(true);};
 L0.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>vista(b.dataset.v));
 $('oxAbr').onclick=()=>{usa();sairCorte(true);if(seq>=0)seqFim();if(desm){desm=false;PECAS.forEach(p=>p.userData.tt=0);$('oxDesm').setAttribute('aria-pressed','false');}
  abT=abT?0:1;$('oxAbr').setAttribute('aria-pressed',String(!!abT));};
@@ -593,7 +605,7 @@ const JP={};E.cortes.forEach(c=>{const P=planoDe(c),z=zona(c),Xc=(z[0]+z[2])/2,Y
  JP[c.id]=P.eixo===1?new THREE.Vector3(c.zona==='esq'?-L/2:c.zona==='dir'?L/2:0,P.v,0):new THREE.Vector3(P.v,c.zona==='baixo'?-H/2:H/2,0);});
 $('oxJ').querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>abreCorte(b.dataset.j));
 const tmpV=new THREE.Vector3();
-function juncoes(){const box=$('oxJ'),on=jun&&!CLS&&!CMODO&&!TMODO&&!VMODO&&!NSOLTO&&!PECAS.some(p=>p.userData.t>.01)&&seq<0&&!cAt&&!desm&&!palcoHd&&!ab&&!abT;box.style.display=on?'':'none';if(!on)return;
+function juncoes(){const box=$('oxJ'),on=jun&&!CLS&&!CMODO&&!TMODO&&!VMODO&&!UMODO&&!NSOLTO&&!PECAS.some(p=>p.userData.t>.01)&&seq<0&&!cAt&&!desm&&!palcoHd&&!ab&&!abT;box.style.display=on?'':'none';if(!on)return;
  const r=host.getBoundingClientRect();box.querySelectorAll('[data-j]').forEach(b=>{tmpV.copy(JP[b.dataset.j]).project(CAM);
   b.style.left=((tmpV.x+1)/2*r.width)+'px';b.style.top=((1-tmpV.y)/2*r.height)+'px';b.style.visibility=tmpV.z<1?'visible':'hidden';});}
 /* medida: tocou no selo, muda L × H (vale para o 3D novo e para o clássico) */
@@ -856,6 +868,36 @@ RN.domElement.addEventListener('pointerup',arrastaFim,true);RN.domElement.addEve
 RN.domElement.addEventListener('pointerleave',()=>{sobreJanela=false;});
 RN.domElement.addEventListener('wheel',e=>{if(!NSOLTO)return;const q=pick(e);if(!q||!q.userData.solto)return;e.preventDefault();e.stopImmediatePropagation();escala(q,e.deltaY<0?1.1:1/1.1);},{capture:true,passive:false});
 
+/* ---------- usinagens dentro do 3D novo (aba Usinagens) ----------
+   Lista do catálogo (a mesma do clássico). Os perfis da usinagem ficam em verde-água e um ponto laranja marca o lugar,
+   a partir da ponta da peça (a medida em mm vem do texto do catálogo quando houver). */
+let UMODO=false,uSel=null,uHov=null,UG=null;
+const MUS=new THREE.MeshBasicMaterial({color:'#ff7a00',depthTest:false,transparent:true,opacity:.95}),MUSR=new THREE.MeshBasicMaterial({color:'#ffd8a8',depthTest:false,transparent:true,opacity:.55});
+const GUS=new THREE.SphereGeometry(14,16,12),GUSR=new THREE.RingGeometry(20,26,28);
+function usinLista(){return ((G('USE')||[]).filter(u=>u&&u.id)).map(u=>({id:u.id,s:u.s||u.n,n:u.n,p:u.p||[],c:u.c||'',m:u.m||'',o:u.o||''}));}
+function usinDe(id){return usinLista().find(u=>u.id===id)||null;}
+function usinPecas(u){return PECAS.filter(p=>!p.userData.o.vid&&u.p.includes(doB(p))||(!p.userData.o.vid&&u.p.includes(p.userData.o.c)));}
+function usinPinta(){if(!UMODO)return;const a=usinDe(uSel||uHov),set=new Set(a?usinPecas(a):[]);materiais(p=>p.userData.o.vid?MGV:set.has(p)?MTRC:MALT);}
+function usinMarcas(u){if(UG){SC.remove(UG);UG=null;}if(!u)return;UG=new THREE.Group();SC.add(UG);ROOT.updateMatrixWorld(true);
+ const mm=(u.m.match(/a\s*([\d.,]+)\s*mm\s*da\s*ponta/i)||[])[1],off=mm?parseFloat(mm.replace(',','.')):35;
+ usinPecas(u).forEach(p=>{const o=p.userData.o,bx=new THREE.Box3().setFromObject(p),c=bx.getCenter(new THREE.Vector3()),ez=new THREE.Vector3(o.ez[0],o.ez[1],o.ez[2]).normalize(),h=(o.len||0)/2;
+  [1,-1].forEach(sg=>{const pt=c.clone().addScaledVector(ez,sg*Math.max(0,h-off)),m=new THREE.Mesh(GUS,MUS),r=new THREE.Mesh(GUSR,MUSR);m.position.copy(pt);r.position.copy(pt);r.userData.anel=1;m.renderOrder=r.renderOrder=9;UG.add(m,r);});});}
+function usinVoa(u){const box=new THREE.Box3();usinPecas(u).forEach(p=>box.expandByObject(p));if(box.isEmpty())return;
+ const c=box.getCenter(new THREE.Vector3()),sph=box.getBoundingSphere(new THREE.Sphere()),asp=Math.min(1,CAM.aspect||1),r=Math.max(500,sph.radius/Math.sin(THREE.MathUtils.degToRad(17))/asp*1.05),dir=CAM.position.clone().sub(CT.target).normalize();voa(c.clone().addScaledVector(dir,r),c);}
+function usinSel(id){uSel=id||null;usinPinta();if(API.aoUsin)API.aoUsin(uSel);const u=usinDe(uSel);usinMarcas(u);
+ if(!u){card(null);hint('Toque numa usinagem para ver onde ela é feita');return;}usinVoa(u);
+ card(`<div class="k">Usinagem ${esc(u.id)} · ${esc(u.p.join(' · '))}</div><div class="v">${esc(u.n)}</div>
+  <div class="p">${u.c?esc(u.c)+' ':''}${u.m?'<br><b>Medida:</b> '+esc(u.m):''}${u.o?'<br><span style="opacity:.8">'+esc(u.o)+'</span>':''}</div>
+  <div class="acts"><button class="oxbtn pri" type="button" id="oxUsP">🔍 Ver o perfil de perto</button><button class="oxbtn" type="button" id="oxUsX">Fechar</button></div>`);
+ $('oxUsP').onclick=()=>{const p=usinPecas(u)[0];if(p)abrePalco(p);};$('oxUsX').onclick=()=>usinSel(null);
+ hint('O ponto laranja marca onde a usinagem é feita · arraste para girar');}
+function usin(on){on=!!on;if(on===UMODO)return true;
+ if(on){devolveTodas(true);classico(false);fechaPalco(true);if(seq>=0)seqFim();sairCorte(true);fechaFolhas();
+  if(desm){desm=false;PECAS.forEach(p=>{p.userData.tt=0;});$('oxDesm').setAttribute('aria-pressed','false');}
+  UMODO=true;uSel=uHov=null;tiraHover();usinPinta();hint('Toque numa usinagem para ver onde ela é feita');enquadra(true);return true;}
+ UMODO=false;uSel=uHov=null;usinMarcas(null);card(null);materiais(matBase);enquadra(true);hint('Toque numa peça para ver de perto · arraste para girar');return true;}
+function usinTick(){if(!UG)return;const k=1+.25*Math.sin(performance.now()/260);UG.children.forEach(o=>{if(o.userData.anel){o.scale.setScalar(k);o.lookAt(CAM.position);}});}
+
 /* ---------- laço ---------- */
 function tam(){posMed();const b=host.getBoundingClientRect();RN.setSize(Math.max(1,b.width),Math.max(1,b.height),false);CAM.aspect=Math.max(1,b.width)/Math.max(1,b.height);CAM.updateProjectionMatrix();tamPalco();}
 const ro=window.ResizeObserver?new ResizeObserver(tam):null;if(ro)ro.observe(L0);else addEventListener('resize',tam);
@@ -867,7 +909,7 @@ function loop(now){raf=0;if(!vivo||L0.hidden||CLS)return;raf=requestAnimationFra
  soltoTick(dt);
  if(ab!==abT){ab=abT>ab?Math.min(abT,ab+dt*.9):Math.max(abT,ab-dt*.9);aplicaFolhas();}
  if(voo){voo.t=Math.min(1,voo.t+dt*1.6);CAM.position.lerpVectors(voo.a,voo.b,ease(voo.t));CT.target.lerpVectors(voo.ta,voo.tb,ease(voo.t));if(voo.t>=1)voo=null;}
- ventoTick();confereTrocas();miniTick();CT.update();RN.render(SC,CAM);juncoes();
+ ventoTick();confereTrocas();miniTick();usinTick();CT.update();RN.render(SC,CAM);juncoes();
  if(palcoHd&&PR){const t=(now-palcoT0)/1000,k=Math.min(1,t/.7),e=ease(k),u=PG.userData;
   PG.position.set(pFrom.x*(1-e)*u.dist*.35,pFrom.y*(1-e)*u.dist*.25,-(1-e)*u.dist*.8);PG.scale.setScalar(.35+.65*e);
   if(u.vid)PSPIN.rotation.y=Math.sin(t*.7)*.5;else{PG.rotation.y=Math.sin(t*.55)*.6;PG.rotation.x=.14+Math.sin(t*.37)*.08;}
@@ -886,7 +928,8 @@ const API={key:KEY,L,H,novo:false,aoVoltar:null,aoMedir:null,
  compHover(c){cHov=c||null;compPinta();},
  compSel(c){compSel(c);},
  compAtual(){return cSel;},
- vento,trocas,trocaLista,aoTroca:null,aoTrocaFoco:null,
+ vento,usin,usinLista,aoUsin:null,usinSel(u){usinSel(u);},usinHover(u){uHov=u||null;usinPinta();},usinAtual(){return uSel;},
+ trocas,trocaLista,aoTroca:null,aoTrocaFoco:null,
  troca(b,o){troca(b,o);},
  miniComp(box,b){miniComp(box,b);},
  trocaAtiva(){return tFoco;},
@@ -897,7 +940,7 @@ const API={key:KEY,L,H,novo:false,aoVoltar:null,aoMedir:null,
  pausar(){if(raf){cancelAnimationFrame(raf);raf=0;}},
  destruir(){vivo=false;this.pausar();if(ro)ro.disconnect();document.removeEventListener('keydown',onKey);document.removeEventListener('pointerdown',fora);
   document.removeEventListener('fullscreenchange',onFs);document.removeEventListener('webkitfullscreenchange',onFs);
-  GEO.forEach(g=>g.dispose());limpaCaps();compsLimpa();ventoLimpa();RN.dispose();if(PR)PR.dispose();}};
+  GEO.forEach(g=>g.dispose());limpaCaps();compsLimpa();ventoLimpa();usinMarcas(null);RN.dispose();if(PR)PR.dispose();}};
 montar();tam();retoma();
 return API;
 }
