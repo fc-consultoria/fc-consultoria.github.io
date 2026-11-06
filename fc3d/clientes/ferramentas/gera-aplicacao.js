@@ -23,10 +23,15 @@ Object.entries(FCM.MONT).forEach(([k,m])=>{
 /* amostra pronta: peças já calculadas e só as seções usadas */
 const r2=v=>Array.isArray(v)?v.map(r2):typeof v==='number'?Math.round(v*100)/100:v;
 const am={_nota:'Gerado por ferramentas/gera-aplicacao.js. Amostra pública da Aplicação.',m:{},sec:{}};
-AMOSTRA.forEach(k=>{const m=FCM.MONT[k];if(!m||m.aj)return;const R=FCM.pecas(S,m,m.def[0],m.def[1]);
+const pack=(am,k)=>{const m=FCM.MONT[k];if(!m||m.aj)return;const R=FCM.pecas(S,m,m.def[0],m.def[1]);
  am.m[k]={W:m.def[0],H:m.def[1],folhas:R.folhas.map(f=>({ox:r2(f.ox),oy:r2(f.oy||0),z:r2(f.z),dir:f.dir||0,curso:r2(f.curso||0),rot:f.rot||null,n:f.n})),
   P:R.P.filter(o=>!o.vz&&!o.oc).map(o=>{const q={g:o.g,p:r2(o.p)};if(o.vid)Object.assign(q,{vid:1,w:r2(o.w),h:r2(o.h),d:r2(o.d),nm:o.nm});else{Object.assign(q,{c:o.c,len:r2(o.len),ex:o.ex,ey:o.ey,ez:o.ez});if(o.sc)q.sc=r2(o.sc);
-   const sc=FCM.secOf(S,o.c);if(!am.sec[o.c])am.sec[o.c]={n:sc.n,s:sc.s};}return q;})};});
+   const sc=FCM.secOf(S,o.c);if(!am.sec[o.c])am.sec[o.c]={n:sc.n,s:sc.s};}return q;})};};
+AMOSTRA.forEach(k=>pack(am,k));
+/* 06/11/2026: "Ver o encaixe" liberado em todas as tipologias no público aberto (só o encaixe; esquadria inteira e folhas na Plataforma FC 3D) */
+const enc={_nota:'Gerado por ferramentas/gera-aplicacao.js. Público: só o Ver o encaixe das tipologias fora da amostra.',m:{},sec:{}};
+Object.keys(FCM.MONT).filter(k=>!AMOSTRA.includes(k)).forEach(k=>pack(enc,k));
+fs.writeFileSync(path.join(__dirname,'..','aplicacao-encaixe.json'),JSON.stringify(enc));
 fs.writeFileSync(path.join(__dirname,'..','aplicacao-amostra.json'),JSON.stringify(am));
 const out={amostra:AMOSTRA.filter(k=>modelos[k]),_nota:'Gerado automaticamente da base da Plataforma FC 3D (tecnico/montagens.js). Só montagens liberadas para os clientes. Não editar à mão: rode fc3d/clientes/ferramentas/gera-aplicacao.js.',modelos,perfis};
 fs.writeFileSync(path.join(__dirname,'..','aplicacao.json'),JSON.stringify(out,null,1)+'\n');
