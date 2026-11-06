@@ -51,6 +51,7 @@ function estilo(){if(css)return;css=true;const s=document.createElement('style')
 .apl .apr b{color:#17222a}
 .apl .aav{font-size:13px;line-height:1.45;color:#7a4a00;background:#fff4e1;border:1.5px solid #f2a024;border-radius:10px;padding:8px 10px}
 .apl .aav b{color:#5c3600}
+.apl .acta .mx{margin:6px 0 2px!important;font-size:13px}.apl .acta .mxl{list-style:none;margin:0 0 10px;padding:0;text-align:left;display:grid;gap:3px;font-size:12.5px;line-height:1.35}
 .apl .aap.lk{background:#f7f9fa}.apl .aap.lk b::after{content:' 🔒';font-size:13px}
 .apl .aap .alk{font-size:11.5px;font-weight:700;color:#17606b}
 .apl .ams{font-size:12.5px;line-height:1.4;color:#17606b;background:#e8f4f5;border-radius:9px;padding:7px 9px}
@@ -155,7 +156,7 @@ async function liga(o,code){if(CLIENTE||!o||!code)return;let D;try{D=await dados
   if(!LV[k]){const m=(D.modelos||{})[L[k].m]||{},onde=(window.CAT_SLUG||new URLSearchParams(location.search).get('c')||(location.pathname.match(/\/catalogo\/([^\/?#]+)/)||[])[1]||'');
    const msg='Olá! Vi a aplicação do perfil '+code+' na '+(m.n||'tipologia')+' ('+(m.ref||'')+')'+(onde?' no catálogo '+onde:' no catálogo da FC')+' e quero conhecer a Plataforma FC 3D.';
    pn.querySelector('.acv').innerHTML='';ld.hidden=true;vis(false);
-   cta.innerHTML=`<div><span class="ic">🔒</span><b>${esc(m.n||'')}</b><p>A montagem em 3D desta tipologia, com o perfil <b>${esc(code)}</b> destacado, o encaixe e a abertura das folhas, faz parte da <b>Plataforma FC 3D</b>.</p><a class="z" target="_blank" rel="noopener" href="https://wa.me/${ZAP}?text=${encodeURIComponent(msg)}">💬 Quero conhecer a Plataforma FC 3D</a><a class="v" target="_blank" rel="noopener" href="/fc3d/">Ver o que a plataforma oferece ↗</a><small>FC Consultoria em Esquadria</small></div>`;
+   cta.innerHTML=`<div><span class="ic">🔒</span><b>${esc(m.n||'')}</b><p>A montagem em 3D desta tipologia, com o perfil <b>${esc(code)}</b> destacado, o encaixe e a abertura das folhas, faz parte da <b>Plataforma FC 3D</b>.</p><p class="mx"><b>E a plataforma tem muito mais para a sua equipe comercial:</b></p><ul class="mxl"><li>🧩 Todas as tipologias em 3D, peça por peça</li><li>🔁 Substituição de perfis</li><li>📍 Onde vai cada perfil e componente</li><li>🌬️ Simulação de pressão de vento</li><li>🏠 Apresentação ao arquiteto e ao cliente final</li></ul><a class="z" target="_blank" rel="noopener" href="https://wa.me/${ZAP}?text=${encodeURIComponent(msg)}">💬 Quero conhecer a Plataforma FC 3D</a><a class="v" target="_blank" rel="noopener" href="/fc3d/">Ver o que a plataforma oferece ↗</a><small>FC Consultoria em Esquadria</small></div>`;
    cta.hidden=false;cta.querySelector('a.z').addEventListener('click',()=>{try{window.hit&&hit('perfis_aplicacao_cta',code+' '+L[k].m);}catch(_){}});
    try{window.hit&&hit('perfis_aplicacao_lk',code+' '+L[k].m);}catch(_){}return;}
   cta.hidden=true;vis(true);ld.hidden=false;ld.textContent='Montando a tipologia…';
