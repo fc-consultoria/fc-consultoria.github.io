@@ -1,6 +1,8 @@
 /* Bancada de montagem 2D · FC Consultoria */
 (function(){
 const R=document.getElementById('banc');if(!R)return;
+/* 06/11/2026: Bancada de montagem só para a FC (navegador marcado com ?eu=1) */
+let _eu=false;try{_eu=localStorage.getItem('fc_eu')==='1';}catch(_){}if(!_eu){R.remove();return;}
 const NS='http://www.w3.org/2000/svg',CORES=['#c9d2d8','#b9c9d6','#d5cdbf','#c3d6c8','#d6c3cf','#c8c4dc'];
 const ex=v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 let B=null,P=[],sel=null,seq=0,vb={x:-120,y:-70,w:240,h:140},ima=true;
