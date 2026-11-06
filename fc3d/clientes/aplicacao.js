@@ -181,8 +181,8 @@ function usaEm(){if(CLIENTE)return;const lst=document.getElementById('lst');if(!
   const nomes=c=>{const v=[];usos(D,c).forEach(a=>{const m=M[a.m]||{},n=m.n||a.m;if(!v.includes(n))v.push(n);});return v;};
   const marca=()=>lst.querySelectorAll('.cd[data-c]:not([data-usa])').forEach(cd=>{cd.dataset.usa='1';const c=String(cd.dataset.c).toUpperCase(),v=nomes(c);if(!v.length)return;
    const tx=v.length>2?v.slice(0,2).join(' · ')+' +'+(v.length-2):v.join(' · ');
-   const b=document.createElement('button');b.type='button';b.className='usa nov3';b.title='Ver onde este perfil é aplicado';b.setAttribute('aria-label','Usa em: '+v.join(', ')+'. Ver a aplicação');
-   b.innerHTML='<small>🧩 Usa em</small>'+esc(tx)+(FULL?'':'<span class="lk">🔒 3D completo na Plataforma FC 3D</span>');
+   const b=document.createElement('button');b.type='button';b.className='usa nov3';b.title='Ver onde este perfil é aplicado';b.setAttribute('aria-label','Aplicação: '+v.join(', ')+'. Ver a aplicação');
+   b.innerHTML='<small>🧩 Aplicação</small>'+esc(tx)+(FULL?'':'<span class="lk">🔒 3D completo na Plataforma FC 3D</span>');
    b.addEventListener('click',e=>{e.stopPropagation();PEND={c,t:Date.now()};try{window.hit&&hit('perfis_usaem',c);}catch(_){}cd.click();});
    cd.appendChild(b);});
   marca();let q=0;new MutationObserver(()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;marca();});}).observe(lst,{childList:true,subtree:true});});}

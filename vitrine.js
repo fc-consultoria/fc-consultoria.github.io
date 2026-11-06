@@ -17,8 +17,10 @@
 #vtC .vtzt{background:none;color:#13232e;padding:9px 12px 4px;font:700 calc(11px + var(--vtw,190px)*.018)/1.25 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}#vtC .vtzm{padding:0 10px;font-size:11.5px;color:#5d6f7a}
 #vtC .vtzb{all:unset;box-sizing:border-box;display:block;width:calc(100% - 20px);margin:8px 10px 6px;text-align:center;cursor:pointer;background:#1f9d55;color:#fff;border-radius:9px;padding:7px 6px;font:700 12.5px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 #vtC .vtzd{display:flex;gap:4px;justify-content:center;padding:0 0 9px;flex-wrap:wrap}#vtC .vtzd i{width:5px;height:5px;border-radius:50%;background:#cfd8de}#vtC .vtzd i.on{background:#1f9d55;width:12px;border-radius:3px}
-#vtT{position:fixed;left:12px;bottom:12px;z-index:60;display:flex;align-items:center;gap:8px;background:#0f2a36;color:#fff;border:0;border-radius:14px;padding:6px 12px 6px 6px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.3);font:700 13px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-#vtT img{width:40px;height:56px;object-fit:cover;border-radius:7px;background:#fff}#vtT small{display:block;font-weight:500;opacity:.8;font-size:11px}
+#vtT{position:fixed;left:clamp(12px,7vw,140px);bottom:14px;z-index:60;display:flex;align-items:center;gap:8px;background:rgba(15,42,54,.92);color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:7px 14px 7px 10px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.28);font:700 13px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;transition:background .2s,transform .2s}
+#vtT:hover{background:#0f2a36;transform:translateY(-2px)}#vtT small{font-weight:500;opacity:.75;font-size:11.5px}#vtT .vtsa{font-size:10px;opacity:.8}
+#vtT .vtdot{width:8px;height:8px;border-radius:50%;background:#2ecc71;box-shadow:0 0 0 0 rgba(46,204,113,.7);animation:vtPul 1.6s ease-out 3}
+@keyframes vtPul{0%{box-shadow:0 0 0 0 rgba(46,204,113,.7)}100%{box-shadow:0 0 0 10px rgba(46,204,113,0)}}
 #vtM{position:fixed;inset:0;z-index:9990;background:rgba(6,16,24,.82);display:grid;place-items:center;padding:14px}
 #vtM .vc{background:#fff;color:#13232e;border-radius:18px;max-width:min(860px,100%);width:100%;max-height:calc(100vh - 28px);overflow:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);box-shadow:0 24px 60px rgba(0,0,0,.45)}
 #vtM .vimg{background:#eef2f4;position:relative}#vtM .vimg img{display:block;width:100%;height:auto}
@@ -27,8 +29,8 @@
 #vtM .va{display:flex;flex-direction:column;gap:8px;margin-top:auto}#vtM .va a,#vtM .va button{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;border-radius:11px;padding:11px 12px;font:700 14.5px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;border:1px solid #cfd8de;color:#13232e}
 #vtM .va .pri{background:#1f9d55;border-color:#1f9d55;color:#fff}#vtM .vn{display:flex;gap:8px}#vtM .vn button{flex:1}
 #vtM .vx{all:unset;position:absolute;top:10px;right:10px;cursor:pointer;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:18px}
-@media(max-width:700px){#vtM .vc{grid-template-columns:1fr}#vtM .vimg img{max-height:52vh;width:auto;margin:0 auto}#vtT{bottom:12px;padding:5px 10px 5px 5px}#vtT small{display:none}#vtT img{width:32px;height:45px}}`;
-  function largo(){if(SS.g('vt_min')==='1'||window.innerWidth<1300)return false;const hw=document.querySelector('.hero .w')||document.querySelector('.w');const esq=hw?hw.getBoundingClientRect().left+(parseFloat(getComputedStyle(hw).paddingLeft)||0):0;return esq>=190;}
+@media(max-width:700px){#vtM .vc{grid-template-columns:1fr}#vtM .vimg img{max-height:52vh;width:auto;margin:0 auto}#vtT{left:12px;bottom:12px;padding:6px 12px 6px 9px}#vtT small{display:none}}`;
+  function largo(){return false; /* 06/11/2026: sempre recolhido (aba discreta), para não poluir a tela */const hw=document.querySelector('.hero .w')||document.querySelector('.w');const esq=hw?hw.getBoundingClientRect().left+(parseFloat(getComputedStyle(hw).paddingLeft)||0):0;return esq>=190;}
   function montar(){
     const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);desenhar();
     window.addEventListener('resize',()=>{clearTimeout(window.__vtR);window.__vtR=setTimeout(desenhar,200);});
@@ -46,7 +48,7 @@
       document.getElementById('vtI').onclick=()=>clicar(i);document.getElementById('vtB').onclick=()=>{const y=L[i];y.acao?clicar(i):orcar(y);};
       document.getElementById('vtMin').onclick=()=>{SS.s('vt_min','1');desenhar();};}
     else{const t=document.createElement('button');t.type='button';t.id='vtT';t.setAttribute('aria-label','Ver folders e pedir orçamento');
-      t.innerHTML=`<img id="vtImg" src="${esc(BASE+x.img)}" alt=""><span>📣 Folders<small id="vtTt">${esc(x.t)}</small></span>`;document.body.appendChild(t);t.onclick=()=>clicar(i);}
+      t.title='Ver folders e pedir orçamento';t.innerHTML=`<i class="vtdot" aria-hidden="true"></i><span>📣 Folders</span><small>toque para ver</small><span class="vtsa" aria-hidden="true">▲</span>`;document.body.appendChild(t);t.onclick=()=>clicar(i);}
     rodar();}
   function trocar(){if(pausa||document.getElementById('vtM')||L.length<2)return;i=(i+1)%L.length;const x=L[i],im=document.getElementById('vtImg');if(!im)return;
     const nova=new Image();nova.onload=()=>{im.style.opacity=0;setTimeout(()=>{im.src=nova.src;im.alt=x.t;im.style.opacity=1;},250);};nova.src=BASE+x.img;
