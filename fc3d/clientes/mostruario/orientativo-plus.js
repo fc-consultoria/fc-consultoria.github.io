@@ -119,6 +119,7 @@ const css=`
 #oxL.cls>*:not(#oxTop){display:none!important}
 #oxL.cls #oxTop{pointer-events:auto}
 #stage.oxfx{position:fixed!important;inset:0!important;z-index:2147480000!important;border-radius:0!important;aspect-ratio:auto!important;max-width:none!important;width:auto!important;height:auto!important;min-height:0!important;margin:0!important}
+body:not(.oxfc) .oxsofc{display:none!important}
 body.oxnovo #stage .views,body.oxnovo #btFlu,body.oxnovo #padFlu,body.oxnovo #dicaFlu,body.oxnovo #stage>#hint{display:none!important}
 body.oxnovo #side>details.card{display:none!important}
 body.oxnovo #side>details.card.oxsel{display:block!important}
@@ -164,7 +165,7 @@ body.oxnovo #side>details.card.oxsel>summary{display:none!important}
 }
 @media (prefers-reduced-motion:reduce){#oxPalco{transition:none}}`;
 
-let ACESSO=null; /* true = Acesso FC */
+let ACESSO=null,FCM=false; /* ACESSO: entrou na plataforma (cliente ou FC) · FCM: Acesso FC */
 let ent=null,L0=null;
 
 /* ---------- botões de entrada no Orientativo atual (só aparecem para o Acesso FC na jcr200) ---------- */
@@ -262,9 +263,10 @@ function pecasPane(){const pn=document.getElementById('oxPane');if(!pn||abaAt!==
   document.querySelectorAll('#oxLis [data-i]').forEach(b=>b.onclick=()=>APP.verDePerto(L[+b.dataset.i].hd));};
  pinta('');document.getElementById('oxBusca').oninput=e=>pinta(e.target.value);}
 
-function liga(){ACESSO=true;carregarMotor().then(criaEntrada).catch(()=>{});}
-document.addEventListener('pfc:acesso',e=>{if(e.detail&&e.detail.matriz)liga();});
-if(window.PFC_MATRIZ){if(document.readyState!=='loading')setTimeout(liga,0);else document.addEventListener('DOMContentLoaded',liga);}
+/* liberado aos clientes: o layout novo vale para quem entrou na plataforma; o que é de conferência fica só no Acesso FC */
+function liga(fc){if(fc)FCM=true;if(ACESSO){document.body.classList.toggle('oxfc',FCM);return;}ACESSO=true;document.body.classList.toggle('oxfc',FCM);carregarMotor().then(criaEntrada).catch(()=>{});}
+document.addEventListener('pfc:acesso',e=>{liga(!!(e.detail&&e.detail.matriz));});
+if(window.PFC_MATRIZ){const f=()=>liga(true);if(document.readyState!=='loading')setTimeout(f,0);else document.addEventListener('DOMContentLoaded',f);}
 
 /* ---------- carga sob demanda: motor das montagens + seções reais ---------- */
 let motor=null;
@@ -309,7 +311,7 @@ const $=id=>document.getElementById(id);
 L0.innerHTML=`<div id="oxCv"></div>
  <div class="oxwm" aria-hidden="true" id="oxWm"><b>© FC Consultoria em Esquadria · Plataforma FC 3D</b></div>
  <div id="oxTop" role="toolbar" aria-label="Comandos do Orientativo 3D">
-  <span class="tag" title="Novo · só o Acesso FC vê, até a aprovação">Só FC</span>
+  <span class="tag oxsofc" title="Visão do Acesso FC">FC</span>
   <button class="oxbtn" type="button" data-v="ext" aria-pressed="true">Externa</button><button class="oxbtn" type="button" data-v="int" aria-pressed="false">Interna</button><button class="oxbtn" type="button" data-v="lat" aria-pressed="false">Lateral</button><span class="sep"></span>
   <button class="oxbtn" id="oxAbr" type="button" aria-pressed="false" title="Abre e fecha as folhas">↔ Abrir</button>
   <button class="oxbtn" id="oxMJ" type="button" title="Monta a janela inteira de uma vez">🔧 Montar janela</button>
@@ -321,9 +323,9 @@ L0.innerHTML=`<div id="oxCv"></div>
   <button class="oxbtn" id="oxVolta" type="button" hidden title="A aba aberta usa o 3D clássico">↩ Voltar ao 3D novo</button>
   <span class="sp"></span>
   <button class="oxbtn" id="oxFull" type="button" title="Tela cheia" aria-label="Tela cheia">⛶</button>
-  ${M.aj?'<a class="oxbtn" id="oxAjB" href="'+RAIZ+'tecnico/?m='+encodeURIComponent(KEY)+'" target="_blank" rel="noopener" title="Abre o Ajuste técnico desta montagem para corrigir a posição dos perfis" style="text-decoration:none;color:#ffd58a">🔧 Ajustar encaixes</a>':''}
+  ${M.aj&&FCM?'<a class="oxbtn" id="oxAjB" href="'+RAIZ+'tecnico/?m='+encodeURIComponent(KEY)+'" target="_blank" rel="noopener" title="Abre o Ajuste técnico desta montagem para corrigir a posição dos perfis" style="text-decoration:none;color:#ffd58a">🔧 Ajustar encaixes</a>':''}
   <button class="oxbtn" id="oxX" type="button" title="Volta ao 3D do Orientativo">✕ Fechar</button>
-  ${M.aj?'<div class="oxaj">⚠ <b>Ajuste pendente:</b> '+esc(M.aj)+'. Corrija no 🔧 Ajustar encaixes e salve; ao reabrir aqui, as peças já vêm na posição salva.</div>':''}
+  ${M.aj&&FCM?'<div class="oxaj">⚠ <b>Ajuste pendente:</b> '+esc(M.aj)+'. Corrija no 🔧 Ajustar encaixes e salve; ao reabrir aqui, as peças já vêm na posição salva.</div>':''}
  </div>
  <div id="oxJ" aria-label="Junções"></div>
  <button id="oxMed" type="button" title="Mudar a medida">${L} × ${H} mm ✎</button>
