@@ -132,6 +132,11 @@ body.oxnovo #side>details.card.oxsel>summary{display:none!important}
 #oxPane .lin:hover{background:var(--accent-soft,#e1eef5)}
 #oxPane .lin b{font-family:var(--f-mono,monospace);font-size:12.5px;min-width:64px}
 #oxPane .lin span{flex:1}
+#oxPane .cmp img{width:46px;height:46px;object-fit:contain;border-radius:6px;background:#fff;flex:none}
+#oxPane .cmp small{display:block;font:400 12px var(--f-mono,monospace);color:var(--muted,#5b6770);margin-top:2px}
+#oxPane .cmp[aria-pressed="true"]{background:#fff1e0;box-shadow:inset 3px 0 0 #ff8a00}
+#oxPinfo dl.cmpf{display:block}#oxPinfo dl.cmpf dt{margin-top:8px}#oxPinfo dl.cmpf dd{text-align:left;font:400 13.5px/1.45 var(--f-body,system-ui);margin:2px 0 0}
+#oxPinfo img{max-width:100%;max-height:120px;object-fit:contain;display:block;margin:6px 0;background:#fff;border-radius:6px}
 #oxPane .lin i{font-style:normal;color:var(--muted,#5d6b76);font-size:12px}
 #oxPane .nt{font-size:12.5px;color:var(--muted,#5d6b76);margin:0 0 8px}
 #oxPane img{display:block;width:100%;height:auto;border:1px solid var(--line,#d5dce1);border-radius:8px;background:#fff}
@@ -173,7 +178,7 @@ function sync(){if(!ent)return;const ok=podeMostrar(),nv=querNovo();ent.hidden=!
 const NOVO_TIPOS=['jcr200'];
 let NOVO=false,medindo=false,abaAt='p',confCasa=null;
 function querNovo(){const st=estado();return !!(ACESSO&&st&&NOVO_TIPOS.includes(st.typo)&&st.mode==='exp'&&!st.wvOn&&!st.diaOn);}
-const ABAS=[['p','Peças',null],['c','Componentes','c-comp'],['s','Trocar perfil','c-swap'],['u','Usinagens','c-us'],['v','Vento','c-conf'],['b','Base técnica',null]];
+const ABAS=[['p','Peças',null],['c','Componentes',null],['s','Trocar perfil','c-swap'],['u','Usinagens','c-us'],['v','Vento','c-conf'],['b','Base técnica',null]];
 function ligaNovo(){NOVO=true;document.body.classList.add('oxnovo');
  const side=document.getElementById('side');
  if(side&&!document.getElementById('oxTabs')){
@@ -190,14 +195,25 @@ function desligaNovo(){NOVO=false;document.body.classList.remove('oxnovo');
  document.querySelectorAll('#side>details.oxsel').forEach(e=>e.classList.remove('oxsel'));
  const cf=document.getElementById('c-conf');if(cf&&confCasa){if(confCasa.flu)cf.classList.add('cf-flu');confCasa.pai.insertBefore(cf,confCasa.prox);confCasa=null;}
  if(APP){APP.novo=false;APP.classico(false);}fecharCamada();}
-function aba(k){if(abaAt==='v'&&k!=='v'&&typeof window.FC_VT_END==='function'){try{window.FC_VT_END();}catch(_){}}abaAt=k;const def=ABAS.find(a=>a[0]===k);
+function aba(k){if(abaAt==='v'&&k!=='v'&&typeof window.FC_VT_END==='function'){try{window.FC_VT_END();}catch(_){}}abaAt=k;if(APP&&APP.comps&&k!=='c')APP.comps(false);const def=ABAS.find(a=>a[0]===k);
  document.querySelectorAll('#oxTabs [data-aba]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.aba===k)));
  document.querySelectorAll('#side>details.oxsel').forEach(e=>e.classList.remove('oxsel'));
  const pn=document.getElementById('oxPane');if(!pn)return;
  if(def[2]){const el=document.getElementById(def[2]);pn.hidden=true;if(el){el.classList.add('oxsel');el.open=true;}if(APP)APP.classico(true);return;}
  pn.hidden=false;if(APP)APP.classico(false);
+ if(k==='c'){compPane();return;}
  if(k==='b'){pn.innerHTML='<p class="nt">Desenho do catálogo técnico que serviu de base para o 3D.</p><img src="base/jcr200.webp" alt="Folha de montagem da SUP JCR 200 com elevação e cortes" loading="lazy"><p class="nt" style="margin-top:8px">Folha de montagem · elevação e cortes · catálogo p. 117. Fonte técnica: catálogo da Linha Suprema, SUP JCR 200.</p>';return;}
  pecasPane();}
+function compPane(){const pn=document.getElementById('oxPane');if(!pn||abaAt!=='c')return;
+ if(!APP){pn.innerHTML='<p class="nt">Abrindo os componentes…</p>';return;}
+ if(!APP.comps(true)){pn.innerHTML='<p class="nt">Os componentes desta tipologia ainda não estão disponíveis no 3D novo.</p>';return;}
+ const L=APP.compLista();
+ pn.innerHTML='<p class="nt">Passe o mouse para localizar · toque para aproximar e ver o componente de perto</p><div id="oxCmp">'
+  +L.map(x=>`<button type="button" class="lin cmp" data-c="${esc(x.c)}" aria-pressed="false">${x.img?`<img src="${x.img}" alt="">`:''}<span>${esc(x.n)}<small>${esc(x.c)} · ${esc(x.q)}</small></span></button>`).join('')+'</div>';
+ const box=document.getElementById('oxCmp');
+ box.querySelectorAll('[data-c]').forEach(b=>{b.onmouseenter=()=>APP.compHover(b.dataset.c);b.onclick=()=>{const c=APP.compAtual()===b.dataset.c?null:b.dataset.c;APP.compSel(c);if(c&&innerWidth<900){const st=document.getElementById('stage');if(st)st.scrollIntoView({behavior:'smooth',block:'start'});}};});
+ box.onmouseleave=()=>APP.compHover(null);
+ APP.aoComp=c=>box.querySelectorAll('[data-c]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.c===c)));}
 function pecasPane(){const pn=document.getElementById('oxPane');if(!pn||abaAt!=='p')return;
  if(!APP){pn.innerHTML='<p class="nt">Abrindo as peças…</p>';return;}
  const L=APP.lista(),n=L.reduce((a,x)=>a+x.q,0);
@@ -380,8 +396,10 @@ function pick(ev){const r=RN.domElement.getBoundingClientRect();PT.set((ev.clien
  const hits=RC.intersectObjects(PECAS.filter(p=>p.visible).map(p=>p.userData.ms),false);
  const h=hits.find(x=>!x.object.userData.hd.userData.o.vid)||hits[0];return h?h.object.userData.hd:null;}
 RN.domElement.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY};});
-RN.domElement.addEventListener('pointerup',e=>{if(!down)return;const mv=Math.hypot(e.clientX-down.x,e.clientY-down.y);down=null;if(mv>6||seq>=0||cAt)return;const p=pick(e);if(p)abrePalco(p);});
-RN.domElement.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse'||down||seq>=0||cAt)return;const p=pick(e);if(p===hov)return;
+RN.domElement.addEventListener('pointerup',e=>{if(!down)return;const mv=Math.hypot(e.clientX-down.x,e.clientY-down.y);down=null;if(mv>6||seq>=0||cAt)return;
+ if(CMODO){const c=pickComp(e);if(c)compSel(c);return;}const p=pick(e);if(p)abrePalco(p);});
+RN.domElement.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse'||down||seq>=0||cAt)return;
+ if(CMODO){const c=pickComp(e);if(c!==cHov){cHov=c;compPinta();}RN.domElement.style.cursor=c?'pointer':'grab';return;}const p=pick(e);if(p===hov)return;
  if(hov)hov.userData.ms.material=matBase(hov);hov=p&&!p.userData.o.vid?p:null;if(hov)hov.userData.ms.material=MHOV;RN.domElement.style.cursor=p?'pointer':'grab';});
 function tiraHover(){if(hov){hov.userData.ms.material=matBase(hov);hov=null;}}
 
@@ -496,15 +514,15 @@ function sairCorte(semCamera){if(!cAt)return;cAt=null;limpaCaps();materiais(matB
 function marcaCortes(){L0.querySelectorAll('[data-corte]').forEach(b=>b.setAttribute('aria-pressed',String(!!cAt&&b.dataset.corte===cAt.id)));const b=$('oxCor');if(b){b.setAttribute('aria-pressed',String(!!cAt));b.textContent=cAt?'✂ Corte '+cAt.id+' ▾':'✂ Cortes ▾';}}
 
 /* ---------- barra do topo ---------- */
-let ab=0,abT=0,jun=true,CLS=false;
+let ab=0,abT=0,jun=true,CLS=false,CMODO=false;
 function aplicaFolhas(){FOL.forEach(F=>{F.position.x=F.userData.ox+F.userData.ab*ab;});}
 function fechaFolhas(){ab=abT=0;aplicaFolhas();$('oxAbr').setAttribute('aria-pressed','false');}
 /* qualquer comando da barra volta do 3D clássico (abas Componentes, Trocar perfil, Usinagens, Vento) */
-function usa(){if(CLS&&API.aoVoltar)API.aoVoltar();classico(false);fechaDD();}
+function usa(){if((CLS||CMODO)&&API.aoVoltar)API.aoVoltar();classico(false);fechaDD();}
 function classico(on){CLS=!!on;L0.classList.toggle('cls',CLS);$('oxVolta').hidden=!CLS;
  if(CLS){fechaPalco(true);if(seq>=0)seqFim();sairCorte(true);fechaMed();}else{tam();retoma();}}
-const vista=v=>{usa();VISTA=v;L0.querySelectorAll('[data-v]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===v)));
- if(cAt){const id=cAt.id;cAt=null;abreCorte(id);}else enquadra(true);};
+const vista=v=>{if(CMODO)classico(false);else usa();VISTA=v;L0.querySelectorAll('[data-v]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===v)));
+ if(cAt){const id=cAt.id;cAt=null;abreCorte(id);}else if(CMODO&&cSel)compVoa(cSel);else enquadra(true);};
 L0.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>vista(b.dataset.v));
 $('oxAbr').onclick=()=>{usa();sairCorte(true);if(seq>=0)seqFim();if(desm){desm=false;PECAS.forEach(p=>p.userData.tt=0);$('oxDesm').setAttribute('aria-pressed','false');}
  abT=abT?0:1;$('oxAbr').setAttribute('aria-pressed',String(!!abT));};
@@ -525,7 +543,7 @@ const JP={};E.cortes.forEach(c=>{const P=planoDe(c),z=zona(c),Xc=(z[0]+z[2])/2,Y
  JP[c.id]=P.eixo===1?new THREE.Vector3(c.zona==='esq'?-L/2:c.zona==='dir'?L/2:0,P.v,0):new THREE.Vector3(P.v,c.zona==='baixo'?-H/2:H/2,0);});
 $('oxJ').querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>abreCorte(b.dataset.j));
 const tmpV=new THREE.Vector3();
-function juncoes(){const box=$('oxJ'),on=jun&&!CLS&&seq<0&&!cAt&&!desm&&!palcoHd&&!ab&&!abT;box.style.display=on?'':'none';if(!on)return;
+function juncoes(){const box=$('oxJ'),on=jun&&!CLS&&!CMODO&&seq<0&&!cAt&&!desm&&!palcoHd&&!ab&&!abT;box.style.display=on?'':'none';if(!on)return;
  const r=host.getBoundingClientRect();box.querySelectorAll('[data-j]').forEach(b=>{tmpV.copy(JP[b.dataset.j]).project(CAM);
   b.style.left=((tmpV.x+1)/2*r.width)+'px';b.style.top=((1-tmpV.y)/2*r.height)+'px';b.style.visibility=tmpV.z<1?'visible':'hidden';});}
 /* medida: tocou no selo, muda L × H (vale para o 3D novo e para o clássico) */
@@ -552,6 +570,66 @@ const onKey=e=>{if(L0.hidden)return;
  else if(seq>=0&&!palcoHd&&(e.key==='ArrowRight'||e.key==='ArrowLeft')){e.preventDefault();seqVai(e.key==='ArrowRight'?1:-1);}};
 document.addEventListener('keydown',onKey);
 
+/* ---------- componentes dentro do 3D novo (aba Componentes) ----------
+   As peças e posições vêm do 3D clássico (mesmo catálogo), trazidas para a escala e o lugar da janela nova. */
+const G=n=>{try{return (0,eval)(n);}catch(_){return null;}};
+const MALT=new THREE.MeshStandardMaterial({color:'#c6ccd0',metalness:.35,roughness:.5,transparent:true,opacity:.2,side:THREE.DoubleSide,depthWrite:false});
+const MCMPH=new THREE.MeshStandardMaterial({color:'#ff6a00',emissive:'#6a2600',emissiveIntensity:.6,roughness:.5,side:THREE.DoubleSide});
+let CG=null,CIT={},cSel=null,cHov=null;
+function compsLimpa(){if(CG){SC.remove(CG);CG=null;}CIT={};}
+function compsMonta(){compsLimpa();const objs=(G('compObjs')||[]).filter(m=>m&&m.userData&&m.userData.comp),prof=G('profMeshes')||[];
+ if(!objs.length||!prof.length)return false;
+ const bc=new THREE.Box3();prof.forEach(m=>{m.updateWorldMatrix(true,false);bc.expandByObject(m);});
+ FOL.forEach(F=>{F.position.x=F.userData.ox;});const bn=new THREE.Box3();PECAS.forEach(p=>{if(!p.userData.o.vid){p.updateWorldMatrix(true,true);bn.expandByObject(p);}});aplicaFolhas();
+ if(bc.isEmpty()||bn.isEmpty())return false;
+ const cc=bc.getCenter(new THREE.Vector3()),cs=bc.getSize(new THREE.Vector3()),nc=bn.getCenter(new THREE.Vector3()),ns=bn.getSize(new THREE.Vector3());
+ const k=new THREE.Vector3(ns.x/cs.x,ns.y/cs.y,ns.z/cs.z),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
+ CG=new THREE.Group();CG.visible=false;SC.add(CG);
+ objs.forEach(m=>{const c=m.userData.comp;m.updateWorldMatrix(true,true);m.matrixWorld.decompose(pos,q,sc);
+  const cl=m.clone(true);cl.matrixAutoUpdate=true;cl.position.set(nc.x+(pos.x-cc.x)*k.x,nc.y+(pos.y-cc.y)*k.y,nc.z+(pos.z-cc.z)*k.z);cl.quaternion.copy(q);cl.scale.copy(sc).multiplyScalar(1000);
+  const ms=[];cl.traverse(o=>{o.visible=true;if(o.isMesh){o.userData={mat0:o.material,cmp:c};ms.push(o);}});
+  CG.add(cl);const it=CIT[c]||(CIT[c]={c,obj:[],ms:[],lbl:null});it.obj.push(cl);it.ms.push(...ms);if(m.userData.lbl&&!it.lbl)it.lbl=cl;});
+ return Object.keys(CIT).length>0;}
+function compInfo(c){const L=G('COMP')||[],x=L.find(z=>z.c===c)||{},I=G('CIMG')||{},it=CIT[c],n=it?it.obj.length:0;
+ return {c,n:x.n||c,d:x.d||'',m:x.m||'',img:I[c]||'',q:x.lin?'por metro':((c==='FEC-636'||c==='FEC-645')?Math.max(1,n/2):n)+' nesta tipologia'};}
+function compPinta(){Object.values(CIT).forEach(it=>{const on=it.c===cSel||it.c===cHov;it.ms.forEach(o=>{o.material=on?MCMPH:o.userData.mat0;});});}
+function pickComp(ev){if(!CG)return null;const r=RN.domElement.getBoundingClientRect();PT.set((ev.clientX-r.left)/r.width*2-1,-(ev.clientY-r.top)/r.height*2+1);RC.setFromCamera(PT,CAM);
+ const h=RC.intersectObjects(CG.children,true)[0];return h?h.object.userData.cmp||null:null;}
+function compVoa(c){const it=CIT[c];if(!it)return;const o=it.lbl||it.obj[0],p=new THREE.Box3().setFromObject(o).getCenter(new THREE.Vector3());
+ const dir=CAM.position.clone().sub(CT.target).normalize();voa(p.clone().addScaledVector(dir,520),p);}
+function compSel(c){cSel=c||null;compPinta();if(API.aoComp)API.aoComp(cSel);
+ if(!cSel){fechaPalco(true);card(null);hint('Passe o mouse num componente para localizar · toque para aproximar');return;}
+ const x=compInfo(cSel);compVoa(cSel);
+ card(`<div class="k">Componente · ${esc(x.c)}</div><div class="v">${esc(x.n)}</div>
+  <div class="p">${x.d?esc(x.d)+' · ':''}${esc(x.q)}${x.m?' · Medida: '+esc(x.m):''}</div>
+  <div class="acts"><button class="oxbtn pri" type="button" id="oxCpP">🔍 Ver de perto</button><button class="oxbtn" type="button" id="oxCpX">Fechar</button></div>`);
+ $('oxCpP').onclick=()=>abrePalcoComp(cSel);$('oxCpX').onclick=()=>compSel(null);
+ hint('O componente fica em laranja · arraste para girar');}
+function abrePalcoComp(c){const CM=G('compModel');if(typeof CM!=='function')return;if(palcoHd)fechaPalco(true);palcoInit();
+ const SZ=G('COMP_SIZE')||{},MA=G('MA')||{},sz=SZ[MA[c]||c]||[.05,.05,.05],x=compInfo(c);
+ let m;try{m=CM(c,sz[0],sz[1],sz[2],false,true);}catch(_){return;}
+ if(PG){PS.remove(PG);PG.traverse(o=>{if(o.material&&o.material.map&&o.isSprite)o.material.map.dispose();});}
+ PG=new THREE.Group();PSPIN=new THREE.Group();PG.add(PSPIN);PS.add(PG);
+ const bx=new THREE.Box3().setFromObject(m),v=bx.getSize(new THREE.Vector3());bx.getCenter(m.position).negate();
+ const g=new THREE.Group();g.add(m);g.scale.setScalar(110/Math.max(v.x,v.y,v.z,1e-6));{const R0={'ROL-426':[-.55,.5,0],'ROL-439':[-.55,.5,0],'NYL-332':[.2,-.75,0],'NYL-414':[.4,-.5,0]}[MA[c]||c]||[.3,.5,0];g.rotation.set(R0[0],R0[1],R0[2]);}PSPIN.add(g);
+ palcoHd={visible:true};pFrom={x:0,y:0};
+ $('oxPinfo').innerHTML=`<div class="cd">${esc(x.c)} · Componente</div><h3>${esc(x.n)}</h3>
+  ${x.img?`<img src="${x.img}" alt="${esc(x.n)}">`:''}
+  <dl class="cmpf">${x.d?`<dt>Aplicação</dt><dd>${esc(x.d)}</dd>`:''}${x.m?`<dt>Medida</dt><dd>${esc(x.m)}</dd>`:''}<dt>Quantidade</dt><dd>${esc(x.q)}</dd></dl>
+  <p class="fonte">Fontes: catálogo técnico Suprema e catálogo MettallFleck (foto e cotas).</p>
+  <div><button class="oxbtn pri" id="oxPX" type="button">↩ Voltar à janela</button></div>`;
+ $('oxPalco').hidden=false;tamPalco();
+ {const box=$('oxPcv').getBoundingClientRect(),asp=Math.max(.5,box.width/Math.max(1,box.height)),dist=160*1.9/2/Math.tan(THREE.MathUtils.degToRad(16))/Math.min(1,asp);
+  PC.position.set(0,dist*.12,dist);PC.lookAt(0,0,0);PG.userData={len:160,vid:false,dist};}
+ requestAnimationFrame(()=>$('oxPalco').classList.add('on'));palcoT0=performance.now();$('oxPX').onclick=()=>fechaPalco();}
+function comps(on){on=!!on;if(on===CMODO)return on?!!CG:true;
+ if(on){classico(false);fechaPalco(true);if(seq>=0)seqFim();sairCorte(true);fechaFolhas();
+  if(desm){desm=false;PECAS.forEach(p=>{p.userData.tt=0;});$('oxDesm').setAttribute('aria-pressed','false');}
+  if(!compsMonta())return false;CMODO=true;CG.visible=true;tiraHover();materiais(p=>p.userData.o.vid?MGV:MALT);cSel=cHov=null;compPinta();
+  hint('Passe o mouse num componente para localizar · toque para aproximar');enquadra(true);return true;}
+ CMODO=false;cSel=cHov=null;fechaPalco(true);card(null);if(CG)CG.visible=false;compsLimpa();materiais(matBase);RN.domElement.style.cursor='grab';enquadra(true);
+ hint('Toque numa peça para ver de perto · arraste para girar');return true;}
+
 /* ---------- laço ---------- */
 function tam(){posMed();const b=host.getBoundingClientRect();RN.setSize(Math.max(1,b.width),Math.max(1,b.height),false);CAM.aspect=Math.max(1,b.width)/Math.max(1,b.height);CAM.updateProjectionMatrix();tamPalco();}
 const ro=window.ResizeObserver?new ResizeObserver(tam):null;if(ro)ro.observe(L0);else addEventListener('resize',tam);
@@ -576,12 +654,17 @@ const API={key:KEY,L,H,novo:false,aoVoltar:null,aoMedir:null,
   else if(a==='cortes'){usa();sairCorte(true);if(seq>=0)seqFim();enquadra(true);hint('Escolha um corte no botão ✂ Cortes ou toque num + das junções');}
   syncCheia();},
  classico,
+ comps,aoComp:null,
+ compLista(){return Object.keys(CIT).map(compInfo);},
+ compHover(c){cHov=c||null;compPinta();},
+ compSel(c){compSel(c);},
+ compAtual(){return cSel;},
  lista(){const g={};PECAS.forEach(p=>{const o=p.userData.o,k=o.vid?'vidro':o.c;if(!g[k]){const inf=info(o);g[k]={c:o.vid?'Vidro':o.c,nm:inf.nm,q:0,vid:!!o.vid,hd:p};}g[k].q++;});return Object.values(g);},
  verDePerto(hd){usa();if(seq>=0)seqFim();sairCorte(true);fechaFolhas();abrePalco(hd);},
  pausar(){if(raf){cancelAnimationFrame(raf);raf=0;}},
  destruir(){vivo=false;this.pausar();if(ro)ro.disconnect();document.removeEventListener('keydown',onKey);document.removeEventListener('pointerdown',fora);
   document.removeEventListener('fullscreenchange',onFs);document.removeEventListener('webkitfullscreenchange',onFs);
-  GEO.forEach(g=>g.dispose());limpaCaps();RN.dispose();if(PR)PR.dispose();}};
+  GEO.forEach(g=>g.dispose());limpaCaps();compsLimpa();RN.dispose();if(PR)PR.dispose();}};
 montar();tam();retoma();
 return API;
 }
