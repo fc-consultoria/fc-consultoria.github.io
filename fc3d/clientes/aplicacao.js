@@ -128,7 +128,7 @@ function cena(pn,codes,key,onDone){const st=pn.querySelector('.ast'),cv=pn.query
   rc.setFromCamera({x:(e.clientX-r.left)/r.width*2-1,y:-(e.clientY-r.top)/r.height*2+1},CAM);const h=rc.intersectObjects(MS,false)[0];
   if(!h){tip.hidden=true;return;}tip.textContent=h.object.userData.nm;tip.style.left=(e.clientX-r.left+12)+'px';tip.style.top=(e.clientY-r.top-30)+'px';tip.hidden=false;});
  OC.addEventListener('start',()=>{tip.hidden=true;anim=null;});
- const rs=()=>{const W=st.clientWidth,H=st.clientHeight;if(!W||!H)return;R.setSize(W,H);CAM.aspect=W/H;CAM.updateProjectionMatrix();ov.setAttribute('width',W);ov.setAttribute('height',H);};
+ const rs=()=>{const W=st.clientWidth,H=st.clientHeight;if(!W||!H)return;R.setSize(W,H);CAM.aspect=W/H;CAM.fov=W/H<1.4?Math.min(80,2*Math.atan(Math.tan(17.5*Math.PI/180)*1.4/(W/H))*180/Math.PI):35;CAM.updateProjectionMatrix();ov.setAttribute('width',W);ov.setAttribute('height',H);};
  const ro=new ResizeObserver(rs);ro.observe(st);rs();
  let vivo=true;const loop=n=>{if(!vivo)return;if(!document.body.contains(pn)){fim();return;}requestAnimationFrame(loop);if(pn.hidden)return;if(anim)anim(n);
   const t=aberta?1:0;if(Math.abs(abA-t)>.001){abA+=(t-abA)*.12;MG.pos(abA);}OC.update();R.render(SC,CAM);etiqueta();};

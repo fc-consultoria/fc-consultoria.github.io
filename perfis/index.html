@@ -226,7 +226,8 @@ async function v3(i,c,n,md){window.__dimUpd=null;hit('perfis_3d',c);const CT=con
    db.onclick=()=>{const on=!dimG.visible;dimG.visible=on;db.setAttribute('aria-pressed',String(on));dl.innerHTML='';els=[];if(on){els=dAnn.map(a=>{const el=document.createElement('span');el.className='pl dim';el.textContent=a.tx;dl.appendChild(el);return {el,v:a.v};});auto=false;tg=[0,0];hit('perfis_medidas',c);}};
    window.__dimUpd=()=>{if(!els.length)return;if(act!==me){els.forEach(a=>a.el.style.display='none');return;}const W2=box.clientWidth,H2=box.clientHeight,pv=new THREE.Vector3();els.forEach(a=>{pv.copy(a.v);me.localToWorld(pv);pv.project(cam);a.el.style.left=((pv.x+1)/2*W2)+'px';a.el.style.top=((1-pv.y)/2*H2)+'px';a.el.style.display='';});};}}
  sc.add(new THREE.HemisphereLight(0xffffff,0x202833,.6));const d1=new THREE.DirectionalLight(0xfff3e2,2.2);d1.position.set(5,8,9);sc.add(d1);const d2=new THREE.DirectionalLight(0xc8dcff,1);d2.position.set(-8,2,-4);sc.add(d2);
- const cam=new THREE.PerspectiveCamera(30,W/H,.1,200);if(window.ResizeObserver)new ResizeObserver(()=>{const w=box.clientWidth,h=box.clientHeight;if(!w||!h)return;r.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix();}).observe(box);let dist=Math.max(9,L*2.6);cam.position.set(0,0,dist);
+ const FOVA=a=>a<1.7?Math.min(75,2*Math.atan(Math.tan(15*Math.PI/180)*1.7/a)*180/Math.PI):30;/* tela em pé (celular/tela cheia): abre o ângulo para o perfil caber */
+ const cam=new THREE.PerspectiveCamera(30,W/H,.1,200);if(window.ResizeObserver)new ResizeObserver(()=>{const w=box.clientWidth,h=box.clientHeight;if(!w||!h)return;r.setSize(w,h);cam.aspect=w/h;cam.fov=FOVA(w/h);cam.updateProjectionMatrix();}).observe(box);cam.fov=FOVA(W/H);cam.updateProjectionMatrix();let dist=Math.max(9,L*2.6);cam.position.set(0,0,dist);
  let ry=.5,rx=.3,auto=true,drag=null,pin=null,tg=null;setTimeout(()=>{const db=o.querySelector('[data-dim]');if(db&&db.onclick){db.onclick();auto=true;tg=null;}},0);const cvs=r.domElement;let act=me,uObj=null,uAnn=[],d0=null;const lab=document.createElement('div');lab.className='u3l';box.appendChild(lab);
  const setU=id=>{if(id)o.querySelectorAll('.mdp').forEach(p=>p.hidden=true);if(uObj){sc.remove(uObj.obj);uObj=null;}lab.innerHTML='';uAnn=[];o.querySelectorAll('[data-u3]').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.u3===id&&!!id));if(b.dataset.u3==='')b.hidden=!id;});
   if(!id){act=me;me.visible=true;if(d0)dist=d0;d0=null;o.querySelector('.hn').textContent='Arraste para girar · role ou pince para zoom';return;}
@@ -284,7 +285,7 @@ const qs=new URLSearchParams(location.search);{const l=LN.find(x=>x.id===qs.get(
   const ob=new MutationObserver(()=>{if(!document.getElementById('v3')){parent.postMessage({fc3d:'fechou'},location.origin);ob.disconnect();}});ob.observe(document.body,{childList:true});};
  if(document.readyState==='complete')setTimeout(ab,200);else addEventListener('load',()=>setTimeout(ab,200));})();
 </script>
-<script src="/fc3d/clientes/aplicacao.js?v=9"></script>
+<script src="/fc3d/clientes/aplicacao.js?v=10"></script>
 <script>/* 06/11/2026: botão Tela cheia no visualizador 3D */
 (function(){const st=document.createElement('style');st.textContent=`#v3.fsm{padding:0}#v3.fsm .bx{width:100vw;height:100vh;height:100dvh;max-height:none;border-radius:0}
 #v3.fsm .wr{flex:1;min-height:0;display:flex;flex-direction:column}#v3.fsm .cv{flex:1;height:auto!important;min-height:0}
