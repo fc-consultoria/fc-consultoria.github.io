@@ -2996,7 +2996,7 @@ applyTypo();build();renderParts();renderCuts();renderUs();renderSliders();render
  if(!tk){nega('Entre na Plataforma FC 3D','O Mostruário 3D abre pela plataforma, depois de entrar com o seu login.');return;}
  fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})}).then(r=>r.ok?r.json():null).then(d=>{
   if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}
-  const t=new URLSearchParams(location.search).get('t');if(window.top===window&&['gpc2fpe','gpc3fvz','pgr200','pcr200a','gjc2fbmf','gpc4fbmf','gpgr1fvz','gmaxpf','gmaxpfcc','gcjunit'].includes(t)&&!d.matriz){nega('Tipologia em ajuste','Esta tipologia está sendo conferida pela FC e ainda não está liberada.');return;}const A=window.PFC_AJ;if(A)A.matriz(d.matriz);(A?A.carregar():Promise.resolve()).then(()=>{g.remove();setTypo(TYPOS[t]?t:'jcr200');});
+  const t=new URLSearchParams(location.search).get('t');if(window.top===window&&['gpc2fpe','gpc3fvz','pgr200','pcr200a','gjc2fbmf','gpc4fbmf','gpgr1fvz','gmaxpf','gmaxpfcc','gcjunit'].includes(t)&&!d.matriz){nega('Tipologia em ajuste','Esta tipologia está sendo conferida pela FC e ainda não está liberada.');return;}window.PFC_MATRIZ=!!d.matriz;const A=window.PFC_AJ;if(A)A.matriz(d.matriz);(A?A.carregar():Promise.resolve()).then(()=>{g.remove();setTypo(TYPOS[t]?t:'jcr200');document.dispatchEvent(new CustomEvent('pfc:acesso',{detail:{matriz:!!d.matriz}}));});
  }).catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));})();
 
 </script>
@@ -3018,4 +3018,5 @@ applyTypo();build();renderParts();renderCuts();renderUs();renderSliders();render
 <script src="../sessao.js?v=1"></script>
 <script src="../uso.js?v=2" defer></script>
 <script src="lite.js?v=10"></script>
+<script src="orientativo-plus.js?v=1"></script>
 <script src="../convite.js?v=2" defer></script>
