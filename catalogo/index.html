@@ -327,5 +327,17 @@ const qs=new URLSearchParams(location.search);{const l=LN.find(x=>x.id===qs.get(
 </script>
 
 <script src="/fc3d/clientes/aplicacao.js?v=9"></script>
+<script>/* 06/11/2026: botão Tela cheia no visualizador 3D */
+(function(){const st=document.createElement('style');st.textContent=`#v3.fsm{padding:0}#v3.fsm .bx{width:100vw;height:100vh;height:100dvh;max-height:none;border-radius:0}
+#v3.fsm .wr{flex:1;min-height:0;display:flex;flex-direction:column}#v3.fsm .cv{flex:1;height:auto!important;min-height:0}
+body:has(#v3.fsm) #rcB,body:has(#v3.fsm) #vtT{display:none!important}#v3 .vb .fsb{background:#0f2a36;color:#fff;border-color:#0f2a36}#v3 .vb .fsb:hover{filter:brightness(1.15)}`;document.head.appendChild(st);
+ const sai=()=>{const o=document.getElementById('v3');if(o)o.classList.remove('fsm');const b=o&&o.querySelector('.fsb');if(b)b.textContent='⛶ Tela cheia';};
+ const liga=o=>{const vb=o.querySelector('.vb');if(!vb||vb.querySelector('.fsb'))return;const b=document.createElement('button');b.type='button';b.className='fsb';b.textContent='⛶ Tela cheia';b.title='Ver em tela cheia';
+  b.onclick=()=>{if(o.classList.contains('fsm')){sai();try{document.fullscreenElement&&document.exitFullscreen();}catch(_){}return;}
+   o.classList.add('fsm');b.textContent='✕ Sair da tela cheia';try{const r=document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();if(r&&r.catch)r.catch(()=>{});}catch(_){}};
+  vb.appendChild(b);};
+ document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement)sai();});
+ new MutationObserver(()=>{const o=document.getElementById('v3');if(o)liga(o);else if(document.fullscreenElement){try{document.exitFullscreen();}catch(_){}}}).observe(document.body,{childList:true});})();</script>
+
 </body>
 </html>
