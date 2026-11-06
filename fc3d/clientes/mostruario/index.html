@@ -658,8 +658,8 @@ const PN={
   'SU-007':{n:"Marco lateral / correr 2",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
   'SU-013':{n:"Marco lateral / correr 3",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
   'SU-014':{n:"Marco lateral / correr 3",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
-  'SU-055':{n:"Montante",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
-  'SU-056':{n:"Montante mão de amigo",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
+  'SU-055':{n:"Montante",h:'Perfil sem baguete: o vidro fica preso no próprio perfil. Não entra na troca de perfis.'},
+  'SU-056':{n:"Montante mão de amigo",h:'Perfil sem baguete: o vidro fica preso no próprio perfil. Não entra na troca de perfis.'},
   'SU-060':{n:"Montante lateral da folha",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
   'SU-061':{n:"Montante mão de amigo",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
   'SU-072':{n:"Montante / folha veneziana",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
@@ -671,9 +671,9 @@ const PN={
   'SU-186':{n:"Travessa da folha",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
   'SU-188':{n:"Travessa central da folha",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
   'SU-226':{n:"Travessa inferior da folha",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
-  'SU-238':{n:"Montante",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
-  'SU-239':{n:"Montante mão de amigo",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
-  'SU-241':{n:"Montante folha sem baguete",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
+  'SU-238':{n:"Montante",h:'Perfil sem baguete: o vidro fica preso no próprio perfil. Não entra na troca de perfis.'},
+  'SU-239':{n:"Montante mão de amigo",h:'Perfil sem baguete: o vidro fica preso no próprio perfil. Não entra na troca de perfis.'},
+  'SU-241':{n:"Montante folha sem baguete",h:'Perfil sem baguete: o vidro fica preso no próprio perfil. Não entra na troca de perfis.'},
   'SU-242':{n:"Montante mão de amigo",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
   'SU-243':{n:"Montante mão de amigo",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
   'SU-245':{n:"Montante lateral da folha",h:'Opção do catálogo para a mesma posição. Troque em “Trocar perfis”.'},
@@ -733,6 +733,8 @@ Object.assign(PN,{
 /* Trocar perfis: opções do catálogo para a mesma posição (mesma função e mesmo encaixe) */
 const ALT_G={'LG-237':['LG-007'],'LG-052':['LG-049','LG-019','LG-140'],'LG-140':['LG-052'],'LG-137':['LG-021'],'LG-124':['LG-045'],'LG-051':['LG-020'],'LG-020':['LG-051'],'LG-045':['LG-002+LG-028','LG-124'],'LG-064':['LG-158+LG-028'],'LG-050':['LG-017'],'LG-017':['LG-050'],'LG-048':['LG-021'],'LG-021':['LG-048','LG-137'],'LG-049':['LG-019','LG-052'],'LG-019':['LG-049','LG-052']};
 const ALT={"SU-245": ["SU-039", "SU-044", "SU-280"], "SU-039": ["SU-245", "SU-280", "SU-055", "SU-238"], "SU-040": ["SU-243", "SU-239"], "SU-041": ["SU-242", "SU-056"], "SU-044": ["SU-060"], "SU-047": ["SU-289"], "SU-049": ["SU-290", "SU-061"], "SU-053": ["SU-186"], "SU-225": ["SU-226"], "SU-227": ["SU-188"], "SU-002": ["SU-260"], "SU-003": ["SU-007","SU-007+SU-291","SU-007+SU-008"], "SU-012": ["SU-013", "SU-014"], "SU-011": ["SU-230"], "SU-230": ["SU-011"], "SU-111": ["SU-241"], "SU-200": ["SU-081"], "SU-080": ["SU-091"], "SU-079": ["SU-088"], "SU-068": ["SU-072", "SU-074"], "SU-187": ["SU-073"]};
+/* perfis sem baguete (vidro preso no próprio perfil) não entram como troca: mudam o sistema, não só o perfil */
+['SU-055','SU-056','SU-238','SU-239','SU-241'].forEach(x=>Object.keys(ALT).forEach(k=>{ALT[k]=ALT[k].filter(o=>o!==x);if(!ALT[k].length)delete ALT[k];}));
 const ROLE_G={'LG-050':'esq','LG-017':'esq','LG-048':'m1','LG-021':'m1','LG-049':'m1','LG-019':'m1'};
 const ROLE={"SU-039": "esq", "SU-044": "esq", "SU-068": "esq", "SU-003": "esq", "SU-012": "esq", "SU-111": "esq", "SU-200": "esq", "SU-079": "esq", "LG-068": "esq", "LG-085": "esq", "SU-040": "m1", "SU-041": "m1", "SU-047": "m1", "SU-049": "m1", "SU-053": "sup", "SU-187": "sup", "SU-080": "sup", "SU-225": "inf", "SU-002": "inf", "SU-011": "inf", "SU-230": "inf"};
 const KG_G={"LG-044": 1.247, "LG-047": 1.133, "LG-024": 1.264, "LG-045": 0.957, "LG-002": 0.639, "LG-028": 0.455, "LG-003": 0.757, "LG-004": 2.035, "LG-005": 2.104, "LG-062": 1.728, "LG-066": 1.539, "LG-064": 1.358, "LG-008": 1.45, "LG-025": 1.533, "LG-009": 0.981, "LG-010": 0.863, "LG-011": 2.11, "LG-014": 1.275, "LG-061": 0.32, "LG-046": 0.206, "LG-063": 0.545, "LG-006": 0.677, "LG-055": 0.759, "LG-007": 1.229, "LG-022": 1.064, "LG-049": 0.905, "LG-048": 0.967, "LG-050": 0.816, "LG-051": 0.916, "LG-017": 1.01, "LG-020": 1.016, "LG-054": 1.575, "LG-053": 1.65, "LG-018": 1.572, "LG-021": 1.733, "LG-019": 1.08, "LG-052": 1.669, "LG-023": 0.551, "LG-027": 0.149, "VZ-006": 0.326, "US-285": 0.326, "LG-056": 0.664, "30-298": 0.824, "LG-042": 1.169, "LG-043": 0.93, "LG-058": 0.759, "LG-016": 0.338, "BG-057": 0.17, "LG-026": 0.158, "LG-015": 0.147, "LG-059": 0.169};
