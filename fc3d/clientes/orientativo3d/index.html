@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Orientativo 3D FC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Orientativo 3D · nova versão (piloto) · Plataforma FC 3D Clientes
+   Perfis desenhados a partir da seção real do catálogo, peça por peça, com cortes, cotas e peso.
+   © FC Consultoria em Esquadria · criação da FC, uso exclusivo de empresas licenciadas. */
+:root{
+  --bg:#f2f4f6;--panel:#ffffff;--soft:#e8edf0;--ink:#14212a;--mute:#5a6872;--line:#d5dde2;
+  --teal:#02717d;--teal2:#025a67;--tealSoft:#d8f0f1;--amber:#c88a1c;--amberSoft:#fbefd6;--amberInk:#8a5a08;
+  --stage:#0f1a19;--stage2:#16262a;--sInk:#e6efed;--sMute:#9db3b0;--sLine:#2a3d40;
+  --f-h:'Space Grotesk',system-ui,sans-serif;--f-b:'Inter',system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#11181d;--panel:#182229;--soft:#1f2c34;--ink:#e6efed;--mute:#97aaa7;--line:#2a3943;
+  --teal:#22c3c9;--teal2:#0aa0a8;--tealSoft:#143a3e;--amber:#e8b04a;--amberSoft:#3a2d12;--amberInk:#f0c87a;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11181d;--panel:#182229;--soft:#1f2c34;--ink:#e6efed;--mute:#97aaa7;--line:#2a3943;
+  --teal:#22c3c9;--teal2:#0aa0a8;--tealSoft:#143a3e;--amber:#e8b04a;--amberSoft:#3a2d12;--amberInk:#f0c87a;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:400 14.5px/1.5 var(--f-b);-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--f-h);margin:0;letter-spacing:-.01em}
+p{margin:0}
+[hidden]{display:none!important}
+.mute{color:var(--mute)}
+#app{display:grid;grid-template-rows:auto 1fr;height:100dvh;background:var(--bg)}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);min-width:0}
+header .tt{min-width:0;flex:1}
+header h1{font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header .sub{font-size:12.5px;color:var(--mute)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:4px 9px;border-radius:999px;background:var(--amberSoft);color:var(--amberInk);white-space:nowrap}
+.btn{appearance:none;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 13px;font-weight:600;cursor:pointer;min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;color:var(--ink);white-space:nowrap}
+.btn:hover{border-color:var(--teal)}
+.btn.pri{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn[aria-pressed="true"]{background:var(--tealSoft);border-color:var(--teal);color:var(--teal)}
+.btn:focus-visible,.cut:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+main{display:grid;grid-template-columns:1fr 330px;min-height:0}
+#stage{position:relative;background:radial-gradient(120% 90% at 50% 30%,var(--stage2),var(--stage));overflow:hidden;min-height:0;color:var(--sInk)}
+#cv{position:absolute;inset:0;touch-action:none}
+#cv canvas{display:block;width:100%;height:100%}
+/* marca d'água FC: sempre visível, inclusive em tela cheia */
+.wm{position:absolute;inset:0;pointer-events:none;z-index:6;overflow:hidden}
+.wm i{position:absolute;left:-20%;right:-20%;font:700 15px var(--f-h);letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.05);white-space:nowrap;transform:rotate(-18deg)}
+.wm b{position:absolute;right:12px;bottom:10px;font:600 11px var(--f-b);letter-spacing:.04em;color:rgba(255,255,255,.55);background:rgba(0,0,0,.28);padding:4px 9px;border-radius:999px}
+.cap{position:absolute;left:14px;top:12px;z-index:5;max-width:min(560px,calc(100% - 28px));pointer-events:none}
+.cap .k{font:600 11px var(--f-b);letter-spacing:.08em;text-transform:uppercase;color:var(--sMute)}
+.cap .v{font:600 16px var(--f-h);color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.4)}
+.cap .p{font-size:12.5px;color:var(--sMute);margin-top:2px}
+.bar{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:7;display:flex;gap:6px;padding:6px;background:rgba(10,20,20,.72);backdrop-filter:blur(8px);border:1px solid var(--sLine);border-radius:14px;max-width:calc(100% - 20px);overflow-x:auto;scrollbar-width:none}
+.bar .btn{background:transparent;border-color:transparent;color:var(--sInk);min-height:38px;padding:7px 11px;font-size:13.5px}
+.bar .btn:hover{background:rgba(255,255,255,.08)}
+.bar .btn[aria-pressed="true"]{background:rgba(34,195,201,.18);color:#7fe3e6;border-color:rgba(34,195,201,.5)}
+.bar .sep{width:1px;background:var(--sLine);margin:4px 2px;flex:none}
+.prog{position:absolute;left:14px;right:14px;bottom:72px;z-index:7;height:4px;border-radius:4px;background:rgba(255,255,255,.1);overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:#22c3c9;transition:width .3s}
+.hint{position:absolute;right:14px;top:12px;z-index:5;font-size:12px;color:var(--sMute);background:rgba(0,0,0,.25);padding:5px 10px;border-radius:999px;pointer-events:none}
+aside{border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;padding:14px 16px 24px;display:flex;flex-direction:column;gap:16px}
+.sec h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-family:var(--f-b);font-weight:700;margin-bottom:8px}
+.med{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.med label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--mute);font-weight:600}
+.med input{border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:8px 10px;font-size:15px;font-weight:600;width:100%;font-variant-numeric:tabular-nums}
+.med input:focus{outline:2px solid var(--teal);outline-offset:0;border-color:var(--teal)}
+.nota{font-size:12px;color:var(--mute);margin-top:6px}
+.elev{display:block;width:100%;height:auto;background:var(--bg);border:1px solid var(--line);border-radius:12px}
+.cut{cursor:pointer}
+.cut line{stroke:var(--amber);stroke-width:1.6;stroke-dasharray:5 3}
+.cut text{fill:var(--amberInk);font:700 11px var(--f-b)}
+.cut:hover line,.cut[aria-pressed="true"] line{stroke:var(--teal);stroke-width:2.4;stroke-dasharray:none}
+.cut:hover text,.cut[aria-pressed="true"] text{fill:var(--teal)}
+.cbtn{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.cbtn .btn{min-height:34px;padding:5px 10px;font-size:13px}
+.col{display:flex;flex-direction:column;gap:8px}
+.col .btn{justify-content:flex-start}
+.leg{font-size:12px;color:var(--mute);line-height:1.45}
+.leg b{color:var(--ink)}
+.pend{font-weight:700;color:var(--amberInk);background:var(--amberSoft);border-radius:6px;padding:1px 6px;font-size:12px;white-space:nowrap}
+/* gaveta do corte (dentro do palco, funciona em tela cheia) */
+#gav{position:absolute;left:12px;right:12px;bottom:72px;z-index:8;background:#f7f9f9;color:#14212a;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.45);display:grid;grid-template-rows:auto 1fr;max-height:min(62%,520px);overflow:hidden}
+#gav .hd{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #dbe3e6}
+#gav .hd h3{font-size:15px;flex:1}
+#gav .hd .btn{min-height:34px;padding:5px 11px;background:#fff;color:#14212a;border-color:#cfd9dd}
+#gavSvg{width:100%;height:100%;min-height:220px;display:block;background:#fff}
+/* palco da peça: ela sai da tela, gira e mostra cotas, corte e peso */
+#palco{position:absolute;inset:0;z-index:9;display:grid;grid-template-columns:1fr 330px;background:rgba(8,16,16,.55);backdrop-filter:blur(3px);opacity:0;transition:opacity .25s}
+#palco.on{opacity:1}
+#pcv{position:relative;min-height:0}
+#pcv canvas{display:block;width:100%;height:100%}
+#pinfo{background:#f7f9f9;color:#14212a;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:-10px 0 30px rgba(0,0,0,.3)}
+#pinfo h3{font-size:19px}
+#pinfo .cd{font:700 12px var(--f-b);letter-spacing:.06em;color:#02717d;text-transform:uppercase}
+#pinfo dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0;font-size:13.5px}
+#pinfo dt{color:#5a6872}
+#pinfo dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums}
+#pinfo .sv{background:#fff;border:1px solid #dbe3e6;border-radius:12px}
+#pinfo .btn{background:#fff;color:#14212a;border-color:#cfd9dd}
+#pinfo .btn.pri{background:#02717d;color:#fff;border-color:#02717d}
+#pinfo .pend{background:#fbefd6;color:#8a5a08}
+#pinfo .fonte{font-size:11.5px;color:#5a6872}
+/* janelas (desenho técnico, lista, pendências) */
+.dlg{position:absolute;inset:0;z-index:10;background:rgba(8,14,16,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+.dlg .cx{background:var(--panel);color:var(--ink);border-radius:16px;width:min(980px,100%);max-height:100%;display:grid;grid-template-rows:auto 1fr auto;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+.dlg .hd{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.dlg .hd h3{flex:1;font-size:16px}
+.dlg .bd{overflow:auto;padding:14px 16px}
+.dlg .ft{padding:10px 16px;border-top:1px solid var(--line);font-size:12px;color:var(--mute)}
+.dlg img{display:block;width:100%;height:auto;background:#fff;border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mute);font-weight:700;position:sticky;top:-14px;background:var(--panel)}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+th.n{text-align:right}
+tr.gr td{background:var(--soft);font-weight:700;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
+tbody tr.pk{cursor:pointer}
+tbody tr.pk:hover td{background:var(--tealSoft)}
+.ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+#gate{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
+#gate .cx{max-width:420px;display:flex;flex-direction:column;gap:10px}
+@media (max-width:900px){
+  main{grid-template-columns:1fr;grid-template-rows:minmax(380px,62dvh) auto}
+  #app{height:auto;min-height:100dvh}
+  aside{border-left:0;border-top:1px solid var(--line)}
+  #palco{grid-template-columns:1fr;grid-template-rows:1fr auto}
+  #pinfo{max-height:52%}
+  header .sub{display:none}
+  .bk{display:none}
+}
+@media (prefers-reduced-motion:reduce){#palco{transition:none}}
+</style>
+</head>
+<body>
+<div id="gate"><div class="cx"><h2 id="gateT">Abrindo o Orientativo 3D…</h2><p class="mute" id="gateP">Conferindo o seu acesso à Plataforma FC 3D.</p></div></div>
+<div id="app">
+ <header>
+  <a class="btn" href="../" title="Voltar para o painel" aria-label="Voltar para o painel">←<span class="bk"> Voltar para o painel</span></a>
+  <div class="tt"><h1 id="tit">Orientativo 3D</h1><div class="sub" id="sub"></div></div>
+  <span class="chip" title="Versão nova em teste. A versão atual continua no card até a aprovação.">Piloto · só FC</span>
+ </header>
+ <main>
+  <div id="stage">
+   <div id="cv"></div>
+   <div class="wm" aria-hidden="true" id="wm"><b>© FC Consultoria em Esquadria · Plataforma FC 3D</b></div>
+   <div class="cap"><div class="k" id="capK">Montada</div><div class="v" id="capV">Toque em uma peça para ver cotas, corte e peso</div><div class="p" id="capP"></div></div>
+   <div class="prog" id="prog" hidden><i></i></div>
+   <div class="bar" role="toolbar" aria-label="Comandos do 3D">
+    <button class="btn" id="bMontar" type="button">🧩 Montar peça por peça</button>
+    <button class="btn" id="bDesm" type="button" aria-pressed="false">💥 Desmontar</button>
+    <button class="btn" id="bAbrir" type="button" aria-pressed="false">↔ Abrir folhas</button>
+    <span class="sep"></span>
+    <button class="btn" id="bExt" type="button" aria-pressed="true">Vista externa</button>
+    <button class="btn" id="bInt" type="button" aria-pressed="false">Vista interna</button>
+    <span class="sep"></span>
+    <button class="btn" id="bFull" type="button">⛶ Tela cheia</button>
+   </div>
+   <div id="gav" hidden role="region" aria-label="Corte">
+    <div class="hd"><h3 id="gavT">Corte</h3><button class="btn" id="gavPrev" type="button" aria-label="Corte anterior">‹</button><button class="btn" id="gavNext" type="button" aria-label="Próximo corte">›</button><button class="btn" id="gavX" type="button">Fechar</button></div>
+    <svg id="gavSvg" role="img" aria-label="Seção do corte"></svg>
+   </div>
+   <div id="palco" hidden>
+    <div id="pcv"></div>
+    <div id="pinfo"></div>
+   </div>
+   <div class="dlg" id="dlg" hidden><div class="cx" role="dialog" aria-modal="true" aria-labelledby="dlgT"><div class="hd"><h3 id="dlgT"></h3><button class="btn" id="dlgX" type="button">Fechar</button></div><div class="bd" id="dlgB"></div><div class="ft" id="dlgF"></div></div></div>
+  </div>
+  <aside>
+   <div class="sec">
+    <h2>Medidas do vão · simulação</h2>
+    <div class="med"><label>Largura L (mm)<input id="inL" type="number" inputmode="numeric" min="600" max="3000" step="10"></label><label>Altura H (mm)<input id="inH" type="number" inputmode="numeric" min="400" max="2400" step="10"></label></div>
+    <p class="nota">Os comprimentos e pesos mudam com as medidas. É simulação: a confirmação é do serralheiro.</p>
+   </div>
+   <div class="sec">
+    <h2>Cortes do catálogo</h2>
+    <svg class="elev" id="elev" viewBox="0 0 300 210" role="group" aria-label="Elevação vista externa com os cortes"></svg>
+    <div class="cbtn" id="cbtn"></div>
+   </div>
+   <div class="sec">
+    <h2>Consultar</h2>
+    <div class="col">
+     <button class="btn" id="bDes" type="button">📐 Ver o desenho técnico da página</button>
+     <button class="btn" id="bLista" type="button">📋 Lista de peças · corte e peso</button>
+     <button class="btn" id="bPend" type="button">⚠ Pontos a conferir <span class="pend" id="nPend"></span></button>
+    </div>
+   </div>
+   <div class="sec leg" id="leg"></div>
+  </aside>
+ </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="../tecnico/montagens.js?v=3"></script>
+<script src="../sessao.js?v=1"></script>
+<script>
+(function(){
+'use strict';
+/* ================= Dados de cada montagem (o que o catálogo informa) =================
+   f: fórmula escrita no catálogo · sem f → "a conferir" (não se calcula no chute).
+   kg: peso do perfil na página do catálogo (kg/m). */
+const ESPEC={
+ jc2:{pg:117,des:'../tecnico/base/jc2.webp',
+  nm:{'SU-001':'Marco superior','SU-002':'Marco inferior','SU-003':'Marco lateral','SU-039':'Montante lateral da folha',
+      'SU-040':'Montante mão de amigo · folha interna','SU-041':'Montante mão de amigo · folha externa','SU-053':'Travessa da folha','SU-102':'Baguete'},
+  kg:{'SU-001':.762,'SU-002':.707,'SU-003':.523,'SU-039':.520,'SU-040':.480,'SU-041':.507,'SU-053':.507,'SU-102':.111},
+  f:{'SU-039':{t:'H − 50',v:(L,H)=>H-50},'SU-040':{t:'H − 50',v:(L,H)=>H-50},'SU-041':{t:'H − 50',v:(L,H)=>H-50}},
+  vid:{t:'(L − 143,2) / 2 × (H − 134)',v:(L,H)=>[(L-143.2)/2,H-134],esp:6},
+  comp:[['NYL-332','Guia deslizante'],['NYL-329','Vedador de vento (inferior)'],['NYL-335','Vedador de vento (superior)'],['NYL-414','Batedeira'],['FEC-636','Fecho'],['MP-347','Indicado no corte 01']],
+  ordemMarco:['SU-002','SU-003','SU-001'],
+  /* cortes como na elevação vista externa do catálogo */
+  cortes:[
+   {id:'01',n:'Corte 01 · marco inferior',pl:'v',zona:'baixo'},
+   {id:'02',n:'Corte 02 · marco superior',pl:'v',zona:'cima'},
+   {id:'03',n:'Corte 03 · marco lateral esquerdo',pl:'h',zona:'esq'},
+   {id:'04',n:'Corte 04 · encontro das folhas',pl:'h',zona:'meio'},
+   {id:'05',n:'Corte 05 · marco lateral direito',pl:'h',zona:'dir'}],
+  pend:[
+   'Marco superior SU-001, marco inferior SU-002 e marco lateral SU-003: a página da montagem não traz a fórmula de corte. Comprimento e peso ficam “a conferir”.',
+   'Travessa SU-053: o catálogo mostra a cota (L − 131,2) / 2 entre os montantes, na linha do vidro, mas ela não bate com a travessa encaixada no desenho (no 3D a travessa fica com cerca de 25 mm a menos). Fica “a conferir” até você dizer qual é a medida de corte.',
+   'Baguete SU-102: sem fórmula na página. Fica “a conferir”.',
+   'Ângulo de corte (90° ou 45°): a página da montagem não informa. Fica “a conferir” em todas as peças.',
+   'Vidro: o 3D agora segue a fórmula do catálogo, (L − 143,2) / 2 × (H − 134). O motor das montagens usava 6 mm a menos na altura.',
+   'Peso do SU-002 na base de seções da plataforma estava 0,762 kg/m. O catálogo diz 0,707 kg/m, e o piloto usa o valor do catálogo. O SU-003 estava sem peso na base, e o catálogo diz 0,523 kg/m.',
+   'Componentes (NYL-332, NYL-329, NYL-335, NYL-414, FEC-636, MP-347) aparecem na lista com quantidade “a conferir”. Ainda não estão desenhados no 3D novo.']}
+};
+const KEY=(new URLSearchParams(location.search).get('m')||'jc2');
+const M=FCM.MONT[KEY],E=ESPEC[KEY];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const mm=v=>v==null?'':(Math.round(v*10)/10).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mm';
+const kgf=v=>v.toLocaleString('pt-BR',{minimumFractionDigits:3,maximumFractionDigits:3});
+const PEND='<span class="pend">a conferir</span>';
+
+/* ================= acesso: piloto só para o Acesso FC (matriz) ================= */
+function nega(t,p){$('gateT').textContent=t;$('gateP').innerHTML=p+'<br><br><a href="../">Ir para a Plataforma FC 3D</a>';}
+if(!M||!E){nega('Montagem indisponível','Esta montagem ainda não está no Orientativo 3D novo.');return;}
+let tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
+if(!tk){nega('Entre na Plataforma FC 3D','O Orientativo 3D abre pela plataforma, depois de entrar com o seu login.');return;}
+fetch('https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_sessao',{method:'POST',headers:{apikey:'sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs','Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
+ .then(r=>r.ok?r.json():null).then(d=>{
+  if(!(d&&(d.papel||d.matriz))){nega('Sessão encerrada','Entre de novo na Plataforma FC 3D.');return;}
+  if(!d.matriz){nega('Em preparação','A nova versão do Orientativo 3D está em teste pela FC Consultoria. Use o Orientativo 3D do card.');return;}
+  Promise.all([FCM.carregarAjustes(),fetch('../tecnico/secoes.json?v=3').then(r=>r.json())]).then(([,S])=>{$('gate').hidden=true;iniciar(S);})
+   .catch(()=>nega('Não foi possível abrir','Tente de novo em instantes.'));})
+ .catch(()=>nega('Sem conexão','Confira a internet e abra de novo.'));
+
+function iniciar(SEC){
+const V=a=>new THREE.Vector3(a[0],a[1],a[2]);
+let L=M.def[0],H=M.def[1],R=null,PECAS=[],FOL=[],ROOT=null,GEO=[];
+$('tit').textContent=M.n;$('sub').textContent=M.linha+' · '+M.cd+' · seções reais do catálogo, peça por peça';
+$('inL').value=L;$('inH').value=H;
+
+/* ---------- cena principal ---------- */
+const host=$('cv'),RN=new THREE.WebGLRenderer({antialias:true,alpha:true});
+RN.setPixelRatio(Math.min(2,devicePixelRatio||1));RN.outputEncoding=THREE.sRGBEncoding;host.appendChild(RN.domElement);
+const SC=new THREE.Scene(),CAM=new THREE.PerspectiveCamera(36,1,10,30000),CT=new THREE.OrbitControls(CAM,RN.domElement);
+CT.enableDamping=true;CT.dampingFactor=.09;CT.screenSpacePanning=true;
+SC.add(new THREE.HemisphereLight('#ffffff','#2c3c3c',.8));
+const DL=new THREE.DirectionalLight('#ffffff',.9);DL.position.set(900,1500,-1700);SC.add(DL);
+const DL2=new THREE.DirectionalLight('#cfeeea',.55);DL2.position.set(-1300,500,1500);SC.add(DL2);
+const DL3=new THREE.DirectionalLight('#ffffff',.25);DL3.position.set(0,-900,-600);SC.add(DL3);
+const MAT=new THREE.MeshStandardMaterial({color:'#c6ccd0',metalness:.6,roughness:.34,side:THREE.DoubleSide});
+const MVID=new THREE.MeshStandardMaterial({color:'#9fd0e0',metalness:.05,roughness:.05,transparent:true,opacity:.26,side:THREE.DoubleSide,depthWrite:false});
+const MHOV=new THREE.MeshStandardMaterial({color:'#e8b04a',metalness:.35,roughness:.4,side:THREE.DoubleSide,emissive:'#3a2600'});
+const PLANO=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:'#e8b04a',transparent:true,opacity:.22,side:THREE.DoubleSide,depthWrite:false}));
+const PLB=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(1,1)),new THREE.LineBasicMaterial({color:'#e8b04a'}));
+PLANO.add(PLB);PLANO.visible=false;SC.add(PLANO);
+
+function geoSec(c,len,ex,ey,ez,sc){const k=sc||[1,1],d=SEC[c]||SEC[{'US-285':'VZ-006'}[c]];
+ const shapes=d.s.map(sh=>{const s=new THREE.Shape(sh.o.map(([a,b])=>new THREE.Vector2(a*k[0],b*k[1])));(sh.h||[]).forEach(h=>s.holes.push(new THREE.Path(h.map(([a,b])=>new THREE.Vector2(a*k[0],b*k[1])))));return s;});
+ const g=new THREE.ExtrudeGeometry(shapes,{depth:len,bevelEnabled:false,curveSegments:2});g.translate(0,0,-len/2);
+ if(ex)g.applyMatrix4(new THREE.Matrix4().makeBasis(V(ex),V(ey),V(ez)));g.computeVertexNormals();return g;}
+
+/* nome, fórmula e peso de cada peça */
+function info(o){
+ if(o.vid){const f=E.vid,[w,h]=f.v(L,H);return {c:'Vidro',nm:'Vidro '+E.vid.esp+' mm',ft:f.t,len:null,w,h,kgm:null};}
+ const f=E.f[o.c],kgm=E.kg[o.c]!=null?E.kg[o.c]:(SEC[o.c]&&SEC[o.c].kg)||null;
+ return {c:o.c,nm:E.nm[o.c]||(SEC[o.c]&&SEC[o.c].n)||o.c,ft:f?f.t:null,len:f?f.v(L,H):null,mod:o.len,kgm,secW:SEC[o.c].w,secH:SEC[o.c].h};}
+
+/* ---------- monta a esquadria com as peças do motor das montagens ---------- */
+function montar(){
+ if(ROOT){SC.remove(ROOT);GEO.forEach(g=>g.dispose());GEO=[];}
+ ROOT=new THREE.Group();SC.add(ROOT);PECAS=[];FOL=[];
+ R=FCM.pecas(SEC,M,L,H);
+ const GR=[ROOT];
+ R.folhas.forEach(f=>{const F=new THREE.Group();F.position.set(f.ox,0,f.z);F.userData={ox:f.ox,ab:f.dir*f.curso,z:f.z};ROOT.add(F);FOL.push(F);GR.push(F);});
+ const vv=E.vid.v(L,H);
+ R.P.forEach((o,ix)=>{if(o.vz||o.oc)return;
+  let ms;
+  if(o.vid){ms=new THREE.Mesh(new THREE.BoxGeometry(vv[0],vv[1],o.d||6),MVID);ms.position.set(o.p[0],o.p[1],o.p[2]);}
+  else{const g=geoSec(o.c,o.len,o.ex,o.ey,o.ez,o.sc);GEO.push(g);ms=new THREE.Mesh(g,MAT);ms.position.set(o.p[0],o.p[1],o.p[2]);}
+  GEO.push(ms.geometry);
+  const hd=new THREE.Group();hd.add(ms);GR[o.g+1].add(hd);
+  const k=o.g<0?260:150,zf=o.g>=0?(R.folhas[o.g].z>0?420:-420):0;
+  hd.userData={o,ix,ms,t:0,tt:0,ex:new THREE.Vector3(o.x[0]*k,o.x[1]*k,o.x[2]*k+zf)};
+  ms.userData.hd=hd;PECAS.push(hd);});
+ /* ordem de montagem: marco (inferior, laterais, superior) e depois cada folha */
+ const om=E.ordemMarco;
+ PECAS.sort((a,b)=>{const A=a.userData.o,B=b.userData.o;if(A.g!==B.g)return A.g-B.g;if(A.g<0)return om.indexOf(A.c)-om.indexOf(B.c);return a.userData.ix-b.userData.ix;});
+ aplicaFolhas(true);enquadra(false);marcaCortes();legenda();
+}
+function enquadra(anim){const d=Math.max(L,H)*1.55+700,ext=VISTA==='ext';CT.target.set(0,0,0);
+ const p=new THREE.Vector3(ext?-d*.22:d*.22,d*.12,ext?-d:d);if(anim)voa(p);else{CAM.position.copy(p);CT.update();}}
+let voo=null;function voa(p){voo={a:CAM.position.clone(),b:p,t:0};}
+
+/* ---------- abrir folhas ---------- */
+let ab=0,abT=0;
+function aplicaFolhas(){FOL.forEach(F=>{F.position.x=F.userData.ox+F.userData.ab*ab;});}
+
+/* ---------- montar peça por peça / desmontar ---------- */
+let seq=null;
+function setT(v){PECAS.forEach(p=>{p.userData.tt=v;p.visible=true;});}
+function montarSeq(){fechaPalco();fechaGav();ab=abT=0;aplicaFolhas();
+ PECAS.forEach(p=>{p.userData.t=p.userData.tt=1;p.visible=false;});
+ seq={i:0,next:performance.now()+300};$('bDesm').setAttribute('aria-pressed','false');$('prog').hidden=false;}
+function passoSeq(now){if(!seq||now<seq.next)return;
+ if(seq.i>=PECAS.length){seq=null;$('prog').hidden=true;cap('Montada','Esquadria montada · '+PECAS.length+' peças','Toque em uma peça para ver cotas, corte e peso');return;}
+ const p=PECAS[seq.i],u=p.userData,inf=info(u.o);p.visible=true;u.tt=0;
+ const grupo=u.o.g<0?'Marco':R.folhas[u.o.g].n;
+ cap('Peça '+(seq.i+1)+' de '+PECAS.length+' · '+grupo,inf.nm+(u.o.vid?'':' · '+u.o.c),inf.ft?'Fórmula: '+inf.ft:'');
+ $('prog').firstElementChild.style.width=((seq.i+1)/PECAS.length*100)+'%';
+ seq.i++;seq.next=now+(matchMedia('(prefers-reduced-motion: reduce)').matches?120:520);}
+function cap(k,v,p){$('capK').textContent=k;$('capV').textContent=v;$('capP').textContent=p||'';}
+
+/* ---------- toque na peça ---------- */
+const RC=new THREE.Raycaster(),PT=new THREE.Vector2();let down=null,hov=null;
+function pick(ev){const r=RN.domElement.getBoundingClientRect();PT.set((ev.clientX-r.left)/r.width*2-1,-(ev.clientY-r.top)/r.height*2+1);RC.setFromCamera(PT,CAM);
+ const hits=RC.intersectObjects(PECAS.filter(p=>p.visible).map(p=>p.userData.ms),false);
+ /* o vidro só é escolhido se não houver perfil na frente */
+ const h=hits.find(x=>!x.object.userData.hd.userData.o.vid)||hits[0];return h?h.object.userData.hd:null;}
+RN.domElement.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY};});
+RN.domElement.addEventListener('pointerup',e=>{if(!down)return;const mv=Math.hypot(e.clientX-down.x,e.clientY-down.y);down=null;if(mv>6||seq)return;const p=pick(e);if(p)abrePalco(p);});
+RN.domElement.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse'||down)return;const p=pick(e);if(p===hov)return;
+ if(hov)hov.userData.ms.material=hov.userData.o.vid?MVID:MAT;hov=p&&!p.userData.o.vid?p:null;if(hov)hov.userData.ms.material=MHOV;RN.domElement.style.cursor=p?'pointer':'grab';});
+
+/* ---------- palco: a peça sai da tela, gira e mostra cotas, corte e peso ---------- */
+let PR=null,PS=null,PC=null,PG=null,PSPIN=null,palcoHd=null,palcoT0=0,pFrom=null;
+function palcoInit(){if(PR)return;PR=new THREE.WebGLRenderer({antialias:true,alpha:true});PR.setPixelRatio(Math.min(2,devicePixelRatio||1));PR.outputEncoding=THREE.sRGBEncoding;$('pcv').appendChild(PR.domElement);
+ PS=new THREE.Scene();PC=new THREE.PerspectiveCamera(32,1,1,40000);
+ PS.add(new THREE.HemisphereLight('#ffffff','#2c3c3c',.9));const a=new THREE.DirectionalLight('#ffffff',1);a.position.set(500,900,1200);PS.add(a);const b=new THREE.DirectionalLight('#bfe8e4',.5);b.position.set(-900,-200,-700);PS.add(b);
+ const wm=document.createElement('div');wm.className='wm';wm.innerHTML='<b>© FC Consultoria em Esquadria · Plataforma FC 3D</b>';$('pcv').appendChild(wm);}
+function sprite(txt,cor,fundo){const c=document.createElement('canvas'),k=c.getContext('2d');k.font='700 44px Inter,system-ui';const w=Math.ceil(k.measureText(txt).width)+44;c.width=w;c.height=80;
+ k.fillStyle=fundo||'rgba(15,26,25,.9)';k.beginPath();k.roundRect?k.roundRect(0,4,w,72,20):k.rect(0,4,w,72);k.fill();k.font='700 44px Inter,system-ui';k.fillStyle=cor||'#ffd58a';k.textBaseline='middle';k.fillText(txt,22,42);
+ const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));s.renderOrder=20;s.userData.ar=w/80;return s;}
+function cotaLinha(len,y,txt){const g=new THREE.Group(),m=new THREE.LineBasicMaterial({color:'#ffd58a',depthTest:false,transparent:true});
+ const pts=[[-len/2,y,0],[len/2,y,0],[-len/2,y-14,0],[-len/2,y+14,0],[len/2,y-14,0],[len/2,y+14,0]].map(V);
+ const l=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),m);l.renderOrder=19;g.add(l);
+ const s=sprite(txt);s.position.set(0,y+0,0);g.add(s);g.userData.s=s;return g;}
+function abrePalco(hd){if(palcoHd)fechaPalco(true);palcoInit();fechaGav();
+ const u=hd.userData,o=u.o,inf=info(o);palcoHd=hd;
+ if(hov===hd){hd.userData.ms.material=o.vid?MVID:MAT;hov=null;}
+ /* de onde a peça sai: posição dela na tela */
+ const wp=new THREE.Vector3();u.ms.getWorldPosition(wp);wp.project(CAM);pFrom={x:wp.x,y:wp.y};
+ hd.visible=false;
+ if(PG){PS.remove(PG);PG.traverse(c=>{if(c.geometry)c.geometry.dispose();});}
+ PG=new THREE.Group();PSPIN=new THREE.Group();PG.add(PSPIN);PS.add(PG);
+ let len,sw,sh,mesh;
+ if(o.vid){const [w,h]=E.vid.v(L,H);len=w;sw=h;sh=E.vid.esp;mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,E.vid.esp),MVID.clone());mesh.material.opacity=.45;PSPIN.add(mesh);}
+ else{len=o.len;sw=SEC[o.c].w;sh=SEC[o.c].h;const g=geoSec(o.c,len,null,null,null,o.sc);g.rotateY(Math.PI/2);mesh=new THREE.Mesh(g,MAT);PSPIN.add(mesh);}
+ const lenTxt=o.vid?mm(len)+' × '+mm(sw):(inf.len!=null?mm(inf.len):'a conferir');
+ const cy=o.vid?-sw/2-60:-Math.max(sw,sh)/2-70;
+ const cl=cotaLinha(len,cy,o.vid?'Vidro '+lenTxt:'Comprimento · '+lenTxt+(inf.ft?' ('+inf.ft+')':''));PG.add(cl);
+ PG.userData={len,cl,vid:!!o.vid};
+ $('pinfo').innerHTML=fichaHTML(o,inf);$('palco').hidden=false;
+ {const box=$('pcv').getBoundingClientRect(),asp=Math.max(.5,box.width/Math.max(1,box.height));
+ const span=Math.max(len*1.08,o.vid?sw*1.25*asp:0)+120,dist=span/2/Math.tan(THREE.MathUtils.degToRad(16))/Math.min(1,asp)+150;
+ PC.position.set(0,dist*.16,dist);PC.lookAt(0,0,0);PG.userData.dist=dist;const sp=cl.userData.s,sz=dist*.03;sp.scale.set(sz*sp.userData.ar,sz,1);}requestAnimationFrame(()=>$('palco').classList.add('on'));palcoT0=performance.now();
+ $('pX').onclick=()=>fechaPalco();const vp=$('pVer');if(vp)vp.onclick=()=>{const c=E.cortes.find(c=>secCorte(c).some(s=>s.c===o.c));fechaPalco();if(c)abreCorte(c.id);};
+ tamPalco();cap(o.vid?'Vidro':o.c,inf.nm,'Peça fora da esquadria · toque em “Voltar a peça” para encaixar de novo');}
+function fichaHTML(o,inf){
+ const grupo=o.g<0?'Marco':R.folhas[o.g].n;
+ if(o.vid){const [w,h]=E.vid.v(L,H);return `<div class="cd">${esc(grupo)}</div><h3>${esc(inf.nm)}</h3>
+  <dl><dt>Medida</dt><dd>${mm(w)} × ${mm(h)}</dd><dt>Fórmula</dt><dd>${esc(E.vid.t)}</dd><dt>Área</dt><dd>${(w*h/1e6).toLocaleString('pt-BR',{maximumFractionDigits:3})} m²</dd><dt>Peso</dt><dd>${PEND}</dd></dl>
+  <p class="fonte">Fonte técnica: catálogo da ${esc(M.linha)}, montagem ${esc(M.cd)}, p. ${E.pg}. Para L ${L} × H ${H} mm.</p><button class="btn pri" id="pX" type="button">↩ Voltar a peça</button>`;}
+ const sv=secSVG(o.c);
+ const pesoU=inf.len!=null&&inf.kgm!=null?inf.kgm*inf.len/1000:null;
+ return `<div class="cd">${esc(o.c)} · ${esc(grupo)}</div><h3>${esc(inf.nm)}</h3>
+  <dl><dt>Comprimento</dt><dd>${inf.len!=null?mm(inf.len):PEND}</dd>
+  <dt>Fórmula</dt><dd>${inf.ft?esc(inf.ft):PEND}</dd>
+  ${inf.len==null?`<dt>No 3D</dt><dd>${mm(inf.mod)} <span class="mute" style="font-weight:400">(modelo, não é medida de corte)</span></dd>`:''}
+  <dt>Ângulo de corte</dt><dd>${PEND}</dd>
+  <dt>Seção</dt><dd>${mm(inf.secW)} × ${mm(inf.secH)}</dd>
+  <dt>Peso por metro</dt><dd>${inf.kgm!=null?kgf(inf.kgm)+' kg/m':PEND}</dd>
+  <dt>Peso da peça</dt><dd>${pesoU!=null?kgf(pesoU)+' kg':PEND}</dd></dl>
+  <div><div class="cd" style="margin-bottom:6px">Corte da peça · seção real</div>${sv}</div>
+  <p class="fonte">Fonte técnica: catálogo da ${esc(M.linha)}, montagem ${esc(M.cd)}, p. ${E.pg}. Para L ${L} × H ${H} mm. Simulação: confirmar com o serralheiro.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn pri" id="pX" type="button">↩ Voltar a peça</button><button class="btn" id="pVer" type="button">Ver no corte</button></div>`;}
+function fechaPalco(rapido){if(!palcoHd)return;const hd=palcoHd;palcoHd=null;hd.visible=true;$('palco').classList.remove('on');
+ const fim=()=>{if(!palcoHd)$('palco').hidden=true;};if(rapido)fim();else setTimeout(fim,250);cap('Montada','Toque em uma peça para ver cotas, corte e peso','');}
+function tamPalco(){if(!PR)return;const b=$('pcv').getBoundingClientRect();PR.setSize(Math.max(1,b.width),Math.max(1,b.height),false);PC.aspect=Math.max(1,b.width)/Math.max(1,b.height);PC.updateProjectionMatrix();}
+
+/* seção da peça em SVG com cotas de largura e altura */
+function secSVG(c){const d=SEC[c],pad=Math.max(d.w,d.h)*.22,W2=d.w/2,H2=d.h/2;
+ const path=d.s.map(s=>[s.o].concat(s.h||[]).map(r=>'M'+r.map(([a,b])=>a.toFixed(2)+' '+(-b).toFixed(2)).join('L')+'Z').join('')).join('');
+ const fs=Math.max(d.w,d.h)*.075;
+ return `<svg class="sv" viewBox="${-W2-pad} ${-H2-pad} ${d.w+2*pad} ${d.h+2*pad+fs*1.2}" role="img" aria-label="Seção do ${esc(c)}">
+  <path d="${path}" fill="#c6ccd0" fill-rule="evenodd" stroke="#14212a" stroke-width="${(Math.max(d.w,d.h)/260).toFixed(3)}"/>
+  <g stroke="#02717d" stroke-width="${(Math.max(d.w,d.h)/300).toFixed(3)}" fill="none"><path d="M${-W2} ${H2+pad*.45}H${W2}M${-W2} ${H2+pad*.25}v${pad*.4}M${W2} ${H2+pad*.25}v${pad*.4}M${W2+pad*.45} ${-H2}V${H2}M${W2+pad*.25} ${-H2}h${pad*.4}M${W2+pad*.25} ${H2}h${pad*.4}"/></g>
+  <text x="0" y="${H2+pad*.45+fs*1.15}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="#02717d" font-family="Inter,system-ui">${mm(d.w)}</text>
+  <text x="${W2+pad*.62}" y="0" font-size="${fs}" font-weight="700" fill="#02717d" font-family="Inter,system-ui" transform="rotate(90 ${W2+pad*.62} 0)" text-anchor="middle">${mm(d.h)}</text></svg>`;}
+
+/* ---------- cortes: seção preenchida no plano do corte ---------- */
+function wpt(o,a,b){const k=o.sc||[1,1];a*=k[0];b*=k[1];let x=o.p[0]+a*o.ex[0]+b*o.ey[0],y=o.p[1]+a*o.ex[1]+b*o.ey[1],z=o.p[2]+a*o.ex[2]+b*o.ey[2];
+ if(o.g>=0){const f=R.folhas[o.g];x+=f.ox;z+=f.z;}return [x,y,z];}
+function planoDe(c){return c.pl==='h'?{eixo:1,v:0}:{eixo:0,v:-L*.2};}
+function secCorte(c){const P=planoDe(c),out=[],vv=E.vid.v(L,H);
+ R.P.forEach(o=>{if(o.vz||o.oc)return;
+  const fo=o.g>=0?[R.folhas[o.g].ox,0,R.folhas[o.g].z]:[0,0,0];
+  if(o.vid){const cx=o.p[0]+fo[0],cy=o.p[1],cz=o.p[2]+fo[2],w=vv[0],h=vv[1],d=o.d||6;
+   if(P.eixo===1&&Math.abs(cy-P.v)<h/2)out.push({vid:1,r:[-(cx+w/2),-(cz+d/2),w,d]});
+   if(P.eixo===0&&Math.abs(cx-P.v)<w/2)out.push({vid:1,r:[cz-d/2,-(cy+h/2),d,h]});return;}
+  if(Math.abs(o.ez[P.eixo])<.9)return;
+  const cen=o.p[P.eixo]+fo[P.eixo];if(Math.abs(cen-P.v)>o.len/2)return;
+  const d=SEC[o.c];if(!d)return;
+  const map=([a,b])=>{const w=wpt(o,a,b);return P.eixo===1?[-w[0],-w[2]]:[w[2],-w[1]];};
+  const rings=[];d.s.forEach(s=>{rings.push(s.o.map(map));(s.h||[]).forEach(h=>rings.push(h.map(map)));});
+  let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;d.s.forEach(s=>s.o.forEach(p=>{const q=map(p);x0=Math.min(x0,q[0]);x1=Math.max(x1,q[0]);y0=Math.min(y0,q[1]);y1=Math.max(y1,q[1]);}));
+  out.push({c:o.c,rings,bb:[x0,y0,x1,y1],g:o.g});});
+ const z=zona(c);return out.filter(s=>{const b=s.vid?[s.r[0],s.r[1],s.r[0]+s.r[2],s.r[1]+s.r[3]]:s.bb;return b[2]>z[0]&&b[0]<z[2]&&b[3]>z[1]&&b[1]<z[3];});}
+function zona(c){const m=190;
+ if(c.pl==='h'){const y0=-60,y1=60;return c.zona==='esq'?[-L/2-30,y0,-L/2+m,y1]:c.zona==='dir'?[L/2-m,y0,L/2+30,y1]:[-120,y0,120,y1];}
+ const x0=-60,x1=60,mv=125;return c.zona==='baixo'?[x0,H/2-mv,x1,H/2+30]:[x0,-H/2-30,x1,-H/2+mv];}
+let cAt=null;
+function abreCorte(id){const c=E.cortes.find(x=>x.id===id);if(!c)return;fechaPalco(true);cAt=c;
+ const S=secCorte(c),z=zona(c);
+ /* recorta a vista ao que existe de seção na zona */
+ let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;S.forEach(s=>{const b=s.vid?[s.r[0],s.r[1],s.r[0]+s.r[2],s.r[1]+s.r[3]]:s.bb;x0=Math.min(x0,Math.max(b[0],z[0]));y0=Math.min(y0,Math.max(b[1],z[1]));x1=Math.max(x1,Math.min(b[2],z[2]));y1=Math.max(y1,Math.min(b[3],z[3]));});
+ const w=x1-x0,h=y1-y0,pad=Math.max(w,h)*.08,lab=Math.max(w,h)*.2,fs=Math.max(w,h)*.032;
+ const vb=[x0-pad,y0-pad-lab,w+2*pad,h+2*pad+2*lab];
+ let svg=`<defs><clipPath id="zc"><rect x="${z[0]}" y="${z[1]}" width="${z[2]-z[0]}" height="${z[3]-z[1]}"/></clipPath>
+  <pattern id="hv" width="${fs*.6}" height="${fs*.6}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="${fs*.6}" height="${fs*.6}" fill="#e3f1f6"/><line x1="0" y1="0" x2="0" y2="${fs*.6}" stroke="#9fc8d6" stroke-width="${fs*.08}"/></pattern></defs><g clip-path="url(#zc)">`;
+ S.filter(s=>s.vid).forEach(s=>{svg+=`<rect x="${s.r[0]}" y="${s.r[1]}" width="${s.r[2]}" height="${s.r[3]}" fill="url(#hv)" stroke="#5f9fb4" stroke-width="${fs*.05}"/>`;});
+ const sw=Math.max(w,h)/700;
+ S.filter(s=>!s.vid).forEach(s=>{const d=s.rings.map(r=>'M'+r.map(p=>p[0].toFixed(2)+' '+p[1].toFixed(2)).join('L')+'Z').join('');
+  svg+=`<path d="${d}" fill="#b9c2c7" fill-rule="evenodd" stroke="#14212a" stroke-width="${sw}"/>`;});
+ svg+='</g>';
+ /* rótulos com linha de chamada, em cima e embaixo, sem sobrepor */
+ const pf=S.filter(s=>!s.vid).map(s=>({c:s.c,cx:(Math.max(s.bb[0],z[0])+Math.min(s.bb[2],z[2]))/2,cy:(Math.max(s.bb[1],z[1])+Math.min(s.bb[3],z[3]))/2})).sort((a,b)=>a.cx-b.cx);
+ const vist={};const lb=pf.filter(p=>{const k=p.c+'|'+Math.round(p.cx/25)+'|'+Math.round(p.cy/25);if(vist[k])return false;vist[k]=1;return true;});
+ const mid=y0+h/2,up=lb.filter(p=>p.cy<=mid),dn=lb.filter(p=>p.cy>mid);
+ const fila=(arr,yy,anc)=>{const n=arr.length;arr.forEach((p,i)=>{const lx=x0+(w)*(n===1?.5:i/(n-1));
+  svg+=`<path d="M${p.cx} ${p.cy}L${lx} ${yy+(anc>0?-fs*1.1:fs*.4)}" stroke="#02717d" stroke-width="${sw*.9}" fill="none"/><circle cx="${p.cx}" cy="${p.cy}" r="${fs*.16}" fill="#02717d"/>
+   <text x="${lx}" y="${yy}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="#02717d" font-family="Inter,system-ui">${esc(p.c)}</text>`;});};
+ fila(up,y0-pad-lab*.35,1);fila(dn,y1+pad+lab*.6,-1);
+ /* lado externo / interno */
+ const ext=c.pl==='h'?{x:x1+pad*.2,y:y1+pad*.6,t:'LADO EXTERNO',a:'end'}:{x:x0-pad*.6,y:y0+h/2,t:'LADO EXTERNO',a:'middle',rot:-90};
+ const int=c.pl==='h'?{x:x1+pad*.2,y:y0-pad*.25,t:'LADO INTERNO',a:'end'}:{x:x1+pad*.6,y:y0+h/2,t:'LADO INTERNO',a:'middle',rot:90};
+ [ext,int].forEach(q=>{svg+=`<text x="${q.x}" y="${q.y}" text-anchor="${q.a}" font-size="${fs*.78}" font-weight="700" letter-spacing="${fs*.08}" fill="#5a6872" font-family="Inter,system-ui"${q.rot?` transform="rotate(${q.rot} ${q.x} ${q.y})"`:''}>${q.t}</text>`;});
+ svg+=`<text x="${vb[0]+vb[2]-pad*.3}" y="${vb[1]+vb[3]-pad*.3}" text-anchor="end" font-size="${fs*.62}" fill="#8a9aa3" font-family="Inter,system-ui">© FC Consultoria · Plataforma FC 3D · seção real do catálogo, ${esc(M.cd)}</text>`;
+ const g=$('gavSvg');g.setAttribute('viewBox',vb.map(v=>v.toFixed(1)).join(' '));g.innerHTML=svg;
+ $('gavT').textContent=c.n;$('gav').hidden=false;
+ /* plano do corte no 3D */
+ const P=planoDe(c);PLANO.visible=true;
+ if(P.eixo===1){PLANO.scale.set(L+300,220,1);PLANO.rotation.set(Math.PI/2,0,0);const xc=c.zona==='esq'?L/2-80:c.zona==='dir'?-L/2+80:0;PLANO.position.set(0,P.v,0);PLANO.scale.x=L+300;}
+ else{PLANO.scale.set(220,H+300,1);PLANO.rotation.set(0,Math.PI/2,0);PLANO.position.set(P.v,0,0);}
+ marcaCortes();}
+function fechaGav(){$('gav').hidden=true;PLANO.visible=false;cAt=null;marcaCortes();}
+function marcaCortes(){document.querySelectorAll('[data-corte]').forEach(b=>b.setAttribute('aria-pressed',String(!!cAt&&b.dataset.corte===cAt.id)));}
+
+/* elevação vista externa, como no catálogo (clicar abre o corte) */
+function elev(){const s=$('elev'),k=Math.min(220/L,150/H),w=L*k,h=H*k,x=(300-w)/2-6,y=(210-h)/2+4;
+ let g=`<text x="150" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" style="color:var(--mute)" letter-spacing=".06em">ELEVAÇÃO VISTA EXTERNA</text>
+ <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="currentColor" style="color:var(--ink)" stroke-width="1.6"/>
+ <rect x="${x+5}" y="${y+5}" width="${w-10}" height="${h-10}" fill="none" stroke="currentColor" style="color:var(--mute)" stroke-width=".8"/>
+ <line x1="${x+w/2}" y1="${y+5}" x2="${x+w/2}" y2="${y+h-5}" stroke="currentColor" style="color:var(--mute)" stroke-width=".8"/>
+ <text x="${x+w+14}" y="${y+h/2+4}" font-size="11" fill="currentColor" style="color:var(--mute)">H</text><text x="${x+w/2}" y="${y+h+16}" text-anchor="middle" font-size="11" fill="currentColor" style="color:var(--mute)">L</text>`;
+ const cut=(id,x1,y1,x2,y2,tx,ty)=>`<g class="cut" data-corte="${id}" role="button" tabindex="0" aria-label="Abrir corte ${id}"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="transparent" stroke-width="14" style="stroke-dasharray:none"/><text x="${tx}" y="${ty}">${id}</text></g>`;
+ const xv=x+w*.7,ym=y+h*.42;
+ g+=cut('02',xv,y-10,xv,y+h*.3,xv-14,y-2)+cut('01',xv,y+h*.7,xv,y+h+10,xv+4,y+h+20)+cut('03',x-12,ym,x+w*.22,ym,x-2,ym-5)+cut('04',x+w*.4,ym,x+w*.6,ym,x+w*.42,ym-5)+cut('05',x+w*.78,ym,x+w+12,ym,x+w-6,ym-5);
+ s.innerHTML=g;s.querySelectorAll('[data-corte]').forEach(b=>{b.onclick=()=>abreCorte(b.dataset.corte);b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();abreCorte(b.dataset.corte);}};});
+ $('cbtn').innerHTML=E.cortes.map(c=>`<button class="btn" type="button" data-corte="${c.id}" aria-pressed="false" title="${esc(c.n)}">Corte ${c.id}</button>`).join('');
+ $('cbtn').querySelectorAll('button').forEach(b=>b.onclick=()=>abreCorte(b.dataset.corte));marcaCortes();}
+$('gavX').onclick=fechaGav;
+$('gavPrev').onclick=()=>{if(!cAt)return;const i=E.cortes.indexOf(cAt);abreCorte(E.cortes[(i+E.cortes.length-1)%E.cortes.length].id);};
+$('gavNext').onclick=()=>{if(!cAt)return;const i=E.cortes.indexOf(cAt);abreCorte(E.cortes[(i+1)%E.cortes.length].id);};
+
+/* ---------- lista de peças com corte e peso ---------- */
+function lista(){const grp={};let vq=0;
+ R.P.forEach(o=>{if(o.vz||o.oc)return;if(o.vid){vq++;return;}const k=o.c;(grp[k]=grp[k]||{c:k,q:0,ord:o.g<0?0:1}).q++;});
+ const om=E.ordemMarco,rows=Object.values(grp).sort((a,b)=>a.ord-b.ord||((om.indexOf(a.c)+1||99)-(om.indexOf(b.c)+1||99))||a.c.localeCompare(b.c));
+ let tot=0,falta=0;
+ const tr=r=>{const inf=info({c:r.c,len:0}),u=inf.len!=null&&inf.kgm!=null?inf.kgm*inf.len/1000:null;if(u!=null)tot+=u*r.q;else falta++;
+  return `<tr class="pk" data-cod="${esc(r.c)}" tabindex="0"><td><b>${esc(r.c)}</b><br><span class="mute">${esc(inf.nm)}</span></td><td class="n">${r.q}</td><td>${inf.ft?esc(inf.ft):PEND}</td><td class="n">${inf.len!=null?mm(inf.len):PEND}</td><td>${PEND}</td><td class="n">${inf.kgm!=null?kgf(inf.kgm):PEND}</td><td class="n">${u!=null?kgf(u*r.q)+' kg':PEND}</td></tr>`;};
+ const [vw,vh]=E.vid.v(L,H);
+ let b=`<p class="mute" style="margin-bottom:10px">${esc(M.cd)} · L ${L} × H ${H} mm. Comprimento só aparece quando o catálogo traz a fórmula. O resto fica “a conferir”, e nada é calculado no chute. Toque numa linha para ver a peça.</p>
+ <div style="overflow-x:auto"><table><thead><tr><th>Peça</th><th class="n">Qtd</th><th>Fórmula do catálogo</th><th class="n">Comprimento</th><th>Corte</th><th class="n">kg/m</th><th class="n">Peso</th></tr></thead><tbody>
+ <tr class="gr"><td colspan="7">Perfis</td></tr>${rows.map(tr).join('')}
+ <tr class="gr"><td colspan="7">Vidro</td></tr><tr><td><b>Vidro ${E.vid.esp} mm</b></td><td class="n">${vq}</td><td>${esc(E.vid.t)}</td><td class="n">${mm(vw)} × ${mm(vh)}</td><td>—</td><td class="n">—</td><td class="n">${PEND}</td></tr>
+ <tr class="gr"><td colspan="7">Componentes indicados no desenho</td></tr>${E.comp.map(([c,n])=>`<tr><td><b>${esc(c)}</b><br><span class="mute">${esc(n)}</span></td><td class="n">${PEND}</td><td colspan="5" class="mute">Aparece no desenho da montagem. A quantidade não está na página.</td></tr>`).join('')}
+ </tbody></table></div>
+ <p style="margin-top:12px"><b>Peso dos perfis com fórmula: ${kgf(tot)} kg</b> <span class="mute">· parcial: ${falta} ${falta===1?'perfil':'perfis'} sem fórmula ficam fora da soma.</span></p>`;
+ dlg('Lista de peças · corte e peso',b,'Fonte técnica: catálogo da '+M.linha+', montagem '+M.cd+', p. '+E.pg+'. Simulação. A confirmação é do serralheiro. © FC Consultoria em Esquadria.');
+ $('dlgB').querySelectorAll('tr.pk').forEach(t=>{const go=()=>{const hd=PECAS.find(p=>p.userData.o.c===t.dataset.cod);fechaDlg();if(hd)abrePalco(hd);};t.onclick=go;t.onkeydown=e=>{if(e.key==='Enter')go();};});}
+function dlg(t,b,f){$('dlgT').textContent=t;$('dlgB').innerHTML=b;$('dlgF').textContent=f||'';$('dlg').hidden=false;$('dlgX').focus();}
+function fechaDlg(){$('dlg').hidden=true;}
+$('dlgX').onclick=fechaDlg;$('dlg').onclick=e=>{if(e.target===$('dlg'))fechaDlg();};
+$('bLista').onclick=()=>{fechaPalco(true);lista();};
+$('bDes').onclick=()=>{fechaPalco(true);dlg('Desenho técnico · '+M.cd,`<img src="${E.des}" alt="Desenho técnico da montagem ${esc(M.cd)}, com elevação e cortes 01 a 05" loading="lazy">`,'Fonte técnica: catálogo da '+M.linha+', montagem '+M.cd+', p. '+E.pg+'. É o desenho que serviu de base para o 3D.');};
+$('bPend').onclick=()=>{fechaPalco(true);dlg('Pontos a conferir · '+M.cd,`<p class="mute" style="margin-bottom:10px">Onde o texto e o desenho do catálogo não batem, ou onde falta informação, a peça fica “a conferir” até você decidir.</p><ol class="ol">${E.pend.map(p=>`<li>${esc(p)}</li>`).join('')}</ol>`,'Lista só do Acesso FC.');};
+$('nPend').textContent=E.pend.length;
+
+function legenda(){const n=PECAS.filter(p=>!p.userData.o.vid).length;
+ $('leg').innerHTML=`<b>${n} perfis + ${PECAS.length-n} vidros</b>, cada um desenhado a partir da seção real do catálogo. Toque numa peça: ela sai da esquadria e mostra cotas, corte e peso. Valores sem fórmula no catálogo aparecem como ${PEND}.`;}
+
+/* ---------- comandos ---------- */
+let VISTA='ext',desm=false;
+$('bMontar').onclick=montarSeq;
+$('bDesm').onclick=()=>{seq=null;$('prog').hidden=true;fechaPalco(true);desm=!desm;setT(desm?1:0);$('bDesm').setAttribute('aria-pressed',String(desm));
+ cap(desm?'Desmontada':'Montada',desm?'Vista explodida · toque em uma peça':'Toque em uma peça para ver cotas, corte e peso','');};
+$('bAbrir').onclick=()=>{abT=abT?0:1;$('bAbrir').setAttribute('aria-pressed',String(!!abT));};
+const vista=v=>{VISTA=v;$('bExt').setAttribute('aria-pressed',String(v==='ext'));$('bInt').setAttribute('aria-pressed',String(v==='int'));enquadra(true);};
+$('bExt').onclick=()=>vista('ext');$('bInt').onclick=()=>vista('int');
+$('bFull').onclick=()=>{const el=$('stage');if(document.fullscreenElement)document.exitFullscreen();else if(el.requestFullscreen)el.requestFullscreen().catch(()=>{});else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();};
+document.addEventListener('fullscreenchange',()=>{$('bFull').textContent=document.fullscreenElement?'⛶ Sair da tela cheia':'⛶ Tela cheia';setTimeout(tam,50);});
+let tmr=null;const mede=()=>{clearTimeout(tmr);tmr=setTimeout(()=>{const l=+$('inL').value,h=+$('inH').value;if(l>=600&&l<=3000&&h>=400&&h<=2400&&(l!==L||h!==H)){L=l;H=h;fechaPalco(true);const c=cAt;montar();elev();if(c)abreCorte(c.id);if(desm)setT(1),PECAS.forEach(p=>p.userData.t=1);}},350);};
+$('inL').oninput=mede;$('inH').oninput=mede;
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('dlg').hidden)fechaDlg();else if(palcoHd)fechaPalco();else if(!$('gav').hidden)fechaGav();});
+
+/* marca d'água em faixas */
+(function(){const w=$('wm');for(let i=0;i<9;i++){const s=document.createElement('i');s.style.top=(i*13-6)+'%';s.textContent=Array(8).fill('FC Consultoria · Plataforma FC 3D').join('     ');w.appendChild(s);}})();
+
+/* ---------- laço de desenho ---------- */
+function tam(){const b=host.getBoundingClientRect();RN.setSize(Math.max(1,b.width),Math.max(1,b.height),false);CAM.aspect=Math.max(1,b.width)/Math.max(1,b.height);CAM.updateProjectionMatrix();tamPalco();}
+addEventListener('resize',tam);
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+let last=performance.now();
+function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;
+ passoSeq(now);
+ PECAS.forEach(p=>{const u=p.userData;if(u.t!==u.tt){const sp=seq?2.2:1.8;u.t=u.tt>u.t?Math.min(u.tt,u.t+dt*sp):Math.max(u.tt,u.t-dt*sp);}
+  const e=ease(u.t);p.position.set(u.ex.x*e,u.ex.y*e,u.ex.z*e);});
+ if(ab!==abT){ab=abT>ab?Math.min(abT,ab+dt*.9):Math.max(abT,ab-dt*.9);aplicaFolhas();}
+ if(voo){voo.t=Math.min(1,voo.t+dt*1.6);CAM.position.lerpVectors(voo.a,voo.b,ease(voo.t));if(voo.t>=1)voo=null;}
+ CT.update();RN.render(SC,CAM);
+ if(palcoHd&&PR){const t=(now-palcoT0)/1000,k=Math.min(1,t/.7),e=ease(k),u=PG.userData;
+  /* sai do lugar da peça na tela e vem para a frente, girando */
+  PG.position.set(pFrom.x*(1-e)*u.dist*.35,pFrom.y*(1-e)*u.dist*.25,-(1-e)*u.dist*.8);
+  PG.scale.setScalar(.35+.65*e);
+  if(u.vid){PSPIN.rotation.y=Math.sin(t*.7)*.5;}
+  else{PSPIN.rotation.x=t*.6;PG.rotation.y=-.55+Math.sin(t*.4)*.12;PG.rotation.x=.18;}
+  PR.render(PS,PC);}}
+montar();elev();tam();requestAnimationFrame(loop);
+}
+})();
+</script>
+</body>
+</html>
