@@ -135,6 +135,19 @@ body.oxnovo #side>details.card.oxsel>summary{display:none!important}
 #oxPane .cmp img{width:46px;height:46px;object-fit:contain;border-radius:6px;background:#fff;flex:none}
 #oxPane .cmp small{display:block;font:400 12px var(--f-mono,monospace);color:var(--muted,#5b6770);margin-top:2px}
 #oxPane .cmp[aria-pressed="true"]{background:#fff1e0;box-shadow:inset 3px 0 0 #ff8a00}
+#oxPane .swr{border-bottom:1px solid var(--line,#d5dce1);padding:10px 0}
+#oxPane .swr.on{background:linear-gradient(90deg,#e1f3f1,transparent);box-shadow:inset 3px 0 0 #02717d;padding-left:8px}
+#oxPane .swh{display:flex;gap:8px;align-items:baseline;cursor:pointer;margin-bottom:6px}
+#oxPane .swh b{font:600 13px var(--f-mono,monospace)}#oxPane .swh span{font-size:13px;color:var(--muted,#5b6770)}
+#oxPane .swo{display:flex;flex-wrap:wrap;gap:6px}
+#oxPane .swo button{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:74px;padding:6px;border:1px solid var(--line,#d5dce1);border-radius:8px;background:#fff;cursor:pointer;font:600 12px var(--f-mono,monospace);color:#1b232a}
+#oxPane .swo button img{width:52px;height:38px;object-fit:contain}
+#oxPane .swo button small{font:400 10.5px var(--f-body,system-ui);color:var(--muted,#5b6770)}
+#oxPane .swo button[aria-pressed="true"]{border-color:#02717d;box-shadow:0 0 0 2px #02717d inset;background:#eef8f7}
+#oxPane .swc{margin-top:8px;font-size:12.5px}#oxPane .swc svg{width:100%;height:auto;max-height:130px;background:#f6f8f9;border-radius:6px}
+#oxPane .swc table{width:100%;border-collapse:collapse;margin-top:6px}#oxPane .swc th,#oxPane .swc td{padding:3px 4px;border-bottom:1px solid #eef1f3;text-align:right;font-weight:500}#oxPane .swc th{text-align:left;color:var(--muted,#5b6770);font-weight:400}
+#oxPane .swc .up{color:#b45309}#oxPane .swc .dn{color:#047857}
+#oxPane .oxlnk{background:none;border:0;color:#02717d;font:600 13px var(--f-body,system-ui);cursor:pointer;padding:4px 0 8px}
 #oxPinfo dl.cmpf{display:block}#oxPinfo dl.cmpf dt{margin-top:8px}#oxPinfo dl.cmpf dd{text-align:left;font:400 13.5px/1.45 var(--f-body,system-ui);margin:2px 0 0}
 #oxPinfo img{max-width:100%;max-height:120px;object-fit:contain;display:block;margin:6px 0;background:#fff;border-radius:6px}
 #oxPane .lin i{font-style:normal;color:var(--muted,#5d6b76);font-size:12px}
@@ -178,7 +191,7 @@ function sync(){if(!ent)return;const ok=podeMostrar(),nv=querNovo();ent.hidden=!
 const NOVO_TIPOS=['jcr200'];
 let NOVO=false,medindo=false,abaAt='p',confCasa=null;
 function querNovo(){const st=estado();return !!(ACESSO&&st&&NOVO_TIPOS.includes(st.typo)&&st.mode==='exp'&&!st.wvOn&&!st.diaOn);}
-const ABAS=[['p','Peças',null],['c','Componentes',null],['s','Trocar perfil','c-swap'],['u','Usinagens','c-us'],['v','Vento','c-conf'],['b','Base técnica',null]];
+const ABAS=[['p','Peças',null],['c','Componentes',null],['s','Trocar perfil',null],['u','Usinagens','c-us'],['v','Vento','c-conf'],['b','Base técnica',null]];
 function ligaNovo(){NOVO=true;document.body.classList.add('oxnovo');
  const side=document.getElementById('side');
  if(side&&!document.getElementById('oxTabs')){
@@ -195,13 +208,14 @@ function desligaNovo(){NOVO=false;document.body.classList.remove('oxnovo');
  document.querySelectorAll('#side>details.oxsel').forEach(e=>e.classList.remove('oxsel'));
  const cf=document.getElementById('c-conf');if(cf&&confCasa){if(confCasa.flu)cf.classList.add('cf-flu');confCasa.pai.insertBefore(cf,confCasa.prox);confCasa=null;}
  if(APP){APP.novo=false;APP.classico(false);}fecharCamada();}
-function aba(k){if(abaAt==='v'&&k!=='v'&&typeof window.FC_VT_END==='function'){try{window.FC_VT_END();}catch(_){}}abaAt=k;if(APP&&APP.comps&&k!=='c')APP.comps(false);const def=ABAS.find(a=>a[0]===k);
+function aba(k){if(abaAt==='v'&&k!=='v'&&typeof window.FC_VT_END==='function'){try{window.FC_VT_END();}catch(_){}}abaAt=k;if(APP&&APP.comps&&k!=='c')APP.comps(false);if(APP&&APP.trocas&&k!=='s')APP.trocas(false);if(APP&&APP.vento&&k!=='v')APP.vento(false);const def=ABAS.find(a=>a[0]===k);
  document.querySelectorAll('#oxTabs [data-aba]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.aba===k)));
  document.querySelectorAll('#side>details.oxsel').forEach(e=>e.classList.remove('oxsel'));
  const pn=document.getElementById('oxPane');if(!pn)return;
- if(def[2]){const el=document.getElementById(def[2]);pn.hidden=true;if(el){el.classList.add('oxsel');el.open=true;}if(APP)APP.classico(true);return;}
+ if(def[2]){const el=document.getElementById(def[2]);pn.hidden=true;if(el){el.classList.add('oxsel');el.open=true;}if(APP){if(k==='v'&&APP.vento)APP.vento(true);else APP.classico(true);}return;}
  pn.hidden=false;if(APP)APP.classico(false);
  if(k==='c'){compPane();return;}
+ if(k==='s'){trocaPane();return;}
  if(k==='b'){pn.innerHTML='<p class="nt">Desenho do catálogo técnico que serviu de base para o 3D.</p><img src="base/jcr200.webp" alt="Folha de montagem da SUP JCR 200 com elevação e cortes" loading="lazy"><p class="nt" style="margin-top:8px">Folha de montagem · elevação e cortes · catálogo p. 117. Fonte técnica: catálogo da Linha Suprema, SUP JCR 200.</p>';return;}
  pecasPane();}
 function compPane(){const pn=document.getElementById('oxPane');if(!pn||abaAt!=='c')return;
@@ -214,6 +228,21 @@ function compPane(){const pn=document.getElementById('oxPane');if(!pn||abaAt!=='
  box.querySelectorAll('[data-c]').forEach(b=>{b.onmouseenter=()=>APP.compHover(b.dataset.c);b.onclick=()=>{const c=APP.compAtual()===b.dataset.c?null:b.dataset.c;APP.compSel(c);if(c&&innerWidth<900){const st=document.getElementById('stage');if(st)st.scrollIntoView({behavior:'smooth',block:'start'});}};});
  box.onmouseleave=()=>APP.compHover(null);
  APP.aoComp=c=>box.querySelectorAll('[data-c]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.c===c)));}
+function trocaPane(){const pn=document.getElementById('oxPane');if(!pn||abaAt!=='s')return;
+ if(!APP){pn.innerHTML='<p class="nt">Abrindo os perfis…</p>';return;}
+ APP.trocas(true);const L=APP.trocaLista();
+ if(!L.length){pn.innerHTML='<p class="nt">Esta tipologia não tem perfis alternativos no catálogo.</p>';return;}
+ pn.innerHTML='<p class="nt">Toque numa opção para trocar o perfil na janela · o perfil trocado fica destacado</p>'+(L.some(r=>r.cur!==r.b)?'<button type="button" class="oxlnk" id="oxSwR">↺ Voltar todos aos originais</button>':'')
+  +L.map(r=>`<div class="swr${r.cur!==r.b?' on':''}" data-b="${esc(r.b)}"><div class="swh"><b>${esc(r.b)}</b><span>${esc(r.nm)}</span></div>
+  <div class="swo">${r.opts.map(o=>`<button type="button" data-o="${esc(o.o)}" aria-pressed="${o.o===r.cur}">${o.img?`<img src="${o.img}" alt="">`:''}<span>${esc(o.o.replace('+',' + '))}</span><small>${esc(o.sub)}</small></button>`).join('')}</div>
+  ${r.cmp?`<div class="swc">${r.cmp}</div>`:''}</div>`).join('');
+ pn.querySelectorAll('.swr').forEach(row=>{const b=row.dataset.b;
+  row.onmouseenter=()=>APP.trocaFoco(b,false);
+  row.querySelector('.swh').onclick=()=>APP.trocaFoco(b,true);
+  row.querySelectorAll('[data-o]').forEach(x=>x.onclick=()=>{APP.troca(b,x.dataset.o);trocaPane();if(innerWidth<900){const st=document.getElementById('stage');if(st)st.scrollIntoView({behavior:'smooth',block:'start'});}});});
+ const rz=document.getElementById('oxSwR');if(rz)rz.onclick=()=>{APP.trocaZera();trocaPane();};
+ pn.onmouseleave=()=>APP.trocaFoco(null,false);
+ APP.aoTroca=trocaPane;APP.aoTrocaFoco=b=>pn.querySelectorAll('.swr').forEach(r=>{if(r.dataset.b===b)r.scrollIntoView({block:'nearest',behavior:'smooth'});});}
 function pecasPane(){const pn=document.getElementById('oxPane');if(!pn||abaAt!=='p')return;
  if(!APP){pn.innerHTML='<p class="nt">Abrindo as peças…</p>';return;}
  const L=APP.lista(),n=L.reduce((a,x)=>a+x.q,0);
@@ -337,6 +366,7 @@ let R=null,PECAS=[],FOL=[],ROOT=null,GEO=[];
 function montar(){
  ROOT=new THREE.Group();SC.add(ROOT);PECAS=[];FOL=[];
  R=window.FCM.pecas(SEC,M,L,H);const GR=[ROOT];
+ {const sw=trocasAtuais();R.P.forEach(o=>{if(o.vid||!o.c)return;const n=sw[o.c];if(n){const n0=n.split('+')[0];if(secDe(n0)){o.c0=o.c;o.c=n0;}}});}
  R.folhas.forEach(f=>{const F=new THREE.Group();F.position.set(f.ox,f.oy||0,f.z);F.userData={ox:f.ox,ab:(f.dir||0)*(f.curso||0)};ROOT.add(F);FOL.push(F);GR.push(F);});
  R.P.forEach((o,ix)=>{if(o.vz||o.oc)return;let ms;
   if(o.vid){const vv=vDim(o);ms=new THREE.Mesh(new THREE.BoxGeometry(vv[0],vv[1],vEsp(o)),MVID);ms.position.set(o.p[0],o.p[1],o.p[2]);}
@@ -397,10 +427,10 @@ function pick(ev){const r=RN.domElement.getBoundingClientRect();PT.set((ev.clien
  const h=hits.find(x=>!x.object.userData.hd.userData.o.vid)||hits[0];return h?h.object.userData.hd:null;}
 RN.domElement.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY};});
 RN.domElement.addEventListener('pointerup',e=>{if(!down)return;const mv=Math.hypot(e.clientX-down.x,e.clientY-down.y);down=null;if(mv>6||seq>=0||cAt)return;
- if(CMODO){const c=pickComp(e);if(c)compSel(c);return;}const p=pick(e);if(p)abrePalco(p);});
+ if(CMODO){const c=pickComp(e);if(c)compSel(c);return;}const p=pick(e);if(TMODO){if(p&&!p.userData.o.vid){tFoco=doB(p);trocaPinta();trocaCard(tFoco);if(API.aoTrocaFoco)API.aoTrocaFoco(tFoco);}return;}if(p)abrePalco(p);});
 RN.domElement.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse'||down||seq>=0||cAt)return;
  if(CMODO){const c=pickComp(e);if(c!==cHov){cHov=c;compPinta();}RN.domElement.style.cursor=c?'pointer':'grab';return;}const p=pick(e);if(p===hov)return;
- if(hov)hov.userData.ms.material=matBase(hov);hov=p&&!p.userData.o.vid?p:null;if(hov)hov.userData.ms.material=MHOV;RN.domElement.style.cursor=p?'pointer':'grab';});
+ if(TMODO){RN.domElement.style.cursor=p?'pointer':'grab';return;}if(hov)hov.userData.ms.material=matBase(hov);hov=p&&!p.userData.o.vid?p:null;if(hov)hov.userData.ms.material=MHOV;RN.domElement.style.cursor=p?'pointer':'grab';});
 function tiraHover(){if(hov){hov.userData.ms.material=matBase(hov);hov=null;}}
 
 /* ---------- ver de perto: a peça sai da janela, de frente para a seção, com as cotas ---------- */
@@ -510,6 +540,7 @@ function abreCorte(id){const c=E.cortes.find(x=>x.id===id);if(!c)return;
   <div class="acts"><button class="oxbtn" type="button" id="oxCX">Fechar</button></div>`);
  $('oxCX').onclick=()=>sairCorte();hint('Arraste para girar · toque de novo no corte para sair');}
 function sairCorte(semCamera){if(!cAt)return;cAt=null;limpaCaps();materiais(matBase);PISO.visible=true;card(null);marcaCortes();
+ if(TMODO){tCorte=false;trocaPinta();if(tFoco)trocaCard(tFoco);if(!semCamera&&tFoco){trocaVoa(tFoco);return;}}
  if(!semCamera)enquadra(true);hint('Toque numa peça para ver de perto · arraste para girar');}
 function marcaCortes(){L0.querySelectorAll('[data-corte]').forEach(b=>b.setAttribute('aria-pressed',String(!!cAt&&b.dataset.corte===cAt.id)));const b=$('oxCor');if(b){b.setAttribute('aria-pressed',String(!!cAt));b.textContent=cAt?'✂ Corte '+cAt.id+' ▾':'✂ Cortes ▾';}}
 
@@ -518,11 +549,11 @@ let ab=0,abT=0,jun=true,CLS=false,CMODO=false;
 function aplicaFolhas(){FOL.forEach(F=>{F.position.x=F.userData.ox+F.userData.ab*ab;});}
 function fechaFolhas(){ab=abT=0;aplicaFolhas();$('oxAbr').setAttribute('aria-pressed','false');}
 /* qualquer comando da barra volta do 3D clássico (abas Componentes, Trocar perfil, Usinagens, Vento) */
-function usa(){if((CLS||CMODO)&&API.aoVoltar)API.aoVoltar();classico(false);fechaDD();}
+function usa(){if((CLS||CMODO||TMODO||VMODO)&&API.aoVoltar)API.aoVoltar();classico(false);fechaDD();}
 function classico(on){CLS=!!on;L0.classList.toggle('cls',CLS);$('oxVolta').hidden=!CLS;
  if(CLS){fechaPalco(true);if(seq>=0)seqFim();sairCorte(true);fechaMed();}else{tam();retoma();}}
-const vista=v=>{if(CMODO)classico(false);else usa();VISTA=v;L0.querySelectorAll('[data-v]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===v)));
- if(cAt){const id=cAt.id;cAt=null;abreCorte(id);}else if(CMODO&&cSel)compVoa(cSel);else enquadra(true);};
+const vista=v=>{if(CMODO||TMODO||VMODO)classico(false);else usa();VISTA=v;L0.querySelectorAll('[data-v]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===v)));
+ if(cAt){const id=cAt.id;cAt=null;abreCorte(id);}else if(CMODO&&cSel)compVoa(cSel);else if(TMODO&&tFoco)trocaVoa(tFoco);else enquadra(true);};
 L0.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>vista(b.dataset.v));
 $('oxAbr').onclick=()=>{usa();sairCorte(true);if(seq>=0)seqFim();if(desm){desm=false;PECAS.forEach(p=>p.userData.tt=0);$('oxDesm').setAttribute('aria-pressed','false');}
  abT=abT?0:1;$('oxAbr').setAttribute('aria-pressed',String(!!abT));};
@@ -543,7 +574,7 @@ const JP={};E.cortes.forEach(c=>{const P=planoDe(c),z=zona(c),Xc=(z[0]+z[2])/2,Y
  JP[c.id]=P.eixo===1?new THREE.Vector3(c.zona==='esq'?-L/2:c.zona==='dir'?L/2:0,P.v,0):new THREE.Vector3(P.v,c.zona==='baixo'?-H/2:H/2,0);});
 $('oxJ').querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>abreCorte(b.dataset.j));
 const tmpV=new THREE.Vector3();
-function juncoes(){const box=$('oxJ'),on=jun&&!CLS&&!CMODO&&seq<0&&!cAt&&!desm&&!palcoHd&&!ab&&!abT;box.style.display=on?'':'none';if(!on)return;
+function juncoes(){const box=$('oxJ'),on=jun&&!CLS&&!CMODO&&!TMODO&&!VMODO&&seq<0&&!cAt&&!desm&&!palcoHd&&!ab&&!abT;box.style.display=on?'':'none';if(!on)return;
  const r=host.getBoundingClientRect();box.querySelectorAll('[data-j]').forEach(b=>{tmpV.copy(JP[b.dataset.j]).project(CAM);
   b.style.left=((tmpV.x+1)/2*r.width)+'px';b.style.top=((1-tmpV.y)/2*r.height)+'px';b.style.visibility=tmpV.z<1?'visible':'hidden';});}
 /* medida: tocou no selo, muda L × H (vale para o 3D novo e para o clássico) */
@@ -577,6 +608,11 @@ const MALT=new THREE.MeshStandardMaterial({color:'#c6ccd0',metalness:.35,roughne
 const MCMPH=new THREE.MeshStandardMaterial({color:'#ff6a00',emissive:'#6a2600',emissiveIntensity:.6,roughness:.5,side:THREE.DoubleSide});
 let CG=null,CIT={},cSel=null,cHov=null;
 function compsLimpa(){if(CG){SC.remove(CG);CG=null;}CIT={};}
+function mapaCls(){const prof=G('profMeshes')||[];if(!prof.length)return null;
+ const bc=new THREE.Box3();prof.forEach(m=>{m.updateWorldMatrix(true,false);bc.expandByObject(m);});
+ FOL.forEach(F=>{F.position.x=F.userData.ox;});const bn=new THREE.Box3();PECAS.forEach(p=>{if(!p.userData.o.vid){p.updateWorldMatrix(true,true);bn.expandByObject(p);}});aplicaFolhas();
+ if(bc.isEmpty()||bn.isEmpty())return null;const cc=bc.getCenter(new THREE.Vector3()),cs=bc.getSize(new THREE.Vector3()),nc=bn.getCenter(new THREE.Vector3()),ns=bn.getSize(new THREE.Vector3());
+ const k=new THREE.Vector3(ns.x/cs.x,ns.y/cs.y,ns.z/cs.z);return {cc,nc,k,p:v=>new THREE.Vector3(nc.x+(v.x-cc.x)*k.x,nc.y+(v.y-cc.y)*k.y,nc.z+(v.z-cc.z)*k.z)};}
 function compsMonta(){compsLimpa();const objs=(G('compObjs')||[]).filter(m=>m&&m.userData&&m.userData.comp),prof=G('profMeshes')||[];
  if(!objs.length||!prof.length)return false;
  const bc=new THREE.Box3();prof.forEach(m=>{m.updateWorldMatrix(true,false);bc.expandByObject(m);});
@@ -630,6 +666,94 @@ function comps(on){on=!!on;if(on===CMODO)return on?!!CG:true;
  CMODO=false;cSel=cHov=null;fechaPalco(true);card(null);if(CG)CG.visible=false;compsLimpa();materiais(matBase);RN.domElement.style.cursor='grab';enquadra(true);
  hint('Toque numa peça para ver de perto · arraste para girar');return true;}
 
+/* ---------- trocar perfil dentro do 3D novo (aba Trocar perfil) ----------
+   A troca é a mesma do 3D clássico (mesma lista do catálogo); aqui a janela é remontada com a seção nova no lugar. */
+function trocasAtuais(){const f=G('SWP');try{return (typeof f==='function'&&f())||{};}catch(_){return {};}}
+function secDe(c){if(SEC[c])return SEC[c];const SH=G('SHAPES')||{},d=SH[c];if(!d)return null;const KG=G('KG')||{},TI=G('TIT')||{};
+ SEC[c]={n:TI[c]||c,w:d.w,h:d.h,kg:KG[c]!=null?KG[c]:null,s:d.s};return SEC[c];}
+let TMODO=false,tFoco=null;
+function remonta(){const p=CAM.position.clone(),t=CT.target.clone();
+ if(ROOT){SC.remove(ROOT);}GEO.forEach(g=>g.dispose());GEO=[];PECAS=[];FOL=[];VFOL=null;hov=null;montar();swSig=JSON.stringify(trocasAtuais());CAM.position.copy(p);CT.target.copy(t);CT.update();aplicaFolhas();}
+const doB=hd=>hd.userData.o.c0||hd.userData.o.c;
+const MTRC=new THREE.MeshStandardMaterial({color:'#6fd6cb',emissive:'#0b4e49',metalness:.4,roughness:.35,side:THREE.DoubleSide});
+function trocaPinta(){if(!TMODO)return;materiais(p=>{const o=p.userData.o;if(o.vid)return MGV;const b=doB(p);
+ if(tFoco&&b===tFoco)return MTRC;return o.c0?MAT:MALT;});}
+function trocaVoa(b){if(ROOT)ROOT.updateMatrixWorld(true);const box=new THREE.Box3();PECAS.forEach(p=>{if(!p.userData.o.vid&&doB(p)===b)box.expandByObject(p);});if(box.isEmpty())return;
+ const c=box.getCenter(new THREE.Vector3()),sph=box.getBoundingSphere(new THREE.Sphere()),asp=Math.min(1,(CAM.aspect||1)),r=Math.max(420,sph.radius/Math.sin(THREE.MathUtils.degToRad(17))/asp*1.05);
+ const dir=CAM.position.clone().sub(CT.target).normalize();voa(c.clone().addScaledVector(dir,r),c);}
+function trocaCorte(n){for(const c of E.cortes){if(secCorte(c).some(q=>q.c===n))return c.id;}return null;}
+function trocaCard(b){const sw=trocasAtuais(),n=sw[b];if(!b||!n){card(null);return;}
+ const n0=n.split('+')[0],cp=n.split('+')[1],da=secDe(b),db=secDe(n0),TI=G('TIT')||{},f=v=>(v>0?'+':'')+String(Math.round(v*10)/10).replace('.',',');
+ const cid=trocaCorte(n0);
+ card(`<div class="k">Perfil trocado · ${esc(b)} → ${esc(n.replace('+',' + '))}</div><div class="v">${esc(TI[n0]||(db&&db.n)||n0)}</div>
+  <div class="p">${da&&db?f(db.w-da.w)+' mm na largura e '+f(db.h-da.h)+' mm na espessura da seção.':''}${cp?' O '+esc(cp)+' encaixa por cima do '+esc(n0)+' como complemento.':''} Confira o encaixe no corte.</div>
+  <div class="acts">${cid?`<button class="oxbtn pri" type="button" id="oxSwC">✂ Ver no corte ${esc(cid)}</button>`:''}<button class="oxbtn" type="button" id="oxSwU">↩ Voltar ao ${esc(b)}</button><button class="oxbtn" type="button" id="oxSwX">Fechar</button></div>`);
+ if(cid)$('oxSwC').onclick=()=>{const keep=TMODO;TMODO=false;abreCorte(cid);TMODO=keep;tCorte=true;};
+ $('oxSwU').onclick=()=>{troca(b,b);if(API.aoTroca)API.aoTroca();};$('oxSwX').onclick=()=>{card(null);tFoco=null;trocaPinta();};}
+let tCorte=false;
+function troca(b,o){const f=G('SWP'),sw=typeof f==='function'?f():null;if(!sw)return;
+ if(o===b)delete sw[b];else{sw[b]=o;try{const tk=G('trk');if(typeof tk==='function')tk('troca',{t:API.key,de:b,para:o});}catch(_){}}
+ try{const rf=G('refreshSwap');if(typeof rf==='function')rf(null);}catch(_){}
+ if(cAt)sairCorte(true);tCorte=false;remonta();tFoco=b;trocaPinta();trocaVoa(b);trocaCard(b);}
+function trocas(on){on=!!on;if(on===TMODO)return true;
+ if(on){classico(false);fechaPalco(true);if(seq>=0)seqFim();sairCorte(true);fechaFolhas();
+  if(desm){desm=false;PECAS.forEach(p=>{p.userData.tt=0;});$('oxDesm').setAttribute('aria-pressed','false');}
+  TMODO=true;tFoco=null;tiraHover();trocaPinta();hint('Os perfis já trocados ficam em alumínio · o destacado é o da linha escolhida');return true;}
+ TMODO=false;tFoco=null;if(cAt)sairCorte(true);tCorte=false;card(null);materiais(matBase);enquadra(true);hint('Toque numa peça para ver de perto · arraste para girar');return true;}
+function trocaLista(){const OR=G('ORIGC')||[],AL=G('ALT')||{},TH=G('THUMB')||{},KG=G('KG')||{},TI=G('TIT')||{},PN=G('PN')||{},sw=trocasAtuais(),fmt=(v,d)=>v.toFixed(d).replace('.',',');
+ return [...new Set(OR)].filter(c=>AL[c]&&AL[c].length).map(b=>{const cur=sw[b]||b;let cmp='';
+  if(sw[b]){const sv=G('swSvg');try{cmp=typeof sv==='function'?sv(b,sw[b]):'';}catch(_){cmp='';}
+   const n0=sw[b].split('+')[0],da=secDe(b),dn=secDe(n0),kb=KG[b]||0,kn=KG[n0]||0,cls=v=>v>0?'up':v<0?'dn':'';
+   if(da&&dn)cmp+=`<table><tr><th></th><td>${esc(b)}</td><td>${esc(n0)}</td></tr><tr><th>Seção (mm)</th><td>${fmt(da.w,1)} × ${fmt(da.h,1)}</td><td>${fmt(dn.w,1)} × ${fmt(dn.h,1)}</td></tr><tr><th>Peso (kg/m)</th><td>${fmt(kb,3)}</td><td class="${cls(kn-kb)}">${fmt(kn,3)}</td></tr></table>`;}
+  return {b,cur,nm:(PN[b]&&PN[b].n)||TI[b]||'',cmp,opts:[b,...AL[b]].map(o=>{const o0=o.split('+')[0];return {o,img:TH[o0]||'',sub:o===b?'original':o.includes('+')?'marco + complemento':(KG[o]?fmt(KG[o],3)+' kg/m':'')};})};});}
+function trocaFoco(b,voar){if(!TMODO)return;if(!b&&!voar){if(!card_on())tFoco=null;trocaPinta();return;}tFoco=b;trocaPinta();if(voar&&b){trocaVoa(b);trocaCard(b);}}
+function card_on(){return !$('oxCard').hidden;}
+
+/* ---------- vento dentro do 3D novo (aba Vento) ----------
+   O painel e as contas são os do Simular pressão de vento (diagramas do catálogo); o palco mostra o vento,
+   o encontro central curvando (verde aprova, vermelho não aprova) e as folhas abrindo quando rompe. */
+let VMODO=false,VG=null,VBEND=null,VROT=0,VFOL=null,VT0=performance.now(),vMsg='';
+const MVB=new THREE.MeshStandardMaterial({color:'#1f8a4c',emissive:'#0a3a1e',roughness:.45,metalness:.1});
+function ventoMonta(){ventoLimpa();VG=new THREE.Group();SC.add(VG);
+ const cone=new THREE.ConeGeometry(16,46,10),haste=new THREE.CylinderGeometry(3.5,3.5,150,6);cone.rotateX(Math.PI/2);cone.translate(0,0,23);haste.rotateX(Math.PI/2);haste.translate(0,0,-75);
+ for(let i=0;i<28;i++){const m=new THREE.MeshBasicMaterial({color:'#8fd3ff',transparent:true,opacity:0,depthWrite:false}),g=new THREE.Group();g.add(new THREE.Mesh(cone,m),new THREE.Mesh(haste,m));
+  g.userData={x:((i*37)%28)/27-.5,y:((i*11)%28)/27-.5,ph:(i*.137)%1,m};VG.add(g);}
+ VG.userData.geo=[cone,haste];VG.visible=false;}
+function ventoLimpa(){if(VG){SC.remove(VG);(VG.userData.geo||[]).forEach(g=>g.dispose());VG.children.forEach(g=>g.userData.m.dispose());VG=null;}
+ if(VBEND){SC.remove(VBEND);VBEND.geometry.dispose();VBEND=null;}VROT=0;VFOL=null;FOL.forEach(F=>{F.rotation.y=0;F.position.z=F.userData.z0!=null?F.userData.z0:F.position.z;});aplicaFolhas();}
+function ventoBend(){if(VBEND){SC.remove(VBEND);VBEND.geometry.dispose();VBEND=null;}const D=G('DIA');if(!D||!D.k)return;
+ const mp=mapaCls(),mx=G('meetX');let x=0;try{x=typeof mx==='function'?mx(+D.k.slice(1)):0;}catch(_){x=0;}
+ const X=mp?mp.p(new THREE.Vector3(x,0,0)).x:x*1000,h=H-120,g=new THREE.CylinderGeometry(11,11,h,10,40);g.translate(X,0,75);
+ VBEND=new THREE.Mesh(g,MVB);VBEND.userData={b:g.attributes.position.array.slice(),h,k:D.k,X};SC.add(VBEND);
+ /* folhas do encontro: as duas mais próximas do ponto, uma de cada lado */
+ FOL.forEach(F=>{if(F.userData.z0==null)F.userData.z0=F.position.z;});ROOT.updateMatrixWorld(true);
+ const fs=FOL.map(F=>{const b=new THREE.Box3().setFromObject(F);return {F,x0:b.min.x,x1:b.max.x,c:(b.min.x+b.max.x)/2};});
+ const esq=fs.filter(f=>f.c<X).sort((a,b)=>b.c-a.c)[0],dir=fs.filter(f=>f.c>=X).sort((a,b)=>a.c-b.c)[0];VFOL=[esq,dir].filter(Boolean);}
+function ventoTick(){if(!VMODO||!VG)return;const on=!!(G('S')||{}).vtOn&&!!G('DIA');VG.visible=on;
+ if(on&&(!VBEND||VBEND.userData.k!==G('DIA').k))ventoBend();if(VBEND)VBEND.visible=on;
+ if(!on){if(VROT){VROT=0;VFOL&&VFOL.forEach(f=>{f.F.rotation.y=0;f.F.position.z=f.F.userData.z0;});aplicaFolhas();}if(!$('oxCard').hidden&&vMsg){card(null);vMsg='';}return;}
+ const t=(performance.now()-VT0)/1000,P=+G('DIAP')||100,sp=.25+P/400,sc=.8+P/250;
+ VG.children.forEach(g=>{const u=g.userData,ph=(u.ph+t*sp)%1;g.position.set(u.x*L*.92,u.y*H*.92,-1500+ph*1400);u.m.opacity=Math.sin(ph*Math.PI)*.85;g.scale.setScalar(sc);});
+ const ok=!!G('DIA_OK'),R0=+G('DIA_R')||0,B=(+G('DIABOW')||0)*1000;
+ if(VBEND){const b=B*(1+.12*Math.sin(t*3.1)+.06*Math.sin(t*7.3)),p=VBEND.geometry.attributes.position.array,O=VBEND.userData.b,h=VBEND.userData.h;
+  for(let j=0;j<p.length;j+=3)p[j+2]=O[j+2]+b*Math.sin(Math.PI*Math.min(1,Math.max(0,(O[j+1]+h/2)/h)));VBEND.geometry.attributes.position.needsUpdate=true;VBEND.geometry.computeVertexNormals();
+  MVB.color.set(ok?'#1f8a4c':'#c0392b');MVB.emissive.set(ok?'#0a3a1e':'#4a120c');}
+ const tg=R0>1.12?Math.min(.5,.22+(R0-1.12)*1.2):0;VROT+=(tg-VROT)*(tg>VROT?.06:.15);if(Math.abs(VROT)<1e-4)VROT=0;if(VBEND)VBEND.visible=VROT<.02;
+ if(VFOL){const sh=VROT*(1+.06*Math.sin(t*5)),X=VBEND?VBEND.userData.X:0;
+  VFOL.forEach(f=>{const F=f.F,left=f.c<X,px=left?f.x0:f.x1,th=left?-sh:sh,cx=F.userData.ox-px;F.rotation.y=th;F.position.x=px+cx*Math.cos(th);F.position.z=F.userData.z0-cx*Math.sin(th);});}
+ const vv=document.getElementById('vtVer'),txt=vv&&!document.getElementById('vtRes').hidden?vv.textContent:'';
+ if(txt&&txt!==vMsg){vMsg=txt;card(`<div class="k">Simular pressão de vento · ${P} kgf/m²</div><div class="p">${esc(txt)}</div><div class="p" style="opacity:.75">Apenas demonstrativo · valores lidos do Diagrama de dimensões do catálogo.</div>`);hint('Arraste para girar · mude a pressão, a mão de amigo ou a medida no painel ao lado');}}
+function vento(on){on=!!on;if(on===VMODO)return true;
+ if(on){classico(false);fechaPalco(true);if(seq>=0)seqFim();sairCorte(true);fechaFolhas();
+  if(desm){desm=false;PECAS.forEach(p=>{p.userData.tt=0;});$('oxDesm').setAttribute('aria-pressed','false');}
+  VMODO=true;tiraHover();ventoMonta();vMsg='';VISTA='ext';L0.querySelectorAll('[data-v]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v==='ext')));enquadra(true);
+  hint('Escolha a mão de amigo e a pressão no painel ao lado e toque em Avaliar');return true;}
+ VMODO=false;ventoLimpa();card(null);vMsg='';enquadra(true);hint('Toque numa peça para ver de perto · arraste para girar');return true;}
+/* trocas feitas em outro lugar (Vento, Diagrama) remontam a janela com os perfis certos */
+let swSig=JSON.stringify(trocasAtuais()),swN=0;
+function confereTrocas(){if(++swN<20)return;swN=0;const sg=JSON.stringify(trocasAtuais());if(sg===swSig)return;swSig=sg;
+ const vb=!!VBEND;if(VMODO){VROT=0;if(VBEND){SC.remove(VBEND);VBEND.geometry.dispose();VBEND=null;}}remonta();if(TMODO)trocaPinta();if(VMODO&&vb)ventoBend();}
+
 /* ---------- laço ---------- */
 function tam(){posMed();const b=host.getBoundingClientRect();RN.setSize(Math.max(1,b.width),Math.max(1,b.height),false);CAM.aspect=Math.max(1,b.width)/Math.max(1,b.height);CAM.updateProjectionMatrix();tamPalco();}
 const ro=window.ResizeObserver?new ResizeObserver(tam):null;if(ro)ro.observe(L0);else addEventListener('resize',tam);
@@ -640,7 +764,7 @@ function loop(now){raf=0;if(!vivo||L0.hidden||CLS)return;raf=requestAnimationFra
   const e=ease(u.t);p.position.set(u.ex.x*e,u.ex.y*e,u.ex.z*e);});
  if(ab!==abT){ab=abT>ab?Math.min(abT,ab+dt*.9):Math.max(abT,ab-dt*.9);aplicaFolhas();}
  if(voo){voo.t=Math.min(1,voo.t+dt*1.6);CAM.position.lerpVectors(voo.a,voo.b,ease(voo.t));CT.target.lerpVectors(voo.ta,voo.tb,ease(voo.t));if(voo.t>=1)voo=null;}
- CT.update();RN.render(SC,CAM);juncoes();
+ ventoTick();confereTrocas();CT.update();RN.render(SC,CAM);juncoes();
  if(palcoHd&&PR){const t=(now-palcoT0)/1000,k=Math.min(1,t/.7),e=ease(k),u=PG.userData;
   PG.position.set(pFrom.x*(1-e)*u.dist*.35,pFrom.y*(1-e)*u.dist*.25,-(1-e)*u.dist*.8);PG.scale.setScalar(.35+.65*e);
   if(u.vid)PSPIN.rotation.y=Math.sin(t*.7)*.5;else{PG.rotation.y=Math.sin(t*.55)*.6;PG.rotation.x=.14+Math.sin(t*.37)*.08;}
@@ -659,12 +783,16 @@ const API={key:KEY,L,H,novo:false,aoVoltar:null,aoMedir:null,
  compHover(c){cHov=c||null;compPinta();},
  compSel(c){compSel(c);},
  compAtual(){return cSel;},
+ vento,trocas,trocaLista,aoTroca:null,aoTrocaFoco:null,
+ troca(b,o){troca(b,o);},
+ trocaFoco(b,v){trocaFoco(b,v);},
+ trocaZera(){const f=G('SWP'),sw=typeof f==='function'?f():null;if(sw)Object.keys(sw).forEach(k=>delete sw[k]);try{G('refreshSwap')(null);}catch(_){}remonta();tFoco=null;card(null);trocaPinta();},
  lista(){const g={};PECAS.forEach(p=>{const o=p.userData.o,k=o.vid?'vidro':o.c;if(!g[k]){const inf=info(o);g[k]={c:o.vid?'Vidro':o.c,nm:inf.nm,q:0,vid:!!o.vid,hd:p};}g[k].q++;});return Object.values(g);},
  verDePerto(hd){usa();if(seq>=0)seqFim();sairCorte(true);fechaFolhas();abrePalco(hd);},
  pausar(){if(raf){cancelAnimationFrame(raf);raf=0;}},
  destruir(){vivo=false;this.pausar();if(ro)ro.disconnect();document.removeEventListener('keydown',onKey);document.removeEventListener('pointerdown',fora);
   document.removeEventListener('fullscreenchange',onFs);document.removeEventListener('webkitfullscreenchange',onFs);
-  GEO.forEach(g=>g.dispose());limpaCaps();compsLimpa();RN.dispose();if(PR)PR.dispose();}};
+  GEO.forEach(g=>g.dispose());limpaCaps();compsLimpa();ventoLimpa();RN.dispose();if(PR)PR.dispose();}};
 montar();tam();retoma();
 return API;
 }
