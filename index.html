@@ -33,6 +33,9 @@ nav.mn{margin-left:auto;display:flex;gap:2px}nav.mn a{white-space:nowrap;text-de
 .hero p.lead{font-size:19px;color:#c7d8df;max-width:56ch;margin:0 0 26px}
 .hero .cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:34px}
 .hero .ph{align-self:end;position:relative}.hero .ph img{width:100%;height:auto;max-width:400px;margin-left:auto;border-radius:16px 16px 0 0;-webkit-mask-image:linear-gradient(to bottom,#000 78%,transparent);mask-image:linear-gradient(to bottom,#000 78%,transparent)}
+.hero .btn.c3go{background:#f2a024;color:#1b1206;border-color:#f2a024}.hero .btn.c3go:hover{filter:brightness(1.07)}
+.imp{border-top:1px solid #22394a}.imp .w{padding-top:56px;padding-bottom:30px}.imp h2{font-size:clamp(30px,4.4vw,48px);font-weight:700;line-height:1.1;color:#fff;margin:12px 0 16px}.imp h2 em{font-style:normal;color:var(--cy)}
+.imp .impl{list-style:none;margin:0;padding:0;display:grid;gap:12px;align-self:center}.imp .impl li{background:#0f1a22;border:1px solid #2b4a58;border-radius:14px;padding:14px 16px;color:#c7d8df;font-size:14.5px}.imp .impl b{display:block;font:700 17px var(--f-d);color:#fff;margin-bottom:2px}
 .hero .cat3{position:absolute;left:-10px;top:36px;width:220px;display:flex;flex-direction:column;gap:5px;background:#fff;color:#13232e;border-radius:14px;padding:12px;box-shadow:0 16px 40px rgba(0,0,0,.45);text-decoration:none;transition:transform .2s}
 .hero .cat3:hover{transform:translateY(-3px)}.hero .cat3 .c3e{font:700 11px var(--f-d);letter-spacing:.06em;text-transform:uppercase;color:#02717d}
 .hero .cat3 img{width:100%;height:110px;object-fit:contain;background:radial-gradient(circle at 50% 40%,#fff 0,#e9eef1 85%);border-radius:10px}
@@ -186,18 +189,29 @@ footer{padding:28px 0 90px;color:var(--tm);font-size:13.5px}footer .w{display:fl
 
 <div class="hero" id="inicio"><div class="w">
  <div>
-  <span class="eb">Implantação de preços em sistemas de esquadrias · Sinop-MT</span>
-  <h1>Com dificuldade para alimentar o sistema? <em>Chame a FC</em>.</h1>
-  <p class="lead">A FC Consultoria é especializada em <b>implantar os preços de custo nos sistemas de cálculo de esquadrias disponíveis no mercado</b>. Cadastramos perfis, componentes e vidros, ajustamos a formação do preço de venda e orientamos a sua equipe, on-line ou presencial.</p>
-  <div class="cta"><a class="btn wz" href="https://wa.me/5566999867984?text=Ol%C3%A1%20Fernando%2C%20estou%20com%20dificuldade%20para%20alimentar%20o%20sistema%20e%20quero%20ajuda%20na%20implanta%C3%A7%C3%A3o%20dos%20pre%C3%A7os." target="_blank" rel="noopener">💬 Quero ajuda na implantação</a><a class="btn cy" href="#treinamento">🧊 Conheça a Plataforma FC 3D</a></div>
-  <p style="margin:14px 0 0;font-size:13px;line-height:1.5;color:#8fa6b2;max-width:520px">Os resultados dependem da atualização dos preços dos fornecedores e do uso do sistema pela equipe.</p>
+  <span class="eb">Catálogo 3D da FC · grátis e sem cadastro</span>
+  <h1>Perfis de esquadria em 3D. <em>Acesse grátis</em>.</h1>
+  <p class="lead">Pesquise pelo código, <b>gire o perfil em 3D</b>, veja as <b>medidas</b>, a <b>usinagem</b> e em qual <b>tipologia</b> ele é aplicado. Linhas Suprema e Gold, abertas para a sua equipe comercial e de orçamento, sem login.</p>
+  <div class="cta"><a class="btn c3go" href="perfis/">🧊 Acessar o Catálogo 3D</a><a class="btn cy" href="#treinamento">Conheça a Plataforma FC 3D</a></div>
+  <p style="margin:14px 0 0;font-size:13px;line-height:1.5;color:#8fa6b2;max-width:520px">Material de apoio técnico. A FC Consultoria não comercializa perfis de alumínio; medidas e usinagens seguem os catálogos dos fabricantes.</p>
  </div>
- <div class="ph"><img src="img/fernando.jpg" alt="Fernando Carvalho, consultor da FC" width="720" height="1080"><div class="tag"><b>Fernando Carvalho</b>Consultor · FC Consultoria</div><a class="cat3" href="perfis/"><span class="c3e">🧊 Catálogo 3D · grátis</span><img src="perfis/img/001.webp" alt="Perfil de alumínio em 3D" width="180" height="120" loading="eager"><b>Perfis Suprema e Gold em 3D</b><span class="c3t">Gire, veja as medidas, a usinagem e onde cada perfil é aplicado.</span><span class="c3b">Abrir o catálogo →</span></a></div>
+ <div class="ph"><img src="img/fernando.jpg" alt="Fernando Carvalho, consultor da FC" width="720" height="1080"><div class="tag"><b>Fernando Carvalho</b>Consultor · FC Consultoria</div></div>
 </div>
 <div class="nums"><div><b>14 anos</b><span>de experiência em planejamento, distribuição e indústria</span></div><div><b>Brasil todo</b><span>atendimento on-line e presencial</span></div><div><b>Sistemas</b><span>implantação e parametrização · consulte a disponibilidade para o seu sistema</span></div><div><b>Representação</b><span>indústrias do setor de esquadrias</span></div></div>
 </div>
 
 <style>@media(max-width:760px){.mcb{grid-template-columns:1fr!important}.mcb>div:last-child{justify-self:start!important}}</style>
+<section class="hero imp" id="implantacao"><div class="w">
+ <div>
+  <span class="eb">Implantação de preços em sistemas de esquadrias · Sinop-MT</span>
+  <h2>Com dificuldade para alimentar o sistema? <em>Chame a FC</em>.</h2>
+  <p class="lead">A FC Consultoria é especializada em <b>implantar os preços de custo nos sistemas de cálculo de esquadrias disponíveis no mercado</b>. Cadastramos perfis, componentes e vidros, ajustamos a formação do preço de venda e orientamos a sua equipe, on-line ou presencial.</p>
+  <div class="cta"><a class="btn wz" href="https://wa.me/5566999867984?text=Ol%C3%A1%20Fernando%2C%20estou%20com%20dificuldade%20para%20alimentar%20o%20sistema%20e%20quero%20ajuda%20na%20implanta%C3%A7%C3%A3o%20dos%20pre%C3%A7os." target="_blank" rel="noopener">💬 Quero ajuda na implantação</a><a class="btn cy" href="#servicos">Ver os serviços</a></div>
+  <p style="margin:14px 0 0;font-size:13px;line-height:1.5;color:#8fa6b2;max-width:520px">Os resultados dependem da atualização dos preços dos fornecedores e do uso do sistema pela equipe.</p>
+ </div>
+ <ul class="impl"><li><b>📥 Cadastro</b>perfis, componentes e vidros no sistema</li><li><b>💲 Preço de venda</b>formação do preço e margem ajustadas</li><li><b>👥 Equipe orientada</b>on-line ou presencial</li><li><b>📡 Acompanhamento</b>andamento da implantação pelo link</li></ul>
+</div></section>
+
 <section class="tr" id="treinamento"><div class="w">
  <div class="sh"><div><span class="chip">NOVO</span><br><span class="eb">Plataforma FC 3D</span><h2>O comercial conhecendo a fundo os perfis e componentes que vende</h2></div><p>Não é sistema de cálculo nem de orçamento. É a ferramenta para a equipe comercial de serralherias, distribuidores e extrusoras ver onde vai cada perfil e componente, as substituições possíveis e a referência de pressão de vento. E com as Tipologias em 3D, a empresa apresenta ao arquiteto, ao engenheiro e ao cliente final. Licença anual por empresa, com login para cada pessoa da equipe.</p></div>
  <style>
