@@ -4,9 +4,13 @@
    já montadas, sem expor a base inteira. Rodar sempre que mudar uma montagem:  node fc3d/clientes/ferramentas/gera-aplicacao.js   © FC Consultoria */
 const fs=require('fs'),path=require('path'),vm=require('vm');
 const T=path.join(__dirname,'..','tecnico');
-const ctx={window:{},localStorage:{getItem:()=>null},fetch:()=>Promise.resolve({ok:false,json:()=>({})}),console};
+/* Ajuste técnico (posições corrigidas pela FC na plataforma): exportar a tabela pfc_ajustes_3d para ferramentas/ajustes-3d.json
+   no formato {"mont:<tipologia>|<peça>":[dx,dy,dz,rx,ry,rz,oculto]} e rodar este script. Sem o arquivo, sai sem ajustes. */
+const AJF=path.join(__dirname,'ajustes-3d.json'),AJD=fs.existsSync(AJF)?JSON.parse(fs.readFileSync(AJF,'utf8')):null;
+const ctx={window:{},localStorage:{getItem:()=>AJD?'arquivo':null},fetch:()=>Promise.resolve({ok:true,json:()=>AJD||{}}),console};
 vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(T,'montagens.js'),'utf8'),ctx);
 const FCM=ctx.window.FCM,S=JSON.parse(fs.readFileSync(path.join(T,'secoes.json'),'utf8'));
+FCM.carregarAjustes().then(()=>{if(AJD)console.log('Ajustes técnicos aplicados: '+Object.keys(AJD).length);
 const lista=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' e '+a[a.length-1];
 const AMOSTRA=['jc2','g_jc2'];/* janela de correr 2 folhas Suprema e Gold */
 const modelos={},perfis={},fora=[];
@@ -36,3 +40,4 @@ fs.writeFileSync(path.join(__dirname,'..','aplicacao-amostra.json'),JSON.stringi
 const out={amostra:AMOSTRA.filter(k=>modelos[k]),_nota:'Gerado automaticamente da base da Plataforma FC 3D (tecnico/montagens.js). Só montagens liberadas para os clientes. Não editar à mão: rode fc3d/clientes/ferramentas/gera-aplicacao.js.',modelos,perfis};
 fs.writeFileSync(path.join(__dirname,'..','aplicacao.json'),JSON.stringify(out,null,1)+'\n');
 console.log(Object.keys(modelos).length+' montagens, '+Object.keys(perfis).length+' perfis. Fora (em ajuste): '+fora.length);fora.forEach(f=>console.log('  - '+f));
+});
