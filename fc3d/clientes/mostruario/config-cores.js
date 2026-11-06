@@ -85,6 +85,8 @@ css.textContent=`
 document.head.appendChild(css);
 let aberto=false;
 function posiciona(){
+  /* Orientativo reorganizado (só Acesso FC, em aprovação): a Configuração/Vento fica na aba do painel */
+  if(document.body.classList.contains('oxnovo'))return;
   const desk=innerWidth>=900;
   if(desk&&conf.parentNode!==st){st.appendChild(conf);conf.classList.add('cf-flu');if(!aberto){conf.open=false;aberto=true;}}
   else if(!desk&&conf.parentNode===st){casa.p.insertBefore(conf,casa.n&&casa.n.parentNode===casa.p?casa.n:null);conf.classList.remove('cf-flu');conf.style.top=conf.style.maxHeight='';}

@@ -61,7 +61,7 @@ const css=`
 #oxL [hidden]{display:none!important}
 #oxCv{position:absolute;inset:0;touch-action:none}
 #oxCv canvas{display:block;width:100%;height:100%}
-#oxL .oxbtn{appearance:none;font:600 13px Inter,system-ui,sans-serif;border:1px solid transparent;background:transparent;color:#e6efed;border-radius:10px;padding:7px 11px;min-height:36px;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+#oxL .oxbtn{appearance:none;font:600 13px Inter,system-ui,sans-serif;border:1px solid transparent;background:transparent;color:#e6efed;border-radius:10px;padding:7px 9px;min-height:36px;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
 #oxL .oxbtn:hover{background:rgba(255,255,255,.08)}
 #oxL .oxbtn:focus-visible{outline:2px solid #22c3c9;outline-offset:1px}
 #oxL .oxbtn[aria-pressed="true"]{background:rgba(34,195,201,.18);color:#7fe3e6;border-color:rgba(34,195,201,.5)}
@@ -104,6 +104,38 @@ const css=`
 #oxL #oxPinfo .oxbtn{color:#14212a;border:1px solid #cfd9dd;background:#fff}
 #oxL #oxPinfo .oxbtn.pri{background:#02717d;border-color:#02717d;color:#fff}
 #oxMsg{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:#c9d6d4}
+#oxL .oxdw{position:relative;display:inline-flex}
+#oxL .oxdd{position:absolute;top:calc(100% + 6px);left:0;z-index:12;min-width:230px;background:#0f1d1d;border:1px solid #2a3d40;border-radius:12px;padding:6px;display:flex;flex-direction:column;gap:2px;box-shadow:0 14px 40px rgba(0,0,0,.5)}
+#oxL .oxdd .oxbtn{justify-content:flex-start;width:100%}
+#oxJ{position:absolute;inset:0;z-index:4;pointer-events:none}
+#oxJ button{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;border:2px solid #fff;background:#1f6f9a;color:#fff;font:700 16px/1 system-ui;cursor:pointer;pointer-events:auto;box-shadow:0 2px 8px rgba(0,0,0,.45);display:grid;place-items:center;padding:0}
+#oxJ button:hover,#oxJ button:focus-visible{background:#e8b04a;color:#2a1a00;outline:none}
+#oxMed{position:absolute;right:12px;z-index:6;font:600 12px Inter,system-ui;color:#c9d6d4;background:rgba(0,0,0,.35);border:1px solid #2a3d40;border-radius:999px;padding:5px 10px;cursor:pointer}
+#oxMed:hover{border-color:#22c3c9;color:#fff}
+#oxMedP{position:absolute;right:12px;z-index:11;background:#0f1d1d;border:1px solid #2a3d40;border-radius:12px;padding:10px;display:flex;gap:8px;align-items:flex-end;box-shadow:0 14px 40px rgba(0,0,0,.5)}
+#oxMedP label{display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:#9db3b0}
+#oxMedP input{width:86px;background:#162a2a;border:1px solid #2a3d40;border-radius:8px;color:#fff;padding:6px 8px;font:600 14px Inter,system-ui}
+#oxL.cls{background:transparent;pointer-events:none}
+#oxL.cls>*:not(#oxTop){display:none!important}
+#oxL.cls #oxTop{pointer-events:auto}
+#stage.oxfx{position:fixed!important;inset:0!important;z-index:2147480000!important;border-radius:0!important;aspect-ratio:auto!important;max-width:none!important;width:auto!important;height:auto!important;min-height:0!important;margin:0!important}
+body.oxnovo #stage .views,body.oxnovo #btFlu,body.oxnovo #padFlu,body.oxnovo #dicaFlu,body.oxnovo #stage>#hint{display:none!important}
+body.oxnovo #side>details.card{display:none!important}
+body.oxnovo #side>details.card.oxsel{display:block!important}
+body.oxnovo #side>details.card.oxsel>summary{display:none!important}
+#oxTabs{display:flex;flex-wrap:wrap;gap:2px;background:var(--panel,#fff);border:1px solid var(--line,#d5dce1);border-radius:10px;padding:4px}
+#oxTabs button{flex:1 1 auto;font:600 13px var(--f-display,system-ui);border:0;background:transparent;color:var(--muted,#5d6b76);padding:8px 10px;border-radius:7px;cursor:pointer;white-space:nowrap}
+#oxTabs button[aria-selected="true"]{background:#02717d;color:#fff}
+#oxTabs button:focus-visible{outline:2px solid #02717d;outline-offset:1px}
+#oxPane{background:var(--panel,#fff);border:1px solid var(--line,#d5dce1);border-radius:10px;padding:12px 14px}
+#oxPane .lin{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line,#d5dce1);padding:8px 2px;cursor:pointer;color:var(--fg,#1b232a);font:500 14px var(--f-body,system-ui)}
+#oxPane .lin:hover{background:var(--accent-soft,#e1eef5)}
+#oxPane .lin b{font-family:var(--f-mono,monospace);font-size:12.5px;min-width:64px}
+#oxPane .lin span{flex:1}
+#oxPane .lin i{font-style:normal;color:var(--muted,#5d6b76);font-size:12px}
+#oxPane .nt{font-size:12.5px;color:var(--muted,#5d6b76);margin:0 0 8px}
+#oxPane img{display:block;width:100%;height:auto;border:1px solid var(--line,#d5dce1);border-radius:8px;background:#fff}
+#oxPane input{width:100%;margin-bottom:6px}
 @media (max-width:760px){
  #oxPalco{grid-template-columns:1fr;grid-template-rows:1fr auto}
  #oxPinfo{max-height:55%}
@@ -130,8 +162,50 @@ function criaEntrada(){
  v.appendChild(ent);
  ent.querySelectorAll('[data-ox]').forEach(b=>b.onclick=()=>abrir(b.dataset.ox));
  sync();setInterval(sync,450);}
-function sync(){if(!ent)return;const ok=podeMostrar();ent.hidden=!ok;
- if(!ok&&L0&&!L0.hidden)fecharCamada();}
+function sync(){if(!ent)return;const ok=podeMostrar(),nv=querNovo();ent.hidden=!ok||nv;
+ if(nv&&!NOVO)ligaNovo();else if(!nv&&NOVO)desligaNovo();
+ else if(!ok&&L0&&!L0.hidden)fecharCamada();
+ if(NOVO&&APP){const st=estado();if(st&&(APP.L!==st.w||APP.H!==st.h)&&!medindo)abrir('novo');}}
+
+/* ===== Orientativo reorganizado (aprovação: JCR 200, só Acesso FC) =====
+   O 3D novo vira o principal no palco, com uma barra só; o painel da direita vira abas.
+   Componentes, Trocar perfil, Usinagens e Vento usam o 3D clássico enquanto a aba está aberta. */
+const NOVO_TIPOS=['jcr200'];
+let NOVO=false,medindo=false,abaAt='p',confCasa=null;
+function querNovo(){const st=estado();return !!(ACESSO&&st&&NOVO_TIPOS.includes(st.typo)&&st.mode==='exp'&&!st.wvOn&&!st.diaOn);}
+const ABAS=[['p','Peças',null],['c','Componentes','c-comp'],['s','Trocar perfil','c-swap'],['u','Usinagens','c-us'],['v','Vento','c-conf'],['b','Base técnica',null]];
+function ligaNovo(){NOVO=true;document.body.classList.add('oxnovo');
+ const side=document.getElementById('side');
+ if(side&&!document.getElementById('oxTabs')){
+  const t=document.createElement('div');t.id='oxTabs';t.setAttribute('role','tablist');t.setAttribute('aria-label','Painel da esquadria');
+  t.innerHTML=ABAS.map(([k,n])=>`<button type="button" role="tab" data-aba="${k}" aria-selected="false">${n}</button>`).join('');
+  const pn=document.createElement('div');pn.id='oxPane';pn.setAttribute('role','tabpanel');
+  side.insertBefore(pn,side.firstChild);side.insertBefore(t,pn);
+  t.querySelectorAll('[data-aba]').forEach(b=>b.onclick=()=>aba(b.dataset.aba));
+  const cf=document.getElementById('c-conf');
+  if(cf&&cf.parentNode!==side){confCasa={pai:cf.parentNode,prox:cf.nextSibling,flu:cf.classList.contains('cf-flu')};cf.classList.remove('cf-flu');cf.style.top=cf.style.maxHeight='';side.insertBefore(cf,pn.nextSibling);}}
+ abaAt='p';abrir('novo');}
+function desligaNovo(){NOVO=false;document.body.classList.remove('oxnovo');
+ ['oxTabs','oxPane'].forEach(i=>{const e=document.getElementById(i);if(e)e.remove();});
+ document.querySelectorAll('#side>details.oxsel').forEach(e=>e.classList.remove('oxsel'));
+ const cf=document.getElementById('c-conf');if(cf&&confCasa){if(confCasa.flu)cf.classList.add('cf-flu');confCasa.pai.insertBefore(cf,confCasa.prox);confCasa=null;}
+ if(APP){APP.novo=false;APP.classico(false);}fecharCamada();}
+function aba(k){if(abaAt==='v'&&k!=='v'&&typeof window.FC_VT_END==='function'){try{window.FC_VT_END();}catch(_){}}abaAt=k;const def=ABAS.find(a=>a[0]===k);
+ document.querySelectorAll('#oxTabs [data-aba]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.aba===k)));
+ document.querySelectorAll('#side>details.oxsel').forEach(e=>e.classList.remove('oxsel'));
+ const pn=document.getElementById('oxPane');if(!pn)return;
+ if(def[2]){const el=document.getElementById(def[2]);pn.hidden=true;if(el){el.classList.add('oxsel');el.open=true;}if(APP)APP.classico(true);return;}
+ pn.hidden=false;if(APP)APP.classico(false);
+ if(k==='b'){pn.innerHTML='<p class="nt">Desenho do catálogo técnico que serviu de base para o 3D.</p><img src="base/jcr200.webp" alt="Folha de montagem da SUP JCR 200 com elevação e cortes" loading="lazy"><p class="nt" style="margin-top:8px">Folha de montagem · elevação e cortes · catálogo p. 117. Fonte técnica: catálogo da Linha Suprema, SUP JCR 200.</p>';return;}
+ pecasPane();}
+function pecasPane(){const pn=document.getElementById('oxPane');if(!pn||abaAt!=='p')return;
+ if(!APP){pn.innerHTML='<p class="nt">Abrindo as peças…</p>';return;}
+ const L=APP.lista(),n=L.reduce((a,x)=>a+x.q,0);
+ pn.innerHTML=`<p class="nt">${n} peças · toque para ver de perto</p><input type="search" id="oxBusca" placeholder="Buscar: código ou nome, ex. 053" autocomplete="off" aria-label="Buscar peça"><div id="oxLis"></div>`;
+ const pinta=f=>{const q=(f||'').toLowerCase();document.getElementById('oxLis').innerHTML=L.map((x,i)=>({x,i})).filter(({x})=>!q||(x.c+' '+x.nm).toLowerCase().includes(q))
+  .map(({x,i})=>`<button type="button" class="lin" data-i="${i}"><b>${esc(x.c)}</b><span>${esc(x.nm)}</span><i>${x.q}×</i> 🔍</button>`).join('')||'<p class="nt">Nenhuma peça com esse nome.</p>';
+  document.querySelectorAll('#oxLis [data-i]').forEach(b=>b.onclick=()=>APP.verDePerto(L[+b.dataset.i].hd));};
+ pinta('');document.getElementById('oxBusca').oninput=e=>pinta(e.target.value);}
 
 function liga(){ACESSO=true;carregarMotor().then(criaEntrada).catch(()=>{});}
 document.addEventListener('pfc:acesso',e=>{if(e.detail&&e.detail.matriz)liga();});
@@ -157,15 +231,19 @@ function abrir(acao){const st=estado();if(!st)return;
  L0.hidden=false;
  const key=chaveDe(st.typo);if(!key)return;
  const Lw=Math.max(400,Math.min(6000,+st.w||1500)),Hh=Math.max(300,Math.min(3500,+st.h||1000));
- if(APP&&APP.key===key&&APP.L===Lw&&APP.H===Hh){APP.acao(acao);return;}
+ if(APP&&APP.key===key&&APP.L===Lw&&APP.H===Hh){liga2();APP.acao(acao);return;}
  if(APP){APP.destruir();APP=null;}
  L0.innerHTML='<div id="oxMsg">Abrindo as peças com a seção real do catálogo…</div>';
- carregar().then(SEC=>{if(L0.hidden)return;APP=montaApp(SEC,key,Lw,Hh);APP.acao(acao);})
+ carregar().then(SEC=>{if(L0.hidden)return;APP=montaApp(SEC,key,Lw,Hh);liga2();APP.acao(acao);})
   .catch(()=>{L0.innerHTML='<div id="oxMsg">Não foi possível abrir agora. Confira a internet e tente de novo.<br><br><button class="oxbtn" type="button" id="oxErrX" style="border-color:#2a3d40">Voltar</button></div>';
    document.getElementById('oxErrX').onclick=fecharCamada;});}
+function liga2(){if(!APP)return;APP.novo=NOVO;
+ APP.aoVoltar=()=>{if(NOVO&&abaAt!=='p'&&abaAt!=='b')aba('p');};
+ APP.aoMedir=()=>{medindo=true;setTimeout(()=>{medindo=false;abrir('novo');},80);};
+ if(NOVO){aba(abaAt);}}
 function fecharCamada(){if(!L0)return;if(APP)APP.pausar();
- if(document.fullscreenElement===L0&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});
- L0.classList.remove('fx');L0.hidden=true;}
+ const st=document.getElementById('stage');if(document.fullscreenElement===st&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});
+ if(st)st.classList.remove('oxfx');L0.hidden=true;}
 
 function montaApp(SEC,KEY,L,H){
 const M=window.FCM.MONT[KEY],E=especDe(KEY);
@@ -176,18 +254,24 @@ const $=id=>document.getElementById(id);
 L0.innerHTML=`<div id="oxCv"></div>
  <div class="oxwm" aria-hidden="true" id="oxWm"><b>© FC Consultoria em Esquadria · Plataforma FC 3D</b></div>
  <div id="oxTop" role="toolbar" aria-label="Comandos do Orientativo 3D">
-  <span class="tag" title="Só o Acesso FC vê, até a aprovação">Novo · só FC</span>
-  <button class="oxbtn" id="oxExt" type="button" aria-pressed="true">Vista externa</button>
-  <button class="oxbtn" id="oxInt" type="button" aria-pressed="false">Interna</button><span class="sep"></span>
-  <button class="oxbtn" id="oxMont" type="button" aria-pressed="false">🧩 Montar peça por peça</button>
-  <button class="oxbtn" id="oxDesm" type="button" aria-pressed="false">💥 Desmontar</button><span class="sep"></span>
-  ${E.cortes.map(c=>`<button class="oxbtn cut" type="button" data-corte="${c.id}" aria-pressed="false" title="Corte ${c.id} · ${esc(c.n)}">Corte ${c.id}</button>`).join('')}
+  <span class="tag" title="Novo · só o Acesso FC vê, até a aprovação">Só FC</span>
+  <button class="oxbtn" type="button" data-v="ext" aria-pressed="true">Externa</button><button class="oxbtn" type="button" data-v="int" aria-pressed="false">Interna</button><button class="oxbtn" type="button" data-v="lat" aria-pressed="false">Lateral</button><span class="sep"></span>
+  <button class="oxbtn" id="oxAbr" type="button" aria-pressed="false" title="Abre e fecha as folhas">↔ Abrir</button>
+  <button class="oxbtn" id="oxMont" type="button" aria-pressed="false">🧩 Peça por peça</button>
+  <button class="oxbtn" id="oxDesm" type="button" aria-pressed="false">💥 Desmontar</button>
+  <span class="oxdw"><button class="oxbtn" id="oxCor" type="button" aria-expanded="false" aria-pressed="false">✂ Cortes ▾</button>
+   <div class="oxdd" id="oxDD" hidden role="menu">${E.cortes.map(c=>`<button class="oxbtn cut" type="button" role="menuitem" data-corte="${c.id}" aria-pressed="false">Corte ${c.id} · ${esc(c.n)}</button>`).join('')}</div></span><span class="sep"></span>
+  <button class="oxbtn" id="oxJun" type="button" aria-pressed="true" title="Mostra os + das junções: tocou, abre o corte daquele ponto">⊕ Junções</button>
+  <button class="oxbtn" id="oxVolta" type="button" hidden title="A aba aberta usa o 3D clássico">↩ Voltar ao 3D novo</button>
   <span class="sp"></span>
-  <button class="oxbtn" id="oxFull" type="button">⛶ Tela cheia</button>
+  <button class="oxbtn" id="oxFull" type="button" title="Tela cheia" aria-label="Tela cheia">⛶</button>
   ${M.aj?'<a class="oxbtn" id="oxAjB" href="'+RAIZ+'tecnico/?m='+encodeURIComponent(KEY)+'" target="_blank" rel="noopener" title="Abre o Ajuste técnico desta montagem para corrigir a posição dos perfis" style="text-decoration:none;color:#ffd58a">🔧 Ajustar encaixes</a>':''}
   <button class="oxbtn" id="oxX" type="button" title="Volta ao 3D do Orientativo">✕ Fechar</button>
   ${M.aj?'<div class="oxaj">⚠ <b>Ajuste pendente:</b> '+esc(M.aj)+'. Corrija no 🔧 Ajustar encaixes e salve; ao reabrir aqui, as peças já vêm na posição salva.</div>':''}
  </div>
+ <div id="oxJ" aria-label="Junções"></div>
+ <button id="oxMed" type="button" title="Mudar a medida">${L} × ${H} mm ✎</button>
+ <div id="oxMedP" hidden><label>Largura (mm)<input id="oxMw" type="number" inputmode="numeric" value="${L}"></label><label>Altura (mm)<input id="oxMh" type="number" inputmode="numeric" value="${H}"></label><button class="oxbtn" id="oxMok" type="button" style="background:#02717d;color:#fff">Aplicar</button></div>
  <div id="oxHint">Toque numa peça para ver de perto · arraste para girar</div>
  <div class="oxcard" id="oxCard" hidden aria-live="polite"></div>
  <div id="oxPalco" hidden><div id="oxPcv"></div><div id="oxPinfo"></div></div>`;
@@ -237,7 +321,7 @@ let R=null,PECAS=[],FOL=[],ROOT=null,GEO=[];
 function montar(){
  ROOT=new THREE.Group();SC.add(ROOT);PECAS=[];FOL=[];
  R=window.FCM.pecas(SEC,M,L,H);const GR=[ROOT];
- R.folhas.forEach(f=>{const F=new THREE.Group();F.position.set(f.ox,f.oy||0,f.z);ROOT.add(F);FOL.push(F);GR.push(F);});
+ R.folhas.forEach(f=>{const F=new THREE.Group();F.position.set(f.ox,f.oy||0,f.z);F.userData={ox:f.ox,ab:(f.dir||0)*(f.curso||0)};ROOT.add(F);FOL.push(F);GR.push(F);});
  R.P.forEach((o,ix)=>{if(o.vz||o.oc)return;let ms;
   if(o.vid){const vv=vDim(o);ms=new THREE.Mesh(new THREE.BoxGeometry(vv[0],vv[1],vEsp(o)),MVID);ms.position.set(o.p[0],o.p[1],o.p[2]);}
   else{if(!SEC[o.c]&&!SEC[{'US-285':'VZ-006'}[o.c]])return;ms=new THREE.Mesh(geoSec(o.c,o.len,o.ex,o.ey,o.ez,o.sc),MAT);ms.position.set(o.p[0],o.p[1],o.p[2]);}
@@ -254,8 +338,8 @@ const matBase=hd=>hd.userData.o.vid?MVID:MAT;
 function materiais(fn){PECAS.forEach(p=>{p.userData.ms.material=fn(p);});}
 
 let VISTA='ext',voo=null;
-function enquadra(anim){const d=Math.max(L,H)*1.55+700,ext=VISTA==='ext';if(!anim)CT.target.set(0,0,0);
- const p=new THREE.Vector3(ext?-d*.22:d*.22,d*.12,ext?-d:d);if(anim)voa(p,new THREE.Vector3());else{CAM.position.copy(p);CT.update();}}
+function enquadra(anim){const d=(Math.max(L,H)*1.55+700)/Math.min(1,(CAM.aspect||1)*1.15),ext=VISTA==='ext';if(!anim)CT.target.set(0,0,0);
+ const p=VISTA==='lat'?new THREE.Vector3(d*.97,d*.12,-d*.2):new THREE.Vector3(ext?-d*.22:d*.22,d*.12,ext?-d:d);if(anim)voa(p,new THREE.Vector3());else{CAM.position.copy(p);CT.update();}}
 function voa(p,alvo){voo={a:CAM.position.clone(),b:p,ta:CT.target.clone(),tb:(alvo||CT.target).clone(),t:0};}
 
 /* ---------- cartão embaixo à esquerda ---------- */
@@ -268,7 +352,7 @@ function corteTxt(o){const inf=info(o);
  if(o.vid){const [w,h]=vDim(o);return 'Corte do catálogo: '+(vTxt?esc(vTxt)+' → ':'')+num(w)+' × '+num(h)+' mm';}
  const kg=inf.kgm!=null?kgf(inf.kgm)+' kg/m':PEND;
  return 'Corte do catálogo: '+(inf.ft?esc(inf.ft)+' → '+mm(inf.len):PEND)+' · '+kg;}
-function seqInicio(){sairCorte(true);fechaPalco(true);desm=false;$('oxDesm').setAttribute('aria-pressed','false');
+function seqInicio(){fechaFolhas();sairCorte(true);fechaPalco(true);desm=false;$('oxDesm').setAttribute('aria-pressed','false');
  PECAS.forEach(p=>{p.userData.t=p.userData.tt=0;});seq=0;seqAplica(true);$('oxMont').setAttribute('aria-pressed','true');}
 function seqAplica(anima){
  PECAS.forEach((p,i)=>{const u=p.userData;
@@ -381,12 +465,16 @@ function secCorte(c){const P=planoDe(c),out=[];
   out.push({c:o.c,shp:d.s.map(q=>({o:q.o.map(map),h:(q.h||[]).map(hh=>hh.map(map))})),bb:[x0,y0,x1,y1]});});
  const z=zona(c);return out.filter(s=>{const b=s.vid?[s.r[0],s.r[1],s.r[0]+s.r[2],s.r[1]+s.r[3]]:s.bb;return b[2]>z[0]&&b[0]<z[2]&&b[3]>z[1]&&b[1]<z[3];});}
 let cAt=null,CAPS=null;
+function alvoDe(c){const P=planoDe(c),z=zona(c),Xc=(z[0]+z[2])/2,Yc=(z[1]+z[3])/2,d=Math.max(z[2]-z[0],z[3]-z[1])*1.7+120,ext=VISTA==='int'?1:-1;let alvo,pos;
+ if(P.eixo===1){alvo=new THREE.Vector3(-Xc,P.v,-Yc);pos=new THREE.Vector3(alvo.x+(c.zona==='esq'?-1:c.zona==='dir'?1:.3)*d*.14,P.v+d*.93,alvo.z+ext*d*.34);}
+ else{alvo=new THREE.Vector3(P.v,-Yc,Xc);pos=new THREE.Vector3(P.v-d*.93,alvo.y+(c.zona==='baixo'?1:-1)*d*.16,alvo.z+ext*d*.32);}
+ return {alvo,pos};}
 function limpaCaps(){if(CAPS){SC.remove(CAPS);CAPS.traverse(o=>{if(o.geometry)o.geometry.dispose();});CAPS=null;}}
 function abreCorte(id){const c=E.cortes.find(x=>x.id===id);if(!c)return;
  if(cAt&&cAt.id===id){sairCorte();return;} /* tocar de novo no corte sai do corte */
  fechaPalco(true);if(seq>=0)seqFim();tiraHover();desm=false;$('oxDesm').setAttribute('aria-pressed','false');
  PECAS.forEach(p=>{p.visible=true;p.userData.t=p.userData.tt=0;});
- cAt=c;const P=planoDe(c),z=zona(c),S=secCorte(c);
+ fechaFolhas();cAt=c;const P=planoDe(c),z=zona(c),S=secCorte(c);
  materiais(p=>p.userData.o.vid?MGV:MGC);PISO.visible=false;
  limpaCaps();CAPS=new THREE.Group();SC.add(CAPS);
  const B=P.eixo===1?new THREE.Matrix4().makeBasis(new THREE.Vector3(-1,0,0),new THREE.Vector3(0,0,-1),new THREE.Vector3(0,1,0)).setPosition(0,P.v,0)
@@ -397,9 +485,7 @@ function abreCorte(id){const c=E.cortes.find(x=>x.id===id);if(!c)return;
   /* fatia fina (3 mm) para a seção aparecer de qualquer ângulo */
   const g=new THREE.ExtrudeGeometry(shp,{depth:5,bevelEnabled:false,curveSegments:3});g.translate(0,0,-2.5);g.applyMatrix4(B);g.computeVertexNormals();
   const m=new THREE.Mesh(g,q.vid?MCAPV:MCAP);m.renderOrder=5;CAPS.add(m);});
- const Xc=(z[0]+z[2])/2,Yc=(z[1]+z[3])/2,d=Math.max(z[2]-z[0],z[3]-z[1])*1.7+120,ext=VISTA==='ext'?-1:1;let alvo,pos;
- if(P.eixo===1){alvo=new THREE.Vector3(-Xc,P.v,-Yc);pos=new THREE.Vector3(alvo.x+(c.zona==='esq'?-1:c.zona==='dir'?1:.3)*d*.14,P.v+d*.93,alvo.z+ext*d*.34);}
- else{alvo=new THREE.Vector3(P.v,-Yc,Xc);pos=new THREE.Vector3(P.v-d*.93,alvo.y+(c.zona==='baixo'?1:-1)*d*.16,alvo.z+ext*d*.32);}
+ const {alvo,pos}=alvoDe(c);
  voa(pos,alvo);marcaCortes();
  card(`<div class="k">Corte ${c.id} · ${esc(c.n)}</div>
   <div class="p">Seção real dos perfis, na mesma posição do desenho ${E.pg?'da pág. '+E.pg:'do catálogo · '+esc(M.cd)}.</div>
@@ -407,56 +493,96 @@ function abreCorte(id){const c=E.cortes.find(x=>x.id===id);if(!c)return;
  $('oxCX').onclick=()=>sairCorte();hint('Arraste para girar · toque de novo no corte para sair');}
 function sairCorte(semCamera){if(!cAt)return;cAt=null;limpaCaps();materiais(matBase);PISO.visible=true;card(null);marcaCortes();
  if(!semCamera)enquadra(true);hint('Toque numa peça para ver de perto · arraste para girar');}
-function marcaCortes(){L0.querySelectorAll('[data-corte]').forEach(b=>b.setAttribute('aria-pressed',String(!!cAt&&b.dataset.corte===cAt.id)));}
+function marcaCortes(){L0.querySelectorAll('[data-corte]').forEach(b=>b.setAttribute('aria-pressed',String(!!cAt&&b.dataset.corte===cAt.id)));const b=$('oxCor');if(b){b.setAttribute('aria-pressed',String(!!cAt));b.textContent=cAt?'✂ Corte '+cAt.id+' ▾':'✂ Cortes ▾';}}
 
 /* ---------- barra do topo ---------- */
-const vista=v=>{VISTA=v;$('oxExt').setAttribute('aria-pressed',String(v==='ext'));$('oxInt').setAttribute('aria-pressed',String(v==='int'));
+let ab=0,abT=0,jun=true,CLS=false;
+function aplicaFolhas(){FOL.forEach(F=>{F.position.x=F.userData.ox+F.userData.ab*ab;});}
+function fechaFolhas(){ab=abT=0;aplicaFolhas();$('oxAbr').setAttribute('aria-pressed','false');}
+/* qualquer comando da barra volta do 3D clássico (abas Componentes, Trocar perfil, Usinagens, Vento) */
+function usa(){if(CLS&&API.aoVoltar)API.aoVoltar();classico(false);fechaDD();}
+function classico(on){CLS=!!on;L0.classList.toggle('cls',CLS);$('oxVolta').hidden=!CLS;
+ if(CLS){fechaPalco(true);if(seq>=0)seqFim();sairCorte(true);fechaMed();}else{tam();retoma();}}
+const vista=v=>{usa();VISTA=v;L0.querySelectorAll('[data-v]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===v)));
  if(cAt){const id=cAt.id;cAt=null;abreCorte(id);}else enquadra(true);};
-$('oxExt').onclick=()=>vista('ext');$('oxInt').onclick=()=>vista('int');
-$('oxMont').onclick=()=>{if(seq>=0)seqFim();else seqInicio();};
-$('oxDesm').onclick=()=>{sairCorte(true);if(seq>=0)seqFim();fechaPalco(true);desm=!desm;PECAS.forEach(p=>{p.visible=true;p.userData.tt=desm?1:0;});
+L0.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>vista(b.dataset.v));
+$('oxAbr').onclick=()=>{usa();sairCorte(true);if(seq>=0)seqFim();if(desm){desm=false;PECAS.forEach(p=>p.userData.tt=0);$('oxDesm').setAttribute('aria-pressed','false');}
+ abT=abT?0:1;$('oxAbr').setAttribute('aria-pressed',String(!!abT));};
+$('oxMont').onclick=()=>{usa();if(seq>=0)seqFim();else seqInicio();};
+$('oxDesm').onclick=()=>{usa();fechaFolhas();sairCorte(true);if(seq>=0)seqFim();fechaPalco(true);desm=!desm;PECAS.forEach(p=>{p.visible=true;p.userData.tt=desm?1:0;});
  $('oxDesm').setAttribute('aria-pressed',String(desm));if(!cAt)enquadra(true);};
-L0.querySelectorAll('[data-corte]').forEach(b=>b.onclick=()=>abreCorte(b.dataset.corte));
+function fechaDD(){$('oxDD').hidden=true;$('oxCor').setAttribute('aria-expanded','false');}
+$('oxCor').onclick=e=>{e.stopPropagation();const d=$('oxDD');if(CLS)usa();d.hidden=!d.hidden;$('oxCor').setAttribute('aria-expanded',String(!d.hidden));};
+L0.querySelectorAll('[data-corte]').forEach(b=>b.onclick=()=>{usa();abreCorte(b.dataset.corte);});
+const fora=e=>{if(!e.target.closest||!e.target.closest('.oxdw'))fechaDD();if(!e.target.closest||(!e.target.closest('#oxMedP')&&!e.target.closest('#oxMed')))fechaMed();};
+document.addEventListener('pointerdown',fora);
+$('oxJun').onclick=()=>{usa();jun=!jun;$('oxJun').setAttribute('aria-pressed',String(jun));};
+$('oxVolta').onclick=()=>usa();
 $('oxX').onclick=fecharCamada;
-function emCheia(){return document.fullscreenElement===L0||document.webkitFullscreenElement===L0||L0.classList.contains('fx');}
-function telaCheia(){if(emCheia()){if(L0.classList.contains('fx'))L0.classList.remove('fx');else if(document.exitFullscreen)document.exitFullscreen().catch(()=>{});else if(document.webkitExitFullscreen)document.webkitExitFullscreen();setTimeout(syncCheia,60);return;}
- const rq=L0.requestFullscreen||L0.webkitRequestFullscreen;
- if(rq){const r=rq.call(L0);if(r&&r.catch)r.catch(()=>{L0.classList.add('fx');syncCheia();});}else L0.classList.add('fx');setTimeout(syncCheia,60);}
-function syncCheia(){const on=emCheia();$('oxFull').textContent=on?'⛶ Sair da tela cheia':'⛶ Tela cheia';$('oxX').hidden=on;tam();}
+/* junções: os + ficam nos pontos dos cortes; tocou, abre o corte daquele ponto */
+$('oxJ').innerHTML=E.cortes.map(c=>`<button type="button" data-j="${c.id}" title="Corte ${c.id} · ${esc(c.n)}" aria-label="Abrir o corte ${c.id}, ${esc(c.n)}">+</button>`).join('');
+const JP={};E.cortes.forEach(c=>{const P=planoDe(c),z=zona(c),Xc=(z[0]+z[2])/2,Yc=(z[1]+z[3])/2;
+ JP[c.id]=P.eixo===1?new THREE.Vector3(c.zona==='esq'?-L/2:c.zona==='dir'?L/2:0,P.v,0):new THREE.Vector3(P.v,c.zona==='baixo'?-H/2:H/2,0);});
+$('oxJ').querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>abreCorte(b.dataset.j));
+const tmpV=new THREE.Vector3();
+function juncoes(){const box=$('oxJ'),on=jun&&!CLS&&seq<0&&!cAt&&!desm&&!palcoHd&&!ab&&!abT;box.style.display=on?'':'none';if(!on)return;
+ const r=host.getBoundingClientRect();box.querySelectorAll('[data-j]').forEach(b=>{tmpV.copy(JP[b.dataset.j]).project(CAM);
+  b.style.left=((tmpV.x+1)/2*r.width)+'px';b.style.top=((1-tmpV.y)/2*r.height)+'px';b.style.visibility=tmpV.z<1?'visible':'hidden';});}
+/* medida: tocou no selo, muda L × H (vale para o 3D novo e para o clássico) */
+function posMed(){const t=$('oxTop').offsetHeight+10;$('oxMed').style.top=t+'px';$('oxMedP').style.top=(t+34)+'px';}
+function fechaMed(){$('oxMedP').hidden=true;}
+$('oxMed').onclick=()=>{usa();const p=$('oxMedP');p.hidden=!p.hidden;if(!p.hidden)$('oxMw').focus();};
+$('oxMok').onclick=()=>{const w=Math.round(+$('oxMw').value),h=Math.round(+$('oxMh').value);if(!(w>0&&h>0))return;fechaMed();
+ const iw=document.getElementById('in-w'),ih=document.getElementById('in-h');
+ if(iw&&ih){iw.value=w;iw.dispatchEvent(new Event('change',{bubbles:true}));ih.value=h;ih.dispatchEvent(new Event('change',{bubbles:true}));}
+ if(API.aoMedir)API.aoMedir();};
+['oxMw','oxMh'].forEach(i=>$(i).onkeydown=e=>{if(e.key==='Enter')$('oxMok').click();});
+/* tela cheia: o palco inteiro (o 3D novo e, nas abas que usam, o clássico) */
+const ST=document.getElementById('stage');
+function emCheia(){return document.fullscreenElement===ST||document.webkitFullscreenElement===ST||ST.classList.contains('oxfx');}
+function telaCheia(){if(emCheia()){if(ST.classList.contains('oxfx'))ST.classList.remove('oxfx');else if(document.exitFullscreen)document.exitFullscreen().catch(()=>{});else if(document.webkitExitFullscreen)document.webkitExitFullscreen();setTimeout(syncCheia,60);return;}
+ const rq=ST.requestFullscreen||ST.webkitRequestFullscreen;
+ if(rq){const r=rq.call(ST);if(r&&r.catch)r.catch(()=>{ST.classList.add('oxfx');syncCheia();});}else ST.classList.add('oxfx');setTimeout(syncCheia,60);}
+function syncCheia(){const on=emCheia();$('oxFull').textContent=on?'⛶ Sair':'⛶';$('oxFull').title=on?'Sair da tela cheia':'Tela cheia';$('oxX').hidden=on||!!API.novo;tam();}
 $('oxFull').onclick=telaCheia;
 const onFs=()=>{if(!L0.isConnected)return;syncCheia();};
 document.addEventListener('fullscreenchange',onFs);document.addEventListener('webkitfullscreenchange',onFs);
 const onKey=e=>{if(L0.hidden)return;
- if(e.key==='Escape'){if(palcoHd)fechaPalco();else if(cAt)sairCorte();else if(seq>=0)seqFim();else if(L0.classList.contains('fx')){L0.classList.remove('fx');syncCheia();}}
+ if(e.key==='Escape'){if(!$('oxDD').hidden)fechaDD();else if(!$('oxMedP').hidden)fechaMed();else if(palcoHd)fechaPalco();else if(cAt)sairCorte();else if(seq>=0)seqFim();else if(ST.classList.contains('oxfx')){ST.classList.remove('oxfx');syncCheia();}}
  else if(seq>=0&&!palcoHd&&(e.key==='ArrowRight'||e.key==='ArrowLeft')){e.preventDefault();seqVai(e.key==='ArrowRight'?1:-1);}};
 document.addEventListener('keydown',onKey);
 
 /* ---------- laço ---------- */
-function tam(){const b=host.getBoundingClientRect();RN.setSize(Math.max(1,b.width),Math.max(1,b.height),false);CAM.aspect=Math.max(1,b.width)/Math.max(1,b.height);CAM.updateProjectionMatrix();tamPalco();}
+function tam(){posMed();const b=host.getBoundingClientRect();RN.setSize(Math.max(1,b.width),Math.max(1,b.height),false);CAM.aspect=Math.max(1,b.width)/Math.max(1,b.height);CAM.updateProjectionMatrix();tamPalco();}
 const ro=window.ResizeObserver?new ResizeObserver(tam):null;if(ro)ro.observe(L0);else addEventListener('resize',tam);
 const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
 let last=performance.now(),raf=0,vivo=true;
-function loop(now){raf=0;if(!vivo||L0.hidden)return;raf=requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;
+function loop(now){raf=0;if(!vivo||L0.hidden||CLS)return;raf=requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;
  PECAS.forEach(p=>{const u=p.userData;if(u.t!==u.tt){const sp=seq>=0?1.6:1.8;u.t=u.tt>u.t?Math.min(u.tt,u.t+dt*sp):Math.max(u.tt,u.t-dt*sp);}
   const e=ease(u.t);p.position.set(u.ex.x*e,u.ex.y*e,u.ex.z*e);});
+ if(ab!==abT){ab=abT>ab?Math.min(abT,ab+dt*.9):Math.max(abT,ab-dt*.9);aplicaFolhas();}
  if(voo){voo.t=Math.min(1,voo.t+dt*1.6);CAM.position.lerpVectors(voo.a,voo.b,ease(voo.t));CT.target.lerpVectors(voo.ta,voo.tb,ease(voo.t));if(voo.t>=1)voo=null;}
- CT.update();RN.render(SC,CAM);
+ CT.update();RN.render(SC,CAM);juncoes();
  if(palcoHd&&PR){const t=(now-palcoT0)/1000,k=Math.min(1,t/.7),e=ease(k),u=PG.userData;
   PG.position.set(pFrom.x*(1-e)*u.dist*.35,pFrom.y*(1-e)*u.dist*.25,-(1-e)*u.dist*.8);PG.scale.setScalar(.35+.65*e);
   if(u.vid)PSPIN.rotation.y=Math.sin(t*.7)*.5;else{PG.rotation.y=Math.sin(t*.55)*.6;PG.rotation.x=.14+Math.sin(t*.37)*.08;}
   PR.render(PS,PC);}}
 function retoma(){if(!raf&&vivo){last=performance.now();raf=requestAnimationFrame(loop);}}
 
-montar();tam();retoma();
-return {key:KEY,L,H,
+const API={key:KEY,L,H,novo:false,aoVoltar:null,aoMedir:null,
  acao(a){L0.hidden=false;tam();retoma();
-  if(a==='montar'){if(seq<0)seqInicio();}
+  if(a==='montar'){usa();if(seq<0)seqInicio();}
   else if(a==='cheia'){if(!emCheia())telaCheia();}
-  else if(a==='cortes'){sairCorte(true);if(seq>=0)seqFim();enquadra(true);hint('Escolha um corte na barra de cima: Corte 01 a 05');}
+  else if(a==='cortes'){usa();sairCorte(true);if(seq>=0)seqFim();enquadra(true);hint('Escolha um corte no botão ✂ Cortes ou toque num + das junções');}
   syncCheia();},
+ classico,
+ lista(){const g={};PECAS.forEach(p=>{const o=p.userData.o,k=o.vid?'vidro':o.c;if(!g[k]){const inf=info(o);g[k]={c:o.vid?'Vidro':o.c,nm:inf.nm,q:0,vid:!!o.vid,hd:p};}g[k].q++;});return Object.values(g);},
+ verDePerto(hd){usa();if(seq>=0)seqFim();sairCorte(true);fechaFolhas();abrePalco(hd);},
  pausar(){if(raf){cancelAnimationFrame(raf);raf=0;}},
- destruir(){vivo=false;this.pausar();if(ro)ro.disconnect();document.removeEventListener('keydown',onKey);
+ destruir(){vivo=false;this.pausar();if(ro)ro.disconnect();document.removeEventListener('keydown',onKey);document.removeEventListener('pointerdown',fora);
   document.removeEventListener('fullscreenchange',onFs);document.removeEventListener('webkitfullscreenchange',onFs);
   GEO.forEach(g=>g.dispose());limpaCaps();RN.dispose();if(PR)PR.dispose();}};
+montar();tam();retoma();
+return API;
 }
 })();
