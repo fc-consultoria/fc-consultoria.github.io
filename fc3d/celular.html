@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Obra em 3D</title>
+<style>
+:root{--bg:#121315;--ink:#f0efec;--mute:#a2a4a8;--acc:#c9a66b;--line:#2c2d31;color-scheme:dark}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:grid;place-items:center;padding:16px;box-sizing:border-box}
+.box{max-width:380px;width:100%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
+.sp{width:34px;height:34px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--acc);animation:g 1s linear infinite}
+@keyframes g{to{transform:rotate(360deg)}}
+small{font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+b{font-size:17px}
+p{margin:0;color:var(--mute);font-size:14px}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){.sp{animation:none}}
+</style>
+</head>
+<body>
+<div class="box" role="status" aria-live="polite">
+  <div class="sp" id="sp"></div>
+  <small>Obra em 3D</small>
+  <b id="tt">Abrindo a obra…</b>
+  <p id="ds">Pode levar alguns segundos no celular.</p>
+</div>
+<script>
+/* Link do QR Code "Ver no celular" da Plataforma FC 3D.
+   Abre uma obra/tipologia sem login, só pelo código do link (válido por tempo limitado).
+   O conteúdo fica no banco; este arquivo público não contém desenhos nem textos da linha. */
+(function(){
+  'use strict';
+  var SB_URL='https://pawwncmfadzxfahfvhry.supabase.co',SB_KEY='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs';
+  var cod=(new URLSearchParams(location.search).get('l')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  function erro(t,d){document.getElementById('sp').hidden=true;document.getElementById('tt').textContent=t;document.getElementById('ds').textContent=d||''}
+  if(!cod){erro('Link incompleto','Aponte a câmera de novo para o QR Code.');return}
+  function rpc(id){
+    return fetch(SB_URL+'/rest/v1/rpc/fc3d_link_conteudo',{method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({p_cod:cod,p_id:id||null})});
+  }
+  /* A obra pede as peças (portas, marca) como se houvesse login.
+     Aqui essas chamadas passam pelo código do link, sem gravar nada no aparelho. */
+  var F=window.fetch.bind(window);
+  window.fetch=function(u,o){
+    try{
+      var url=String(u&&u.url||u);
+      if(url.indexOf('/rest/v1/rpc/fc3d_conteudo')>-1&&url.indexOf('fc3d_conteudos')<0){
+        var b=JSON.parse(o&&o.body||'{}');return rpc(b.p_id);
+      }
+      if(url.indexOf('/rest/v1/rpc/')>-1)return Promise.resolve(new Response('{"message":"Indisponível no celular."}',{status:403,headers:{'Content-Type':'application/json'}}));
+    }catch(e){}
+    return F(u,o);
+  };
+  var GI=Storage.prototype.getItem;
+  Storage.prototype.getItem=function(k){
+    if(k==='fc3d.ses')return JSON.stringify({token:'00000000-0000-0000-0000-000000000000',link:cod,celular:true});
+    return GI.call(this,k);
+  };
+  window.FC3D_CELULAR=cod;
+  rpc(null).then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j}})})
+  .then(function(x){
+    if(!x.ok){erro('Não foi possível abrir',(x.j&&x.j.message)||'Peça um novo QR Code.');return}
+    if(typeof x.j!=='string'||x.j.length<100){erro('Obra indisponível','Peça um novo QR Code.');return}
+    document.open();document.write(x.j);document.close();
+  }).catch(function(){erro('Sem conexão','Verifique a internet e tente de novo.')});
+})();
+</script>
+</body>
+</html>
