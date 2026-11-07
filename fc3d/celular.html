@@ -36,14 +36,14 @@ p{margin:0;color:var(--mute);font-size:14px}
   var cod=(new URLSearchParams(location.search).get('l')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
   function erro(t,d){document.getElementById('sp').hidden=true;document.getElementById('tt').textContent=t;document.getElementById('ds').textContent=d||''}
   if(!cod){erro('Link incompleto','Aponte a câmera de novo para o QR Code.');return}
+  var F=window.fetch.bind(window);
   function rpc(id){
-    return fetch(SB_URL+'/rest/v1/rpc/fc3d_link_conteudo',{method:'POST',
+    return F(SB_URL+'/rest/v1/rpc/fc3d_link_conteudo',{method:'POST',
       headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Accept':'application/json'},
       body:JSON.stringify({p_cod:cod,p_id:id||null})});
   }
   /* A obra pede as peças (portas, marca) como se houvesse login.
      Aqui essas chamadas passam pelo código do link, sem gravar nada no aparelho. */
-  var F=window.fetch.bind(window);
   window.fetch=function(u,o){
     try{
       var url=String(u&&u.url||u);
