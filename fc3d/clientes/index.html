@@ -209,6 +209,20 @@ a.card:hover{border-color:var(--teal);transform:translateY(-1px)}
 .ln-volta:hover{border-color:var(--teal)}.ln-volta:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 #vit{scroll-margin-top:14px}
 </style>
+<style id="tema-claro-fc">
+/* Identidade oficial FC · tema claro (08/11/2026) — gelo, grafite, azul-petróleo, prata. O modo escuro continua no botão de tema. */
+:root:not([data-theme="dark"]){--bg:#f4f3f0;--panel:#fff;--soft:#ecebe7;--ink:#1f2a30;--mute:#5b666c;--line:#e3e1dc;--teal:#037480;--teal2:#025f69;--tealSoft:#e0f0f1;--prata:#c1c2c6;--slate:#fbfaf8;--slate2:#f4f3f0}
+:root:not([data-theme="dark"]) .ent-arte{background:radial-gradient(circle at 20% 10%,rgba(11,178,186,.16) 0,transparent 55%),linear-gradient(180deg,#fbfaf8 0,#f1f0ec 100%);color:var(--ink);border-right:1px solid var(--line)}
+:root:not([data-theme="dark"]) .ent-arte h1 em{color:var(--teal)}:root:not([data-theme="dark"]) .ent-arte .sub{color:#4a555b}:root:not([data-theme="dark"]) .ent-arte ul{color:#3a464c}
+:root:not([data-theme="dark"]) .ent-arte li b{background:#e0f0f1;color:var(--teal)}:root:not([data-theme="dark"]) .ent-arte .wm{color:#7d8288}:root:not([data-theme="dark"]) .ent-arte svg.fundo{opacity:.10;color:#037480;stroke:#037480}
+:root:not([data-theme="dark"]) .lg.img{background-color:#fbfaf8;box-shadow:inset 0 0 0 1px var(--line)}
+:root:not([data-theme="dark"]) .topo{background:#fbfaf8;color:var(--ink);border-bottom:3px solid var(--teal)}:root:not([data-theme="dark"]) .topo .tt span{color:#7d8288}:root:not([data-theme="dark"]) .topo .eu{color:#3a464c}:root:not([data-theme="dark"]) .topo .eu i{color:var(--teal)}
+:root:not([data-theme="dark"]) .topo .lg{box-shadow:inset 0 0 0 1px var(--line)}
+:root:not([data-theme="dark"]) .ic-bt{border-color:var(--prata);color:var(--ink)}:root:not([data-theme="dark"]) .ic-bt:hover{background:#e6f0f1}
+:root:not([data-theme="dark"]) .vercomo,:root:not([data-theme="dark"]) .dentro{background:#ecebe7;color:#3a464c}:root:not([data-theme="dark"]) .vercomo button{color:#3a464c}:root:not([data-theme="dark"]) .vercomo button[aria-pressed="true"]{background:var(--teal);color:#fff}
+:root:not([data-theme="dark"]) .dentro select{border:1px solid var(--line)}
+:root:not([data-theme="dark"]) .hero{background:linear-gradient(120deg,#037480 0%,#025560 100%)}
+</style>
 </head>
 <body>
 
@@ -317,7 +331,7 @@ $('#zapEnt').href=ZAP;
 
 /* ---------- tema ---------- */
 function tema(m){if(m)document.documentElement.setAttribute('data-theme',m);else document.documentElement.removeAttribute('data-theme');}
-tema(ls.get(TM));
+tema(ls.get(TM)||'light');
 $('#btTema').onclick=()=>{const atual=document.documentElement.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');const n=atual==='dark'?'light':'dark';tema(n);ls.set(TM,n);};
 
 /* ---------- conteúdo ---------- */
