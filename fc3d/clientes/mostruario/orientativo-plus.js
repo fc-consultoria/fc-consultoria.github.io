@@ -75,7 +75,7 @@ const css=`
 #oxTop .tag{flex:none;font:700 10.5px Inter,system-ui;letter-spacing:.08em;text-transform:uppercase;color:#ffd58a;background:rgba(255,213,138,.12);border-radius:999px;padding:3px 8px;margin-right:4px}
 #oxHint{position:absolute;right:12px;bottom:44px;z-index:5;font-size:12px;color:#9db3b0;background:rgba(0,0,0,.3);padding:4px 10px;border-radius:999px;pointer-events:none}
 .oxwm{position:absolute;inset:0;pointer-events:none;z-index:6;overflow:hidden}
-.oxwm i{position:absolute;left:-20%;right:-20%;font:700 15px Inter,system-ui;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.05);white-space:nowrap;transform:rotate(-18deg);font-style:normal}
+.oxwm i{position:absolute;left:-20%;right:-20%;font:700 15px Inter,system-ui;letter-spacing:.18em;text-transform:uppercase;color:var(--oxwm,rgba(255,255,255,.05));white-space:nowrap;transform:rotate(-18deg);font-style:normal}
 .oxwm b{position:absolute;right:12px;bottom:10px;font:600 11px Inter,system-ui;letter-spacing:.04em;color:rgba(255,255,255,.6);background:rgba(0,0,0,.32);padding:4px 9px;border-radius:999px}
 /* cartão embaixo à esquerda (corte e montagem) */
 .oxcard{position:absolute;left:14px;bottom:14px;z-index:8;width:min(420px,calc(100% - 28px));background:rgba(10,20,20,.88);backdrop-filter:blur(8px);border:1px solid #2a3d40;border-radius:14px;padding:12px 14px;box-shadow:0 14px 40px rgba(0,0,0,.45)}
@@ -334,7 +334,7 @@ L0.innerHTML=`<div id="oxCv"></div>
   <button class="oxbtn" id="oxJun" type="button" aria-pressed="true" title="Mostra os + das junções: tocou, abre o corte daquele ponto">⊕ Junções</button>
   <button class="oxbtn" id="oxVolta" type="button" hidden title="A aba aberta usa o 3D clássico">↩ Voltar ao 3D novo</button>
   <span class="sp"></span>
-  <button class="oxbtn" id="oxFull" type="button" title="Tela cheia" aria-label="Tela cheia">⛶</button>
+  <button class="oxbtn" id="oxFundo" type="button" title="Trocar o fundo da tela" aria-label="Trocar o fundo da tela">🎨</button><button class="oxbtn" id="oxFull" type="button" title="Tela cheia" aria-label="Tela cheia">⛶</button>
   ${M.aj&&FCM?'<a class="oxbtn" id="oxAjB" href="'+RAIZ+'tecnico/?m='+encodeURIComponent(KEY)+'" target="_blank" rel="noopener" title="Abre o Ajuste técnico desta montagem para corrigir a posição dos perfis" style="text-decoration:none;color:#ffd58a">🔧 Ajustar encaixes</a>':''}
   <button class="oxbtn" id="oxX" type="button" title="Volta ao 3D do Orientativo">✕ Fechar</button>
   ${M.aj&&FCM?'<div class="oxaj">⚠ <b>Ajuste pendente:</b> '+esc(M.aj)+'. Corrija no 🔧 Ajustar encaixes e salve; ao reabrir aqui, as peças já vêm na posição salva.</div>':''}
@@ -625,6 +625,19 @@ function telaCheia(){if(emCheia()){if(ST.classList.contains('oxfx'))ST.classList
  if(rq){const r=rq.call(ST);if(r&&r.catch)r.catch(()=>{ST.classList.add('oxfx');syncCheia();});}else ST.classList.add('oxfx');setTimeout(syncCheia,60);}
 function syncCheia(){const on=emCheia();$('oxFull').textContent=on?'⛶ Sair':'⛶';$('oxFull').title=on?'Sair da tela cheia':'Tela cheia';$('oxX').hidden=on||!!API.novo;tam();}
 $('oxFull').onclick=telaCheia;
+/* 08/11/2026 · Fundo da tela: escolha da pessoa, guardada neste aparelho (vale para todas as tipologias) */
+const FUNDOS=[['escuro','Escuro','radial-gradient(120% 90% at 50% 25%,#1d3236,#0b1414 70%)','#3d5c5f','#26403f',.45,'rgba(255,255,255,.05)',1],
+ ['claro','Claro','radial-gradient(120% 90% at 50% 25%,#f6f8f9,#d3dce0 75%)','#8fa3a8','#b8c6ca',.6,'rgba(0,0,0,.05)',.25],
+ ['branco','Branco','#ffffff','#b9c5c8','#dde4e6',.7,'rgba(0,0,0,.04)',.15],
+ ['azul','Azul','radial-gradient(120% 90% at 50% 25%,#24507a,#0a1c2e 72%)','#4d7aa3','#2a4a6a',.45,'rgba(255,255,255,.05)',.8],
+ ['cinza','Cinza estúdio','radial-gradient(120% 90% at 50% 25%,#7c878c,#3b4448 75%)','#9aa6ab','#5d686d',.45,'rgba(255,255,255,.06)',.6]];
+let FUNDO_I=0;try{FUNDO_I=Math.max(0,FUNDOS.findIndex(f=>f[0]===localStorage.getItem('fc3d-fundo')));}catch(_){}
+function aplicaFundo(av){const f=FUNDOS[FUNDO_I],L=$('oxL');if(L){L.style.background=f[2];L.style.setProperty('--oxwm',f[6]);}
+ PISO.children.slice().forEach(o=>{if(o.type==='GridHelper'){const g=new THREE.GridHelper(2,24,f[3],f[4]);g.material.transparent=true;g.material.opacity=f[5];g.position.copy(o.position);
+   PISO.remove(o);o.geometry.dispose();o.material.dispose();PISO.add(g);}else if(o.isMesh&&o.material){o.material.opacity=f[7];}});
+ const b=$('oxFundo');if(b)b.title='Fundo: '+f[1]+' · toque para trocar';if(av)hint('Fundo: '+f[1]+' · toque de novo para trocar');}
+$('oxFundo').onclick=()=>{FUNDO_I=(FUNDO_I+1)%FUNDOS.length;try{localStorage.setItem('fc3d-fundo',FUNDOS[FUNDO_I][0]);}catch(_){}aplicaFundo(true);};
+aplicaFundo(false);
 const onFs=()=>{if(!L0.isConnected)return;syncCheia();};
 document.addEventListener('fullscreenchange',onFs);document.addEventListener('webkitfullscreenchange',onFs);
 const onKey=e=>{if(L0.hidden)return;

@@ -75,7 +75,7 @@ const css=`
 #oxTop .tag{flex:none;font:700 10.5px Inter,system-ui;letter-spacing:.08em;text-transform:uppercase;color:#ffd58a;background:rgba(255,213,138,.12);border-radius:999px;padding:3px 8px;margin-right:4px}
 #oxHint{position:absolute;right:12px;bottom:44px;z-index:5;font-size:12px;color:#9db3b0;background:rgba(0,0,0,.3);padding:4px 10px;border-radius:999px;pointer-events:none}
 .oxwm{position:absolute;inset:0;pointer-events:none;z-index:6;overflow:hidden}
-.oxwm i{position:absolute;left:-20%;right:-20%;font:700 15px Inter,system-ui;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.05);white-space:nowrap;transform:rotate(-18deg);font-style:normal}
+.oxwm i{position:absolute;left:-20%;right:-20%;font:700 15px Inter,system-ui;letter-spacing:.18em;text-transform:uppercase;color:var(--oxwm,rgba(255,255,255,.05));white-space:nowrap;transform:rotate(-18deg);font-style:normal}
 .oxwm b{position:absolute;right:12px;bottom:10px;font:600 11px Inter,system-ui;letter-spacing:.04em;color:rgba(255,255,255,.6);background:rgba(0,0,0,.32);padding:4px 9px;border-radius:999px}
 /* cartão embaixo à esquerda (corte e montagem) */
 .oxcard{position:absolute;left:14px;bottom:14px;z-index:8;width:min(420px,calc(100% - 28px));background:rgba(10,20,20,.88);backdrop-filter:blur(8px);border:1px solid #2a3d40;border-radius:14px;padding:12px 14px;box-shadow:0 14px 40px rgba(0,0,0,.45)}
@@ -335,7 +335,7 @@ L0.innerHTML=`<div id="oxCv"></div>
   <button class="oxbtn" id="oxJun" type="button" aria-pressed="true" title="Mostra os + das junções: tocou, abre o corte daquele ponto">⊕ Junções</button>
   <button class="oxbtn" id="oxVolta" type="button" hidden title="A aba aberta usa o 3D clássico">↩ Voltar ao 3D novo</button>
   <span class="sp"></span>
-  <button class="oxbtn" id="oxFull" type="button" title="Tela cheia" aria-label="Tela cheia">⛶</button>
+  <button class="oxbtn" id="oxFundo" type="button" title="Trocar o fundo da tela" aria-label="Trocar o fundo da tela">🎨</button><button class="oxbtn" id="oxFull" type="button" title="Tela cheia" aria-label="Tela cheia">⛶</button>
   ${M.aj&&FCM?'<a class="oxbtn" id="oxAjB" href="'+RAIZ+'tecnico/?m='+encodeURIComponent(KEY)+'" target="_blank" rel="noopener" title="Abre o Ajuste técnico desta montagem para corrigir a posição dos perfis" style="text-decoration:none;color:#ffd58a">🔧 Ajustar encaixes</a>':''}
   <button class="oxbtn" id="oxX" type="button" title="Volta ao 3D do Orientativo">✕ Fechar</button>
   ${M.aj&&FCM?'<div class="oxaj">⚠ <b>Ajuste pendente:</b> '+esc(M.aj)+'. Corrija no 🔧 Ajustar encaixes e salve; ao reabrir aqui, as peças já vêm na posição salva.</div>':''}
@@ -363,6 +363,7 @@ const MHOV=new THREE.MeshStandardMaterial({color:'#e8b04a',metalness:.35,roughne
 /* transparentes: peças já montadas e janela no corte */
 const MGH=new THREE.MeshStandardMaterial({color:'#aeb9bd',metalness:.2,roughness:.6,transparent:true,opacity:.08,side:THREE.DoubleSide,depthWrite:false});
 const MCUR=new THREE.MeshStandardMaterial({color:'#dfe6ea',metalness:.55,roughness:.3,emissive:'#14383c',side:THREE.DoubleSide});
+const MSEMUS=new THREE.MeshStandardMaterial({color:'#b9a2ff',metalness:.35,roughness:.4,emissive:'#2a1a5a',side:THREE.DoubleSide});/* passo 1: perfil só com corte reto, sem usinagem (lilás) */
 const MGC=new THREE.MeshStandardMaterial({color:'#7f9599',metalness:0,roughness:.9,transparent:true,opacity:.07,side:THREE.DoubleSide,depthWrite:false});
 const MGV=new THREE.MeshStandardMaterial({color:'#9fd0e0',roughness:.1,transparent:true,opacity:.035,side:THREE.DoubleSide,depthWrite:false});
 const MCAP=new THREE.MeshStandardMaterial({color:'#ecd29c',emissive:'#5a4214',metalness:.05,roughness:.6,side:THREE.DoubleSide});
@@ -626,6 +627,19 @@ function telaCheia(){if(emCheia()){if(ST.classList.contains('oxfx'))ST.classList
  if(rq){const r=rq.call(ST);if(r&&r.catch)r.catch(()=>{ST.classList.add('oxfx');syncCheia();});}else ST.classList.add('oxfx');setTimeout(syncCheia,60);}
 function syncCheia(){const on=emCheia();$('oxFull').textContent=on?'⛶ Sair':'⛶';$('oxFull').title=on?'Sair da tela cheia':'Tela cheia';$('oxX').hidden=on||!!API.novo;tam();}
 $('oxFull').onclick=telaCheia;
+/* 08/11/2026 · Fundo da tela: escolha da pessoa, guardada neste aparelho (vale para todas as tipologias) */
+const FUNDOS=[['escuro','Escuro','radial-gradient(120% 90% at 50% 25%,#1d3236,#0b1414 70%)','#3d5c5f','#26403f',.45,'rgba(255,255,255,.05)',1],
+ ['claro','Claro','radial-gradient(120% 90% at 50% 25%,#f6f8f9,#d3dce0 75%)','#8fa3a8','#b8c6ca',.6,'rgba(0,0,0,.05)',.25],
+ ['branco','Branco','#ffffff','#b9c5c8','#dde4e6',.7,'rgba(0,0,0,.04)',.15],
+ ['azul','Azul','radial-gradient(120% 90% at 50% 25%,#24507a,#0a1c2e 72%)','#4d7aa3','#2a4a6a',.45,'rgba(255,255,255,.05)',.8],
+ ['cinza','Cinza estúdio','radial-gradient(120% 90% at 50% 25%,#7c878c,#3b4448 75%)','#9aa6ab','#5d686d',.45,'rgba(255,255,255,.06)',.6]];
+let FUNDO_I=0;try{FUNDO_I=Math.max(0,FUNDOS.findIndex(f=>f[0]===localStorage.getItem('fc3d-fundo')));}catch(_){}
+function aplicaFundo(av){const f=FUNDOS[FUNDO_I],L=$('oxL');if(L){L.style.background=f[2];L.style.setProperty('--oxwm',f[6]);}
+ PISO.children.slice().forEach(o=>{if(o.type==='GridHelper'){const g=new THREE.GridHelper(2,24,f[3],f[4]);g.material.transparent=true;g.material.opacity=f[5];g.position.copy(o.position);
+   PISO.remove(o);o.geometry.dispose();o.material.dispose();PISO.add(g);}else if(o.isMesh&&o.material){o.material.opacity=f[7];}});
+ const b=$('oxFundo');if(b)b.title='Fundo: '+f[1]+' · toque para trocar';if(av)hint('Fundo: '+f[1]+' · toque de novo para trocar');}
+$('oxFundo').onclick=()=>{FUNDO_I=(FUNDO_I+1)%FUNDOS.length;try{localStorage.setItem('fc3d-fundo',FUNDOS[FUNDO_I][0]);}catch(_){}aplicaFundo(true);};
+aplicaFundo(false);
 const onFs=()=>{if(!L0.isConnected)return;syncCheia();};
 document.addEventListener('fullscreenchange',onFs);document.addEventListener('webkitfullscreenchange',onFs);
 const onKey=e=>{if(L0.hidden)return;
@@ -902,7 +916,7 @@ function usinTick(){if(!UG)return;const k=1+.25*Math.sin(performance.now()/260);
 /* ===== Modo apresentação (protótipo FC): a tipologia se monta seguindo a sequência das aulas ===== */
 const AP_STEPS=[
  {t:'Usinagem dos perfis',src:'Vídeos de usinagem',cam:'usin',
-  b:['Antes de montar, os perfis são cortados na medida e usinados no estampo. Os pontos laranja mostram onde.','<b>Marco lateral</b> <code>SU-003</code> (os dois lados): desabe das abas internas nas duas pontas (17 mm, ou 7,5 mm) para encaixar nos marcos superior e inferior, e furos Ø5 de fixação a 17 mm da ponta, a 18 mm da borda, espaçados 35 mm (2 ou 3 furos), alinhados aos olhais.','<b>Marco inferior</b> <code>SU-002</code> (trilho de 3 paredes): dreno de saída d’água, rasgo 30 × 5 mm a 55 mm da ponta (estampar 2 vezes).','<b>Marco superior</b> <code>SU-001</code> (trilho de 4 paredes): só corte reto na medida. Não leva usinagem; recebe os parafusos do marco lateral pelos olhais.','<b>Montantes</b> <code>SU-039</code> e <b>mãos amigas</b> <code>SU-040</code> e <code>SU-041</code>: passagem do trilho nas duas pontas e furação para os parafusos das travessas <code>SU-053</code> (Ø5 a 31,6 mm da ponta, ou Ø10 a 19 mm, conforme a fábrica); furo de 10 mm da guia no lado oposto à aba.','<b>Fecho concha</b> no <code>SU-039</code>, na face oposta à aba: furo do parafuso, recorte do fecho e rasgo da lingueta (padrão 5 × 31 mm). O usual é perto do meio do montante (em janela de 1,10 m, cerca de 50 cm da ponta).','Medidas do catálogo técnico da linha. Cada fábrica confere no próprio estampo.']},
+  b:['Antes de montar, os perfis são cortados na medida e usinados no estampo. Os pontos laranja mostram onde.','<b>Marco lateral</b> <code>SU-003</code> (os dois lados): desabe das abas internas nas duas pontas (17 mm, ou 7,5 mm) para encaixar nos marcos superior e inferior, e furos Ø5 de fixação a 17 mm da ponta, a 18 mm da borda, espaçados 35 mm (2 ou 3 furos), alinhados aos olhais.','<b>Marco inferior</b> <code>SU-002</code> (trilho de 3 paredes): dreno de saída d’água, rasgo 30 × 5 mm a 55 mm da ponta (estampar 2 vezes).','<b>Marco superior</b> <code>SU-001</code> (trilho de 4 paredes), <span style="color:#b9a2ff;font-weight:700">em lilás no 3D</span>: só corte reto na medida. Não leva usinagem; recebe os parafusos do marco lateral pelos olhais.','<b>Montantes</b> <code>SU-039</code> e <b>mãos amigas</b> <code>SU-040</code> e <code>SU-041</code>: passagem do trilho nas duas pontas e furação para os parafusos das travessas <code>SU-053</code> (Ø5 a 31,6 mm da ponta, ou Ø10 a 19 mm, conforme a fábrica); furo de 10 mm da guia no lado oposto à aba.','<b>Fecho concha</b> no <code>SU-039</code>, na face oposta à aba: furo do parafuso, recorte do fecho e rasgo da lingueta (padrão 5 × 31 mm). O usual é perto do meio do montante (em janela de 1,10 m, cerca de 50 cm da ponta).','Medidas do catálogo técnico da linha. Cada fábrica confere no próprio estampo.']},
  {t:'Fechamento do quadro',src:'Vídeo 2 · Fechamento do quadro',cam:'int',hc:['CON-370'],
   b:['Contra-fecho <code>CON 370</code> encaixado solto na canaleta do marco direito, com a canaleta virada para dentro.','Marco direito <code>SU-003</code> no trilho inferior <code>SU-002</code>, depois o trilho superior <code>SU-001</code>, que não tem lado.','Marco esquerdo <code>SU-003</code>, com a canaleta virada para fora.','8 parafusos 3,8×32 ponta agulha (2 por canto) e silicone neutro nos cantos.']},
  {t:'Vedação do marco',src:'Vídeo 1 · explicação',tag:'sem demonstração',cam:'base',
@@ -1000,7 +1014,7 @@ function apAnim(k){const hl=new Set(),hc=new Set(AP_STEPS[k].hc||[]);let end=0;
  if(AP_STEPS[k].fr)PECAS.forEach(p=>{if(p.userData.o.g<0)hl.add(p);});
  if(k===13){AP.ev.push({t:AP.clock+1,fn:()=>{const d=apDist();voa(new THREE.Vector3(-d*.25,d*.12,-d),new THREE.Vector3());}},{t:AP.clock+4.2,fn:()=>apCam('int')});end=Math.max(end,6);}
  AP.end=AP.clock+end;
- PECAS.forEach(p=>{p.userData.ms.material=hl.has(p)?(p.userData.o.vid?MVID:MCUR):matBase(p);});
+ PECAS.forEach(p=>{p.userData.ms.material=(k===0&&p.userData.o.c==='SU-001')?MSEMUS:hl.has(p)?(p.userData.o.vid?MVID:MCUR):matBase(p);});
  AP.cp.forEach(cl=>cl.traverse(o=>{if(o.isMesh&&o.userData.mat0)o.material=hc.has(cl.userData.ap.c)?MCMPH:o.userData.mat0;}));}
 function apUsinagem(hl){/* passo 1: perfis soltos (sem vidro, sem baguete, sem acessórios) e os pontos de usinagem do catálogo */
  PECAS.forEach(p=>{const u=p.userData,o=u.o;if(o.vid||o.c==='SU-102')return;const a=u.ap;p.visible=true;u.apShow=null;
