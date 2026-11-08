@@ -159,20 +159,22 @@ const zapUrl=t=>'https://wa.me/55'+String(CLI&&CLI.zap||'66999867984').replace(/
 window.CARDX=p=>{const cs=(p.cores||[]).filter(k=>CORES[k]);return `${cs.length?`<div class="ccor nov3">${cs.map(k=>`<i title="${CORES[k][0]}" style="background:${CORES[k][1]}"></i>`).join('')}</div>`:''}${p.sc?`<button type="button" class="scb nov3" data-scb>Sob consulta${p.obs?' ⓘ':''}</button><div class="sco nov3" hidden>${p.obs?esc(p.txt||CLI.obs_pad||'')+'<br>':'Consulte prazo e disponibilidade:<br>'}<a class="scz" target="_blank" rel="noopener" href="${zapUrl('Olá! Quero consultar o perfil '+(p.cd||p.c)+' ('+(p.nd||p.n)+') do catálogo.')}">💬 Consultar no WhatsApp</a></div>`:'<span class="pe nov3">pronta entrega</span>'}`;};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-scb]');if(!b)return;const o=b.nextElementSibling;o.hidden=!o.hidden;HITX('cat_sc',b.closest('.cd').dataset.c);},true);
 const get=async q=>{const r=await fetch(SBU+q,{headers:{apikey:SBK}});if(!r.ok)throw new Error(r.status);return r.json();};
+/* filial (vitrine.base): usa linhas, perfis, fotos e edições da empresa-base; nome, cidade, WhatsApp e vendedores são da própria loja */
+async function pegaCli(){const c=(await get('cat_clientes?select=*&ativo=eq.true&slug=eq.'+encodeURIComponent(SLUG)))[0];if(!c)return null;const bid=c.vitrine&&c.vitrine.base;let b=null;if(bid){try{b=(await get('cat_clientes?select=*&id=eq.'+encodeURIComponent(bid)))[0];}catch(e){}}if(!b)return Object.assign(c,{itid:c.id});const v=Object.assign({},b.vitrine||{},c.vitrine||{});delete v.base;return Object.assign({},b,{id:c.id,slug:c.slug,nome:c.nome,cidade:c.cidade||b.cidade,zap:c.zap||'',ativo:c.ativo,dominio:c.dominio,vitrine:v,itid:b.id,atualizado:String(b.atualizado)+'|'+String(c.atualizado)});}
 function wm(nome){const s=`<svg xmlns='http://www.w3.org/2000/svg' width='260' height='150'><text x='130' y='80' text-anchor='middle' transform='rotate(-24 130 75)' font-family='Arial,sans-serif' font-weight='700' font-size='19' fill='#17606b' fill-opacity='.13'>${nome.replace(/[<&'"]/g,'')}</text></svg>`;return `url("data:image/svg+xml,${encodeURIComponent(s)}")`;}
 /* aplica as edições do painel (código, nome, peso, foto, publicar, sob consulta) */
 function aplicaIT(it){const IT={};it.forEach(x=>IT[x.base]=x);LN.forEach(l=>{const lc=((CLI.cores_linha||{})[l.id]||[]).length?CLI.cores_linha[l.id]:null;l.p.forEach(q=>{if(q.p0===undefined){q.p0=q.p||'';q.pb0=q.pb||'';}const e=IT[q.c]||{};q.cd=e.cg||e.c||'';q.cm=e.cg?(e.c||''):'';q.nd=e.n||'';q.oc=!!e.oc;q.sc=e.sc!==false;q.obs=!!e.obs;q.txt=e.txt||'';q.cores=e.cores||lc||q.cor0||CLI.cores||['branco','preto','natural'];q.p=e.p||q.p0;q.pb=q.pb0;q.fd=e.foto||'';if(CLI.peso_oc||e.pe_oc){q.p='';q.pb='';}});});}
 /* atualização automática: a cada 1 min (e ao voltar para a aba) confere se houve edição e redesenha sozinho */
 function autoAtualiza(it0){const assina=(it,c)=>JSON.stringify([it.map(x=>x.base+'|'+x.atualizado).sort(),c&&c.atualizado]);let SIG=assina(it0,CLI),busy=false;
- const confere=async()=>{if(busy||document.hidden||QS.get('print'))return;busy=true;try{const c=(await get('cat_clientes?select=*&ativo=eq.true&slug=eq.'+encodeURIComponent(SLUG)))[0];if(!c){location.reload();return;}const it=await get('cat_itens?select=*&cliente_id=eq.'+encodeURIComponent(CLI.id));const s=assina(it,c);if(s===SIG)return;SIG=s;
+ const confere=async()=>{if(busy||document.hidden||QS.get('print'))return;busy=true;try{const c=await pegaCli();if(!c){location.reload();return;}const it=await get('cat_itens?select=*&cliente_id=eq.'+encodeURIComponent(CLI.itid||CLI.id));const s=assina(it,c);if(s===SIG)return;SIG=s;
   const lin=JSON.stringify(c.linhas)!==JSON.stringify(CLI.linhas);Object.assign(CLI,c);if(lin){location.reload();return;}aplicaIT(it);
   const ocupado=document.querySelector('#v3,#lbx:not([hidden])')||/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'');if(ocupado)SIG='';else desenha();}catch(e){}finally{busy=false;}};
  setInterval(confere,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)confere();});}
 async function carregaCli(){const M=document.getElementById('lst');
  if(!SLUG){M.innerHTML='<p style="padding:40px 0">Catálogo não encontrado.</p>';return;}
- try{const c=await get('cat_clientes?select=*&ativo=eq.true&slug=eq.'+encodeURIComponent(SLUG));CLI=c[0];}catch(e){}
+ try{CLI=await pegaCli();}catch(e){}
  if(!CLI){document.getElementById('cName').textContent='Catálogo não encontrado';M.innerHTML='<p style="padding:40px 0">Este catálogo não existe ou foi desativado.</p>';return;}
- let it=[];try{it=await get('cat_itens?select=*&cliente_id=eq.'+encodeURIComponent(CLI.id));}catch(e){}
+ let it=[];try{it=await get('cat_itens?select=*&cliente_id=eq.'+encodeURIComponent(CLI.itid||CLI.id));}catch(e){}
  for(let k=LN.length-1;k>=0;k--)if(!(CLI.linhas||[]).includes(LN[k].id))LN.splice(k,1);
  aplicaIT(it);
  const R=document.documentElement.style;R.setProperty('--tl',CLI.cor||'#17606b');R.setProperty('--cc',CLI.cor||'#17606b');
