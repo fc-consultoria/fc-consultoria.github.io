@@ -355,7 +355,12 @@ body:has(#v3.fsm) #rcB,body:has(#v3.fsm) #vtT{display:none!important}#v3 .vb .fs
     if(d.tipo==='progresso')mostra('Guardando o catálogo para usar sem internet… <b>'+Math.round(d.feitos*100/d.total)+'%</b>',true);
     if(d.tipo==='pronto'){LS.s('fc-cat3d-off',String(d.versao||1));mostra('✓ Pronto: o Catálogo 3D abre <b>sem internet</b>.');}
   });
-  window.addEventListener('appinstalled',function(){if(btn)btn.remove();baixarTudo();});
+  /* contagem de instalações (08/11/2026): 1 por aparelho; os aparelhos marcados como da FC não contam */
+  function aparelho(){var id=LS.g('fc-app3d-id');if(!id){id='a'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);LS.s('fc-app3d-id',id);}return id;}
+  function conta(ev){try{if(typeof hit==='function')hit(ev,aparelho());}catch(e){}}
+  function registraInstalacao(){if(LS.g('fc-app3d-reg'))return;LS.s('fc-app3d-reg','1');conta('app_instalado');}
+  window.addEventListener('appinstalled',function(){if(btn)btn.remove();registraInstalacao();baixarTudo();});
+  if(app){registraInstalacao();try{if(!sessionStorage.getItem('fc-app3d-ab')){sessionStorage.setItem('fc-app3d-ab','1');conta('app_aberto');}}catch(e){}}
   navigator.serviceWorker.register('/perfis/sw.js',{scope:'/perfis/'}).then(function(){
     if(app&&!LS.g('fc-cat3d-off'))baixarTudo();
   }).catch(function(){});
