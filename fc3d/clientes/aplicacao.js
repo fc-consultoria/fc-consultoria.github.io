@@ -3,7 +3,7 @@
    Conteúdo orientativo: a confirmação é sempre do serralheiro. © FC Consultoria em Esquadria */
 (function(){
 const BASE='/fc3d/clientes/';
-const L3=['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js'];
+const L3=['/vendor/three-r128.min.js','/vendor/OrbitControls-r128.js'];
 /* base única: as mesmas montagens e seções da Plataforma FC 3D (desenho técnico e Montagens em 3D) */
 let DADOS=null,SEC=null,AM=null,LIBS=null,ENC=null;
 /* Completo: Matriz (window.FCAPL_FULL) e equipe logada na Plataforma FC 3D (mesma regra do Substituir perfil).

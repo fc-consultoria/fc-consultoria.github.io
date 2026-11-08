@@ -9,6 +9,13 @@
 <meta property="og:title" content="Catálogo de esquadria Suprema e Gold em 3D · FC Consultoria">
 <meta property="og:description" content="Trilhos, montantes, travessas e arremates em 3D, com código e peso. Baixe o catálogo em PDF.">
 <link rel="icon" href="../img/logo-fc-160.jpg">
+<link rel="manifest" href="/perfis/manifest.webmanifest">
+<meta name="theme-color" content="#0e1b22">
+<link rel="apple-touch-icon" href="/img/app-icone-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Catálogo 3D FC">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600;700&display=swap">
 <style>
@@ -206,7 +213,7 @@ async function v3(i,c,n,md){window.__dimUpd=null;hit('perfis_3d',c);const CT=con
  let o=document.getElementById('v3');if(o)o.remove();o=document.createElement('div');o.id='v3';o.setAttribute('role','dialog');o.setAttribute('aria-label','Perfil '+c+' em 3D');
  o.innerHTML=`<div class="bx"><div class="tp"><b>${esc(window.DISP?DISP(c)[0]:c)}</b><span>${esc(window.DISP?DISP(c)[1]:n)}</span>${CT?`<em class="ct">${CT}</em>`:''}<button type="button" aria-label="Fechar">×</button></div><div class="vb"><button type="button" data-vw="0,0">⬜ Frente (corte)</button><button type="button" data-vw=".3,.5" aria-pressed="true">◩ 3/4</button><button type="button" data-vw="0,1.5708">▭ Lateral</button><button type="button" data-vw="1.35,0">⬒ De cima</button><button type="button" data-vw="auto">↻ Girar</button>${MMD[c]?'<button type="button" data-dim class="md" hidden>📐 Medidas</button>':''}${US.length?(USOK(i)?'<button type="button" data-usi class="md us">🔧 Usinagem</button>':'<button type="button" data-usl class="md us">🔧 Usinagem 🔒</button>'):''}</div><div class="wr"><div class="cv"><span class="hn">Arraste para girar · role ou pince para zoom</span>${md?'<button type="button" data-med class="cvb" title="Desenho do catálogo com todas as medidas">📄 Desenho</button>':''}</div>${md?`<div class="mdp" hidden><button type="button" class="mdx">↺ Voltar ao 3D</button><span class="wm"><img src="${AS.med(md)}" alt="Medidas do perfil ${esc(c)}"></span><small>Desenho com medidas do catálogo do fabricante (mm). Toque para ampliar.</small></div>`:''}${US.length&&USOK(i)?`<div class="mdp usp" hidden><button type="button" class="mdx">↺ Voltar ao 3D</button>${U3[c]?`<div class="u3"><b>🧊 Ver usinado em 3D:</b> ${us3dSpecs(c).map(x=>`<button type="button" data-u3="${x.id}">${esc(x.n)}</button>`).join('')}<button type="button" data-u3="" hidden>↺ Perfil inteiro</button></div>`:''}<div class="un">${US.length>1?'<button type="button" data-up aria-label="Anterior">‹</button>':''}<span></span>${US.length>1?'<button type="button" data-un aria-label="Próxima">›</button>':''}</div><span class="wm"><img alt="Usinagem do perfil ${esc(c)}"></span><small>Demonstrativo: a usinagem segue o catálogo do fabricante, mas pode mudar conforme o fornecedor e a ferramenta. Confirme sempre com o seu fornecedor. Toque no desenho para ampliar.</small></div>`:''}</div></div>`;document.body.appendChild(o);try{window.FCAPL&&FCAPL.liga(o,c);}catch(_){}
  let fim=false;const fx=()=>{fim=true;o.remove();};o.querySelector('button').onclick=fx;o.addEventListener('click',e=>{if(e.target===o)fx();});document.addEventListener('keydown',function k(e){if(e.key==='Escape'){fx();document.removeEventListener('keydown',k);}});
- try{if(!T3){const THREE=await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js');T3={THREE};}
+ try{if(!T3){const THREE=await import('/vendor/three-0.160.0.module.min.js');T3={THREE};}
   if(!SEC)SEC=await AS.sec();}catch(e){o.querySelector('.hn').textContent='Não foi possível abrir o 3D agora.';return;}
  const {THREE}=T3,P=SEC[i];if(!P||fim)return;const box=o.querySelector('.cv'),W=box.clientWidth,H=box.clientHeight;
  const r=new THREE.WebGLRenderer({antialias:true,alpha:true});r.setPixelRatio(Math.min(2,devicePixelRatio));r.setSize(W,H);r.toneMapping=THREE.ACESFilmicToneMapping;r.outputColorSpace=THREE.SRGBColorSpace;box.prepend(r.domElement);
@@ -286,7 +293,7 @@ const qs=new URLSearchParams(location.search);{const l=LN.find(x=>x.id===qs.get(
   const ob=new MutationObserver(()=>{if(!document.getElementById('v3')){parent.postMessage({fc3d:'fechou'},location.origin);ob.disconnect();}});ob.observe(document.body,{childList:true});};
  if(document.readyState==='complete')setTimeout(ab,200);else addEventListener('load',()=>setTimeout(ab,200));})();
 </script>
-<script src="/fc3d/clientes/aplicacao.js?v=12"></script>
+<script src="/fc3d/clientes/aplicacao.js?v=13"></script>
 <script>/* 06/11/2026: botão Tela cheia no visualizador 3D */
 (function(){const st=document.createElement('style');st.textContent=`#v3.fsm{padding:0}#v3.fsm .bx{width:100vw;height:100vh;height:100dvh;max-height:none;border-radius:0}
 #v3.fsm .wr{flex:1;min-height:0;display:flex;flex-direction:column}#v3.fsm .cv{flex:1;height:auto!important;min-height:0}
@@ -299,5 +306,63 @@ body:has(#v3.fsm) #rcB,body:has(#v3.fsm) #vtT{display:none!important}#v3 .vb .fs
  document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement)sai();});
  new MutationObserver(()=>{const o=document.getElementById('v3');if(o)liga(o);else if(document.fullscreenElement){try{document.exitFullscreen();}catch(_){}}}).observe(document.body,{childList:true});})();</script>
 
+<!-- Catálogo 3D instalável · FC (08/11/2026) -->
+<style>
+#appBtn{white-space:nowrap}
+#appOff{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:60;background:#0e1b22;color:#fff;border:1px solid #2c4756;border-radius:12px;padding:10px 14px;font:500 14px var(--f-b);box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center;max-width:calc(100% - 32px)}
+#appOff b{color:var(--or)}#appOff button{background:none;border:0;color:#9fb6c1;font-size:18px;cursor:pointer;padding:0 2px}
+#appIos{position:fixed;inset:0;z-index:70;background:rgba(8,16,20,.72);display:grid;place-items:end center;padding:16px}
+#appIos>div{background:#fff;color:var(--tx);border-radius:16px;max-width:420px;width:100%;padding:20px 20px 16px;font:400 15.5px/1.5 var(--f-b)}
+#appIos h3{font:800 22px var(--f-d);margin:0 0 8px}#appIos ol{margin:8px 0 14px;padding-left:20px}#appIos li{margin:4px 0}
+.app-net{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:#2b1d05;color:var(--or);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:middle}
+@media(max-width:620px){#appBtn .t{display:none}}
+</style>
+<div id="appIos" hidden><div><h3>Instalar no iPhone / iPad</h3>
+<ol><li>Toque em <b>Compartilhar</b> (o quadrado com a seta, na barra do Safari).</li>
+<li>Escolha <b>Adicionar à Tela de Início</b>.</li><li>Toque em <b>Adicionar</b>.</li></ol>
+<p style="margin:0 0 14px;color:var(--tm)">O Catálogo 3D da FC fica com ícone próprio e abre também sem internet.</p>
+<button type="button" class="btn b-tl" style="width:100%" onclick="this.closest('#appIos').hidden=true">Entendi</button></div></div>
+<div id="appOff" hidden><span id="appOffT"></span><button type="button" aria-label="Fechar" onclick="this.parentNode.hidden=true">×</button></div>
+<script>
+(function(){
+  var nav=document.querySelector('header.top nav');if(!nav)return;
+  var LS={g:function(k){try{return localStorage.getItem(k)}catch(e){return null}},s:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+  var app=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var pedido=null,btn=null,aviso=document.getElementById('appOff'),avisoT=document.getElementById('appOffT');
+  function mostra(t,fixo){avisoT.innerHTML=t;aviso.hidden=false;clearTimeout(mostra.t);if(!fixo)mostra.t=setTimeout(function(){aviso.hidden=true},6000);}
+  function botao(){
+    if(app||btn)return;
+    btn=document.createElement('button');btn.type='button';btn.id='appBtn';btn.className='btn b-gh';
+    btn.innerHTML='📲 <span class="t">Instalar o app</span>';btn.title='Instalar o Catálogo 3D da FC no aparelho (funciona sem internet)';
+    nav.insertBefore(btn,nav.firstChild);
+    btn.onclick=function(){
+      if(pedido){pedido.prompt();pedido.userChoice.then(function(r){if(r.outcome==='accepted')btn.remove();pedido=null;});}
+      else if(ios){document.getElementById('appIos').hidden=false;}
+      else mostra('No menu do navegador (⋮), escolha <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.');
+    };
+  }
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();pedido=e;botao();});
+  if(ios&&!app)botao();
+  if(!('serviceWorker' in navigator))return;
+  function baixarTudo(){navigator.serviceWorker.ready.then(function(r){if(r.active)r.active.postMessage({tipo:'baixar-tudo'});});}
+  navigator.serviceWorker.addEventListener('message',function(e){
+    var d=e.data||{};
+    if(d.tipo==='progresso')mostra('Guardando o catálogo para usar sem internet… <b>'+Math.round(d.feitos*100/d.total)+'%</b>',true);
+    if(d.tipo==='pronto'){LS.s('fc-cat3d-off',String(d.versao||1));mostra('✓ Pronto: o Catálogo 3D abre <b>sem internet</b>.');}
+  });
+  window.addEventListener('appinstalled',function(){if(btn)btn.remove();baixarTudo();});
+  navigator.serviceWorker.register('/perfis/sw.js',{scope:'/perfis/'}).then(function(){
+    if(app&&!LS.g('fc-cat3d-off'))baixarTudo();
+  }).catch(function(){});
+  function rede(){
+    var b=document.querySelector('.brand small');if(!b)return;
+    var x=b.querySelector('.app-net');
+    if(!navigator.onLine){if(!x){x=document.createElement('span');x.className='app-net';x.textContent='sem internet';b.appendChild(x);}}
+    else if(x)x.remove();
+  }
+  window.addEventListener('online',rede);window.addEventListener('offline',rede);rede();
+})();
+</script>
 </body>
 </html>
