@@ -620,32 +620,29 @@ $('#btSair').onclick=async()=>{if(ls.get('pfc-apres')==='1'&&window.FCSessaoEnce
 /* ---------- 08/11/2026 · Painel de Vendas (Central do Cliente) dentro da plataforma: mesmo login, sem senha nova ---------- */
 const CENTRAL_URL='https://cpkjphodruyxfouirhpd.supabase.co',CENTRAL_KEY='sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg';
 const VND_EMP={'casa-bandeirante':'cb','teste-casa-bandeirante':'cb'};
-function podeVendas(){if(!S||!VND_EMP[S.empresa])return false;if(S.matriz)return true;return papel()==='vendedor'&&S.setor==='vendas';}
-function telaVnd(){const fc=S.matriz||String(S.empresa||'').startsWith('teste-');
-  return `<div class="hero"><div><h1>Painel de Vendas</h1><p>Monte o orçamento do cliente com os preços e o estoque da empresa, acompanhe os seus orçamentos e feche os pedidos.</p></div>
-  <button class="btn" type="button" id="vndAbrir">🧾 Abrir o Painel de Vendas</button></div>
-  <p class="mute" id="vndMsg" role="status" style="margin-top:10px"></p>
-  ${fc?`<p class="mute" style="font-size:13px">Acesso FC: ${papel()==='vendedor'||String(S.empresa||'').startsWith('teste-')?'abre como o vendedor vê (demonstração, nada é gravado)':'abre o painel completo da FC (resultados, aprovar pedidos e descontos)'}. Precisa do login do Painel da Matriz neste navegador.</p>`:'<p class="mute" style="font-size:13px">Use no computador. O mesmo login da plataforma abre o Painel de Vendas, sem senha nova.</p>'}`;}
-async function abrirVendas(){const msg=document.getElementById('vndMsg'),b=document.getElementById('vndAbrir'),e=VND_EMP[S.empresa];
-  if(b){b.disabled=true;b.textContent='Abrindo…';}if(msg)msg.textContent='';
+function podeVendas(){if(!S||!VND_EMP[S.empresa])return false;if(S.matriz)return true;if(papel()==='gestor')return true;/* 08/11/2026 · gestor acompanha vendas e orçamentos da equipe */return papel()==='vendedor'&&S.setor==='vendas';}
+function telaVnd(){/* 08/11/2026 · a aba já abre o Painel de Vendas aqui dentro, sem card nem clique a mais */
+  return `<div id="vndBox"><p class="mute" id="vndMsg" role="status">Abrindo o Painel de Vendas…</p></div>`;}
+async function abrirVendas(){const msg=document.getElementById('vndMsg'),e=VND_EMP[S.empresa];
+  if(msg)msg.textContent='Abrindo o Painel de Vendas…';
   try{let url;
-    if(S.matriz)url='/treinamento/orcamento/?e='+e+(papel()==='vendedor'?'&ver=vend':'')+'&emb=1';
-    else if(String(S.empresa||'').startsWith('teste-'))url='/treinamento/orcamento/?e='+e+'&ver=vend&emb=1';
+    const G=papel()==='gestor';
+    if(S.matriz||String(S.empresa||'').startsWith('teste-'))url='/treinamento/orcamento/?e='+e+(G?'&aba=com':'&ver=vend')+'&emb=1';
     else{const p=await rpc('pfc_central_passe',{p_token:S.token});
       const r=await fetch(CENTRAL_URL+'/rest/v1/rpc/emp_passe_entrar',{method:'POST',headers:{apikey:CENTRAL_KEY,'Content-Type':'application/json'},
         body:JSON.stringify({p_pid:p.pid,p_exp:p.exp,p_sig:p.sig,p_ua:navigator.userAgent})}).then(x=>x.json());
       if(!r||r.erro||!r.token)throw new Error(r&&r.erro==='pessoa_inativa'?'Seu cadastro de vendas está pausado. Fale com o gestor ou com a FC.':'Não foi possível liberar o Painel de Vendas agora.');
-      if(!r.vchave)throw new Error('Seu acesso de vendedor ainda não foi liberado no Painel de Vendas. Fale com a FC Consultoria.');
       try{localStorage.setItem('emp-tok-'+e,r.token);}catch(_){}
-      url='/treinamento/orcamento/?v='+encodeURIComponent(r.vchave)+'&et='+encodeURIComponent(r.token)+'&emb=1';}
+      if(G){if(!r.chave)throw new Error('O acompanhamento de vendas ainda não foi liberado para o gestor. Fale com a FC Consultoria.');
+        url='/treinamento/orcamento/?k='+encodeURIComponent(r.chave)+'&aba=com&emb=1';}
+      else{if(!r.vchave)throw new Error('Seu acesso de vendedor ainda não foi liberado no Painel de Vendas. Fale com a FC Consultoria.');
+        url='/treinamento/orcamento/?v='+encodeURIComponent(r.vchave)+'&et='+encodeURIComponent(r.token)+'&emb=1';}}
     vndTela(url);}
-  catch(err){if(msg)msg.textContent=err.message||'Erro ao abrir.';}
-  finally{if(b){b.disabled=false;b.textContent='🧾 Abrir o Painel de Vendas';}}}
-function vndTela(url){let o=document.getElementById('vndTela');if(o)o.remove();o=document.createElement('div');o.id='vndTela';
-  o.style.cssText='position:fixed;inset:0;z-index:9000;display:flex;flex-direction:column;background:var(--bg,#f2f6f7)';
-  o.innerHTML=`<div style="display:flex;align-items:center;gap:12px;padding:8px 14px;background:#16302e;color:#fff"><button type="button" id="vndVoltar" style="border:0;border-radius:10px;background:#F2C14E;color:#16302e;font:700 14px system-ui,sans-serif;padding:8px 14px;cursor:pointer">← Voltar para o painel</button><b>🧾 Painel de Vendas</b><span style="opacity:.75;font-size:13px">${h(S.empresa_nome||'')}</span></div><iframe title="Painel de Vendas" src="${url}" style="flex:1;border:0;width:100%;background:#fff"></iframe>`;
-  document.body.appendChild(o);document.documentElement.style.overflow='hidden';
-  o.querySelector('#vndVoltar').onclick=()=>{o.remove();document.documentElement.style.overflow='';};}
+  catch(err){if(msg)msg.innerHTML=h(err.message||'Erro ao abrir.')+' <button class="btn" type="button" id="vndAbrir" style="margin-left:8px">Tentar de novo</button>';}}
+function vndTela(url){const box=document.getElementById('vndBox');if(!box)return;
+  box.innerHTML=`<iframe title="Painel de Vendas" src="${url}" style="display:block;width:100%;border:0;border-radius:12px;background:#fff"></iframe>`;
+  const f=box.querySelector('iframe'),alt=()=>{const t=f.getBoundingClientRect().top+scrollY;f.style.height=Math.max(640,innerHeight-t-8)+'px';};
+  alt();addEventListener('resize',alt);}
 document.addEventListener('click',ev=>{if(ev.target&&ev.target.id==='vndAbrir')abrirVendas();});
 /* ---------- 08/11/2026 · Ver como cliente (só a FC): abre aba nova como usuário da empresa, sem senha; o login fica só naquela aba ---------- */
 const VERCLI=[['teste-casa-bandeirante','Casa Bandeirante','Catálogo da CB',[['🧾 Painel de Vendas · como o vendedor vê','/treinamento/orcamento/?e=cb&ver=vend'],['🏢 Central do Cliente · por setor','/treinamento/consultorias.html?ver=cb&como=gestor']]],
@@ -697,6 +694,7 @@ function render(){
   if(S&&S.matriz)setTimeout(async()=>{const el=document.getElementById('demoPend');if(!el)return;try{const D=await rpc('pfc_adm_demo_lista',{p_token:S.token});const n=D.filter(d=>d.status==='pendente').length;if(n){el.hidden=false;el.textContent=n+' demonstrativo'+(n>1?'s':'')+' aguardando';}}catch(_){}},50);
   $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaAmb,apr:telaApr,o3d:telaO3d,ges:telaGes,mtg:telaMtg,vnd:telaVnd,catc:()=>PFCcat.tela(S,papel())}[tab]||telaInicio)();
   ligar();if(tab==='tip'&&window.PFCapr)PFCapr.ligar();
+  if(tab==='vnd')setTimeout(abrirVendas,0);
   if(tab==='inicio')dicasPl();
   if(window.PFCcat&&(tab==='inicio'||tab==='catc'))PFCcat.carregar(S,rpc,papel(),tab==='catc'?'tela':'card');
   if(tab==='ges')equipeCarregar();
@@ -756,7 +754,7 @@ function telaInicio(){
   const p=papel(),nome=S.matriz?'FC':(S.nome||'').split(' ')[0];
   const txt={gestor:'Acompanhe a equipe e use a plataforma para apresentar as esquadrias aos seus clientes.',vendedor:'Escolha a tipologia, monte o ambiente e apresente ao seu cliente em 3D.',arquiteto:'Veja os projetos, as plantas e as esquadrias preparadas para a sua obra.',demo:'Conheça a plataforma: abra as tipologias em 3D e veja o desenho técnico de cada montagem.'}[p];
   const mods=itens().filter(m=>m.k!=='inicio'&&m.k!=='apr');
-  const desc={tip:'Janelas, portas e fachadas em 3D, com desenho técnico e o Orientativo da equipe.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ges:'O que cada setor está fazendo: quem entrou, quem está on-line, quanto tempo e o que cada pessoa abriu.',mtg:'A tipologia 3D segue a sequência de montagem, passo a passo. Em conferência pela FC.',catc:'Quem abriu o catálogo, os clientes cadastrados e as cotações que chegaram para cada vendedor.',vnd:'Monte o orçamento do cliente com os preços e o estoque da empresa e acompanhe os seus pedidos.'};
+  const desc={tip:'Janelas, portas e fachadas em 3D, com desenho técnico e o Orientativo da equipe.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ges:'O que cada setor está fazendo: quem entrou, quem está on-line, quanto tempo e o que cada pessoa abriu.',mtg:'A tipologia 3D segue a sequência de montagem, passo a passo. Em conferência pela FC.',catc:'Quem abriu o catálogo, os clientes cadastrados e as cotações que chegaram para cada vendedor.',vnd:papel()==='gestor'?'Acompanhe os orçamentos e pedidos da equipe de vendas, os resultados e o que está aguardando aprovação.':'Monte o orçamento do cliente com os preços e o estoque da empresa e acompanhe os seus pedidos.'};
   return `<div class="hero"><div><h2>Olá, ${h(nome)}!</h2><p>${txt}</p></div><div class="bts"><button class="btn cl" data-ir="tip">Ver tipologias</button></div></div>
   ${window.PFCcat?PFCcat.card(S,p):''}
   <div class="grid">${mods.map(m=>`<button class="card" data-ir="${m.k}"><span class="ic" aria-hidden="true">${m.i}</span><h3>${m.n}</h3><span class="d">${desc[m.k]}</span><span class="pe">${m.k==='tip'||m.k==='apr'||m.k==='amb'||m.k==='ges'||m.k==='mtg'||m.k==='vnd'||m.k==='catc'?'<span class="chip o">Disponível</span>':'<span class="chip a">Em construção</span>'}</span></button>`+(m.k==='tip'&&p!=='arquiteto'?`<a class="card" href="orientativo/?foco=1#cat" style="text-decoration:none;color:inherit"><span class="ic" aria-hidden="true">▤</span><h3>Catálogo 3D</h3><span class="d">${p==='demo'?'Os perfis das linhas Suprema e Gold com código, desenho e peso, para girar em 3D.':S.catalogo?'O catálogo de perfis da '+h(S.empresa_nome||'empresa')+', com os códigos da empresa. Toque no perfil para ver em 3D.':'Todos os perfis da linha com código e desenho, para consultar na hora do atendimento.'}</span><span class="pe"><span class="chip o">Disponível</span></span></a>`:'')).join('')}${['gestor','vendedor','demo'].includes(p)&&window.PFCo3d&&(p==='demo'||(S.matriz&&!S.empresa)||PFCo3d.pode(S,p))?`<button class="card" data-ir="o3d"><span class="ic" aria-hidden="true">${S.obra3d_bloq?'🔒':'⬆'}</span><h3>Simulador de Obra 3D</h3><span class="d">Anexe a Proposta comercial e o Orientativo de Montagem. O projeto passa pelo filtro da FC, volta para a sua avaliação e, aprovado, vira proposta on-line com código de acesso para cada pessoa.</span><span class="pe">${S.obra3d_bloq?'<span class="chip" style="background:#e9eef0;color:#36474c">🔒 Aguardando liberação da FC</span>':'<span class="chip" style="background:#F2C14E;color:#4A3300">Novo</span>'}</span></button>`:''}</div>
