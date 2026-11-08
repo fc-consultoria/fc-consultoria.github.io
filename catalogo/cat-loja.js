@@ -128,7 +128,7 @@
           if(r.troca){trocaSenha(depois);}else{tt('Bem-vindo, '+EU.nome.split(' ')[0]+'!');depois&&depois();}}
         else{const d={};['nome','empresa','doc','zap','cidade'].forEach(k=>d[k]=f[k].value);
           if(f.senha){if(f.senha.value.length<6){err='A senha precisa ter pelo menos 6 caracteres.';pinta();return;}if(f.senha.value!==f.senha2.value){err='As duas senhas estão diferentes.';pinta();return;}d.senha=f.senha.value;}
-          const r=await rpc('loja_cadastrar',{p_cli:O.cli.id,p:d});
+          const r=await rpc('loja_cadastrar',{p_cli:O.cli.id,p:Object.assign({},d,window.CAT_VCODE?{vcode:window.CAT_VCODE}:{})});
           if(r.erro){err=r.erro;pinta();return;}O.hit&&O.hit('loja_cadastro','');
           if(r.status==='ativo'){const r2=await rpc('loja_entrar',{p_cli:O.cli.id,p_login:d.zap,p_senha:d.senha});if(r2&&r2.tok){TOK=r2.tok;ls.set('fc_loja_tok_'+O.cli.id,TOK);await carregaEu();fecha(o);tt('Cadastro feito! Bem-vindo, '+EU.nome.split(' ')[0]+'!');depois&&depois();return;}}
           A='entrar';msg=r.status==='ativo'?'✅ Cadastro feito! Entre com o seu WhatsApp e a senha que você criou.':'✅ Cadastro enviado! A '+esc(O.cli.nome)+' vai conferir e mandar a sua senha no WhatsApp. Depois é só entrar aqui.';pinta();}}

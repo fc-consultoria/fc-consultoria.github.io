@@ -135,7 +135,7 @@ html,body{max-width:100%;overflow-x:hidden}
 
 <script src="cat-vitrine.js?v=5"></script>
 <script src="cat-apres.js?v=1"></script>
-<script src="cat-loja.js?v=6"></script>
+<script src="cat-loja.js?v=7"></script>
 <script src="linhas-cda.js?v=4"></script><script src="linhas-guapore.js?v=13"></script><script src="medidas.js?v=3"></script>
 <script>
 /* Catálogo Virtual FC · FC Consultoria em Esquadria · Sinop-MT · todos os direitos reservados */
@@ -151,9 +151,11 @@ const SBU='https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/',SBK='sb_publishabl
 const CORES={branco:['Branco','#f4f5f6'],preto:['Preto fosco','#2f3236'],bronze:['Bronze','#5a4632'],natural:['Natural','#b9bec3'],champanhe:['Champanhe','#cbb28a'],amadeirado:['Amadeirado','#8a5a36'],fosco:['Fosco','#aeb4b9'],brilhante:['Brilhante','#e6e9ec'],cromado:['Cromado','#d5dade'],inox:['Inox','#c3c8cc'],zincado:['Zincado','#9ea7ad'],cerejeira:['Cerejeira real','#7a3424']};
 const QS=new URLSearchParams(location.search);
 const SLUG=window.CAT_SLUG||QS.get('c')||(location.pathname.match(/\/catalogo\/([^\/?#]+)/)||[])[1]||'';
+/* link do vendedor (?v=código): conta os acessos para o vendedor que divulgou e já deixa o cliente com ele no cadastro */
+window.CAT_VCODE=(()=>{const k='cat-v-'+SLUG;let v=String(QS.get('v')||'').toLowerCase();if(/^[0-9a-f]{8}$/.test(v)){try{localStorage.setItem(k,v);}catch(_){}return v;}try{v=localStorage.getItem(k)||'';}catch(_){v='';}return /^[0-9a-f]{8}$/.test(v)?v:'';})();
 let CLI=null;
 try{if(!sessionStorage.getItem('fc_s'))sessionStorage.setItem('fc_s','c'+Math.random().toString(36).slice(2,12)+Date.now().toString(36));}catch(_){}
-window.HITX=(ev,ref)=>{try{if(localStorage.getItem('fc_eu')==='1')return;}catch(_){}try{fetch(SBU+'rpc/site_hit',{method:'POST',keepalive:true,headers:{apikey:SBK,'Content-Type':'application/json'},body:JSON.stringify({p_s:sessionStorage.getItem('fc_s')||'x',p_pag:'cat:'+SLUG,p_ev:ev,p_o:'direto',p_ref:ref||''})}).catch(()=>{});}catch(_){}};
+window.HITX=(ev,ref)=>{try{if(localStorage.getItem('fc_eu')==='1')return;}catch(_){}try{fetch(SBU+'rpc/site_hit',{method:'POST',keepalive:true,headers:{apikey:SBK,'Content-Type':'application/json'},body:JSON.stringify({p_s:sessionStorage.getItem('fc_s')||'x',p_pag:'cat:'+SLUG,p_ev:ev,p_o:window.CAT_VCODE?'v:'+window.CAT_VCODE:'direto',p_ref:ref||''})}).catch(()=>{});}catch(_){}};
 window.DISP=c=>{const q=LN.flatMap(l=>l.p).find(x=>x.c===c);return q?[q.cd||q.c,q.nd||q.n]:[c,''];};
 const zapUrl=t=>'https://wa.me/55'+String(CLI&&CLI.zap||'66999867984').replace(/\D/g,'').replace(/^55/,'')+'?text='+encodeURIComponent(t);
 window.CARDX=p=>{const cs=(p.cores||[]).filter(k=>CORES[k]);return `${cs.length?`<div class="ccor nov3">${cs.map(k=>`<i title="${CORES[k][0]}" style="background:${CORES[k][1]}"></i>`).join('')}</div>`:''}${p.sc?`<button type="button" class="scb nov3" data-scb>Sob consulta${p.obs?' ⓘ':''}</button><div class="sco nov3" hidden>${p.obs?esc(p.txt||CLI.obs_pad||'')+'<br>':'Consulte prazo e disponibilidade:<br>'}<a class="scz" target="_blank" rel="noopener" href="${zapUrl('Olá! Quero consultar o perfil '+(p.cd||p.c)+' ('+(p.nd||p.n)+') do catálogo.')}">💬 Consultar no WhatsApp</a></div>`:'<span class="pe nov3">pronta entrega</span>'}`;};
