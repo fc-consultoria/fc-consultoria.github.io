@@ -417,23 +417,31 @@ function enquadra(anim){const d=(Math.max(L,H)*1.55+700)/Math.min(1,(CAM.aspect|
 function voa(p,alvo){voo={a:CAM.position.clone(),b:p,ta:CT.target.clone(),tb:(alvo||CT.target).clone(),t:0};}
 
 /* ---------- cartão embaixo à esquerda ---------- */
-function card(html){const c=$('oxCard');if(html==null){c.hidden=true;c.innerHTML='';return c;}c.innerHTML=html;c.hidden=false;return c;}
+function card(html){const c=$('oxCard');c.classList.remove('ap','min');if(html==null){c.hidden=true;c.innerHTML='';return c;}c.innerHTML=html;c.hidden=false;return c;}
 function hint(t){$('oxHint').textContent=t||'';$('oxHint').hidden=!t;}
 
 /* ---------- montar peça por peça (manual) ---------- */
-let seq=-1,desm=false;
+let seq=-1,desm=false,SEQ=[];
+/* 08/11/2026 · ordem da montagem (igual à Apresentação): quadro → folha externa → folha interna → vidros → baguetes */
+function seqOrdem(){const pos=p=>{const o=p.userData.o,g=o.g;
+  if(g<0){const r=o.c==='SU-003'?((o.p&&o.p[0]>0)?0:3):o.c==='SU-002'?1:o.c==='SU-001'?2:2.5;return [0,0,r];}
+  const fol=R.folhas[g],ext=!!(fol&&/extern/i.test(fol.n)),fo=ext?1:2;
+  if(o.vid)return [3,fo,0];if(o.c==='SU-102')return [4,fo,0];
+  const ma=o.c==='SU-040'||o.c==='SU-041';
+  return [fo,0,ext?(ma?0:o.c==='SU-053'?1:2):(o.c==='SU-039'?0:o.c==='SU-053'?1:2)];};
+ return PECAS.map((p,i)=>({i,k:pos(p)})).sort((a,b)=>a.k[0]-b.k[0]||a.k[1]-b.k[1]||a.k[2]-b.k[2]||a.i-b.i).map(x=>x.i);}
 function corteTxt(o){const inf=info(o);
  if(o.vid){const [w,h]=vDim(o);return 'Corte do catálogo: '+(vTxt?esc(vTxt)+' → ':'')+num(w)+' × '+num(h)+' mm';}
  const kg=inf.kgm!=null?kgf(inf.kgm)+' kg/m':PEND;
  return 'Corte do catálogo: '+(inf.ft?esc(inf.ft)+' → '+mm(inf.len):PEND)+' · '+kg;}
 function seqInicio(){fechaFolhas();sairCorte(true);fechaPalco(true);desm=false;$('oxDesm').setAttribute('aria-pressed','false');
- PECAS.forEach(p=>{p.userData.t=p.userData.tt=0;});seq=0;seqAplica(true);$('oxMont').setAttribute('aria-pressed','true');}
+ PECAS.forEach(p=>{p.userData.t=p.userData.tt=0;});SEQ=seqOrdem();seq=0;seqAplica(true);$('oxMont').setAttribute('aria-pressed','true');}
 function seqAplica(anima){
- PECAS.forEach((p,i)=>{const u=p.userData;
+ PECAS.forEach((p,i0)=>{const u=p.userData,i=SEQ.indexOf(i0);
   if(i<seq){p.visible=true;u.ms.material=u.o.vid?MGV:MGH;u.tt=0;}
   else if(i===seq){p.visible=true;u.ms.material=u.o.vid?MVID:MCUR;if(anima){u.t=1;}u.tt=0;}
   else{p.visible=false;u.t=u.tt=0;}});
- const p=PECAS[seq],o=p.userData.o,inf=info(o),N=PECAS.length;
+ const p=PECAS[SEQ[seq]],o=p.userData.o,inf=info(o),N=PECAS.length;
  card(`<div class="k">Peça ${seq+1} de ${N} · ${esc(inf.nm)} · ${esc(grupoDe(o))}</div>
   <div class="v">${o.vid?esc(inf.nm):esc(o.c)+(inf.nmc||inf.nm!=='Perfil'?' · '+esc(inf.nmc||inf.nm):'')}</div>
   <div class="p">${corteTxt(o)}</div>
@@ -442,10 +450,11 @@ function seqAplica(anima){
    <button class="oxbtn pri" type="button" id="oxProx">${seq===N-1?'Concluir ✓':'Próxima ›'}</button>
    <button class="oxbtn" type="button" id="oxPerto">🔍 Ver de perto</button>
    <button class="oxbtn" type="button" id="oxSeqX">Fechar</button></div>`);
- $('oxAnt').onclick=()=>seqVai(-1);$('oxProx').onclick=()=>seqVai(1);$('oxPerto').onclick=()=>abrePalco(PECAS[seq]);$('oxSeqX').onclick=seqFim;
+ {const c=$('oxCard');if(c){c.classList.add('ap');apOff();}}
+ $('oxAnt').onclick=()=>seqVai(-1);$('oxProx').onclick=()=>seqVai(1);$('oxPerto').onclick=()=>abrePalco(PECAS[SEQ[seq]]);$('oxSeqX').onclick=seqFim;
  hint('As peças já montadas ficam transparentes · arraste para girar');}
 function seqVai(d){if(seq<0)return;const n=seq+d;if(n<0)return;if(n>=PECAS.length){seqFim();return;}seq=n;seqAplica(d>0);}
-function seqFim(){if(seq<0)return;seq=-1;fechaPalco(true);PECAS.forEach(p=>{p.visible=true;p.userData.tt=0;});materiais(matBase);card(null);
+function seqFim(){if(seq<0)return;seq=-1;fechaPalco(true);PECAS.forEach(p=>{p.visible=true;p.userData.tt=0;});materiais(matBase);{const c=$('oxCard');if(c)c.classList.remove('ap');}card(null);apOff();
  $('oxMont').setAttribute('aria-pressed','false');hint('Toque numa peça para ver de perto · arraste para girar');}
 
 /* ---------- toque na peça ---------- */
@@ -498,7 +507,81 @@ function abrePalco(hd){if(palcoHd)fechaPalco(true);palcoInit();tiraHover();
   const span=o.vid?Math.max(len,sw*asp)*1.25+160:Math.max(sw,sh)*3,dist=span/2/Math.tan(THREE.MathUtils.degToRad(16))/Math.min(1,asp);
   PC.position.set(0,dist*.1,dist);PC.lookAt(0,0,0);PG.userData.dist=dist;const sz=dist*.034;cotas.forEach(c=>{const sp=c.userData.s;sp.scale.set(sz*sp.userData.ar,sz,1);});}
  requestAnimationFrame(()=>$('oxPalco').classList.add('on'));palcoT0=performance.now();
- $('oxPX').onclick=()=>fechaPalco();}
+ $('oxPX').onclick=()=>fechaPalco();
+ document.querySelectorAll('[data-us3d]').forEach(b=>b.onclick=()=>{if(b.dataset.us3d)palcoUsin(b.dataset.us3d);else abrePalco(hd);});}
+/* ---------- 08/11/2026 · Perfil usinado de verdade (protótipo FC): furos e rasgos recortados na parede do perfil, com as cotas do catálogo ----------
+   Recorte por CSG (BSP) — algoritmo do csg.js de Evan Wallace (MIT), reescrito aqui de forma compacta. */
+const CSG=(()=>{const EPS=1e-4;
+ class Vx{constructor(p,n){this.p=p;this.n=n;}clone(){return new Vx(this.p.clone(),this.n.clone());}flip(){this.n.negate();}lerp(o,t){return new Vx(this.p.clone().lerp(o.p,t),this.n.clone().lerp(o.n,t));}}
+ class Pl{constructor(n,w){this.n=n;this.w=w;}static de(a,b,c){const n=b.clone().sub(a).cross(c.clone().sub(a)).normalize();return new Pl(n,n.dot(a));}clone(){return new Pl(this.n.clone(),this.w);}flip(){this.n.negate();this.w=-this.w;}
+  split(pg,cf,cb,f,b){let T=0;const ty=[];for(const v of pg.v){const t=this.n.dot(v.p)-this.w,k=t<-EPS?2:t>EPS?1:0;T|=k;ty.push(k);}
+   if(T===0)(this.n.dot(pg.pl.n)>0?cf:cb).push(pg);else if(T===1)f.push(pg);else if(T===2)b.push(pg);
+   else{const F=[],B=[];for(let i=0;i<pg.v.length;i++){const j=(i+1)%pg.v.length,ti=ty[i],tj=ty[j],vi=pg.v[i],vj=pg.v[j];
+     if(ti!==2)F.push(vi);if(ti!==1)B.push(ti!==2?vi.clone():vi);
+     if((ti|tj)===3){const t=(this.w-this.n.dot(vi.p))/this.n.dot(vj.p.clone().sub(vi.p)),v=vi.lerp(vj,t);F.push(v);B.push(v.clone());}}
+    if(F.length>=3)f.push(new Pg(F));if(B.length>=3)b.push(new Pg(B));}}}
+ class Pg{constructor(v){this.v=v;this.pl=Pl.de(v[0].p,v[1].p,v[2].p);}flip(){this.v.reverse().forEach(x=>x.flip());this.pl.flip();}}
+ class Nd{constructor(p){this.pl=null;this.f=null;this.b=null;this.p=[];if(p)this.build(p);}
+  invert(){this.p.forEach(x=>x.flip());if(this.pl)this.pl.flip();if(this.f)this.f.invert();if(this.b)this.b.invert();const t=this.f;this.f=this.b;this.b=t;}
+  clip(ps){if(!this.pl)return ps.slice();let f=[],b=[];for(const p of ps)this.pl.split(p,f,b,f,b);if(this.f)f=this.f.clip(f);b=this.b?this.b.clip(b):[];return f.concat(b);}
+  clipTo(n){this.p=n.clip(this.p);if(this.f)this.f.clipTo(n);if(this.b)this.b.clipTo(n);}
+  all(){let p=this.p.slice();if(this.f)p=p.concat(this.f.all());if(this.b)p=p.concat(this.b.all());return p;}
+  build(ps){if(!ps.length)return;if(!this.pl)this.pl=ps[0].pl.clone();const f=[],b=[];for(const p of ps)this.pl.split(p,this.p,this.p,f,b);
+   if(f.length){if(!this.f)this.f=new Nd();this.f.build(f);}if(b.length){if(!this.b)this.b=new Nd();this.b.build(b);}}}
+ function de(g){const q=g.index?g.toNonIndexed():g;const P=q.attributes.position,out=[];
+  for(let i=0;i<P.count;i+=3){const a=new THREE.Vector3().fromBufferAttribute(P,i),b=new THREE.Vector3().fromBufferAttribute(P,i+1),c=new THREE.Vector3().fromBufferAttribute(P,i+2);
+   const n=b.clone().sub(a).cross(c.clone().sub(a));if(n.lengthSq()<1e-10)continue;n.normalize();out.push(new Pg([new Vx(a,n.clone()),new Vx(b,n.clone()),new Vx(c,n.clone())]));}return out;}
+ function para(ps){const pos=[],nor=[];ps.forEach(p=>{for(let i=2;i<p.v.length;i++)[p.v[0],p.v[i-1],p.v[i]].forEach(v=>{pos.push(v.p.x,v.p.y,v.p.z);nor.push(p.pl.n.x,p.pl.n.y,p.pl.n.z);});});
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));return g;}
+ function menos(ga,gbs){let A=de(ga);gbs.forEach(gb=>{const a=new Nd(A),b=new Nd(de(gb));a.invert();a.clipTo(b);b.clipTo(a);b.invert();b.clipTo(a);b.invert();a.build(b.all());a.invert();A=a.all();});return para(A);}
+ return {menos};})();
+
+/* Usinagens com medida (catálogo técnico Suprema, págs. 111–112). Face: x-/x+ (laterais da seção), y-/y+ (faces largas).
+   e = distância da ponta da peça até o centro, a = posição na face a partir do centro, r = Ø ou largura, b = comprimento. */
+const US3D={
+ '1002':{L:90,face:'x-',ops:[['furo',0,31.6,5]],opc:[['furo',0,49,5]],cotas:[[31.6,'31,6']],rot:'Ø5'},
+ '1003':{L:90,face:'x-',ops:[['furo',0,19,10]],cotas:[[19,'19']],rot:'Ø10'},
+ '2201':{L:120,face:'x-',ops:[['rasgo',0,60,5,31]],rot:'5 × 31'},
+ '2501':{L:260,face:'y+',ops:[['rasgo',0,130,26,145],['furo',0,130-80.5,4],['furo',0,130+80.5,4]],rot:'Rasgo do fecho'},
+ '0904':{L:140,face:'x-',ops:[['rasgo',-15.5,70,5,30]],cotas:[[55,'55']],rot:'30 × 5'},
+ '1202':{L:100,face:'y-',furosSU003:true,rot:'Ø5'},
+ '1104':{L:100,desabe:[16.5,6.5,14.4,13,17],cotas:[[17,'17']],rot:'Desabe 17 mm'}
+};
+function us3dGeo(id,c){const sp=US3D[id];if(!sp||!SEC[c])return null;const L=sp.L,d=SEC[c];let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+ d.s.forEach(q=>q.o.forEach(([a,b])=>{x0=Math.min(x0,a);x1=Math.max(x1,a);y0=Math.min(y0,b);y1=Math.max(y1,b);}));
+ const sh=d.s.map(o=>{const s=new THREE.Shape(o.o.map(([x,y])=>new THREE.Vector2(x,y)));(o.h||[]).forEach(h=>s.holes.push(new THREE.Path(h.map(([x,y])=>new THREE.Vector2(x,y)))));return s;});
+ const g=new THREE.ExtrudeGeometry(sh,{depth:L,bevelEnabled:false,curveSegments:1});g.translate(0,0,-L/2);
+ const P=2.6,cut=[],marca=[],somb=[];/* P: profundidade do recorte a partir da face (atravessa só a parede da face) */
+ const noFace=(face,a,e,w,b,furo)=>{const z=L/2-e;let m;
+  if(face[0]==='x'){const sx=face[1]==='+'?1:-1,x=sx>0?x1:x0;m=furo?new THREE.CylinderGeometry(w/2,w/2,P*2,28).rotateZ(Math.PI/2):new THREE.BoxGeometry(P*2,w,b);m.translate(x,a,z);marca.push({p:[x+sx*.6,a,z],n:[sx,0,0]});
+   const sg=furo?new THREE.CircleGeometry(w/2*.98,28).rotateY(sx*Math.PI/2):new THREE.PlaneGeometry(b*.98,w*.98).rotateY(sx*Math.PI/2);sg.translate(x-sx*(P+.6),a,z);somb.push(sg);}
+  else{const sy=face[1]==='+'?1:-1,y=sy>0?y1:y0;m=furo?new THREE.CylinderGeometry(w/2,w/2,P*2,28):new THREE.BoxGeometry(w,P*2,b);m.translate(a,y,z);marca.push({p:[a,y+sy*.6,z],n:[0,sy,0]});
+   const sg=furo?new THREE.CircleGeometry(w/2*.98,28).rotateX(-sy*Math.PI/2):new THREE.PlaneGeometry(w*.98,b*.98).rotateX(-sy*Math.PI/2);sg.translate(a,y-sy*(P+.6),z);somb.push(sg);}
+  cut.push(m);};
+ (sp.ops||[]).forEach(([k,a,e,w,b])=>noFace(sp.face,a,e,w,b,k==='furo'));
+ if(sp.furosSU003){for(let x=x0+18;x<x1-10;x+=35)noFace('y-',x,17,5,0,true);}
+ if(sp.desabe){const [cx,cy,a,b,cc]=sp.desabe,m=new THREE.BoxGeometry(a,b,cc+2);m.translate(cx,cy,L/2-cc/2+1);cut.push(m);}
+ let geo;try{geo=CSG.menos(g,cut);}catch(_){geo=g;}
+ return {geo,L,x0,x1,y0,y1,sp,marca,somb};}
+function palcoUsin(id){if(!palcoHd||!PSPIN)return;const o=palcoHd.userData.o,R2=us3dGeo(id,o.c),u=usinDe(id);if(!R2)return;
+ while(PSPIN.children.length){const c=PSPIN.children.pop();if(c.geometry)c.geometry.dispose();}
+ PG.children.slice().forEach(c=>{if(c!==PSPIN){PG.remove(c);}});
+ const {geo,L,x0,x1,y0,y1,sp}=R2,cx=(x0+x1)/2,cy=(y0+y1)/2;geo.translate(-cx,-cy,0);
+ const m=new THREE.Mesh(geo,MAT);PSPIN.add(m);
+ const MSB=new THREE.MeshBasicMaterial({color:'#141c20',side:THREE.DoubleSide});(R2.somb||[]).forEach(g2=>{g2.translate(-cx,-cy,0);PSPIN.add(new THREE.Mesh(g2,MSB));});
+ const ed=new THREE.LineSegments(new THREE.EdgesGeometry(geo,30),new THREE.LineBasicMaterial({color:'#1b262c',transparent:true,opacity:.35}));PSPIN.add(ed);
+ const fx=sp.face||(sp.desabe?'y+':'y-');/* 08/11: só os recortes, sem cotas (pedido do Fernando) */
+ /* virar a face usinada para a câmera */
+ PSPIN.rotation.set(0,0,0);
+ if(fx==='x-')PSPIN.rotation.set(.25,1.05,0);else if(fx==='x+')PSPIN.rotation.set(.25,-1.05,0);else if(fx==='y+')PSPIN.rotation.set(1.0,-.35,0);else PSPIN.rotation.set(-1.0,-.35,0);
+ if(sp.desabe)PSPIN.rotation.set(.75,-.7,0);
+ const span=Math.max(L,x1-x0,y1-y0)*1.35,box=$('oxPcv').getBoundingClientRect(),asp=Math.max(.5,box.width/Math.max(1,box.height));
+ const dist=span/2/Math.tan(THREE.MathUtils.degToRad(16))/Math.min(1,asp);PC.position.set(0,dist*.08,dist);PC.lookAt(0,0,0);PG.userData.dist=dist;
+ const sz=dist*.03;PSPIN.traverse(c=>{if(c.isSprite)c.scale.set(sz*(c.userData.ar||1),sz,1);else if(c.userData&&c.userData.s){const s2=c.userData.s;s2.scale.set(sz*s2.userData.ar,sz,1);}});
+ const h=$('oxUsTit');if(h)h.textContent=(u?u.n:id)+' · recorte ilustrativo, conforme o catálogo técnico da linha.';
+ document.querySelectorAll('[data-us3d]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.us3d===id)));}
+function us3dDoPerfil(c){return usinLista().filter(u=>u.p.includes(c)&&US3D[u.id]);}
+
 /* ficha enxuta: seção e desenho de detalhe; sem comprimento, fórmula, ângulo e peso da peça */
 function ficha(o){const inf=info(o),gr=grupoDe(o);
  if(o.vid)return `<div class="cd">${esc(gr)}</div><h3>${esc(inf.nm)}</h3>
@@ -510,6 +593,7 @@ function ficha(o){const inf=info(o),gr=grupoDe(o);
   <dl><dt>Seção</dt><dd>${inf.secW!=null?mm(inf.secW)+' × '+mm(inf.secH):PEND}</dd></dl>
   <div><div class="cd" style="margin-bottom:6px">Detalhe do perfil · medidas do catálogo</div>
   <img src="${det}" data-alt="${RAIZ}orientativo/img2d/${encodeURIComponent(o.c)}.webp" alt="Detalhe do perfil ${esc(o.c)} com as medidas" onerror="if(this.dataset.alt&&this.src.indexOf(this.dataset.alt)<0){this.src=this.dataset.alt;this.dataset.alt='';}else{this.hidden=true;this.nextElementSibling.hidden=false}"><div hidden>${secSVG(o.c)}</div></div>
+  ${(()=>{const L2=us3dDoPerfil(o.c);return L2.length?`<div><div class="cd" style="margin-bottom:6px">Usinagens deste perfil · peça usinada em 3D</div><div style="display:flex;flex-wrap:wrap;gap:6px">${L2.map(u=>`<button type="button" class="oxbtn" data-us3d="${esc(u.id)}" style="color:#14212a;border-color:#c9d3d6;background:#fff">${esc(u.s||u.n)}</button>`).join('')}<button type="button" class="oxbtn" data-us3d="" style="color:#14212a;border-color:#c9d3d6;background:#fff">Perfil sem usinagem</button></div><p id="oxUsTit" style="margin:6px 0 0;font-size:13px;color:#3a4a50"></p></div>`:'';})()}
   <p class="fonte">${fonte()}</p>
   <div><button class="oxbtn pri" id="oxPX" type="button">↩ Voltar a peça</button></div>`;}
 function secSVG(c){const d=SEC[c];if(!d)return '';const pad=Math.max(d.w,d.h)*.22,W2=d.w/2,H2=d.h/2;
@@ -962,8 +1046,8 @@ let AP=null;
 +'.oxcard .apans{margin-top:6px;font-size:12px;color:#ffd58a}'+'.oxcard.ap{display:flex;flex-direction:column;max-height:46%;overflow:auto}.oxcard.ap .apl{overflow:auto}'+'.oxcard.ap .apmin{float:right;margin:-4px -4px 0 8px;border:1px solid #2a3d40;background:transparent;color:#cfe;border-radius:8px;font:600 12px system-ui,sans-serif;padding:3px 8px;cursor:pointer}'+'.oxcard.ap.min .apl,.oxcard.ap.min .apq,.oxcard.ap.min .apans{display:none}'+'@media (min-width:900px){.oxcard.ap{left:auto;right:14px;top:118px;bottom:auto;width:380px;max-height:calc(100% - 170px)}.oxcard.ap.min{top:118px}}';
  document.head.appendChild(s);})();
 const AP_W=380;
-function apDock(){if(!AP)return false;const b=host.getBoundingClientRect();return b.width>=900&&!AP.min;}
-function apOff(){const b=host.getBoundingClientRect(),w=Math.max(1,b.width),h=Math.max(1,b.height);if(AP&&apDock())CAM.setViewOffset(w,h,(AP_W+28)/2,0,w,h);else CAM.clearViewOffset();CAM.updateProjectionMatrix();}
+function apDock(){if(!AP&&!(seq>=0))return false;const b=host.getBoundingClientRect();return b.width>=900&&!(AP&&AP.min);}
+function apOff(){const b=host.getBoundingClientRect(),w=Math.max(1,b.width),h=Math.max(1,b.height);if(apDock())CAM.setViewOffset(w,h,(AP_W+28)/2,0,w,h);else CAM.clearViewOffset();CAM.updateProjectionMatrix();}
 function apBench(F){const p=F.userData.p0;return new THREE.Vector3(p.x+Math.sign(p.x||1)*300,p.y,520);}
 function apPrep(){
  fechaFolhas();
@@ -1068,7 +1152,7 @@ $('oxAp').onclick=()=>{if(AP)apFim();else apInicio();};
 
 
 /* ---------- laço ---------- */
-function tam(){posMed();const b=host.getBoundingClientRect();RN.setSize(Math.max(1,b.width),Math.max(1,b.height),false);CAM.aspect=Math.max(1,b.width)/Math.max(1,b.height);CAM.updateProjectionMatrix();tamPalco();if(typeof AP!=='undefined'&&AP)apOff();}
+function tam(){posMed();const b=host.getBoundingClientRect();RN.setSize(Math.max(1,b.width),Math.max(1,b.height),false);CAM.aspect=Math.max(1,b.width)/Math.max(1,b.height);CAM.updateProjectionMatrix();tamPalco();if(typeof AP!=='undefined')apOff();}
 const ro=window.ResizeObserver?new ResizeObserver(tam):null;if(ro)ro.observe(L0);else addEventListener('resize',tam);
 const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
 let last=performance.now(),raf=0,vivo=true;
