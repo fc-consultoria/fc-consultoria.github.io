@@ -901,8 +901,8 @@ function usinTick(){if(!UG)return;const k=1+.25*Math.sin(performance.now()/260);
 
 /* ===== Modo apresentação (protótipo FC): a tipologia se monta seguindo a sequência das aulas ===== */
 const AP_STEPS=[
- {t:'Usinagem dos perfis',src:'Vídeos de usinagem',cam:'int',
-  b:['Antes de montar, os perfis são cortados e usinados no estampo. Os pontos laranja mostram onde.','Marcos <code>SU-003</code>: recorte das pontas para encaixar o trilho inferior <code>SU-002</code> e o superior <code>SU-001</code>, e furos de fixação alinhados aos olhais dos trilhos.','Montantes <code>SU-039</code> e mãos amigas <code>SU-040</code> e <code>SU-041</code>: passagem do trilho nas duas pontas, furo de 5 mm no lado da aba e furo de 10 mm da guia no lado oposto.','Fecho concha no <code>SU-039</code>, na face oposta à aba: furo do parafuso, recorte do fecho e rasgo da lingueta. O usual é perto do meio do montante (em janela de 1,10 m, cerca de 50 cm da ponta).','As medidas de recorte e de furo dependem do estampo de cada fábrica.']},
+ {t:'Usinagem dos perfis',src:'Vídeos de usinagem',cam:'usin',
+  b:['Antes de montar, os perfis são cortados na medida e usinados no estampo. Os pontos laranja mostram onde.','<b>Marco lateral</b> <code>SU-003</code> (os dois lados): desabe das abas internas nas duas pontas (17 mm, ou 7,5 mm) para encaixar nos marcos superior e inferior, e furos Ø5 de fixação a 17 mm da ponta, a 18 mm da borda, espaçados 35 mm (2 ou 3 furos), alinhados aos olhais.','<b>Marco inferior</b> <code>SU-002</code> (trilho de 3 paredes): dreno de saída d’água, rasgo 30 × 5 mm a 55 mm da ponta (estampar 2 vezes).','<b>Marco superior</b> <code>SU-001</code> (trilho de 4 paredes): só corte reto na medida. Não leva usinagem; recebe os parafusos do marco lateral pelos olhais.','<b>Montantes</b> <code>SU-039</code> e <b>mãos amigas</b> <code>SU-040</code> e <code>SU-041</code>: passagem do trilho nas duas pontas e furação para os parafusos das travessas <code>SU-053</code> (Ø5 a 31,6 mm da ponta, ou Ø10 a 19 mm, conforme a fábrica); furo de 10 mm da guia no lado oposto à aba.','<b>Fecho concha</b> no <code>SU-039</code>, na face oposta à aba: furo do parafuso, recorte do fecho e rasgo da lingueta (padrão 5 × 31 mm). O usual é perto do meio do montante (em janela de 1,10 m, cerca de 50 cm da ponta).','Medidas do catálogo técnico da linha. Cada fábrica confere no próprio estampo.']},
  {t:'Fechamento do quadro',src:'Vídeo 2 · Fechamento do quadro',cam:'int',hc:['CON-370'],
   b:['Contra-fecho <code>CON 370</code> encaixado solto na canaleta do marco direito, com a canaleta virada para dentro.','Marco direito <code>SU-003</code> no trilho inferior <code>SU-002</code>, depois o trilho superior <code>SU-001</code>, que não tem lado.','Marco esquerdo <code>SU-003</code>, com a canaleta virada para fora.','8 parafusos 3,8×32 ponta agulha (2 por canto) e silicone neutro nos cantos.']},
  {t:'Vedação do marco',src:'Vídeo 1 · explicação',tag:'sem demonstração',cam:'base',
@@ -917,7 +917,7 @@ const AP_STEPS=[
  {t:'Montagem da folha interna',src:'Vídeo 3 · Montagem das folhas',cam:'bench',
   b:['Folha com a mão amiga <code>SU-040</code> (sem escova); corre no trilho de dentro.','Fecho concha virado para o lado oposto ao da externa.','<code>SU-039</code>, depois as <code>SU-053</code> e, por último, a <code>SU-040</code>.']},
  {t:'Guias deslizantes',src:'Vídeo 3 · Montagem das folhas',cam:'bench',hc:['NYL-332'],
-  b:['Guias de nylon nas pontas das folhas.','Apertadas só o suficiente para ficarem no lugar; o ajuste é feito na regulagem.']},
+  b:['Guias deslizantes <code>NYL 332</code> no topo e na base dos montantes das folhas: 2 em cima e 2 embaixo por folha.','As de cima correm dentro do marco superior e as de baixo dentro do marco inferior, mantendo a folha no trilho.','Apertadas só o suficiente para ficarem no lugar; o ajuste é feito na regulagem.']},
  {t:'Encaixe das folhas',src:'Vídeo 4 · Encaixe das folhas',cam:'int',
   b:['Sempre de dentro para fora: primeiro a folha interna, depois a externa.','A <code>SU-053</code> de cima entra primeiro no trilho superior; depois a folha baixa sobre o trilho inferior.','A externa corre no trilho de fora e a interna no de dentro.']},
  {t:'Regulagem das roldanas',src:'Vídeo 4 · Encaixe das folhas',cam:'base',hc:['ROL-426'],
@@ -945,8 +945,11 @@ let AP=null;
 +'.oxcard .apq label{display:inline-flex;gap:6px;align-items:center;margin:2px 6px 2px 0;font-size:12.5px;color:#e6efee;border:1px solid #2a3d40;border-radius:8px;padding:4px 8px;cursor:pointer}'
 +'.oxcard .apq label:has(input:checked){border-color:#7fe3e6;background:rgba(127,227,230,.1)}'
 +'.oxcard .apq small{display:block;margin-top:4px;color:#9fb3b0;font-size:11.5px}'
-+'.oxcard .apans{margin-top:6px;font-size:12px;color:#ffd58a}';
++'.oxcard .apans{margin-top:6px;font-size:12px;color:#ffd58a}'+'.oxcard.ap{display:flex;flex-direction:column;max-height:46%;overflow:auto}.oxcard.ap .apl{overflow:auto}'+'.oxcard.ap .apmin{float:right;margin:-4px -4px 0 8px;border:1px solid #2a3d40;background:transparent;color:#cfe;border-radius:8px;font:600 12px system-ui,sans-serif;padding:3px 8px;cursor:pointer}'+'.oxcard.ap.min .apl,.oxcard.ap.min .apq,.oxcard.ap.min .apans{display:none}'+'@media (min-width:900px){.oxcard.ap{left:auto;right:14px;top:118px;bottom:auto;width:380px;max-height:calc(100% - 170px)}.oxcard.ap.min{top:118px}}';
  document.head.appendChild(s);})();
+const AP_W=380;
+function apDock(){if(!AP)return false;const b=host.getBoundingClientRect();return b.width>=900&&!AP.min;}
+function apOff(){const b=host.getBoundingClientRect(),w=Math.max(1,b.width),h=Math.max(1,b.height);if(AP&&apDock())CAM.setViewOffset(w,h,(AP_W+28)/2,0,w,h);else CAM.clearViewOffset();CAM.updateProjectionMatrix();}
 function apBench(F){const p=F.userData.p0;return new THREE.Vector3(p.x+Math.sign(p.x||1)*300,p.y,520);}
 function apPrep(){
  fechaFolhas();
@@ -971,7 +974,7 @@ function apPrep(){
    else if(cc==='FIT-246'){sA=3;base=.9;off.set(0,0,220);}
    else if(cc==='ROL-426'){sA=4;off.set(0,-200,140);}
    else if(cc==='FEC-636'){sA=ext?5:6;ord=3;off.set(0,0,200);}
-   else if(cc==='NYL-332'){sA=7;off.set(0,200,120);}
+   else if(cc==='NYL-332'){sA=7;off.set(0,c.y<0?-200:200,120);}
    cl.userData.ap={c:cc,sA,ord,base,off,p0:cl.position.clone(),hd:best,ext};cp.push(cl);}));}
  return cp;}
 function apSnap(k){AP.tw=[];AP.ev=[];
@@ -1005,8 +1008,8 @@ function apUsinagem(hl){/* passo 1: perfis soltos (sem vidro, sem baguete, sem a
  FOL.forEach(F=>{F.visible=true;F.position.copy(apBench(F));});ROOT.updateMatrixWorld(true);
  PECAS.forEach(p=>{const u=p.userData,e=ease(1);p.position.set(u.ex.x*e,u.ex.y*e,u.ex.z*e);});ROOT.updateMatrixWorld(true);
  usinLista().forEach(u=>{usinPecas(u).forEach(p=>hl.add(p));usinMarcas(u,true);});}
-function apDist(){return (Math.max(L,H)*1.55+700)/Math.min(1,(CAM.aspect||1)*1.15);}
-function apCam(n){const d=apDist()*1.12,ty=-H*.26,P={int:[[d*.22,d*.12+ty,d],[0,ty,0]],bench:[[0,d*.5+ty,d*1.7],[0,ty-H*.22,300]],base:[[d*.22,-H*.05,d*.55],[0,-H/2-H*.08,0]],lado:[[d*.62,d*.1+ty,d*.7],[0,ty,0]]}[n]||[[d*.22,d*.12+ty,d],[0,ty,0]];
+function apDist(){const b=host.getBoundingClientRect(),w=Math.max(1,b.width),f=apDock()?w/Math.max(300,w-AP_W-28):1;return (Math.max(L,H)*1.55+700)/Math.min(1,(CAM.aspect||1)/f*1.15);}
+function apCam(n){const d=apDist()*1.12,ty=-H*.26,P={usin:[[d*.3,d*.2+ty*.4,d*1.6],[0,ty*.4,250]],int:[[d*.22,d*.12+ty,d],[0,ty,0]],bench:[[0,d*.5+ty,d*1.7],[0,ty-H*.22,300]],base:[[d*.22,-H*.05,d*.55],[0,-H/2-H*.08,0]],lado:[[d*.62,d*.1+ty,d*.7],[0,ty,0]]}[n]||[[d*.22,d*.12+ty,d],[0,ty,0]];
  VISTA='int';L0.querySelectorAll('[data-v]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v==='int')));
  voa(new THREE.Vector3(...P[0]),new THREE.Vector3(...P[1]));}
 function apGo(k){if(!AP)return;usinMarcas(null);AP.k=Math.max(0,Math.min(AP_STEPS.length-1,k));AP.qOpen=false;AP.wait=0;apSnap(AP.k-1);apAnim(AP.k);apCam(AP_STEPS[AP.k].cam);apCard();}
@@ -1014,7 +1017,7 @@ function apCard(){if(!AP)return;const k=AP.k,s=AP_STEPS[k],N=AP_STEPS.length,a=A
  let qh='';if(AP.qOpen&&s.q){qh='<div class="apq"><b>? '+esc(s.q.h)+'</b>'+s.q.it.map((it,i)=>'<p>'+esc(it.q)+'</p>'+it.o.map((o,j)=>'<label><input type="radio" name="apq'+k+'_'+i+'" id="apq'+k+'_'+i+'_'+j+'" value="'+esc(o)+'">'+esc(o)+'</label>').join('')).join('')
   +'<small>'+esc(s.q.n||'')+' Nenhuma opção aparece como certa: é um ponto de conferência.</small><div class="acts"><button class="oxbtn pri" type="button" id="apQok">Continuar</button></div></div>';}
  const c=card('<div class="k">Passo '+(k+1)+' de '+N+' · '+esc(s.src)+(s.tag?' · <span class="aptag">'+esc(s.tag)+'</span>':'')+'</div>'
-  +'<div class="v">'+esc(s.t)+(s.q?' <span class="aptag">?</span>':'')+'</div>'
+  +'<div class="v"><button type="button" class="apmin" id="apMin" title="'+(AP.min?'Mostrar o texto':'Recolher o texto')+'">'+(AP.min?'▴ Texto':'▾ Recolher')+'</button>'+esc(s.t)+(s.q?' <span class="aptag">?</span>':'')+'</div>'
   +'<ul class="apl">'+s.b.map(x=>'<li>'+x+'</li>').join('')+'</ul>'
   +(a&&!AP.qOpen?'<div class="apans">Conferência marcada: '+a.map(esc).join(' · ')+'</div>':'')+qh
   +'<div class="bar"><i style="width:'+((k+1)/N*100)+'%"></i></div>'
@@ -1023,7 +1026,8 @@ function apCard(){if(!AP)return;const k=AP.k,s=AP_STEPS[k],N=AP_STEPS.length,a=A
   +'<button class="oxbtn" type="button" id="apProx"'+(k===N-1?' disabled':'')+'>Próximo ›</button>'
   +'<button class="oxbtn" type="button" id="apRep" title="Repetir este passo">↺</button>'
   +'<button class="oxbtn" type="button" id="apX">Fechar</button></div>');
- c.classList.add('ap');
+ c.classList.add('ap');c.classList.toggle('min',!!AP.min);apOff();
+ $('apMin').onclick=()=>{AP.min=!AP.min;apCard();apCam(AP_STEPS[AP.k].cam);};
  $('apAnt').onclick=()=>{AP.play=false;apGo(AP.k-1);};$('apProx').onclick=()=>{AP.play=false;apGo(AP.k+1);};
  $('apRep').onclick=()=>apGo(AP.k);$('apX').onclick=apFim;
  $('apPlay').onclick=()=>{AP.play=!AP.play;if(AP.play&&AP.k===N-1&&AP.clock>AP.end){AP.qDone={};apGo(0);return;}if(AP.play)AP.wait=AP.clock+.8;apCard();};
@@ -1037,7 +1041,7 @@ function apFim(){if(!AP)return;const a=AP;AP=null;usinMarcas(null);
  a.cp.forEach(cl=>{if(cl.parent)cl.parent.remove(cl);});compsLimpa();
  PECAS.forEach(p=>{const u=p.userData;if(u.ex0)u.ex.copy(u.ex0);u.t=u.tt=0;u.dl=0;u.mk=1;u.apShow=null;p.visible=true;});
  FOL.forEach(F=>{F.visible=true;if(F.userData.p0)F.position.copy(F.userData.p0);});
- materiais(matBase);card(null);jun=a.jun0;$('oxAp').setAttribute('aria-pressed','false');hint('Toque numa peça para ver de perto · arraste para girar');enquadra(true);}
+ materiais(matBase);card(null);apOff();jun=a.jun0;$('oxAp').setAttribute('aria-pressed','false');hint('Toque numa peça para ver de perto · arraste para girar');enquadra(true);}
 function apTick(dt){if(!AP)return;AP.clock+=dt;const c=AP.clock;
  PECAS.forEach(p=>{const s=p.userData.apShow;if(s!=null&&c>=s){p.visible=true;p.userData.apShow=null;}});
  AP.tw.forEach(w=>{const x=(c-w.t0)/w.dur;if(x<0)return;if(w.show&&!w.o.visible)w.o.visible=true;w.o.position.lerpVectors(w.a,w.b,ease(Math.min(1,x)));});
@@ -1050,7 +1054,7 @@ $('oxAp').onclick=()=>{if(AP)apFim();else apInicio();};
 
 
 /* ---------- laço ---------- */
-function tam(){posMed();const b=host.getBoundingClientRect();RN.setSize(Math.max(1,b.width),Math.max(1,b.height),false);CAM.aspect=Math.max(1,b.width)/Math.max(1,b.height);CAM.updateProjectionMatrix();tamPalco();}
+function tam(){posMed();const b=host.getBoundingClientRect();RN.setSize(Math.max(1,b.width),Math.max(1,b.height),false);CAM.aspect=Math.max(1,b.width)/Math.max(1,b.height);CAM.updateProjectionMatrix();tamPalco();if(typeof AP!=='undefined'&&AP)apOff();}
 const ro=window.ResizeObserver?new ResizeObserver(tam):null;if(ro)ro.observe(L0);else addEventListener('resize',tam);
 const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
 let last=performance.now(),raf=0,vivo=true;

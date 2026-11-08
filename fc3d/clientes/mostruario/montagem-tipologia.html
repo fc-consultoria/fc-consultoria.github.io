@@ -927,7 +927,7 @@ const COMP=[
   {c:'CON-382',n:'Contratesta lateral para fechadura',d:'Linha Gold. Alumínio preto. Vai nas aletas do marco lateral, no trilho da folha que tranca, e recebe o gancho da fechadura.',q:'',m:''},
   {c:'FEC-636',n:'Fecho concha sem chave e trava reta',d:'Janela e porta de correr. Alumínio preto. Vai no montante lateral SU-039 de cada folha.',q:'2 por janela',m:'153 × 26 mm'},
   {c:'ROL-426',n:'Roldana com regulagem sem rolamento',d:'Janela de correr. Nylon 6.6 preto. Encaixa na travessa inferior, nas duas pontas da folha. Peso máximo por folha 15 kg.',q:'4 por janela',m:'19 mm de largura, regulagem 21 a 26 mm'},
-  {c:'NYL-332',n:'Guia deslizante',d:'Janela e porta de correr. Poliamida com chapa de reforço e parafuso em aço inox (Alumiconte 12.02). Fica no topo dos montantes e corre dentro do trilho superior.',q:'',m:'22 × 52 × 4,5 mm (17,5 com o parafuso), rasgo 8 × 8'},
+  {c:'NYL-332',n:'Guia deslizante',d:'Janela e porta de correr. Poliamida com chapa de reforço e parafuso em aço inox (Alumiconte 12.02). Fica no topo e na base dos montantes e corre dentro dos trilhos superior e inferior.',q:'',m:'22 × 52 × 4,5 mm (17,5 com o parafuso), rasgo 8 × 8'},
   {c:'NYL-329',n:'Caixa de dreno e vedador',d:'Janela de correr. Nylon 6.6 preto. Vai no trilho inferior, no encontro das folhas.',q:'1 por janela',m:'38,8 × 55,5 mm'},
   {c:'NYL-335',n:'Vedador de vento',d:'Janela de correr. Nylon 6.6 preto. Vai no trilho superior, no encontro das folhas.',q:'1 por janela',m:'23,5 × 8 mm'},
   {c:'FEC-645',n:'Fecho concha com chave e trava reta',d:'Janela e porta de correr. Alumínio preto. Vai no montante lateral SU-039 da folha.',q:'',m:'153 × 26 mm'},
@@ -1516,6 +1516,7 @@ function build(){
       if(S.typo==='jcr200'&&ROL==='ROL-426'){const pw=j?PW(Rc):PW(Lc);cb(g,ROL,.069,.0212,.0192,xx-Math.sign(xx)*(pw/2+.0345),-sH/2+.0106,0,first&&j===0);}/* protótipo apresentação: ROL440R 69 x 19,2 x 21,2, no canal da SU-053 de baixo, rente à ponta */
       else cb(g,ROL,ROL==='ROL-439'?.135:.06,.021,.019,xx-Math.sign(xx)*(ROL==='ROL-439'?.08:.045),-sH/2+.0105,0,first&&j===0);
       cb(g,'NYL-332',.016,.0538,.0222,xx,sH/2-.0269+.014,0,first&&j===0);
+      if(S.typo==='jcr200'){const gb=cb(g,'NYL-332',.016,.0538,.0222,xx,-sH/2+.0269-.014,0,false);if(gb)gb.rotation.z=Math.PI;}/* protótipo apresentação: guia deslizante também na base dos montantes */
     });
     /* Acessórios conforme o desenho técnico */
     if(!sd.fixed&&S.typo==='jcr200'){/* protótipo apresentação: escovas na SU-041, nos SU-039 e nas SU-053 de cima e de baixo; SU-040 sem escova */
@@ -3030,5 +3031,5 @@ applyTypo();build();renderParts();renderCuts();renderUs();renderSliders();render
 <script src="../sessao.js?v=2"></script>
 <script src="../uso.js?v=2" defer></script>
 <script src="lite.js?v=10"></script>
-<script>window.FC_APRES=true;</script><script src="orientativo-apresentacao.js?v=1"></script>
+<script>window.FC_APRES=true;</script><script src="orientativo-apresentacao.js?v=2"></script>
 <script src="../convite.js?v=2" defer></script>
