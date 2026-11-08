@@ -616,11 +616,17 @@ $('#btSair').onclick=async()=>{if(ls.get('pfc-apres')==='1'&&window.FCSessaoEnce
 
 /* ---------- telas ---------- */
 /* ---------- 08/11/2026 · Ver como cliente (só a FC): abre aba nova como usuário da empresa, sem senha; o login fica só naquela aba ---------- */
-const VERCLI=[['teste-casa-bandeirante','Casa Bandeirante','Catálogo da CB'],['teste-guapore-vidros','Guaporé Vidros / Sinop','Catálogo da Guaporé'],['teste-cde','CDE','Catálogo Suprema e Gold'],['cliente-teste-fc','Cliente novo','Sem catálogo próprio']];
+const VERCLI=[['teste-casa-bandeirante','Casa Bandeirante','Catálogo da CB',[['🧾 Painel de Vendas · como o vendedor vê','/treinamento/orcamento/?e=cb&ver=vend'],['🏢 Central do Cliente · por setor','/treinamento/consultorias.html?ver=cb&como=gestor']]],
+ ['teste-guapore-vidros','Guaporé Vidros / Sinop','Catálogo da Guaporé',[['🧾 Portal Comercial · como o vendedor vê','/treinamento/guapore/portal-comercial.html?papel=vendedor'],['🏢 Central do Cliente · por setor','/treinamento/consultorias.html?ver=gb&como=gestor']]],
+ ['teste-cde','CDE','Catálogo Suprema e Gold',[['🏢 Central do Cliente · por setor','/treinamento/consultorias.html?ver=cde&como=gestor']]],
+ ['cliente-teste-fc','Cliente novo','Sem catálogo próprio',[]]];
 function verCliQuadro(){return `<div class="linha-tit" style="margin-top:22px"><h3>👁 Ver como cliente</h3><span class="chip t">só a FC vê</span></div>
   <p class="mute" style="margin:4px 0 10px">Abre uma aba nova como usuário da empresa, com todas as ferramentas. É uma empresa de teste espelhada: nada aparece para o cliente real. A sua aba FC continua aberta.</p>
-  <div class="grid" style="align-items:start">${VERCLI.map(([id,n,d])=>`<div class="card" style="text-align:left;cursor:default"><h3>${h(n)}</h3><span class="d">${h(d)}</span>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button type="button" class="btn pri" data-vercli="${id}|gestor">Gestor</button><button type="button" class="btn sec" data-vercli="${id}|vendedor">Colaborador</button></div></div>`).join('')}</div>
+  <div class="grid" style="align-items:start">${VERCLI.map(([id,n,d,cx])=>`<div class="card" style="text-align:left;cursor:default"><h3>${h(n)}</h3><span class="d">${h(d)}</span>
+  <span style="font-size:12px;font-weight:700;margin-top:10px;display:block">Plataforma FC 3D</span>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><button type="button" class="btn pri" data-vercli="${id}|gestor">Gestor</button><button type="button" class="btn sec" data-vercli="${id}|vendedor">Colaborador</button></div>
+  ${cx.length?`<span style="font-size:12px;font-weight:700;margin-top:12px;display:block">Central do Cliente</span><div style="display:flex;flex-direction:column;gap:6px;margin-top:6px">${cx.map(([t,u])=>`<a class="btn sec" style="text-decoration:none;font-size:13px;text-align:left" href="${u}" target="_blank" rel="noopener">${h(t)} ↗</a>`).join('')}</div>`:''}</div>`).join('')}</div>
+  <p class="mute" style="margin-top:8px;font-size:13px">Central do Cliente: abre com o login do Painel da Matriz neste navegador. No Painel de Vendas em modo "como o vendedor vê", nada é gravado.</p>
   <p class="mute" id="verCliMsg" role="status" style="margin-top:8px;font-size:13px"></p>`;}
 document.addEventListener('click',async ev=>{const b=ev.target.closest&&ev.target.closest('[data-vercli]');if(!b||!S||!S.matriz)return;
   const [emp,pp]=b.dataset.vercli.split('|'),msg=document.getElementById('verCliMsg');const w=window.open('about:blank','_blank');
