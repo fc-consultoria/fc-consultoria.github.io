@@ -89,7 +89,7 @@ footer{background:var(--ink);color:#c7d6dd;padding:34px 0 90px;font-size:14.5px;
 <body>
 <header class="top"><div class="w">
  <a class="brand" href="../" aria-label="FC Consultoria · voltar ao site"><img src="../img/logo-fc-160.jpg" alt=""><span><b>FC Consultoria</b><small>Catálogo de perfis</small></span></a>
- <nav><a class="btn b-gh" href="../">← Site da FC</a><button type="button" class="btn b-or" data-cv="">💬 Fale com a FC</button></nav>
+ <nav><a class="btn b-gh" href="../">← Site da FC</a><button type="button" class="btn b-or" data-cv="" aria-label="Fale com a FC">💬 <span class="tf">Fale com a FC</span></button></nav>
 </div></header>
 <section class="hero hs"><div class="w">
  <div>
@@ -309,13 +309,15 @@ body:has(#v3.fsm) #rcB,body:has(#v3.fsm) #vtT{display:none!important}#v3 .vb .fs
 <!-- Catálogo 3D instalável · FC (08/11/2026) -->
 <style>
 #appBtn{white-space:nowrap}
-#appOff{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:60;background:#0e1b22;color:#fff;border:1px solid #2c4756;border-radius:12px;padding:10px 14px;font:500 14px var(--f-b);box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center;max-width:calc(100% - 32px)}
+#appOff{position:fixed;left:50%;top:76px;transform:translateX(-50%);z-index:60;background:#0e1b22;color:#fff;border:1px solid #2c4756;border-radius:12px;padding:10px 14px;font:500 14px var(--f-b);box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center;max-width:calc(100% - 32px)}
 #appOff b{color:var(--or)}#appOff button{background:none;border:0;color:#9fb6c1;font-size:18px;cursor:pointer;padding:0 2px}
 #appIos{position:fixed;inset:0;z-index:70;background:rgba(8,16,20,.72);display:grid;place-items:end center;padding:16px}
 #appIos>div{background:#fff;color:var(--tx);border-radius:16px;max-width:420px;width:100%;padding:20px 20px 16px;font:400 15.5px/1.5 var(--f-b)}
 #appIos h3{font:800 22px var(--f-d);margin:0 0 8px}#appIos ol{margin:8px 0 14px;padding-left:20px}#appIos li{margin:4px 0}
 .app-net{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:#2b1d05;color:var(--or);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:middle}
-@media(max-width:620px){#appBtn .t{display:none}}
+#appBtn .c{display:none}
+#appBtn{background:rgba(242,160,36,.12);color:#fff;border:1px solid var(--or)}
+@media(max-width:560px){.top nav .tf{display:none}.top nav .btn{white-space:nowrap}#appBtn{padding:8px 11px;min-height:40px;font-size:14px}#appBtn .t{display:none}#appBtn .c{display:inline}}
 </style>
 <div id="appIos" hidden><div><h3>Instalar no iPhone / iPad</h3>
 <ol><li>Toque em <b>Compartilhar</b> (o quadrado com a seta, na barra do Safari).</li>
@@ -333,17 +335,19 @@ body:has(#v3.fsm) #rcB,body:has(#v3.fsm) #vtT{display:none!important}#v3 .vb .fs
   function mostra(t,fixo){avisoT.innerHTML=t;aviso.hidden=false;clearTimeout(mostra.t);if(!fixo)mostra.t=setTimeout(function(){aviso.hidden=true},6000);}
   function botao(){
     if(app||btn)return;
-    btn=document.createElement('button');btn.type='button';btn.id='appBtn';btn.className='btn b-gh';
-    btn.innerHTML='📲 <span class="t">Instalar o app</span>';btn.title='Instalar o Catálogo 3D da FC no aparelho (funciona sem internet)';
+    btn=document.createElement('button');btn.type='button';btn.id='appBtn';btn.className='btn';
+    btn.innerHTML='📲 <span class="t">Instalar o app</span><span class="c">Instalar</span>';btn.title='Instalar o Catálogo 3D da FC no aparelho (funciona sem internet)';
     nav.insertBefore(btn,nav.firstChild);
     btn.onclick=function(){
       if(pedido){pedido.prompt();pedido.userChoice.then(function(r){if(r.outcome==='accepted')btn.remove();pedido=null;});}
       else if(ios){document.getElementById('appIos').hidden=false;}
-      else mostra('No menu do navegador (⋮), escolha <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.');
+      else if(dentroApp)mostra('Este link abriu dentro do '+dentroApp+'. Toque nos <b>⋮</b> (ou <b>⋯</b>) e escolha <b>Abrir no navegador</b>; lá aparece a opção de instalar.',true);
+      else mostra('Toque nos <b>⋮</b> do navegador (canto de cima) e escolha <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.',true);
     };
   }
   window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();pedido=e;botao();});
-  if(ios&&!app)botao();
+  var ua=navigator.userAgent,dentroApp=/Instagram/i.test(ua)?'Instagram':/FBAN|FBAV|FB_IAB/i.test(ua)?'Facebook':/WhatsApp/i.test(ua)?'WhatsApp':/; wv\)/.test(ua)?'aplicativo':'';
+  if(!app)botao();
   if(!('serviceWorker' in navigator))return;
   function baixarTudo(){navigator.serviceWorker.ready.then(function(r){if(r.active)r.active.postMessage({tipo:'baixar-tudo'});});}
   navigator.serviceWorker.addEventListener('message',function(e){
