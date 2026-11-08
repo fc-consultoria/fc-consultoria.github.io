@@ -128,7 +128,7 @@ window.FCSUB={async publico(o){o=o||{};st.pub=true;st.pick=o.pick||null;
  ui(!!o.abrir,(typeof o.alvo==='function'?o.alvo():o.alvo)||null);return true;},
  async init(o){o=o||{};try{st.tk=localStorage.getItem('pfc-token');}catch(_){}if(!st.tk)return false;
  try{st.S=await rpc('pfc_sessao',{p_token:st.tk});}catch(_){return false;}const S=st.S;
- if(!S||S.demo||!(S.matriz||((S.papel==='gestor'||S.papel==='vendedor')&&EMP.includes(S.empresa))))return false;
+ if(!S||S.demo||!(S.matriz||((S.papel==='gestor'||S.papel==='vendedor')&&EMP.includes(String(S.empresa||'').replace(/^teste-/,'')))))return false;/* 08/11: empresas de teste da FC (teste-<cliente>) veem igual ao cliente */
  if(o.slug&&!S.matriz&&S.catalogo!==o.slug)return false;
  st.pick=o.pick||null;const slug=o.slug||S.catalogo;
  try{const j=await fetch('/fc3d/clientes/orientativo/perfis.json?v=3',{cache:'no-cache'}).then(r=>r.json());Object.entries(j.P).forEach(([k,v])=>{const x=Object.assign({k},v);st.P[k]=x;st.IDX[k]=x;});}catch(_){return false;}
