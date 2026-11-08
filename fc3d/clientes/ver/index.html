@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Ver como cliente · Plataforma FC 3D</title>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#eef1f0;color:#16302e;font:500 16px system-ui,sans-serif;text-align:center;padding:20px}b{font-size:20px}p{color:#5a6b69}a{color:#0e6f6a;font-weight:700}</style>
+</head>
+<body>
+<div id="m"><b>Abrindo a plataforma como cliente…</b><p>Teste da FC · esta aba tem o login só dela.</p></div>
+<script>
+(async()=>{
+  const SP='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_teste_entrar',SPK='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs';
+  const m=document.getElementById('m'),erro=t=>{m.innerHTML='<b>Não foi possível abrir</b><p></p><p><a href="../">Ir para a Plataforma FC 3D</a></p>';m.querySelector('p').textContent=t;};
+  const c=new URLSearchParams(location.search).get('c');
+  history.replaceState(null,'',location.pathname);/* o código não fica no histórico */
+  if(!c){erro('Link incompleto. Abra pelo quadro "Ver como cliente" do seu acesso FC.');return;}
+  try{
+    const r=await fetch(SP,{method:'POST',headers:{apikey:SPK,'Content-Type':'application/json'},body:JSON.stringify({p_codigo:c})});
+    const d=r.ok?await r.json():null;
+    if(!d||d.erro||!d.token){erro((d&&d.erro)||'Confira a internet e tente de novo.');return;}
+    sessionStorage.setItem('pfc-aba','1');
+    sessionStorage.setItem('pfc-aba-nome',d.empresa_nome.replace(/^Teste FC · /,'')+(d.papel==='gestor'?' (Gestor)':' (Colaborador)'));
+    sessionStorage.setItem('pfc-token',d.token);
+    ['pfc-papel','pfc-apres','pfc-apres-ativo'].forEach(k=>sessionStorage.removeItem(k));
+    location.replace('../');
+  }catch(_){erro('Sem conexão. Confira a internet e tente de novo.');}
+})();
+</script>
+</body>
+</html>

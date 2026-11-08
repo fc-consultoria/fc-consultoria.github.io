@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<script src="/fc3d/clientes/aba.js?v=1"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Plataforma FC 3D</title>
@@ -614,6 +615,18 @@ function mostrarEntrada(m){$('#app').hidden=true;$('#entrada').hidden=false;$('#
 $('#btSair').onclick=async()=>{if(ls.get('pfc-apres')==='1'&&window.FCSessaoEncerrar){window.FCSessaoEncerrar();return;}ls.del('pfc-apres');ls.del('pfc-apres-ativo');const t=S&&S.token;S=null;ls.del(TK);ls.del('pfc-papel');try{if(t)await rpc('pfc_sair',{p_token:t});}catch(_){}mostrarEntrada('');};
 
 /* ---------- telas ---------- */
+/* ---------- 08/11/2026 · Ver como cliente (só a FC): abre aba nova como usuário da empresa, sem senha; o login fica só naquela aba ---------- */
+const VERCLI=[['teste-casa-bandeirante','Casa Bandeirante','Catálogo da CB'],['teste-guapore-vidros','Guaporé Vidros / Sinop','Catálogo da Guaporé'],['teste-cde','CDE','Catálogo Suprema e Gold'],['cliente-teste-fc','Cliente novo','Sem catálogo próprio']];
+function verCliQuadro(){return `<div class="linha-tit" style="margin-top:22px"><h3>👁 Ver como cliente</h3><span class="chip t">só a FC vê</span></div>
+  <p class="mute" style="margin:4px 0 10px">Abre uma aba nova como usuário da empresa, com todas as ferramentas. É uma empresa de teste espelhada: nada aparece para o cliente real. A sua aba FC continua aberta.</p>
+  <div class="grid" style="align-items:start">${VERCLI.map(([id,n,d])=>`<div class="card" style="text-align:left;cursor:default"><h3>${h(n)}</h3><span class="d">${h(d)}</span>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button type="button" class="btn pri" data-vercli="${id}|gestor">Gestor</button><button type="button" class="btn sec" data-vercli="${id}|vendedor">Colaborador</button></div></div>`).join('')}</div>
+  <p class="mute" id="verCliMsg" role="status" style="margin-top:8px;font-size:13px"></p>`;}
+document.addEventListener('click',async ev=>{const b=ev.target.closest&&ev.target.closest('[data-vercli]');if(!b||!S||!S.matriz)return;
+  const [emp,pp]=b.dataset.vercli.split('|'),msg=document.getElementById('verCliMsg');const w=window.open('about:blank','_blank');
+  try{const r=await rpc('pfc_teste_link',{p_token:S.token,p_emp:emp,p_papel:pp});if(!r||!r.codigo)throw new Error('Sem código');
+    if(w)w.location.href='ver/?c='+encodeURIComponent(r.codigo);else location.href='ver/?c='+encodeURIComponent(r.codigo);if(msg)msg.textContent='';}
+  catch(err){if(w)w.close();if(msg)msg.textContent='Não abriu: '+(err.message||'erro')+'. Se acabou de atualizar, confira se o SQL do "Ver como cliente" foi rodado no Supabase.';}});
 /* ---------- 08/11/2026 · Montagem Tipologia (só a FC): a tipologia 3D segue a sequência de montagem, passo a passo ---------- */
 const MTG=[
   {mo:'jcr200',n:'Janela de correr 2 folhas',cd:'SUP JCR 200',st:'conf',ps:['Usinagem dos perfis','Fechamento do quadro','Vedação do marco','Escovas nos perfis','Roldanas','Montagem da folha externa','Montagem da folha interna','Guias deslizantes','Encaixe das folhas','Regulagem das roldanas','Regulagem das guias','Fecho e contra-fecho','Vidro e baguete','Instalação'],
@@ -704,10 +717,11 @@ function telaInicio(){
   const p=papel(),nome=S.matriz?'FC':(S.nome||'').split(' ')[0];
   const txt={gestor:'Acompanhe a equipe e use a plataforma para apresentar as esquadrias aos seus clientes.',vendedor:'Escolha a tipologia, monte o ambiente e apresente ao seu cliente em 3D.',arquiteto:'Veja os projetos, as plantas e as esquadrias preparadas para a sua obra.',demo:'Conheça a plataforma: abra as tipologias em 3D e veja o desenho técnico de cada montagem.'}[p];
   const mods=itens().filter(m=>m.k!=='inicio'&&m.k!=='apr');
-  const desc={tip:'Janelas, portas e fachadas em 3D, com desenho técnico e o Orientativo da equipe.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ges:'O que cada setor está fazendo: quem entrou, quem está on-line, quanto tempo e o que cada pessoa abriu.'};
+  const desc={tip:'Janelas, portas e fachadas em 3D, com desenho técnico e o Orientativo da equipe.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ges:'O que cada setor está fazendo: quem entrou, quem está on-line, quanto tempo e o que cada pessoa abriu.',mtg:'A tipologia 3D segue a sequência de montagem, passo a passo. Em conferência pela FC.'};
   return `<div class="hero"><div><h2>Olá, ${h(nome)}!</h2><p>${txt}</p></div><div class="bts"><button class="btn cl" data-ir="tip">Ver tipologias</button></div></div>
-  <div class="grid">${mods.map(m=>`<button class="card" data-ir="${m.k}"><span class="ic" aria-hidden="true">${m.i}</span><h3>${m.n}</h3><span class="d">${desc[m.k]}</span><span class="pe">${m.k==='tip'||m.k==='apr'||m.k==='amb'||m.k==='ges'?'<span class="chip o">Disponível</span>':'<span class="chip a">Em construção</span>'}</span></button>`+(m.k==='tip'&&p!=='arquiteto'?`<a class="card" href="orientativo/?foco=1#cat" style="text-decoration:none;color:inherit"><span class="ic" aria-hidden="true">▤</span><h3>Catálogo 3D</h3><span class="d">${p==='demo'?'Os perfis das linhas Suprema e Gold com código, desenho e peso, para girar em 3D.':S.catalogo?'O catálogo de perfis da '+h(S.empresa_nome||'empresa')+', com os códigos da empresa. Toque no perfil para ver em 3D.':'Todos os perfis da linha com código e desenho, para consultar na hora do atendimento.'}</span><span class="pe"><span class="chip o">Disponível</span></span></a>`:'')).join('')}${['gestor','vendedor','demo'].includes(p)&&window.PFCo3d&&(p==='demo'||(S.matriz&&!S.empresa)||PFCo3d.pode(S,p))?`<button class="card" data-ir="o3d"><span class="ic" aria-hidden="true">${S.obra3d_bloq?'🔒':'⬆'}</span><h3>Simulador de Obra 3D</h3><span class="d">Anexe a Proposta comercial e o Orientativo de Montagem. O projeto passa pelo filtro da FC, volta para a sua avaliação e, aprovado, vira proposta on-line com código de acesso para cada pessoa.</span><span class="pe">${S.obra3d_bloq?'<span class="chip" style="background:#e9eef0;color:#36474c">🔒 Aguardando liberação da FC</span>':'<span class="chip" style="background:#F2C14E;color:#4A3300">Novo</span>'}</span></button>`:''}</div>
+  <div class="grid">${mods.map(m=>`<button class="card" data-ir="${m.k}"><span class="ic" aria-hidden="true">${m.i}</span><h3>${m.n}</h3><span class="d">${desc[m.k]}</span><span class="pe">${m.k==='tip'||m.k==='apr'||m.k==='amb'||m.k==='ges'||m.k==='mtg'?'<span class="chip o">Disponível</span>':'<span class="chip a">Em construção</span>'}</span></button>`+(m.k==='tip'&&p!=='arquiteto'?`<a class="card" href="orientativo/?foco=1#cat" style="text-decoration:none;color:inherit"><span class="ic" aria-hidden="true">▤</span><h3>Catálogo 3D</h3><span class="d">${p==='demo'?'Os perfis das linhas Suprema e Gold com código, desenho e peso, para girar em 3D.':S.catalogo?'O catálogo de perfis da '+h(S.empresa_nome||'empresa')+', com os códigos da empresa. Toque no perfil para ver em 3D.':'Todos os perfis da linha com código e desenho, para consultar na hora do atendimento.'}</span><span class="pe"><span class="chip o">Disponível</span></span></a>`:'')).join('')}${['gestor','vendedor','demo'].includes(p)&&window.PFCo3d&&(p==='demo'||(S.matriz&&!S.empresa)||PFCo3d.pode(S,p))?`<button class="card" data-ir="o3d"><span class="ic" aria-hidden="true">${S.obra3d_bloq?'🔒':'⬆'}</span><h3>Simulador de Obra 3D</h3><span class="d">Anexe a Proposta comercial e o Orientativo de Montagem. O projeto passa pelo filtro da FC, volta para a sua avaliação e, aprovado, vira proposta on-line com código de acesso para cada pessoa.</span><span class="pe">${S.obra3d_bloq?'<span class="chip" style="background:#e9eef0;color:#36474c">🔒 Aguardando liberação da FC</span>':'<span class="chip" style="background:#F2C14E;color:#4A3300">Novo</span>'}</span></button>`:''}</div>
   <div id="dicasPl"></div>
+  ${S.matriz&&!S.empresa&&papel()==='gestor'?verCliQuadro():''}
   ${S.matriz&&papel()==='gestor'?`<div style="margin:18px 0 6px"><a class="btn pri" href="empresas/">👥 Empresas e acessos <span id="demoPend" class="chip a" hidden></span></a> <span class="mute" style="margin-left:8px">cadastro das empresas, pessoas, licença e mensagem para o WhatsApp · só a FC vê</span></div>`:''}${S.matriz&&papel()==='gestor'?`<div class="linha-tit"><h3>Etapas da plataforma</h3><span class="chip t">só a FC vê</span></div><div class="etapas">${ETAPAS.map(([n,t,d])=>`<div class="etp ${n==='1'?'on':''}"><span class="chip ${n==='1'?'o':''}">${n==='1'?'Pronta':'Etapa '+n}</span><b>${t}</b><span class="mute">${d}</span></div>`).join('')}</div>`:''}`;
 }
 function faixaOri(){if(papel()==='arquiteto')return '';if(papel()==='demo')return `<div class="demo-bar"><span><b>📘 Orientativo de Montagem 3D</b> · módulos de estudo e prova final para a equipe aprender cada tipologia.</span><span class="sp"></span><span class="chip a">Na versão completa</span></div>`;let F=[];try{F=JSON.parse(localStorage.getItem('fc_esq_feito'))||[]}catch(_){}
@@ -858,7 +872,7 @@ window.PFCaprCtx={TIPS,LINHAS,h,papel:()=>papel(),sessao:()=>S,render:()=>render
 <script src="convite.js?v=2" defer></script>
 <script src="licenca.js?v=3" defer></script>
 <script src="leve.js?v=1"></script>
-<script src="sessao.js?v=1"></script>
+<script src="sessao.js?v=2"></script>
 <script src="uso.js?v=2" defer></script>
 <script src="obra3d.js?v=12"></script>
 </body>

@@ -50,7 +50,7 @@
   /* a tela inicial chama de novo logo depois do login */
   window.FCSessaoIniciar=iniciar;
   /* saiu em outra aba (botão Sair ou Encerrar) → esta aba também fecha */
-  addEventListener('storage',e=>{if(e.key==='pfc-token'&&!e.newValue&&e.oldValue)encerrar('Acesso encerrado','O acesso foi encerrado em outra aba deste computador.',false);});
+  addEventListener('storage',e=>{if(!window.PFC_ABA_TESTE&&e.key==='pfc-token'&&!e.newValue&&e.oldValue)encerrar('Acesso encerrado','O acesso foi encerrado em outra aba deste computador.',false);});
 
   /* ---- 2) modo apresentação ---- */
   function apresentacao(){
