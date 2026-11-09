@@ -92,7 +92,7 @@ select.in{width:100%;border:1px solid var(--line);background:var(--panel);border
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="../licenca.js?v=4"></script>
+<script src="../licenca.js?v=5"></script>
 <script>
 const sb=window.supabase.createClient('https://pawwncmfadzxfahfvhry.supabase.co','sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs',{auth:{persistSession:false,storageKey:'pfc-auth'}});
 const $=s=>document.querySelector(s);
@@ -163,7 +163,7 @@ function tSim(){const cnpj=c=>String(c||'').replace(/^(\d{2})(\d{3})(\d{3})(\d{4
       ${x.plano==='avulso'&&c.pedido&&!c.liberado?`<button class="btn sm ok" data-o3lib="${h(x.token)}">Liberar acesso agora</button>`:''}
       ${c.whats?`<a class="btn sm" target="_blank" rel="noopener" href="${wa(c.whats,'Olá, '+prim(c.nome||'')+'! Aqui é da FC Consultoria, sobre o Simulador de Obra 3D da '+(c.razao||x.empresa)+'.')}">WhatsApp</a>`:''}</div></div>`;};
   const P=O3.filter(x=>(x.cobs||[]).some(k=>k.status==='enviado')),R=O3.filter(x=>!P.includes(x));
-  return `<div class="sec"><div class="eh"><h2>Simulador de Obra 3D · avulso</h2></div><p class="mute" style="font-size:13.5px;margin-bottom:10px">Empresas com link de envio avulso: cadastro, teste de 3 dias (6 projetos) e pacotes de 20 projetos por R$ 200,00 no Pix. Confira o Pix no Sicoob antes de confirmar.</p>
+  return `<div class="sec"><div class="eh"><h2>Simulador de Obra 3D · avulso</h2></div><p class="mute" style="font-size:13.5px;margin-bottom:10px">Empresas com link de envio avulso: cadastro, teste de 3 dias (6 projetos) e pacotes de projetos. Valores e pagamento só pelo WhatsApp oficial da FC. Confira o pagamento no Sicoob antes de confirmar.</p>
    ${P.length?'<h3 style="margin:8px 0">Comprovantes para conferir</h3>'+P.map(card).join(''):''}
    <h3 style="margin:12px 0 8px">Empresas</h3>${R.map(card).join('')||'<p class="vazio">Nenhuma empresa avulsa ainda.</p>'}</div>`;}
 function tResumo(){const m=D.mes,P=pend(),V=vencendo(),mesN=new Date(m.inicio+'T12:00:00').toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
@@ -207,7 +207,7 @@ function estDemo(d){if(d.comprou)return '<span class="chip o">Comprou</span>';if
   if(d.status==='pendente')return '<span class="chip">Aguardando liberação</span>';if(d.status==='recusado')return '<span class="chip r">Recusado</span>';
   return d.ativo&&new Date(d.expira)>new Date()?'<span class="chip t">Testando</span>':'<span class="chip">Terminou</span>';}
 function msgDemo(d){const n=prim(d.nome),fim=!(d.ativo&&new Date(d.expira)>new Date());
-  return fim?`Olá, ${n}! Aqui é da FC Consultoria. Seu demonstrativo da Plataforma FC 3D terminou. O que achou?\n\nA licença é de ${brl(D.info.valor)} no Pix, vale 1 ano e tem até ${D.info.acessos} acessos para a sua equipe. Se quiser, te mando o Pix por aqui.${ASS}`
+  return fim?`Olá, ${n}! Aqui é da FC Consultoria. Seu demonstrativo da Plataforma FC 3D terminou. O que achou?\n\nSe quiser, agendamos uma apresentação com a sua equipe e eu te passo os planos por aqui.${ASS}`
    :`Olá, ${n}! Aqui é da FC Consultoria. Vi que você está testando a Plataforma FC 3D. Ficou alguma dúvida? Posso te ajudar por aqui.${ASS}`;}
 /* ---------- relatório de uso dos demonstrativos (pfc_lic_demo_uso) ---------- */
 let U=null,Uc=false,DAB={};
@@ -267,7 +267,7 @@ function tTut(){return `<div class="sec"><div class="eh"><h2>Como usar o painel<
   <li>Depois toque em <b>➕ Adicionar pessoa</b> para cadastrar quem entrou.</li></ol>
  <h3>5. Renovação (todo ano)</h3><ol>
   <li>A aba <b>🔁 Renovações</b> mostra as licenças que vencem em até 30 dias.</li>
-  <li>Toque em <b>💬 Mensagem de renovação</b>. A mensagem já vai com o Pix de ${brl(D.info.renovacao)}.</li>
+  <li>Toque em <b>💬 Mensagem de renovação</b>. A mensagem avisa o vencimento e pede para o cliente responder por aqui. Valor e pagamento você combina na conversa.</li>
   <li>Quando o Pix cair no Sicoob, toque em <b>✅ Renovação recebida · +1 ano</b>. Os logins continuam os mesmos.</li></ol>
   <p class="dica">Se a licença vencer sem renovação, o acesso do cliente é pausado sozinho. Ao renovar, ele volta a funcionar.</p>
  <h3>6. Demonstrativos</h3><ol>
@@ -347,18 +347,16 @@ function ligar(){
   document.querySelectorAll('[data-pau]').forEach(b=>b.onclick=async()=>{const v=b.dataset.v;if(v==='pausar'&&!confirm('Pausar este acesso? A pessoa sai da plataforma na hora.'))return;
     try{const r=await rpc('pfc_lic_acesso',{p_acesso:b.dataset.pau,p_acao:v});if(r.erro)return alert(r.erro);carregar();}catch(err){alert(err.message);}});
   document.querySelectorAll('[data-rmsg]').forEach(b=>b.onclick=()=>{const l=D.licencas.find(x=>x.empresa_id===b.dataset.rmsg),I=D.info;
-    const txid='FC3DR'+dig(l.documento).slice(-6)+String(new Date().getFullYear()).slice(-2);
-    const cod=window.FCPIX?FCPIX({pix_chave:I.pix_chave,pix_nome:I.pix_nome,pix_cidade:I.pix_cidade,valor:I.renovacao,txid}):'';
-    const t=`Olá, ${prim(l.responsavel)}! A licença da Plataforma FC 3D da ${l.empresa} ${l.dias<0?'venceu em':'vence em'} ${dt(l.licenca_ate)}.\n\nPara renovar por mais 1 ano, com os mesmos acessos: ${brl(I.renovacao)} no Pix.\n\nPix copia e cola:\n${cod}\n\nOu pela chave CNPJ 52.985.682/0001-32 (FC Consultoria). Depois do pagamento, me mande o comprovante por aqui.${ASS}`;
+    const t=`Olá, ${prim(l.responsavel)}! A licença da Plataforma FC 3D da ${l.empresa} ${l.dias<0?'venceu em':'vence em'} ${dt(l.licenca_ate)}.\n\nPara renovar por mais 1 ano, com os mesmos acessos, é só me responder por aqui que eu passo os valores e a forma de pagamento.${ASS}`;
     janelaMsg('Mensagem de renovação',l.whats,t,`<div class="box">${h(l.empresa)} · ${l.dias<0?'vencida em':'vence em'} ${dt(l.licenca_ate)}</div>`);});
   document.querySelectorAll('[data-ren]').forEach(b=>b.onclick=()=>{const l=D.licencas.find(x=>x.empresa_id===b.dataset.ren);
     const base=l.dias<0?new Date():new Date(l.licenca_ate+'T12:00:00');const nova=new Date(base);nova.setFullYear(nova.getFullYear()+1);
     const o=janela('Renovação recebida',`<div class="box"><b>${h(l.empresa)}</b><br>Hoje: ${l.dias<0?'vencida em':'válida até'} ${dt(l.licenca_ate)}<br>Depois da renovação: <b>válida até ${nova.toLocaleDateString('pt-BR')}</b></div>
-      <label class="chk"><input type="checkbox" id="rOk"><span>Conferi no Sicoob: o Pix de <b>${brl(D.info.renovacao)}</b> da renovação entrou na conta da FC.</span></label><div class="msg" id="rMsg"></div>
+      <label class="chk"><input type="checkbox" id="rOk"><span>Conferi no Sicoob: o pagamento da renovação entrou na conta da FC.</span></label><div class="msg" id="rMsg"></div>
       <div class="a"><button class="btn ok" type="button" id="rBt" disabled>✅ Renovar por 1 ano</button><button class="btn" type="button" id="rNo">Voltar</button></div>`);
     o.querySelector('#rOk').onchange=e=>{o.querySelector('#rBt').disabled=!e.target.checked;};o.querySelector('#rNo').onclick=fecha;
     o.querySelector('#rBt').onclick=async e=>{e.target.disabled=true;try{const r=await rpc('pfc_lic_renovar',{p_empresa:l.empresa_id});if(r.erro){o.querySelector('#rMsg').textContent=r.erro;e.target.disabled=false;return;}
-      await carregar();janelaMsg('Renovação feita ✅',l.whats,`Olá, ${prim(l.responsavel)}! Recebemos o Pix da renovação. ✅\n\nA licença da Plataforma FC 3D da ${l.empresa} agora vale até ${dt(r.licenca_ate)}. Os logins e códigos continuam os mesmos.\n\nObrigado pela confiança!${ASS}`);}
+      await carregar();janelaMsg('Renovação feita ✅',l.whats,`Olá, ${prim(l.responsavel)}! Recebemos o pagamento da renovação. ✅\n\nA licença da Plataforma FC 3D da ${l.empresa} agora vale até ${dt(r.licenca_ate)}. Os logins e códigos continuam os mesmos.\n\nObrigado pela confiança!${ASS}`);}
       catch(err){o.querySelector('#rMsg').textContent=err.message;e.target.disabled=false;}};});
 }
 

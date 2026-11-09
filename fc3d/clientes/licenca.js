@@ -13,16 +13,6 @@ async function call(fn,a){if(typeof window.rpc==='function')return window.rpc(fn
   const r=await fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(a||{})});
   let d=null;try{d=await r.json();}catch(_){}if(!r.ok)throw new Error((d&&(d.message||d.hint))||('Erro '+r.status));return d;}
 
-/* ---- Pix copia e cola (BR Code estático com valor) ---- */
-const tlv=(id,v)=>id+String(v.length).padStart(2,'0')+v;
-const semAcento=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9 ]/g,'').toUpperCase().trim();
-function crc16(s){let c=0xFFFF;for(let i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(let j=0;j<8;j++)c=(c&0x8000)?((c<<1)^0x1021)&0xFFFF:(c<<1)&0xFFFF;}return c.toString(16).toUpperCase().padStart(4,'0');}
-function pix(P){
-  const conta=tlv('00','br.gov.bcb.pix')+tlv('01',P.pix_chave);
-  let s=tlv('00','01')+tlv('26',conta)+tlv('52','0000')+tlv('53','986')+tlv('54',Number(P.valor).toFixed(2))+tlv('58','BR')
-    +tlv('59',semAcento(P.pix_nome).slice(0,25))+tlv('60',semAcento(P.pix_cidade).slice(0,15))+tlv('62',tlv('05',String(P.txid).replace(/[^A-Za-z0-9]/g,'').slice(0,25)))+'6304';
-  return s+crc16(s);
-}
 const carrega=u=>new Promise((ok,er)=>{const s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=er;document.head.appendChild(s);});
 let qrP=null;const qrLib=()=>qrP||(qrP=window.qrcode?Promise.resolve():carrega(QRJS).catch(()=>carrega('https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js')));
 
@@ -48,7 +38,6 @@ function caixa(html){estilo();let o=document.getElementById('licOv');
   o.innerHTML=`<div class="lc" role="dialog" aria-modal="true" aria-labelledby="licTit"><button class="x" type="button" aria-label="Fechar">×</button>${html}</div>`;
   o.querySelector('.x').onclick=fechar;o.scrollTop=0;return o;}
 function fechar(){const o=document.getElementById('licOv');if(o)o.remove();}
-const cartao=()=>zap('Olá, FC! Quero a licença da Plataforma FC 3D'+(ped&&ped.empresa?' para a '+ped.empresa:'')+' e prefiro pagar no cartão ou preciso de mais acessos.');
 
 /* ---- 1 · pedido da licença (09/11/2026: sem valor e sem chave Pix na tela — a FC passa valores e pagamento só pelo WhatsApp oficial) ---- */
 const SEG=`<div class="bx">🔒 <b>Segurança:</b> a FC Consultoria em Esquadria só envia valores e dados de pagamento pelo WhatsApp oficial <b>(66) 9 9986-7984</b>. Não pague cobranças recebidas por outro número ou link.</div>`;
@@ -89,7 +78,6 @@ function passo3(linkZap){
   o.querySelector('#lCor').onclick=passo1;
 }
 
-window.FCPIX=pix;
 window.FCLIC={
   async abrir(c){ctx=c||{};
     const pid=ls.get(PK);

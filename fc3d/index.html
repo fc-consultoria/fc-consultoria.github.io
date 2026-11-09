@@ -429,7 +429,7 @@ function vContrato(m){
       <div class="kv"><div><span>Valor da licença</span><b>${c.valor?'R$ '+esc(c.valor):'<span class="mute">a definir</span>'}</b><span>${val('modalidade','mensal ou anual')}</span></div>
       <div><span>Acessos incluídos</span><b>${val('acessos','a definir')}</b><span>${c.extra?'acesso extra: R$ '+esc(c.extra):'acesso extra a definir'}</span></div>
       <div><span>Vigência</span><b>${c.inicio?brD(c.inicio):'<span class="mute">a definir</span>'}</b><span>${c.fim?'até '+brD(c.fim):''}</span></div></div>
-      <p class="mute" style="font-size:13.5px">Forma de pagamento: ${val('pagamento','PIX · CNPJ 52.985.682/0001-32')}</p>
+      <p class="mute" style="font-size:13.5px">Forma de pagamento: ${val('pagamento','combinada com a FC pelo WhatsApp oficial')}</p>
       ${c.obs?`<p style="font-size:14px;white-space:pre-wrap">${esc(c.obs)}</p>`:''}
     </section>
     <section class="card" style="padding:0;overflow:hidden"><div style="padding:18px 22px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--soft)"><h2 style="font-size:18px">Pagamentos</h2>${adm?`<button class="btn sm pri" type="button" id="btParc">+ Parcela</button>`:''}</div>
@@ -446,7 +446,7 @@ function vContrato(m){
     $('#btEdC').onclick=()=>dialogo('Editar contrato',`<div class="grid2"><label class="f" for="cV">Valor da licença (R$)<input id="cV" value="${esc(c.valor||'')}"></label><label class="f" for="cM">Modalidade<input id="cM" value="${esc(c.modalidade||'')}" placeholder="mensal ou anual"></label>
       <label class="f" for="cA">Acessos incluídos<input id="cA" value="${esc(c.acessos||'')}"></label><label class="f" for="cE">Acesso extra (R$)<input id="cE" value="${esc(c.extra||'')}"></label>
       <label class="f" for="cI">Início<input id="cI" type="date" value="${esc(c.inicio||'')}"></label><label class="f" for="cF">Fim<input id="cF" type="date" value="${esc(c.fim||'')}"></label></div>
-      <label class="f" for="cP">Forma de pagamento<input id="cP" value="${esc(c.pagamento||'PIX · CNPJ 52.985.682/0001-32')}"></label>
+      <label class="f" for="cP">Forma de pagamento<input id="cP" value="${esc(c.pagamento||'')}"></label>
       <label class="f" for="cO">Observações<textarea id="cO">${esc(c.obs||'')}</textarea></label>`,
       async()=>salva({...c,valor:$('#cV').value,modalidade:$('#cM').value,acessos:$('#cA').value,extra:$('#cE').value,inicio:$('#cI').value,fim:$('#cF').value,pagamento:$('#cP').value,obs:$('#cO').value}));
     const edP=i=>{const p=i==null?{desc:'',venc:'',valor:'',status:'aberto'}:P[i];
