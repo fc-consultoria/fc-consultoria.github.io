@@ -3,7 +3,7 @@
   "jc2",
   "g_jc2"
  ],
- "_nota": "Gerado automaticamente da base da Plataforma FC 3D (tecnico/montagens.js). Só montagens liberadas para os clientes. Não editar à mão: rode fc3d/clientes/ferramentas/gera-aplicacao.js.",
+ "_nota": "Versão pública (sem as posições). A Aplicação completa fica só na Plataforma FC 3D.",
  "modelos": {
   "jc2": {
    "n": "Janela de correr 2 folhas",
@@ -139,19 +139,19 @@
    },
    {
     "m": "jc4a",
-    "pos": "Trilho superior · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "jc4p",
-    "pos": "Trilho superior · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "pc2",
-    "pos": "Trilho superior · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "pc4",
-    "pos": "Trilho superior · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-002": [
@@ -161,7 +161,7 @@
    },
    {
     "m": "jc4a",
-    "pos": "Trilho inferior · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-003": [
@@ -171,15 +171,15 @@
    },
    {
     "m": "jc4a",
-    "pos": "Marco lateral · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "pc2",
-    "pos": "Marco lateral · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "pc4",
-    "pos": "Marco lateral · no marco · 2 peças"
+    "pos": ""
    }
   ],
   "SU-039": [
@@ -189,67 +189,67 @@
    },
    {
     "m": "jc3",
-    "pos": "Montante da folha · na folha interna e folha fixa · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc2a",
-    "pos": "Montante da folha · em todas as folhas · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc4",
-    "pos": "Montante da folha · em todas as folhas · 4 peças"
+    "pos": ""
    },
    {
     "m": "jc4a",
-    "pos": "Montante da folha · em todas as folhas · 4 peças"
+    "pos": ""
    },
    {
     "m": "jcb",
-    "pos": "Montante da folha · na folha interna e folha externa · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc4p",
-    "pos": "Montante da folha · na folha fixa esquerda, folha móvel esquerda, folha móvel direita e folha fixa direita · 4 peças"
+    "pos": ""
    },
    {
     "m": "jc4pa",
-    "pos": "Montante da folha · na folha fixa esquerda, folha móvel esquerda, folha móvel direita e folha fixa direita · 4 peças"
+    "pos": ""
    },
    {
     "m": "jvz3",
-    "pos": "Montante da folha · na folha de vidro · 1 peça"
+    "pos": ""
    },
    {
     "m": "jc4v",
-    "pos": "Montante da folha · na folha de vidro interna e folha de vidro externa · 2 peças"
+    "pos": ""
    },
    {
     "m": "jvz6",
-    "pos": "Montante da folha · na folha de vidro esquerda e folha de vidro direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "jvc7",
-    "pos": "Montante da folha · na folha de vidro interna e folha de vidro externa · 2 peças"
+    "pos": ""
    },
    {
     "m": "pc2",
-    "pos": "Montante da folha · na folha externa · 1 peça"
+    "pos": ""
    },
    {
     "m": "pc3",
-    "pos": "Montante da folha · na folha fixa · 1 peça"
+    "pos": ""
    },
    {
     "m": "pc4",
-    "pos": "Montante da folha · na folha fixa esquerda e folha fixa direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "pc4a",
-    "pos": "Montante da folha · na folha fixa esquerda e folha fixa direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "pvz3",
-    "pos": "Montante da folha · na folha de vidro · 1 peça"
+    "pos": ""
    }
   ],
   "SU-040": [
@@ -259,47 +259,47 @@
    },
    {
     "m": "jc3",
-    "pos": "Montante de encontro · folha interna · na folha interna e folha central · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc2a",
-    "pos": "Montante de encontro · folha interna · na folha interna · 1 peça"
+    "pos": ""
    },
    {
     "m": "jc4",
-    "pos": "Montante de encontro · folha interna · na folha móvel esquerda e folha móvel direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc4a",
-    "pos": "Montante de encontro · folha interna · na folha móvel esquerda e folha móvel direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "jcb",
-    "pos": "Montante de encontro · folha interna · na folha interna · 1 peça"
+    "pos": ""
    },
    {
     "m": "jc4p",
-    "pos": "Montante de encontro · folha interna · na folha móvel esquerda e folha móvel direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc4pa",
-    "pos": "Montante de encontro · folha interna · na folha móvel esquerda e folha móvel direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "jvz3",
-    "pos": "Montante de encontro · folha interna · na folha de vidro · 1 peça"
+    "pos": ""
    },
    {
     "m": "jc4v",
-    "pos": "Montante de encontro · folha interna · na folha de vidro interna · 1 peça"
+    "pos": ""
    },
    {
     "m": "jvz6",
-    "pos": "Montante de encontro · folha interna · na folha de vidro esquerda e folha de vidro direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "jvc7",
-    "pos": "Montante de encontro · folha interna · na folha de vidro interna · 1 peça"
+    "pos": ""
    }
   ],
   "SU-053": [
@@ -309,67 +309,67 @@
    },
    {
     "m": "jc3",
-    "pos": "Travessa da folha · em todas as folhas · 6 peças"
+    "pos": ""
    },
    {
     "m": "jc2a",
-    "pos": "Travessa da folha · em todas as folhas · 4 peças"
+    "pos": ""
    },
    {
     "m": "jc4",
-    "pos": "Travessa da folha · em todas as folhas · 8 peças"
+    "pos": ""
    },
    {
     "m": "jc4a",
-    "pos": "Travessa da folha · em todas as folhas · 8 peças"
+    "pos": ""
    },
    {
     "m": "jcb",
-    "pos": "Travessa da folha · na folha interna e folha externa · 4 peças"
+    "pos": ""
    },
    {
     "m": "jc4p",
-    "pos": "Travessa da folha · na folha fixa esquerda, folha móvel esquerda, folha móvel direita e folha fixa direita · 8 peças"
+    "pos": ""
    },
    {
     "m": "jc4pa",
-    "pos": "Travessa da folha · na folha fixa esquerda, folha móvel esquerda, folha móvel direita e folha fixa direita · 8 peças"
+    "pos": ""
    },
    {
     "m": "jvz3",
-    "pos": "Travessa da folha · na folha de vidro · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc4v",
-    "pos": "Travessa da folha · na folha de vidro interna e folha de vidro externa · 4 peças"
+    "pos": ""
    },
    {
     "m": "jvz6",
-    "pos": "Travessa da folha · na folha de vidro esquerda e folha de vidro direita · 4 peças"
+    "pos": ""
    },
    {
     "m": "jvc7",
-    "pos": "Travessa da folha · na folha de vidro interna e folha de vidro externa · 4 peças"
+    "pos": ""
    },
    {
     "m": "pc2",
-    "pos": "Travessa da folha · em todas as folhas · 2 peças"
+    "pos": ""
    },
    {
     "m": "pc3",
-    "pos": "Travessa da folha · em todas as folhas · 3 peças"
+    "pos": ""
    },
    {
     "m": "pc4",
-    "pos": "Travessa da folha · em todas as folhas · 4 peças"
+    "pos": ""
    },
    {
     "m": "pc4a",
-    "pos": "Travessa da folha · em todas as folhas · 4 peças"
+    "pos": ""
    },
    {
     "m": "pvz3",
-    "pos": "Travessa da folha · na folha de vidro · 1 peça"
+    "pos": ""
    }
   ],
   "SU-102": [
@@ -379,79 +379,79 @@
    },
    {
     "m": "jc3",
-    "pos": "Baguete · em todas as folhas · 12 peças"
+    "pos": ""
    },
    {
     "m": "jc2a",
-    "pos": "Baguete · em todas as folhas · 8 peças"
+    "pos": ""
    },
    {
     "m": "jc4",
-    "pos": "Baguete · em todas as folhas · 16 peças"
+    "pos": ""
    },
    {
     "m": "jc4a",
-    "pos": "Baguete · em todas as folhas · 16 peças"
+    "pos": ""
    },
    {
     "m": "jcb",
-    "pos": "Baguete · na folha interna, folha externa e folha maxim-ar · 16 peças"
+    "pos": ""
    },
    {
     "m": "jc4p",
-    "pos": "Baguete · na folha fixa esquerda, folha móvel esquerda, folha móvel direita e folha fixa direita · 16 peças"
+    "pos": ""
    },
    {
     "m": "jc4pa",
-    "pos": "Baguete · na folha fixa esquerda, folha móvel esquerda, folha móvel direita e folha fixa direita · 16 peças"
+    "pos": ""
    },
    {
     "m": "jvz3",
-    "pos": "Baguete · na folha de vidro · 4 peças"
+    "pos": ""
    },
    {
     "m": "jc4v",
-    "pos": "Baguete · na folha de vidro interna e folha de vidro externa · 8 peças"
+    "pos": ""
    },
    {
     "m": "jvz6",
-    "pos": "Baguete · na folha de vidro esquerda e folha de vidro direita · 8 peças"
+    "pos": ""
    },
    {
     "m": "jvc7",
-    "pos": "Baguete · na folha de vidro interna e folha de vidro externa · 8 peças"
+    "pos": ""
    },
    {
     "m": "pc2",
-    "pos": "Baguete · em todas as folhas · 16 peças"
+    "pos": ""
    },
    {
     "m": "pc3",
-    "pos": "Baguete · em todas as folhas · 24 peças"
+    "pos": ""
    },
    {
     "m": "pc4",
-    "pos": "Baguete · em todas as folhas · 32 peças"
+    "pos": ""
    },
    {
     "m": "pc4a",
-    "pos": "Baguete · em todas as folhas · 32 peças"
+    "pos": ""
    },
    {
     "m": "pvz3",
-    "pos": "Baguete · na folha de vidro · 8 peças"
+    "pos": ""
    },
    {
     "m": "pg1",
-    "pos": "Baguete · na folha de giro · 8 peças"
+    "pos": ""
    },
    {
     "m": "mx1",
-    "pos": "Baguete · na folha maxim-ar · 4 peças"
+    "pos": ""
    },
    {
     "m": "mx2p",
-    "pos": "Baguete · na fixo e folha maxim-ar · 16 peças"
+    "pos": ""
    }
   ],
   "SU-041": [
@@ -461,641 +461,641 @@
    },
    {
     "m": "jc3",
-    "pos": "Montante de encontro · folha externa · na folha central e folha fixa · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc2a",
-    "pos": "Montante de encontro · folha externa · na folha externa · 1 peça"
+    "pos": ""
    },
    {
     "m": "jc4",
-    "pos": "Montante de encontro · folha externa · na folha fixa esquerda e folha fixa direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc4a",
-    "pos": "Montante de encontro · folha externa · na folha fixa esquerda e folha fixa direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "jcb",
-    "pos": "Montante de encontro · folha externa · na folha externa · 1 peça"
+    "pos": ""
    },
    {
     "m": "jc4p",
-    "pos": "Montante de encontro · folha externa · na folha fixa esquerda e folha fixa direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc4pa",
-    "pos": "Montante de encontro · folha externa · na folha fixa esquerda e folha fixa direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc4v",
-    "pos": "Montante de encontro · folha externa · na folha de vidro externa · 1 peça"
+    "pos": ""
    },
    {
     "m": "jvc7",
-    "pos": "Montante de encontro · folha externa · na folha de vidro externa · 1 peça"
+    "pos": ""
    }
   ],
   "SU-010": [
    {
     "m": "jc3",
-    "pos": "Trilho superior 3 trilhos · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "jvz3",
-    "pos": "Trilho superior 3 trilhos · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "jvz6",
-    "pos": "Trilho superior 3 trilhos · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "pc3",
-    "pos": "Trilho superior 3 trilhos · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "pvz3",
-    "pos": "Trilho superior 3 trilhos · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-011": [
    {
     "m": "jc3",
-    "pos": "Trilho inferior 3 trilhos · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "jvz3",
-    "pos": "Trilho inferior 3 trilhos · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "jvz6",
-    "pos": "Trilho inferior 3 trilhos · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-012": [
    {
     "m": "jc3",
-    "pos": "Marco lateral 3 trilhos · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "jvz6",
-    "pos": "Marco lateral 3 trilhos · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "jvc7",
-    "pos": "Marco lateral 3 trilhos · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "pc3",
-    "pos": "Marco lateral 3 trilhos · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "pvz3",
-    "pos": "Marco lateral 3 trilhos · no marco · 2 peças"
+    "pos": ""
    }
   ],
   "SU-291": [
    {
     "m": "jc3",
-    "pos": "Contrafecho · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc2a",
-    "pos": "Contrafecho · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc4",
-    "pos": "Contrafecho · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "jcb",
-    "pos": "Contrafecho · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc4p",
-    "pos": "Contrafecho · no marco · 3 peças"
+    "pos": ""
    },
    {
     "m": "jc4pa",
-    "pos": "Contrafecho · no marco · 3 peças"
+    "pos": ""
    },
    {
     "m": "jc4v",
-    "pos": "Contrafecho · no marco · 4 peças"
+    "pos": ""
    },
    {
     "m": "jvz6",
-    "pos": "Contrafecho · no marco · 4 peças"
+    "pos": ""
    },
    {
     "m": "jvc7",
-    "pos": "Contrafecho · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "pc3",
-    "pos": "Contrafecho · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "pc4",
-    "pos": "Contrafecho · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "pc4a",
-    "pos": "Contrafecho · no marco · 3 peças"
+    "pos": ""
    },
    {
     "m": "pvz3",
-    "pos": "Contrafecho · no marco · 2 peças"
+    "pos": ""
    }
   ],
   "SU-026": [
    {
     "m": "jc2a",
-    "pos": "Marco superior · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "jc4",
-    "pos": "Marco superior · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "jc4pa",
-    "pos": "Marco superior · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "pc4a",
-    "pos": "Marco superior · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-251": [
    {
     "m": "jc2a",
-    "pos": "Marco inferior · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "jc4",
-    "pos": "Marco inferior · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "jcb",
-    "pos": "Marco inferior · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-028": [
    {
     "m": "jc2a",
-    "pos": "Marco lateral · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc4",
-    "pos": "Marco lateral · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "jcb",
-    "pos": "Marco lateral · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc4pa",
-    "pos": "Marco lateral · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "pc4a",
-    "pos": "Marco lateral · no marco · 2 peças"
+    "pos": ""
    }
   ],
   "SU-029": [
    {
     "m": "jcb",
-    "pos": "Marco lateral bandeira · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "jc4pa",
-    "pos": "Marco lateral bandeira · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-005": [
    {
     "m": "jcb",
-    "pos": "Trilho superior porta/janela de correr 2 folhas com bandeira · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-079": [
    {
     "m": "jcb",
-    "pos": "Marco da maxim-ar · no marco · 8 peças"
+    "pos": ""
    },
    {
     "m": "jc4p",
-    "pos": "Marco da maxim-ar · na fixo · 16 peças"
+    "pos": ""
    },
    {
     "m": "jc4pa",
-    "pos": "Marco da maxim-ar · na fixo · 16 peças"
+    "pos": ""
    },
    {
     "m": "mx1",
-    "pos": "Marco da maxim-ar · no marco · 4 peças"
+    "pos": ""
    },
    {
     "m": "mx2p",
-    "pos": "Marco da maxim-ar · no marco · 4 peças"
+    "pos": ""
    }
   ],
   "SU-200": [
    {
     "m": "jcb",
-    "pos": "Montante da folha maxim-ar · na folha maxim-ar · 8 peças"
+    "pos": ""
    },
    {
     "m": "mx1",
-    "pos": "Montante da folha maxim-ar · na folha maxim-ar · 3 peças"
+    "pos": ""
    },
    {
     "m": "mx2p",
-    "pos": "Montante da folha maxim-ar · na folha maxim-ar · 6 peças"
+    "pos": ""
    }
   ],
   "SU-276": [
    {
     "m": "jcb",
-    "pos": "Pingadeira do marco da maxim-ar · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "mx1",
-    "pos": "Pingadeira do marco da maxim-ar · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "mx2p",
-    "pos": "Pingadeira do marco da maxim-ar · no marco · 2 peças"
+    "pos": ""
    }
   ],
   "SU-085": [
    {
     "m": "jcb",
-    "pos": "Travessa sem olhal do marco SU-079 · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "mx2p",
-    "pos": "Travessa sem olhal do marco SU-079 · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-004": [
    {
     "m": "jc4p",
-    "pos": "Marco bandeira peitoril · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-007": [
    {
     "m": "jc4p",
-    "pos": "Marco lateral · no marco · 2 peças"
+    "pos": ""
    }
   ],
   "SU-006": [
    {
     "m": "jc4p",
-    "pos": "Trilho inferior janela de correr 2 folhas com parapeito · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "jc4pa",
-    "pos": "Trilho inferior janela de correr 2 folhas com parapeito · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-086": [
    {
     "m": "jc4p",
-    "pos": "Travessa com olhal do marco SU-079 · na fixo · 3 peças"
+    "pos": ""
    },
    {
     "m": "jc4pa",
-    "pos": "Travessa com olhal do marco SU-079 · na fixo · 3 peças"
+    "pos": ""
    },
    {
     "m": "mx2p",
-    "pos": "Travessa com olhal do marco SU-079 · no marco e na fixo · 2 peças"
+    "pos": ""
    }
   ],
   "SU-013": [
    {
     "m": "jvz3",
-    "pos": "Marco lateral veneziana · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-014": [
    {
     "m": "jvz3",
-    "pos": "Marco lateral veneziana · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-068": [
    {
     "m": "jvz3",
-    "pos": "Montante da folha veneziana · na folha veneziana ventilada e folha veneziana cega · 2 peças"
+    "pos": ""
    },
    {
     "m": "jc4v",
-    "pos": "Montante da folha veneziana · na folha veneziana interna e folha veneziana externa · 2 peças"
+    "pos": ""
    },
    {
     "m": "jvz6",
-    "pos": "Montante da folha veneziana · na veneziana cega esquerda, veneziana cega direita, veneziana ventilada esquerda e veneziana ventilada direita · 4 peças"
+    "pos": ""
    },
    {
     "m": "pvz3",
-    "pos": "Montante da folha veneziana · na folha veneziana ventilada e folha veneziana cega · 2 peças"
+    "pos": ""
    }
   ],
   "SU-070": [
    {
     "m": "jvz3",
-    "pos": "Montante da folha mão de amigo veneziana · na folha veneziana ventilada · 1 peça"
+    "pos": ""
    },
    {
     "m": "jc4v",
-    "pos": "Montante da folha mão de amigo veneziana · na folha veneziana interna e folha veneziana externa · 2 peças"
+    "pos": ""
    },
    {
     "m": "jvz6",
-    "pos": "Montante da folha mão de amigo veneziana · na veneziana ventilada esquerda e veneziana ventilada direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "pvz3",
-    "pos": "Montante da folha mão de amigo veneziana · na folha veneziana ventilada · 1 peça"
+    "pos": ""
    }
   ],
   "SU-187": [
    {
     "m": "jvz3",
-    "pos": "Travessa da folha de correr janela/porta veneziana · na folha veneziana ventilada e folha veneziana cega · 4 peças"
+    "pos": ""
    },
    {
     "m": "jc4v",
-    "pos": "Travessa da folha de correr janela/porta veneziana · na folha veneziana interna e folha veneziana externa · 4 peças"
+    "pos": ""
    },
    {
     "m": "jvz6",
-    "pos": "Travessa da folha de correr janela/porta veneziana · na veneziana cega esquerda, veneziana cega direita, veneziana ventilada esquerda e veneziana ventilada direita · 8 peças"
+    "pos": ""
    },
    {
     "m": "pvz3",
-    "pos": "Travessa da folha de correr janela/porta veneziana · na folha veneziana ventilada e folha veneziana cega · 4 peças"
+    "pos": ""
    }
   ],
   "US-285": [
    {
     "m": "jvz3",
-    "pos": "Veneziana ventilada larga · na folha veneziana ventilada · 16 peças"
+    "pos": ""
    },
    {
     "m": "jc4v",
-    "pos": "Veneziana ventilada larga · na folha veneziana interna e folha veneziana externa · 32 peças"
+    "pos": ""
    },
    {
     "m": "jvz6",
-    "pos": "Veneziana ventilada larga · na veneziana ventilada esquerda e veneziana ventilada direita · 32 peças"
+    "pos": ""
    },
    {
     "m": "jvc7",
-    "pos": "Veneziana ventilada larga · na camarão 1, camarão 2, camarão 3 e camarão 4 · 64 peças"
+    "pos": ""
    },
    {
     "m": "pvz3",
-    "pos": "Veneziana ventilada larga · na folha veneziana ventilada · 30 peças"
+    "pos": ""
    },
    {
     "m": "g_jvz3",
-    "pos": "Veneziana ventilada larga · na folha veneziana ventilada · 16 peças"
+    "pos": ""
    }
   ],
   "SU-069": [
    {
     "m": "jvz3",
-    "pos": "Montante da folha mão de amigo duplo veneziana · na folha veneziana cega · 1 peça"
+    "pos": ""
    },
    {
     "m": "jvz6",
-    "pos": "Montante da folha mão de amigo duplo veneziana · na veneziana cega esquerda e veneziana cega direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "pvz3",
-    "pos": "Montante da folha mão de amigo duplo veneziana · na folha veneziana cega · 1 peça"
+    "pos": ""
    }
   ],
   "VZ-006": [
    {
     "m": "jvz3",
-    "pos": "Veneziana cega larga · na folha veneziana cega · 16 peças"
+    "pos": ""
    },
    {
     "m": "jvz6",
-    "pos": "Veneziana cega larga · na veneziana cega esquerda e veneziana cega direita · 32 peças"
+    "pos": ""
    },
    {
     "m": "pvz3",
-    "pos": "Veneziana cega larga · na folha veneziana cega · 30 peças"
+    "pos": ""
    },
    {
     "m": "g_jvz3",
-    "pos": "Veneziana cega larga · na folha veneziana cega · 16 peças"
+    "pos": ""
    }
   ],
   "SU-121": [
    {
     "m": "jc4v",
-    "pos": "Trilho superior porta/janela de correr 4 e 8 folhas · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-122": [
    {
     "m": "jc4v",
-    "pos": "Trilho inferior porta/janela de correr 4 e 8 folhas · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-123": [
    {
     "m": "jc4v",
-    "pos": "Marco lateral correr 4 folhas · no marco · 2 peças"
+    "pos": ""
    }
   ],
   "SU-024": [
    {
     "m": "jvc7",
-    "pos": "Trilho superior porta/janela de correr camarão · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-025": [
    {
     "m": "jvc7",
-    "pos": "Trilho inferior porta/janela de correr camarão · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-072": [
    {
     "m": "jvc7",
-    "pos": "Montante da folha camarão · na camarão 1, camarão 2 e camarão 4 · 3 peças"
+    "pos": ""
    }
   ],
   "SU-074": [
    {
     "m": "jvc7",
-    "pos": "Montante da folha camarão · na camarão 1, camarão 2, camarão 3 e camarão 4 · 5 peças"
+    "pos": ""
    }
   ],
   "SU-073": [
    {
     "m": "jvc7",
-    "pos": "Travessa da folha camarão · na camarão 1, camarão 2, camarão 3 e camarão 4 · 8 peças"
+    "pos": ""
    }
   ],
   "SU-228": [
    {
     "m": "pc2",
-    "pos": "Trilho inferior porta de correr 2 folhas · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "pc4",
-    "pos": "Trilho inferior porta de correr 2 folhas · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "pc4a",
-    "pos": "Trilho inferior porta de correr 2 folhas · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-044": [
    {
     "m": "pc2",
-    "pos": "Montante da folha porta · na folha interna · 1 peça"
+    "pos": ""
    },
    {
     "m": "pc3",
-    "pos": "Montante da folha porta · na folha interna · 1 peça"
+    "pos": ""
    },
    {
     "m": "pc4",
-    "pos": "Montante da folha porta · na folha móvel esquerda e folha móvel direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "pc4a",
-    "pos": "Montante da folha porta · na folha móvel esquerda e folha móvel direita · 2 peças"
+    "pos": ""
    }
   ],
   "SU-047": [
    {
     "m": "pc2",
-    "pos": "Montante da folha interna mão de amigo c/ reforço · na folha interna · 1 peça"
+    "pos": ""
    },
    {
     "m": "pc3",
-    "pos": "Montante da folha interna mão de amigo c/ reforço · na folha interna e folha central · 2 peças"
+    "pos": ""
    },
    {
     "m": "pc4",
-    "pos": "Montante da folha interna mão de amigo c/ reforço · na folha móvel esquerda e folha móvel direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "pc4a",
-    "pos": "Montante da folha interna mão de amigo c/ reforço · na folha móvel esquerda e folha móvel direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "pvz3",
-    "pos": "Montante da folha interna mão de amigo c/ reforço · na folha de vidro · 1 peça"
+    "pos": ""
    }
   ],
   "SU-225": [
    {
     "m": "pc2",
-    "pos": "Travessa da folha de correr porta · em todas as folhas · 2 peças"
+    "pos": ""
    },
    {
     "m": "pc3",
-    "pos": "Travessa da folha de correr porta · em todas as folhas · 3 peças"
+    "pos": ""
    },
    {
     "m": "pc4",
-    "pos": "Travessa da folha de correr porta · em todas as folhas · 4 peças"
+    "pos": ""
    },
    {
     "m": "pc4a",
-    "pos": "Travessa da folha de correr porta · em todas as folhas · 4 peças"
+    "pos": ""
    },
    {
     "m": "pvz3",
-    "pos": "Travessa da folha de correr porta · na folha de vidro · 1 peça"
+    "pos": ""
    },
    {
     "m": "pg1",
-    "pos": "Travessa da folha de correr porta · na folha de giro · 1 peça"
+    "pos": ""
    }
   ],
   "SU-227": [
    {
     "m": "pc2",
-    "pos": "Travessa central da folha de correr · em todas as folhas · 2 peças"
+    "pos": ""
    },
    {
     "m": "pc3",
-    "pos": "Travessa central da folha de correr · em todas as folhas · 3 peças"
+    "pos": ""
    },
    {
     "m": "pc4",
-    "pos": "Travessa central da folha de correr · em todas as folhas · 4 peças"
+    "pos": ""
    },
    {
     "m": "pc4a",
-    "pos": "Travessa central da folha de correr · em todas as folhas · 4 peças"
+    "pos": ""
    },
    {
     "m": "pvz3",
-    "pos": "Travessa central da folha de correr · na folha de vidro · 1 peça"
+    "pos": ""
    }
   ],
   "SU-049": [
    {
     "m": "pc2",
-    "pos": "Montante da folha externa mão de amigo c/ reforço · na folha externa · 1 peça"
+    "pos": ""
    },
    {
     "m": "pc3",
-    "pos": "Montante da folha externa mão de amigo c/ reforço · na folha central e folha fixa · 2 peças"
+    "pos": ""
    },
    {
     "m": "pc4",
-    "pos": "Montante da folha externa mão de amigo c/ reforço · na folha fixa esquerda e folha fixa direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "pc4a",
-    "pos": "Montante da folha externa mão de amigo c/ reforço · na folha fixa esquerda e folha fixa direita · 2 peças"
+    "pos": ""
    }
   ],
   "SU-230": [
    {
     "m": "pc3",
-    "pos": "Trilho inferior porta de correr 3/6 folhas · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "pvz3",
-    "pos": "Trilho inferior porta de correr 3/6 folhas · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "SU-110": [
    {
     "m": "pg1",
-    "pos": "Travessa da folha porta/portinhola · na folha de giro · 1 peça"
+    "pos": ""
    }
   ],
   "SU-050": [
    {
     "m": "pg1",
-    "pos": "Travessa central larga da folha de correr · na folha de giro · 1 peça"
+    "pos": ""
    }
   ],
   "SU-080": [
    {
     "m": "mx1",
-    "pos": "Travessa folha 90° da maxim-ar com olhal · na folha maxim-ar · 1 peça"
+    "pos": ""
    },
    {
     "m": "mx2p",
-    "pos": "Travessa folha 90° da maxim-ar com olhal · na folha maxim-ar · 2 peças"
+    "pos": ""
    }
   ],
   "LG-044": [
@@ -1105,7 +1105,7 @@
    },
    {
     "m": "g_jc4",
-    "pos": "Trilho superior porta/janela de correr 2 folhas · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "LG-024": [
@@ -1115,7 +1115,7 @@
    },
    {
     "m": "g_jc4",
-    "pos": "Trilho inferior janela de correr 2 folhas · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "LG-045": [
@@ -1125,7 +1125,7 @@
    },
    {
     "m": "g_jc4",
-    "pos": "Perfil · no marco · 2 peças"
+    "pos": ""
    }
   ],
   "LG-028": [
@@ -1135,15 +1135,15 @@
    },
    {
     "m": "g_jc4",
-    "pos": "Contrafecho/matajunta · no marco · 4 peças"
+    "pos": ""
    },
    {
     "m": "g_jc6",
-    "pos": "Contrafecho/matajunta · no marco · 6 peças"
+    "pos": ""
    },
    {
     "m": "g_jvz3",
-    "pos": "Contrafecho/matajunta · no marco · 6 peças"
+    "pos": ""
    }
   ],
   "LG-050": [
@@ -1153,15 +1153,15 @@
    },
    {
     "m": "g_jc4",
-    "pos": "Montante da folha · na folha fixa esquerda, folha móvel esquerda e folha fixa direita · 3 peças"
+    "pos": ""
    },
    {
     "m": "g_jc6",
-    "pos": "Montante da folha · na folha fixa esquerda, folha 3 e folha fixa direita · 3 peças"
+    "pos": ""
    },
    {
     "m": "g_jvz3",
-    "pos": "Montante da folha · em todas as folhas · 3 peças"
+    "pos": ""
    }
   ],
   "LG-049": [
@@ -1171,15 +1171,15 @@
    },
    {
     "m": "g_jc4",
-    "pos": "Montante da folha externa mão de amigo · na folha fixa esquerda e folha fixa direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "g_jc6",
-    "pos": "Montante da folha externa mão de amigo · na folha fixa esquerda, folha 2, folha 5 e folha fixa direita · 4 peças"
+    "pos": ""
    },
    {
     "m": "g_jvz3",
-    "pos": "Montante da folha externa mão de amigo · na folha veneziana cega e folha veneziana ventilada · 2 peças"
+    "pos": ""
    }
   ],
   "LG-006": [
@@ -1189,15 +1189,15 @@
    },
    {
     "m": "g_jc4",
-    "pos": "Travessa da folha de correr janela/porta · em todas as folhas · 8 peças"
+    "pos": ""
    },
    {
     "m": "g_jc6",
-    "pos": "Travessa da folha de correr janela/porta · em todas as folhas · 12 peças"
+    "pos": ""
    },
    {
     "m": "g_jvz3",
-    "pos": "Travessa da folha de correr janela/porta · em todas as folhas · 6 peças"
+    "pos": ""
    }
   ],
   "BG-057": [
@@ -1207,19 +1207,19 @@
    },
    {
     "m": "g_jc4",
-    "pos": "Baguete padrão · em todas as folhas · 16 peças"
+    "pos": ""
    },
    {
     "m": "g_jc6",
-    "pos": "Baguete padrão · em todas as folhas · 24 peças"
+    "pos": ""
    },
    {
     "m": "g_jvz3",
-    "pos": "Baguete padrão · na folha de vidro · 4 peças"
+    "pos": ""
    },
    {
     "m": "g_pg2",
-    "pos": "Baguete padrão · em todas as folhas · 16 peças"
+    "pos": ""
    }
   ],
   "LG-048": [
@@ -1229,91 +1229,91 @@
    },
    {
     "m": "g_jc4",
-    "pos": "Montante da folha interna mão de amigo · na folha móvel esquerda e folha móvel direita · 2 peças"
+    "pos": ""
    },
    {
     "m": "g_jc6",
-    "pos": "Montante da folha interna mão de amigo · na folha 2, folha 3, folha 4 e folha 5 · 4 peças"
+    "pos": ""
    },
    {
     "m": "g_jvz3",
-    "pos": "Montante da folha interna mão de amigo · na folha de vidro · 1 peça"
+    "pos": ""
    }
   ],
   "LG-051": [
    {
     "m": "g_jc4",
-    "pos": "Montante da folha central · na folha móvel direita · 1 peça"
+    "pos": ""
    },
    {
     "m": "g_jc6",
-    "pos": "Montante da folha central · na folha 4 · 1 peça"
+    "pos": ""
    }
   ],
   "LG-062": [
    {
     "m": "g_jc6",
-    "pos": "Trilho superior porta/janela de correr 3 e 6 folhas · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "g_jvz3",
-    "pos": "Trilho superior porta/janela de correr 3 e 6 folhas · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "LG-066": [
    {
     "m": "g_jc6",
-    "pos": "Trilho inferior porta/janela de correr 3 e 6 folhas · no marco · 1 peça"
+    "pos": ""
    },
    {
     "m": "g_jvz3",
-    "pos": "Trilho inferior porta/janela de correr 3 e 6 folhas · no marco · 1 peça"
+    "pos": ""
    }
   ],
   "LG-064": [
    {
     "m": "g_jc6",
-    "pos": "Perfil · no marco · 2 peças"
+    "pos": ""
    },
    {
     "m": "g_jvz3",
-    "pos": "Perfil · no marco · 2 peças"
+    "pos": ""
    }
   ],
   "LG-056": [
    {
     "m": "g_pg2",
-    "pos": "Perfil · no marco · 3 peças"
+    "pos": ""
    }
   ],
   "LG-043": [
    {
     "m": "g_pg2",
-    "pos": "Montante de 70 da folha porta de giro · em todas as folhas · 4 peças"
+    "pos": ""
    }
   ],
   "LG-058": [
    {
     "m": "g_pg2",
-    "pos": "Travessa superior para porta de giro · em todas as folhas · 2 peças"
+    "pos": ""
    }
   ],
   "LG-007": [
    {
     "m": "g_pg2",
-    "pos": "Travessa da folha de correr porta · em todas as folhas · 2 peças"
+    "pos": ""
    }
   ],
   "LG-055": [
    {
     "m": "g_pg2",
-    "pos": "Travessa central da folha de correr · em todas as folhas · 2 peças"
+    "pos": ""
    }
   ],
   "LG-016": [
    {
     "m": "g_pg2",
-    "pos": "Batente interno porta de giro · no marco · 1 peça"
+    "pos": ""
    }
   ]
  }

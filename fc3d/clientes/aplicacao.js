@@ -10,14 +10,17 @@ let DADOS=null,SEC=null,AM=null,LIBS=null,ENC=null;
    Amostra: site aberto e link que as empresas mandam aos clientes. Só a janela de correr 2 folhas fica liberada; o resto vira convite para a plataforma. */
 /* Link do cliente (?cliente): é o link que a empresa encaminha aos clientes dela — sem Aplicação e sem "Usa em" (exclusivo da Plataforma FC 3D), mesmo em aparelho com a equipe logada. */
 const CLIENTE=(()=>{try{return new URLSearchParams(location.search).has('cliente');}catch(_){return false;}})();
-const FULL=(()=>{if(CLIENTE)return false;if(window.FCAPL_FULL)return true;try{return !!localStorage.getItem('pfc-token');}catch(_){return false;}})();
+let FULL=(()=>{if(CLIENTE)return false;if(window.FCAPL_FULL)return true;try{return !!localStorage.getItem('pfc-token');}catch(_){return false;}})();
+/* 09/11/2026: a base completa fica cifrada (cofre.js); sem login válido cai na amostra pública */
+const cofre=()=>window.FCCofre?Promise.resolve():new Promise((ok,er)=>{const s=document.createElement('script');s.src=BASE+'cofre.js?v=1';s.onload=ok;s.onerror=er;document.head.appendChild(s);});
 const ZAP='5566999867984';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const dados=()=>DADOS||(DADOS=fetch(BASE+'aplicacao.json?v=4',{cache:'no-cache'}).then(r=>r.json()).catch(()=>({modelos:{},perfis:{}})));
+const pubD=()=>fetch(BASE+'aplicacao.json?v=5',{cache:'no-cache'}).then(r=>r.json());
+const dados=()=>DADOS||(DADOS=(FULL?cofre().then(()=>FCCofre.json(BASE+'aplicacao-completa.json')).catch(()=>{FULL=false;return pubD();}):pubD()).catch(()=>({modelos:{},perfis:{}})));
 const sc=u=>new Promise((ok,er)=>{const s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=er;document.head.appendChild(s);});
 const libs=()=>LIBS||(LIBS=(window.THREE&&THREE.REVISION==='128'?Promise.resolve():sc(L3[0])).then(()=>THREE.OrbitControls?null:sc(L3[1]))
- .then(()=>FULL?(window.FCM?null:sc(BASE+'tecnico/montagens.js?v=3')).then(()=>Promise.all([fetch(BASE+'tecnico/secoes.json?v=3').then(r=>r.json()).then(j=>{SEC=j;}),FCM.carregarAjustes()]))
-  :fetch(BASE+'aplicacao-amostra.json?v=1').then(r=>r.json()).then(j=>{AM=j;})).catch(e=>{LIBS=null;throw e;}));
+ .then(()=>dados()).then(()=>FULL?cofre().then(()=>window.FCM?null:FCCofre.script(BASE+'tecnico/montagens.js')).then(()=>Promise.all([FCCofre.json(BASE+'tecnico/secoes.json').then(j=>{SEC=j;}),FCM.carregarAjustes()])):null)
+  .catch(()=>{FULL=false;}).then(()=>FULL?null:fetch(BASE+'aplicacao-amostra.json?v=1').then(r=>r.json()).then(j=>{AM=j;})).catch(e=>{LIBS=null;throw e;}));
 const livre=(D,k)=>FULL||(D.amostra||[]).includes(k);
 /* 06/11/2026: no público, as tipologias fora da amostra abrem só no "Ver o encaixe" */
 const encx=()=>ENC||(ENC=fetch(BASE+'aplicacao-encaixe.json?v=1').then(r=>r.json()).then(j=>{Object.assign(AM.m,j.m||{});Object.assign(AM.sec,j.sec||{});}).catch(e=>{ENC=null;throw e;}));
