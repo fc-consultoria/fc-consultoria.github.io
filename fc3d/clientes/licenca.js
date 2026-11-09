@@ -1,4 +1,4 @@
-/* Plataforma FC 3D · compra da licença anual (Pix)
+/* Plataforma FC 3D · pedido da licença anual (valores e pagamento só pelo WhatsApp oficial)
    © FC Consultoria em Esquadria · criação da FC, uso exclusivo de empresas licenciadas.
    Uso: FCLIC.abrir({token, nome, whats}) — token pode ser nulo (demonstrativo já encerrado). */
 (function(){
@@ -50,13 +50,12 @@ function caixa(html){estilo();let o=document.getElementById('licOv');
 function fechar(){const o=document.getElementById('licOv');if(o)o.remove();}
 const cartao=()=>zap('Olá, FC! Quero a licença da Plataforma FC 3D'+(ped&&ped.empresa?' para a '+ped.empresa:'')+' e prefiro pagar no cartão ou preciso de mais acessos.');
 
-/* ---- 1 · licença + dados + termos ---- */
+/* ---- 1 · pedido da licença (09/11/2026: sem valor e sem chave Pix na tela — a FC passa valores e pagamento só pelo WhatsApp oficial) ---- */
+const SEG=`<div class="bx">🔒 <b>Segurança:</b> a FC Consultoria em Esquadria só envia valores e dados de pagamento pelo WhatsApp oficial <b>(66) 9 9986-7984</b>. Não pague cobranças recebidas por outro número ou link.</div>`;
 async function passo1(){
-  caixa(`<p class="mute">Carregando…</p>`);
-  try{info=info||await call('pfc_licenca_info',{});}catch(e){caixa(`<h2 id="licTit">Adquirir licença</h2><p class="msg">Não foi possível carregar agora. Tente de novo ou fale com a FC.</p><a class="btn pri" href="${zap('Olá, FC! Quero adquirir a licença da Plataforma FC 3D.')}" target="_blank" rel="noopener">Falar com a FC</a>`);return;}
   const v=ped||{};const o=caixa(`<h2 id="licTit">Licença da Plataforma FC 3D</h2>
-   <div class="pr"><b>${brl(info.valor)}</b><span class="mute">no Pix · 1 ano · até ${info.acessos} acessos</span></div>
-   <ul><li>Tipologias Suprema e Gold em 3D, com desenho técnico e aplicação de cada perfil</li><li>Apresentação em tela cheia para TV e telão</li><li>Monte sua Casa com as esquadrias na planta</li><li>Licença no nome da sua empresa</li></ul>
+   <p class="mute" style="margin-top:6px">Licença anual no nome da sua empresa. Preencha os dados e a FC entra em contato pelo WhatsApp com os planos e a forma de pagamento.</p>
+   <ul><li>Tipologias Suprema e Gold em 3D, com desenho técnico e aplicação de cada perfil</li><li>Apresentação em tela cheia para TV e telão</li><li>Licença no nome da sua empresa</li></ul>
    <form id="licF" autocomplete="on" novalidate><div class="gr">
     <div class="w"><label class="f" for="lEmp">Nome da empresa</label><input class="in" id="lEmp" autocomplete="organization" maxlength="100" value="${h(v.empresa||ctx.empresa||'')}"></div>
     <div><label class="f" for="lDoc">CNPJ (ou CPF)</label><input class="in" id="lDoc" inputmode="numeric" maxlength="20" value="${h(v.documento||'')}"></div>
@@ -67,58 +66,35 @@ async function passo1(){
    </div>
    <label class="ac"><input type="checkbox" id="lTer"><span>Li e aceito os <a href="termos/" target="_blank" rel="noopener">termos de uso</a> da Plataforma FC 3D.</span></label>
    <div class="msg" id="lMsg" role="alert"></div>
-   <div class="bts"><button class="btn pri" id="lBt">Gerar Pix de ${brl(info.valor)}</button>
-   <a class="btn sec" href="${cartao()}" target="_blank" rel="noopener">💳 Cartão em até 3x ou mais acessos? Fale com a FC</a></div></form>`);
+   <div class="bts"><button class="btn pri" id="lBt">Solicitar licença</button></div></form>${SEG}`);
   o.querySelector('#licF').addEventListener('submit',async e=>{e.preventDefault();const g=id=>o.querySelector(id).value.trim(),m=o.querySelector('#lMsg'),bt=o.querySelector('#lBt');m.textContent='';
     if(!o.querySelector('#lTer').checked){m.textContent='Para seguir, aceite os termos de uso.';o.querySelector('#lTer').focus();return;}
-    bt.disabled=true;bt.textContent='Gerando Pix…';
+    bt.disabled=true;bt.textContent='Enviando…';
     try{const r=await call('pfc_licenca_pedir',{p_token:ctx.token||null,p_empresa:g('#lEmp'),p_documento:g('#lDoc'),p_responsavel:g('#lRes'),p_whats:g('#lZap'),p_email:g('#lMail'),p_cidade:g('#lCid'),p_termos:true});
       if(r.erro){m.textContent=r.erro;return;}
-      ped=Object.assign({},r,{documento:g('#lDoc'),cidade:g('#lCid'),whats:g('#lZap'),email:g('#lMail')});ls.set(PK,r.pedido);passo2();
-    }catch(err){m.textContent=err.message||'Não foi possível gerar o Pix. Tente de novo.';}
-    finally{bt.disabled=false;bt.textContent='Gerar Pix de '+brl(info.valor);}});
+      ped=Object.assign({},r,{documento:g('#lDoc'),cidade:g('#lCid'),whats:g('#lZap'),email:g('#lMail')});ls.set(PK,r.pedido);
+      const txt='Olá, FC! Quero a licença da Plataforma FC 3D.\nEmpresa: '+ped.empresa+'\nResponsável: '+ped.responsavel+'\nPedido: '+ped.txid;
+      const w=window.open(zap(txt),'_blank','noopener');passo3(w?null:zap(txt));
+    }catch(err){m.textContent=err.message||'Não foi possível enviar agora. Tente de novo.';}
+    finally{bt.disabled=false;bt.textContent='Solicitar licença';}});
 }
 
-/* ---- 2 · Pix com QR + copia e cola ---- */
-async function passo2(){
-  const cod=pix(ped);
-  const o=caixa(`<h2 id="licTit">Pague com Pix</h2><p class="mute" style="margin-top:4px">${h(ped.empresa)} · licença de 1 ano · até ${ped.acessos} acessos</p>
-   <div class="pr"><b>${brl(ped.valor)}</b><span class="mute">valor já preenchido</span></div>
-   <div class="qr" id="lQr" aria-label="QR Code do Pix"><span class="mute" style="color:#555">Gerando QR Code…</span></div>
-   <label class="f" for="lCod">Pix copia e cola</label><textarea id="lCod" rows="4" readonly>${h(cod)}</textarea>
-   <div class="bts"><button class="btn sec" type="button" id="lCop">📋 Copiar código Pix</button>
-   <button class="btn pri" type="button" id="lPg">✅ Já paguei · enviar comprovante</button>
-   <a class="btn sec" href="${cartao()}" target="_blank" rel="noopener">💳 Cartão ou mais acessos? Fale com a FC</a></div>
-   <div class="bx">Recebedor: FC Consultoria em Esquadria · CNPJ 52.985.682/0001-32<br>Identificador do pedido: <b>${h(ped.txid)}</b></div>
-   <p style="margin-top:12px;font-size:13.5px"><a class="lk" href="#" id="lVolta">← corrigir dados da empresa</a></p>`);
-  o.querySelector('#lCop').onclick=async e=>{const b=e.currentTarget,t=o.querySelector('#lCod');try{await navigator.clipboard.writeText(cod);}catch(_){t.select();document.execCommand('copy');}b.textContent='✓ Código copiado';setTimeout(()=>{b.textContent='📋 Copiar código Pix';},2500);};
-  o.querySelector('#lVolta').onclick=e=>{e.preventDefault();passo1();};
-  o.querySelector('#lPg').onclick=async e=>{const b=e.currentTarget;b.disabled=true;
-    const txt='Olá, FC! Paguei a licença da Plataforma FC 3D.\nEmpresa: '+ped.empresa+'\nResponsável: '+ped.responsavel+'\nValor: '+brl(ped.valor)+'\nPedido: '+ped.txid+'\nSegue o comprovante do Pix:';
-    const w=window.open(zap(txt),'_blank','noopener');
-    try{await call('pfc_licenca_comprovante',{p_pedido:ped.pedido});}catch(_){}
-    ped.status='comprovante';passo3(w?null:zap(txt));};
-  try{await qrLib();const q=qrcode(0,'M');q.addData(cod);q.make();o.querySelector('#lQr').innerHTML=q.createSvgTag({cellSize:6,margin:2,scalable:true});}
-  catch(_){o.querySelector('#lQr').innerHTML='<span style="color:#555;font-size:13px;text-align:center">Use o Pix copia e cola abaixo.</span>';}
-}
-
-/* ---- 3 · aviso recebido ---- */
+/* ---- 2 · pedido recebido ---- */
 function passo3(linkZap){
-  const o=caixa(`<div class="ok" aria-hidden="true">✅</div><h2 id="licTit" style="margin-top:8px">Pagamento avisado</h2>
-   <p style="margin-top:8px">Mande o comprovante na conversa do WhatsApp que abriu. A FC confere o Pix e libera a licença da <b>${h(ped.empresa)}</b>, com os ${ped.acessos} acessos, pelo WhatsApp informado.</p>
-   <div class="bx">Atendimento: segunda a sexta, 8h às 11h e 13h às 17h. Avisos fora desse horário são liberados no próximo horário de atendimento.<br>Pedido: <b>${h(ped.txid)}</b></div>
-   <div class="bts"><a class="btn pri" href="${linkZap||zap('Olá, FC! Paguei a licença da Plataforma FC 3D. Pedido '+ped.txid+'. Segue o comprovante:')}" target="_blank" rel="noopener">Abrir o WhatsApp da FC</a>
-   <button class="btn sec" type="button" id="lVer">Ver o Pix de novo</button></div>`);
-  o.querySelector('#lVer').onclick=passo2;
+  const o=caixa(`<div class="ok" aria-hidden="true">✅</div><h2 id="licTit" style="margin-top:8px">Pedido recebido</h2>
+   <p style="margin-top:8px">A FC vai falar com a <b>${h(ped.empresa)}</b> pelo WhatsApp informado, com os planos e a forma de pagamento.</p>
+   <div class="bx">Atendimento: segunda a sexta, 8h às 11h e 13h às 17h. Pedidos fora desse horário são respondidos no próximo horário de atendimento.<br>Pedido: <b>${h(ped.txid)}</b></div>${SEG}
+   <div class="bts"><a class="btn pri" href="${linkZap||zap('Olá, FC! Quero a licença da Plataforma FC 3D. Pedido '+ped.txid+'.')}" target="_blank" rel="noopener">Abrir o WhatsApp da FC</a>
+   <button class="btn sec" type="button" id="lCor">Corrigir dados da empresa</button></div>`);
+  o.querySelector('#lCor').onclick=passo1;
 }
 
 window.FCPIX=pix;
 window.FCLIC={
   async abrir(c){ctx=c||{};
     const pid=ls.get(PK);
-    if(pid&&!ped){try{const r=await call('pfc_licenca_status',{p_pedido:pid});if(r&&!r.erro&&(r.status==='aguardando'||r.status==='comprovante')){ped=r;info=info||r;}else ls.del(PK);}catch(_){}}
-    if(ped&&ped.status==='comprovante')return passo3();
-    if(ped&&ped.pedido)return passo2();
+    if(pid&&!ped){try{const r=await call('pfc_licenca_status',{p_pedido:pid});if(r&&!r.erro&&(r.status==='aguardando'||r.status==='comprovante')){ped=r;}else ls.del(PK);}catch(_){}}
+    if(ped&&ped.pedido)return passo3();
     return passo1();},
   fechar
 };
