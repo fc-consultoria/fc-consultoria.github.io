@@ -19,7 +19,7 @@ const KEY=Buffer.from(k,'base64');if(KEY.length!==32){console.error('Chave invá
 /* telas cifradas inteiras: a página pública vira só a entrada que pede a chave */
 const PAGINAS=['mostruario/index.html','mostruario/montagem-tipologia.html','orientativo/index.html','orientativo3d/index.html','montagens/index.html','tecnico/index.html'];
 /* ficam na fonte mas também saem abertos no site (usados por telas públicas) */
-const PUBLICO=['mostruario/vento.js','aplicacao-amostra.json','aplicacao-encaixe.json'];
+const PUBLICO=['mostruario/vento.js','aplicacao-amostra.json'];/* 09/11/2026: aplicacao-encaixe.json saiu do público (só a amostra abre) */
 /* gerado à parte: a Aplicação completa sai cifrada e a versão pública sai sem as posições (só a amostra completa) */
 const APLIC='aplicacao.json';
 

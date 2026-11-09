@@ -23,6 +23,7 @@ const libs=()=>LIBS||(LIBS=(window.THREE&&THREE.REVISION==='128'?Promise.resolve
   .catch(()=>{FULL=false;}).then(()=>FULL?null:fetch(BASE+'aplicacao-amostra.json?v=1').then(r=>r.json()).then(j=>{AM=j;})).catch(e=>{LIBS=null;throw e;}));
 const livre=(D,k)=>FULL||(D.amostra||[]).includes(k);
 /* 06/11/2026: no público, as tipologias fora da amostra abrem só no "Ver o encaixe" */
+/* 09/11/2026: aplicacao-encaixe.json saiu do site aberto */
 const encx=()=>ENC||(ENC=fetch(BASE+'aplicacao-encaixe.json?v=1').then(r=>r.json()).then(j=>{Object.assign(AM.m,j.m||{});Object.assign(AM.sec,j.sec||{});}).catch(e=>{ENC=null;throw e;}));
 /* código do card pode vir composto ("LG-024 / LG-115") */
 const partes=c=>String(c||'').toUpperCase().split('/').map(x=>x.trim()).filter(Boolean);
@@ -150,8 +151,8 @@ async function liga(o,code){if(CLIENTE||!o||!code)return;let D;try{D=await dados
  const bt=document.createElement('button');bt.type='button';bt.className='apb';bt.textContent='🧩 Aplicação';bt.title='Onde este perfil é aplicado na tipologia';bt.setAttribute('aria-pressed','false');vb.appendChild(bt);
  const pn=document.createElement('div');pn.className='apl';pn.hidden=true;
  const LV=L.map(a=>livre(D,a.m)),k0=Math.max(0,LV.indexOf(true)),nLk=LV.filter(v=>!v).length;
- const lista=L.map((a,k)=>{const m=(D.modelos||{})[a.m]||{};return `<button type="button" class="aap${LV[k]?'':' lk'}" data-k="${k}" aria-pressed="${k===k0}"><small>Tipologia · ${esc(m.linha||'')}</small><b>${esc(m.n||a.m)}</b><span>${esc(a.pos)}</span>${m.ref?`<em>Referência: ${esc(m.ref)}</em>`:''}${LV[k]?'':'<span class="alk">🔍 Encaixe liberado · esquadria inteira na Plataforma FC 3D</span>'}</button>`;}).join('');
- const ams=FULL||!nLk?'':`<div class="ams">🧩 Aqui você testa a <b>janela de correr 2 folhas</b> em 3D. ${nLk>1?`Nas outras ${nLk} tipologias o <b>encaixe</b> está liberado; a esquadria inteira fica`:'Na outra tipologia o <b>encaixe</b> está liberado; a esquadria inteira fica'} na <b>Plataforma FC 3D</b>.</div>`;
+ const lista=L.map((a,k)=>{const m=(D.modelos||{})[a.m]||{};return `<button type="button" class="aap${LV[k]?'':' lk'}" data-k="${k}" aria-pressed="${k===k0}"><small>Tipologia · ${esc(m.linha||'')}</small><b>${esc(m.n||a.m)}</b><span>${esc(a.pos)}</span>${m.ref?`<em>Referência: ${esc(m.ref)}</em>`:''}${LV[k]?'':'<span class="alk">🔒 Na Plataforma FC 3D</span>'}</button>`;}).join('');
+ const ams=FULL||!nLk?'':`<div class="ams">🧩 Aqui você testa a <b>janela de correr 2 folhas</b> em 3D. ${nLk>1?`As outras ${nLk} tipologias ficam`:'A outra tipologia fica'} na <b>Plataforma FC 3D</b>.</div>`;
  pn.innerHTML=`<div class="ast"><div class="acv"></div><svg><defs><marker id="apMk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#f2a024"/></marker></defs><line stroke="#f2a024" stroke-width="2.5" marker-end="url(#apMk)"/></svg><div class="alb" hidden></div><div class="atp" hidden></div><div class="aload">Montando a tipologia…</div><div class="acta" hidden></div>
   <button type="button" class="avt">↺ Voltar ao 3D</button>
   <div class="alg"><span><i style="background:#f2a024"></i>Este perfil</span><span><i style="background:#a7b1b6"></i>Demais perfis</span></div>
@@ -162,15 +163,14 @@ async function liga(o,code){if(CLIENTE||!o||!code)return;let D;try{D=await dados
  const cta=pn.querySelector('.acta'),vis=on=>['.act','.alg','.alb','svg','.acv'].forEach(q=>{const e=pn.querySelector(q);if(e)e.style.visibility=on?'':'hidden';});
  const pinta=k=>{const m=(D.modelos||{})[L[k].m]||{},onde=(window.CAT_SLUG||new URLSearchParams(location.search).get('c')||(location.pathname.match(/\/catalogo\/([^\/?#]+)/)||[])[1]||'');
    const msg='Olá! Vi a aplicação do perfil '+code+' na '+(m.n||'tipologia')+' ('+(m.ref||'')+')'+(onde?' no catálogo '+onde:' no catálogo da FC')+' e quero conhecer a Plataforma FC 3D.';
-   cta.innerHTML=`<div><span class="ic">🔒</span><b>${esc(m.n||'')}</b><p>Aqui no catálogo o <b>encaixe</b> do perfil <b>${esc(code)}</b> está liberado. A <b>esquadria inteira</b> em 3D e a <b>abertura das folhas</b> desta tipologia fazem parte da <b>Plataforma FC 3D</b>.</p><p class="mx"><b>E a plataforma tem muito mais para a sua equipe comercial:</b></p><ul class="mxl"><li>🧩 Todas as tipologias em 3D, peça por peça</li><li>🔁 Substituição de perfis</li><li>📍 Onde vai cada perfil e componente</li><li>🌬️ Simulação de pressão de vento</li><li>🏠 Apresentação ao arquiteto e ao cliente final</li></ul><a class="z" target="_blank" rel="noopener" href="https://wa.me/${ZAP}?text=${encodeURIComponent(msg)}">💬 Quero conhecer a Plataforma FC 3D</a><a class="v" target="_blank" rel="noopener" href="/fc3d/">Ver o que a plataforma oferece ↗</a><button type="button" class="vb2">↺ Voltar ao encaixe</button><small>FC Consultoria em Esquadria</small></div>`;
+   cta.innerHTML=`<div><span class="ic">🔒</span><b>${esc(m.n||'')}</b><p>A aplicação do perfil <b>${esc(code)}</b> nesta tipologia, com o <b>encaixe</b>, a <b>esquadria inteira</b> em 3D e a <b>abertura das folhas</b>, faz parte da <b>Plataforma FC 3D</b>.</p><p class="mx"><b>E a plataforma tem muito mais para a sua equipe comercial:</b></p><ul class="mxl"><li>🧩 Todas as tipologias em 3D, peça por peça</li><li>🔁 Substituição de perfis</li><li>📍 Onde vai cada perfil e componente</li><li>🌬️ Simulação de pressão de vento</li><li>🏠 Apresentação ao arquiteto e ao cliente final</li></ul><a class="z" target="_blank" rel="noopener" href="https://wa.me/${ZAP}?text=${encodeURIComponent(msg)}">💬 Quero conhecer a Plataforma FC 3D</a><a class="v" target="_blank" rel="noopener" href="/fc3d/">Ver o que a plataforma oferece ↗</a><button type="button" class="vb2">↺ Voltar ao encaixe</button><small>FC Consultoria em Esquadria</small></div>`;
    cta.querySelector('a.z').addEventListener('click',()=>{try{window.hit&&hit('perfis_aplicacao_cta',code+' '+L[k].m);}catch(_){}});
    cta.querySelector('.vb2').onclick=()=>{cta.hidden=true;vis(true);};
   };
  const mostra=k=>{if(k===atual&&(fim||!LV[k]))return;atual=k;pn.querySelectorAll('.aap').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k==k));if(fim){fim();fim=null;}
   const ld=pn.querySelector('.aload');
   const trava=()=>{cta.hidden=false;vis(false);try{window.hit&&hit('perfis_aplicacao_lk',code+' '+L[k].m);}catch(_){}};
-  if(!LV[k]&&!FULL){cta.hidden=true;vis(true);ld.hidden=false;ld.textContent='Montando o encaixe…';pinta(k);
-   libs().then(encx).then(()=>{if(atual!==k)return;if(!AM.m[L[k].m])throw 0;fim=cena(pn,CODES,L[k].m,()=>{ld.hidden=true;},trava);}).catch(()=>{ld.hidden=true;trava();});return;}
+  if(!LV[k]&&!FULL){/* 09/11/2026: no público só a janela de correr 2 folhas abre; as demais vão direto para o convite da Plataforma FC 3D */pinta(k);ld.hidden=true;trava();return;}
   cta.hidden=true;vis(true);ld.hidden=false;ld.textContent='Montando a tipologia…';
   libs().then(()=>{fim=cena(pn,CODES,L[k].m,()=>{ld.hidden=true;});}).catch(()=>{ld.textContent='Não foi possível abrir a aplicação agora. Atualize a página.';});};
  const abre=v=>{pn.hidden=!v;bt.setAttribute('aria-pressed',v);if(v){vb.querySelectorAll('button[aria-pressed="true"]').forEach(b=>{if(b!==bt)b.dataset.apw='1';});mostra(atual<0?k0:atual);try{window.hit&&hit('perfis_aplicacao',code);}catch(_){}}};

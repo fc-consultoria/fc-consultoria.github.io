@@ -15,6 +15,6 @@ e é entregue pela função `pfc_cofre_chave(p_token)` somente para quem tem log
 
 Telas cifradas inteiras: mostruario/, mostruario/montagem-tipologia.html, orientativo/, orientativo3d/, montagens/, tecnico/.
 Base cifrada: tecnico/montagens.js, tecnico/secoes.json, orientativo/jan_shapes.json, orientativo/perfis_extra.json, aplicacao-completa.json e os scripts do mostruário.
-Saem abertos (usados por telas públicas): mostruario/vento.js, aplicacao-amostra.json, aplicacao-encaixe.json e aplicacao.json (versão sem as posições).
+Saem abertos (usados por telas públicas): mostruario/vento.js, aplicacao-amostra.json, aplicacao.json (versão sem as posições). O encaixe (aplicacao-encaixe.json) fica cifrado: no público só a amostra abre.
 
 Para gerar a Aplicação: abrir o cofre, rodar `node fc3d/clientes/_fonte/ferramentas/gera-aplicacao.js`, depois fechar.
