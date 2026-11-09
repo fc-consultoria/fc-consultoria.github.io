@@ -344,7 +344,7 @@ const MENU=[
   {k:'cen',n:'Ferramentas do setor',i:'🗂',p:['vendedor'],ok:()=>podeCen()/* 08/11/2026: Compras, Marketing e Coordenação da CB (o que ficava na Central do Cliente) */},
   {k:'catc',n:'Clientes do Catálogo',i:'📊',p:['gestor','vendedor'],ok:()=>!!(window.PFCcat&&PFCcat.pode(S,papel()))/* 08/11/2026: acessos, clientes e cotações do catálogo da loja (Guaporé Vidros e Sinop) */},
   {k:'tip',n:'Tipologias',i:'▦',p:['gestor','vendedor','arquiteto','demo']},
-  {k:'amb',n:'Ambientes',i:'◫',p:['gestor','vendedor']},
+  /* 09/11/2026 · Ambientes (Monte sua Casa) inativo em toda a plataforma */
   {k:'apr',n:'Apresentação',i:'▶',p:['gestor','vendedor','arquiteto']/* fora do demonstrativo: lá ficam só Tipologias e Catálogo 3D */},
   {k:'ges',n:'Equipe',i:'👥',p:['gestor']/* 03/11/2026: andamento da equipe por setor (só o gestor e a FC dentro da empresa) */},
   {k:'mtg',n:'Montagem Tipologia',i:'🎬',p:['gestor','vendedor','arquiteto','demo'],fc:1/* 08/11/2026: sequência de montagem passo a passo (vídeos de professor) · só a FC vê */}];
@@ -720,7 +720,7 @@ function render(){
    $('#menu').querySelector('[data-o3dm]').onclick=()=>{tab='o3d';render();scrollTo(0,0);};/* 05/11 · aba própria: o Simulador não aparece mais na Apresentação */}
   $('#menu').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();scrollTo(0,0);});
   if(S&&S.matriz)setTimeout(async()=>{const el=document.getElementById('demoPend');if(!el)return;try{const D=await rpc('pfc_adm_demo_lista',{p_token:S.token});const n=D.filter(d=>d.status==='pendente').length;if(n){el.hidden=false;el.textContent=n+' demonstrativo'+(n>1?'s':'')+' aguardando';}}catch(_){}},50);
-  $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaAmb,apr:telaApr,o3d:telaO3d,ges:telaGes,mtg:telaMtg,vnd:telaVnd,cen:telaCen,catc:()=>PFCcat.tela(S,papel())}[tab]||telaInicio)();
+  $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaInicio,apr:telaApr,o3d:telaO3d,ges:telaGes,mtg:telaMtg,vnd:telaVnd,cen:telaCen,catc:()=>PFCcat.tela(S,papel())}[tab]||telaInicio)();
   ligar();if(tab==='tip'&&window.PFCapr)PFCapr.ligar();
   if(tab==='vnd')setTimeout(abrirVendas,0);if(tab==='cen')setTimeout(abrirCen,0);
   if(tab==='inicio')dicasPl();

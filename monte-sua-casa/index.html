@@ -2,106 +2,18 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Simule as esquadrias na planta · FC Consultoria</title>
-<meta name="description" content="Simule a montagem de esquadrias de alumínio Suprema e Gold nas plantas, em 3D: janelas, portas, cores, dia e noite. Achou interessante? Fale com a FC Consultoria em Esquadria.">
-<link rel="icon" href="../img/logo-fc-160.jpg">
-<meta property="og:title" content="Simule as esquadrias na planta · FC Consultoria"><meta property="og:description" content="Montagem de esquadrias Suprema e Gold nas plantas, em 3D. Fale com a FC Consultoria."><meta property="og:image" content="https://fc-consultoria.github.io/img/logo-fc-160.jpg"><meta property="og:url" content="https://fc-consultoria.github.io/monte-sua-casa/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
-<style>
-/* Página do site: Monte sua Casa 3D · apresentação da simulação (sem teste no site) e contato com a FC */
-.gal{display:grid;grid-template-columns:1.25fr 1fr;gap:12px}.gal figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}.gal img{display:block;width:100%;height:100%;object-fit:cover;aspect-ratio:16/10}.gal figure:first-child{grid-row:span 2}.gal figure:first-child img{aspect-ratio:auto}.gal figcaption{padding:9px 12px;font-size:14px;color:var(--muted);border-top:1px solid var(--line)}.gal .sm{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.ct{display:grid;grid-template-columns:1.2fr .8fr;gap:22px;align-items:center;background:linear-gradient(150deg,#0e6b62,#123a35);color:#fff;border-radius:20px;padding:28px}.ct h2{color:#fff}.ct p{color:#d5ebe6;margin:0}.ct .bt{background:#fff;color:#0e6b62}.ct .bt.wa{background:#1f9d55;color:#fff}.ct .tel{font:700 22px var(--f-d);margin-top:10px;display:block;color:#fff;text-decoration:none}
-@media (max-width:860px){.gal,.ct{grid-template-columns:1fr}.gal .sm{grid-template-columns:1fr}}
-:root{--bg:#f1f5f3;--panel:#fff;--fg:#14231f;--muted:#56675f;--line:#d6e2dd;--teal:#0e6b62;--teal-soft:#e2f0ec;--amber:#d98a1f;--amber-soft:#fbecd5;
-  --f-d:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;--f-b:'Inter',ui-sans-serif,system-ui,sans-serif}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1916;--panel:#16241f;--fg:#e9f2ee;--muted:#9fb3ab;--line:#28403a;--teal:#46b8a8;--teal-soft:#183530;--amber:#f0a947;--amber-soft:#33260f;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0f1916;--panel:#16241f;--fg:#e9f2ee;--muted:#9fb3ab;--line:#28403a;--teal:#46b8a8;--teal-soft:#183530;--amber:#f0a947;--amber-soft:#33260f;color-scheme:dark}
-*{box-sizing:border-box}html,body{margin:0}
-body{background:var(--bg);color:var(--fg);font:400 16px/1.6 var(--f-b)}
-a{color:inherit}
-.nav{display:flex;align-items:center;gap:12px;padding:14px max(16px,calc((100% - 1120px)/2));background:var(--panel);border-bottom:1px solid var(--line)}
-.nav b{font:700 17px var(--f-d)}.nav .sp{flex:1}.nav a{font:600 14px var(--f-b);text-decoration:none;color:var(--muted)}
-.mk{display:flex;gap:3px;height:24px}.mk i{width:6px;border-radius:2px}.mk i:nth-child(1){background:var(--teal);height:60%;align-self:flex-end}.mk i:nth-child(2){background:var(--fg)}.mk i:nth-child(3){background:var(--amber);height:78%;align-self:flex-end}
-.wrap{max-width:1120px;margin:0 auto;padding:36px 16px 64px;display:flex;flex-direction:column;gap:44px}
-.eb{font:600 12px ui-monospace,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
-h1{font:700 clamp(32px,5.4vw,54px)/1.05 var(--f-d);margin:8px 0 14px;text-wrap:balance}
-h2{font:700 clamp(24px,3.4vw,32px)/1.15 var(--f-d);margin:0 0 10px}
-.lead{font-size:18px;color:var(--muted);max-width:62ch;margin:0}
-.ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
-.bt{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font:700 15px var(--f-d);padding:13px 18px;border-radius:12px;background:var(--teal);color:#fff;border:0;cursor:pointer}
-.bt.am{background:var(--amber);color:#1b1205}.bt.gh{background:transparent;color:var(--fg);border:1.5px solid var(--line)}
-.jogo{position:relative;border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:0 24px 60px rgba(10,40,35,.14);background:#0f1418;height:min(720px,82vh)}
-.jogo iframe{width:100%;height:100%;border:0;display:block}
-.jogo .tag{position:absolute;left:14px;top:-1px;transform:translateY(-100%)}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:8px}
-.card i{font-style:normal;font-size:24px;width:44px;height:44px;border-radius:12px;background:var(--teal-soft);display:grid;place-items:center}
-.card b{font:700 17px var(--f-d)}.card p{margin:0;color:var(--muted);font-size:15px}
-.cmp{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.cmp .card ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:15px}
-.cmp .card.pro{border:2px solid var(--teal)}
-.pill{display:inline-block;font:600 12px var(--f-b);padding:3px 10px;border-radius:99px;background:var(--amber-soft)}
-.share{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px}
-.wa{background:#e5ddd5;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px}
-.wa .msg{background:#dcf8c6;color:#111;border-radius:12px 12px 2px 12px;padding:10px 12px;font-size:14.5px;line-height:1.45;align-self:flex-end;max-width:94%;box-shadow:0 1px 1px rgba(0,0,0,.1)}
-.wa .lk{background:#fff;color:#111;border-radius:10px;overflow:hidden;border:1px solid #cfd8d1;margin-top:8px}
-.wa .lk div{background:linear-gradient(135deg,#0e6b62,#123a35);color:#fff;padding:16px 12px;font:700 15px var(--f-d)}
-.wa .lk p{margin:0;padding:8px 12px;font-size:12.5px;color:#456}
-.lkb{display:flex;gap:6px;margin-top:10px}.lkb input{flex:1;min-width:0;font:500 13px ui-monospace,Menlo,monospace;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--fg)}
-.nt{font-size:13px;color:var(--muted)}
-footer{border-top:1px solid var(--line);padding:22px 16px;text-align:center;color:var(--muted);font-size:14px}
-@media (max-width:860px){.grid3,.cmp,.share{grid-template-columns:1fr}.jogo{height:78vh}.nav a{display:none}}
-</style>
-<script src="/whats.js?v=1"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Monte sua Casa 3D · FC Consultoria</title>
 </head>
-<body>
-<nav class="nav"><a href="../" style="display:flex;text-decoration:none"><span class="mk"><i></i><i></i><i></i></span></a><b>FC Consultoria em Esquadria</b><span class="sp"></span><a href="../">Início</a><a href="#simulacao">Simulação</a><a href="#mostruario">Plataforma FC 3D</a><a class="bt" href="#contato" style="padding:9px 14px;font-size:14px;color:#fff">Fale com a FC</a></nav>
-<main class="wrap">
-  <header>
-    <span class="eb">Monte sua Casa 3D · Plataforma FC 3D</span>
-    <h1>Simule a montagem de esquadrias nas plantas</h1>
-    <p class="lead">Escolha a planta, feche cada vão com janelas e portas das linhas Suprema e Gold, troque as cores do telhado, das paredes e dos perfis, e veja a obra de dia e de noite. Uma forma de mostrar ao seu cliente como a casa fica antes de fabricar.</p>
-    <div class="ctas"><a class="bt am" href="#" data-chat>💬 Achou interessante? Peça um acesso para conhecer</a><a class="bt gh" href="#" data-wa>WhatsApp (66) 9 9986-7984</a></div>
-  </header>
-
-  <section id="simulacao"><h2>Veja como fica a simulação</h2>
-    <div class="gal">
-      <figure><img src="../img/monte/planta-terrea.webp" alt="Casa térrea moderna em 3D com as esquadrias montadas" loading="lazy"><figcaption>Térrea moderna · esquadrias Suprema montadas em todos os vãos</figcaption></figure>
-      <figure><img src="../img/monte/casa-em-l.webp" alt="Casa em L com varanda gourmet em 3D" loading="lazy"><figcaption>Casa em L · troca de cores de telhado, paredes e perfis</figcaption></figure>
-      <div class="sm"><figure><img src="../img/monte/noite.webp" alt="Casa vista à noite com as luzes acesas" loading="lazy"><figcaption>De noite, com as luzes acesas</figcaption></figure>
-      <figure><img src="../img/monte/bairro.webp" alt="Bairro com várias obras para fechar com esquadrias" loading="lazy"><figcaption>Bairro com várias obras</figcaption></figure></div>
-    </div>
-    <p class="nt" style="margin-top:8px">Imagens da simulação na Plataforma FC 3D. Medidas e pesos são demonstrativos: confirme sempre com o seu fornecedor de perfis.</p></section>
-
-  <section><h2>A obra do seu cliente, em 3D</h2>
-    <div class="grid3">
-      <div class="card"><i>🏠</i><b>Plantas completas</b><p>Casas com garagem, quintal e piscina, casa em L e prédio de apartamentos, num bairro com avenida, praça e comércio.</p></div>
-      <div class="card"><i>🪟</i><b>Esquadrias de verdade</b><p>Correr 2 e 4 folhas, maxim-ar e porta de giro, com os desenhos dos perfis Suprema e Gold.</p></div>
-      <div class="card"><i>🎨</i><b>Do jeito do cliente</b><p>Telhado, paredes, muro e cor dos perfis. Abra as esquadrias e veja a casa à noite com as luzes acesas.</p></div>
-    </div></section>
-
-  <section id="mostruario"><div class="card" style="border:2px solid var(--teal)"><b style="font-size:20px">A simulação faz parte da Plataforma FC 3D</b><span class="pill" style="align-self:flex-start">para a sua vidraçaria</span>
-    <ul style="margin:4px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:15px"><li>Montagem de esquadrias nas plantas e no prédio de 12 apartamentos</li><li>Perfis, cortes e peso da obra em Suprema e Gold</li><li>16 tipologias em 3D e catálogo de perfis, para apresentar ao cliente e vender com segurança</li><li>Treinamento da equipe com acompanhamento do gestor</li></ul></div></section>
-
-  <section id="contato" class="ct">
-    <div><h2>Quer conhecer? Peça um acesso</h2><p>Mande uma mensagem, nem que seja só para conhecer. A FC libera um acesso para você montar as esquadrias nas plantas e explica como usar nas vendas.</p>
-      <a class="tel" href="#" data-wa>📱 (66) 9 9986-7984</a></div>
-    <div style="display:flex;flex-direction:column;gap:10px"><a class="bt" href="#" data-chat>💬 Pedir acesso aqui no site</a><a class="bt wa" href="#" data-wa>Chamar no WhatsApp</a></div>
-  </section>
-</main>
-<footer>FC Consultoria em Esquadria · Sinop/MT · Atendimento de segunda a sexta, das 8h às 11h e das 13h às 17h</footer>
-<script src="../rep_chat.js?v=1792043132"></script>
-<script>
-if(window.FCRC)FCRC.init({pag:"monte-sua-casa",marca:"FC Consultoria",cor:"#1f9d55",logo:"../img/logo-fc-160.jpg",rotulo:"💬 Fale com a FC",sub:"Simulação de esquadrias e Plataforma FC 3D · respondemos por aqui",ph:"Escreva sua dúvida ou pedido",ola:"Olá! Quer um acesso para conhecer a simulação de esquadrias? Deixe seu nome, empresa e cidade que a FC libera por aqui."});
-(function(){const WA='https://wa.me/5566999867984?text='+encodeURIComponent('Olá! Vi a simulação de esquadrias nas plantas no site e quero um acesso para conhecer.');
-  document.querySelectorAll('[data-wa]').forEach(a=>{a.href=WA;a.target='_blank';a.rel='noopener';});
-  let s0='x';try{s0=sessionStorage.getItem('fc_s')||(()=>{const v=Math.random().toString(36).slice(2,10);sessionStorage.setItem('fc_s',v);return v;})();}catch(_){}
-  const hit=ev=>{try{fetch('https://cpkjphodruyxfouirhpd.supabase.co/rest/v1/rpc/site_hit',{method:'POST',keepalive:true,headers:{apikey:'sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg','Content-Type':'application/json'},body:JSON.stringify({p_s:s0,p_pag:'monte-sua-casa',p_ev:ev,p_o:'direto',p_ref:(document.referrer||'').slice(0,80)})}).catch(()=>{});}catch(_){}};
-  hit('view');
-  document.querySelectorAll('[data-wa]').forEach(a=>a.addEventListener('click',()=>hit('whats')));
-  document.querySelectorAll('[data-chat]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();hit('mc_chat');if(window.FCRC)FCRC.abrir('Olá! Vi a simulação de esquadrias nas plantas e quero um acesso para conhecer. Minha empresa e cidade: ');else window.open(WA,'_blank');}));})();
-</script>
+<body style="margin:0;min-height:100vh;display:grid;place-items:center;font:16px/1.5 system-ui,sans-serif;background:#0b2a2f;color:#e6f3f4;padding:24px;box-sizing:border-box">
+<!-- 09/11/2026 · Monte sua Casa 3D inativo em toda a plataforma (site, Plataforma FC 3D, Mostruário) -->
+<div style="max-width:440px;text-align:center;background:#123c42;border-radius:16px;padding:28px 24px">
+<div style="font:600 12px ui-monospace,monospace;letter-spacing:.12em;opacity:.8">FC CONSULTORIA EM ESQUADRIA</div>
+<h1 style="font-size:22px;margin:8px 0">Monte sua Casa 3D</h1>
+<p style="margin:0 0 18px;opacity:.9">Esta simulação não está mais disponível. Para conhecer as ferramentas da FC, agende uma apresentação.</p>
+<a href="https://wa.me/5566999867984?text=Ol%C3%A1%2C%20FC%21%20Quero%20agendar%20uma%20apresenta%C3%A7%C3%A3o." style="display:inline-block;background:#1f9d55;color:#fff;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:12px">📅 Agendar apresentação no WhatsApp</a>
+<p style="margin:16px 0 0"><a href="/" style="color:#9fc3c8">Ir para o site da FC</a></p>
+</div>
 </body>
 </html>

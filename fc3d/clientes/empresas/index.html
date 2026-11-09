@@ -63,7 +63,7 @@ textarea{min-height:150px;resize:vertical;font-size:14px}
  <div class="kpis" id="kpis"></div>
  <div class="atal" id="atal"></div>
  <div id="lista"><p class="mute">Carregando…</p></div>
- <section class="emp" id="demos"></section>
+ <section class="emp" id="demos" hidden></section><!-- 09/11/2026 · demonstrativo encerrado -->
 </div>
 <div class="dlg" id="dlg" hidden><div class="box" id="box" role="dialog" aria-modal="true"></div></div>
 
@@ -99,6 +99,7 @@ function avisaNovos(D){const p=D.filter(d=>d.status==='pendente');document.title
       try{const c=new AudioContext(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;g.gain.value=.08;o.start();o.stop(c.currentTime+.25);}catch(_){}}}
   pendVistos=ids;}
 async function carregarDemos(){
+  return;/* 09/11/2026 · demonstrativo por link encerrado: seção oculta e sem consulta ao banco */
   clearTimeout(demoT);demoT=setTimeout(carregarDemos,15000);
   let D=[];try{D=await rpc('pfc_adm_demo_lista');}catch(e){$('#demos').innerHTML='<div class="eh"><h2>Demonstrativos</h2></div><p class="msg" style="padding:14px 16px">'+h(e.message)+'</p>';return;}
   avisaNovos(D);
