@@ -563,7 +563,9 @@ $('#cadForm').addEventListener('submit',async e=>{e.preventDefault();const msg=$
 
 /* ---------- demonstrativo (link único: ?demo=1 ou /demo/) ---------- */
 const ZAPDEMO='https://wa.me/5566999867984?text='+encodeURIComponent('Olá, FC! Testei o demonstrativo da Plataforma FC 3D e quero conhecer os planos.');
-let modoDemo=/[?&]demo=1/.test(location.search);
+/* 09/11/2026 · demonstrativo por link encerrado: interessados agendam apresentação com a FC */
+if(/[?&]demo=1/.test(location.search)){location.replace('demo/');}
+let modoDemo=false;
 function formDemo(on){modoDemo=on;$('#liAmb').hidden=on;$('#entForm').hidden=on;$('#demoForm').hidden=!on;const cf=$('#cadForm');if(cf)cf.hidden=true;}
 $('#demoTroca').onclick=()=>formDemo(false);
 function demoFim(t){const f=$('#demoFim');f.hidden=false;f.innerHTML=h(t)+`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn pri" type="button" data-lic>Adquirir licença</button><a class="btn sec" href="${ZAPDEMO}" target="_blank" rel="noopener">Falar com a FC no WhatsApp</a></div>`;}
@@ -601,7 +603,7 @@ function faltaDemo(){if(!S||!S.demo)return '';const ms=new Date(S.expira)-Date.n
 const barraDemo=()=>S&&S.demo?`<div class="demo-bar"><span><b>Demonstrativo</b> · ${faltaDemo()}</span><span class="sp"></span><span class="mute">Gostou? Licença de 1 ano para a sua empresa.</span><button class="btn pri" type="button" data-lic>Adquirir licença</button><a class="btn sec" href="${ZAPDEMO}" target="_blank" rel="noopener">Falar com a FC</a></div>`:'';
 const escH=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function abrir(token){
-  try{S=await rpc('pfc_sessao',{p_token:token});S.token=token;}
+  try{S=await rpc('pfc_sessao',{p_token:token});S.token=token;if(S&&S.demo){ls.del(TK);ls.del('pfc-papel');S=null;location.replace('demo/');return;}}
   catch(err){const eraDemo=ls.get('pfc-papel')==='demo';ls.del(TK);ls.del('pfc-papel');S=null;const m=err.message||'';if(/demonstrativo/i.test(m)){formDemo(true);mostrarEntrada('');demoFim(m);return;}if(eraDemo){formDemo(true);mostrarEntrada('');$('#demoMsg').textContent='O demonstrativo foi aberto em outro aparelho. Para usar aqui, entre de novo com o mesmo WhatsApp.';return;}mostrarEntrada(/pausad/i.test(m)?m:'');return;}
   if(S.demo)ls.set('pfc-papel','demo');else ls.del('pfc-papel');
   $('#entrada').hidden=true;$('#app').hidden=false;
