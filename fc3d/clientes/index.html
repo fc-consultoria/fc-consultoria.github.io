@@ -625,7 +625,7 @@ async function abrir(token){
   }
   $('#euNome').textContent=S.nome;
   const vc=$('#verComo');vc.hidden=!S.matriz;
-  if(S.matriz){vc.innerHTML=['gestor','vendedor','arquiteto'].map(/* 09/11/2026: Demonstrativo excluído */p=>`<button type="button" data-ver="${p}" aria-pressed="${papel()===p}">${PAPEIS[p]}</button>`).join('');
+  if(S.matriz){vc.innerHTML=['gestor','vendedor'].map(/* 09/11/2026: Demonstrativo excluído; Portal do Cliente oculto até a etapa 2 (voltar 'arquiteto' aqui para religar) */p=>`<button type="button" data-ver="${p}" aria-pressed="${papel()===p}">${PAPEIS[p]}</button>`).join('');
     vc.querySelectorAll('[data-ver]').forEach(b=>b.onclick=()=>{papelVer=b.dataset.ver;vc.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));if(!itens().some(m=>m.k===tab))tab='inicio';render();});}
   render();
   setTimeout(divPl,1500);
