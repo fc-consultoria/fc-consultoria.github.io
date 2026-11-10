@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<script src="/fc3d/clientes/aba.js?v=4"></script>
+<script src="/fc3d/clientes/aba.js?v=5"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Plataforma FC 3D</title>
@@ -729,7 +729,7 @@ function render(){
   /* 04/11/2026 · Simulador de Obra 3D no menu, ao lado do Catálogo 3D (só onde ele está ligado) */
   if(window.PFCo3d&&['gestor','vendedor','demo'].includes(papel())&&(papel()==='demo'||(S.matriz&&!S.empresa)||PFCo3d.pode(S,papel()))){$('#menu').insertAdjacentHTML('beforeend',`<button type="button" data-o3dm ${tab==='o3d'?'aria-current="page"':''}><span aria-hidden="true">${S.obra3d_bloq?'🔒':'⬆'}</span>Simulador de Obra 3D</button>`);
    $('#menu').querySelector('[data-o3dm]').onclick=()=>{tab='o3d';render();scrollTo(0,0);};/* 05/11 · aba própria: o Simulador não aparece mais na Apresentação */}
-  $('#menu').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();scrollTo(0,0);});
+  $('#menu').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;try{if(sessionStorage.getItem('pfc-aba-ab'))sessionStorage.setItem('pfc-aba-tab',tab);}catch(_){}render();scrollTo(0,0);});
   if(S&&S.matriz)setTimeout(async()=>{const el=document.getElementById('demoPend');if(!el)return;try{const D=await rpc('pfc_adm_demo_lista',{p_token:S.token});const n=D.filter(d=>d.status==='pendente').length;if(n){el.hidden=false;el.textContent=n+' demonstrativo'+(n>1?'s':'')+' aguardando';}}catch(_){}},50);
   $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaInicio,apr:telaApr,o3d:telaO3d,ges:telaGes,mtg:telaMtg,vnd:telaVnd,cen:telaCen,prc:telaPrc,catc:()=>PFCcat.tela(S,papel())}[tab]||telaInicio)();
   ligar();if(tab==='tip'&&window.PFCapr)PFCapr.ligar();
@@ -740,7 +740,7 @@ function render(){
   if(window.PFCo3d){PFCo3d._re=tab==='o3d'?()=>PFCo3d.carregar(S,cen,rpc,render,papel()):null;if(PFCo3d._re)PFCo3d._re();}/* 04/11/2026 · Obra em 3D (teste) */
   if(window.PFCtut)PFCtut.atualiza();
 }
-const vaiPara=k=>{tab=k;render();scrollTo(0,0);};
+const vaiPara=k=>{tab=k;try{if(sessionStorage.getItem('pfc-aba-ab'))sessionStorage.setItem('pfc-aba-tab',tab);}catch(_){}render();scrollTo(0,0);};
 /* ponte para o guia Como usar (tutorial.js) */
 window.PFC={papel:()=>papel(),tab:()=>tab,ir:k=>vaiPara(k),matriz:()=>!!(S&&S.matriz),nome:()=>(S&&S.nome)||''};
 
@@ -941,11 +941,11 @@ const ABK=(()=>{try{return sessionStorage.getItem('pfc-aba')==='1'?sessionStorag
 const ABIN=(()=>{try{return sessionStorage.getItem('pfc-aba-in')==='1'}catch(_){return false}})();/* já entrou: voltar de outra tela cai no Início, não na capa */
 const abIn=v=>{try{if(v)sessionStorage.setItem('pfc-aba-in','1');else sessionStorage.removeItem('pfc-aba-in');}catch(_){}};
 if(ABK){
-  if(ABIN)ls.set(TK,ABK);else ls.del(TK);
+  if(ABIN){ls.set(TK,ABK);try{const t0=sessionStorage.getItem('pfc-aba-tab');if(t0&&!location.hash)tab=t0;}catch(_){}}else ls.del(TK);
   const pre=()=>{const l=$('#inLogin'),c=$('#inCod');if(l)l.value='colaborador';if(c)c.value='apresentacao';};
   document.addEventListener('submit',async e=>{if(e.target.id!=='entForm')return;e.preventDefault();e.stopImmediatePropagation();
     const bt=$('#entBt');if(bt){bt.disabled=true;bt.textContent='Entrando…';}
-    try{ls.set(TK,ABK);abIn(true);tab='inicio';await abrir(ABK);}
+    try{ls.set(TK,ABK);abIn(true);tab='inicio';try{sessionStorage.removeItem('pfc-aba-tab')}catch(_){}await abrir(ABK);}
     finally{if(bt){bt.disabled=false;bt.textContent='Entrar';}pre();}},true);
 /* capa da empresa antes da tela de entrada (10/11/2026) — mesmo visual da capa do Portal Comercial */
   const CAPAS={'teste-cde':{sg:'CDE',fs:38,n:'CDE Vidros & Esquadrias',bg:'radial-gradient(circle at 30% 20%,#f08a3c 0%,#9a3a0b 45%,#2a0f02 100%)',c:'#b8560f'},
