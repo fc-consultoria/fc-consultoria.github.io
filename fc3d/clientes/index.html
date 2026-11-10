@@ -640,16 +640,18 @@ const VND_EMP={'casa-bandeirante':'cb','teste-casa-bandeirante':'cb'};
 function podeVendas(){if(!S||!VND_EMP[S.empresa])return false;if(S.matriz)return true;if(papel()==='gestor')return true;/* 08/11/2026 · gestor acompanha vendas e orçamentos da equipe */return papel()==='vendedor'&&(S.setor==='vendas'||S.setor==='gerente');}
 /* 08/11/2026 · Compras, Marketing e Coordenação (gerente comercial) da CB: as ferramentas do setor que ficavam na Central do Cliente abrem dentro da plataforma */
 const CEN_SET={compras:'Compras',marketing:'Marketing',gerente:'Coordenação'};
-function podeCen(){return !!(S&&!S.matriz&&VND_EMP[S.empresa]&&!String(S.empresa).startsWith('teste-')&&papel()==='vendedor'&&CEN_SET[S.setor]);}
+/* 09/11/2026 · Guaporé Vidros também tem Ferramentas do setor (Compras); o Painel de Vendas continua só na CB */
+const CEN_EMP=Object.assign({},VND_EMP,{'guapore-vidros':'gb'});
+function podeCen(){return !!(S&&!S.matriz&&CEN_EMP[S.empresa]&&!String(S.empresa).startsWith('teste-')&&papel()==='vendedor'&&CEN_SET[S.setor]);}
 async function passeCentral(){const p=await rpc('pfc_central_passe',{p_token:S.token});
   const r=await fetch(CENTRAL_URL+'/rest/v1/rpc/emp_passe_entrar',{method:'POST',headers:{apikey:CENTRAL_KEY,'Content-Type':'application/json'},
     body:JSON.stringify({p_pid:p.pid,p_exp:p.exp,p_sig:p.sig,p_ua:navigator.userAgent})}).then(x=>x.json());
   if(!r||r.erro||!r.token)throw new Error(r&&r.erro==='pessoa_inativa'?'Seu cadastro está pausado. Fale com o gestor ou com a FC.':'Não foi possível abrir agora. Tente de novo.');
-  try{localStorage.setItem('emp-tok-'+VND_EMP[S.empresa],r.token);}catch(_){}return r;}
+  try{localStorage.setItem('emp-tok-'+CEN_EMP[S.empresa],r.token);}catch(_){}return r;}
 function telaCen(){return `<div id="cenBox"><p class="mute" id="cenMsg" role="status">Abrindo as ferramentas de ${h(CEN_SET[S.setor]||'')}…</p></div>`;}
 async function abrirCen(){const msg=document.getElementById('cenMsg');
   try{await passeCentral();const box=document.getElementById('cenBox');if(!box)return;
-    box.innerHTML=`<iframe title="Ferramentas do setor" src="/treinamento/consultorias.html?e=${VND_EMP[S.empresa]}&plat=1" style="display:block;width:100%;border:0;border-radius:12px;background:#fff"></iframe>`;
+    box.innerHTML=`<iframe title="Ferramentas do setor" src="/treinamento/consultorias.html?e=${CEN_EMP[S.empresa]}&plat=1" style="display:block;width:100%;border:0;border-radius:12px;background:#fff"></iframe>`;
     const f=box.querySelector('iframe'),alt=()=>{const t=f.getBoundingClientRect().top+scrollY;f.style.height=Math.max(640,innerHeight-t-8)+'px';};alt();addEventListener('resize',alt);}
   catch(err){if(msg)msg.innerHTML=h(err.message||'Erro ao abrir.')+' <button class="btn" type="button" id="cenAbrir" style="margin-left:8px">Tentar de novo</button>';}}
 document.addEventListener('click',ev=>{if(ev.target&&ev.target.id==='cenAbrir')abrirCen();});
