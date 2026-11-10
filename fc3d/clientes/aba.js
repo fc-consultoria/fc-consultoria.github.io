@@ -15,7 +15,7 @@
       var v=document.createElement('button');v.type='button';v.id='pfcAbaVolta';v.textContent='↩ Voltar para o painel';
       v.style.cssText='position:fixed;left:12px;bottom:12px;z-index:2147483000;border:1px solid rgba(0,0,0,.12);border-radius:10px;background:rgba(255,255,255,.85);color:#33494c;font:600 12.5px system-ui,sans-serif;padding:7px 11px;cursor:pointer;opacity:.55;box-shadow:0 4px 12px rgba(0,0,0,.12)';
       v.onmouseenter=function(){v.style.opacity='1'};v.onmouseleave=function(){v.style.opacity='.55'};
-      v.onclick=function(){try{['pfc-token','pfc-papel','pfc-apres','pfc-apres-ativo','pfc-aba','pfc-aba-nome','pfc-aba-ab'].forEach(function(k){r.call(ss,k);});}catch(_){}
+      v.onclick=function(){try{['pfc-token','pfc-papel','pfc-apres','pfc-apres-ativo','pfc-aba','pfc-aba-nome','pfc-aba-ab','pfc-aba-capa'].forEach(function(k){r.call(ss,k);});}catch(_){}
         try{if(window.opener&&!window.opener.closed)window.opener.focus();}catch(_){}
         window.close();setTimeout(function(){location.href='/fc3d/clientes/';},300);};
       document.body.appendChild(v);};
@@ -27,7 +27,7 @@
     var n=(g.call(ss,'pfc-aba-nome')||'cliente');
     d.innerHTML='<span>🧪 Teste FC · vendo como <b></b></span><button type="button" style="border:0;border-radius:8px;background:#F2C14E;color:#4A3300;font:700 12px system-ui;padding:5px 9px;cursor:pointer">Fechar teste</button>';
     d.querySelector('b').textContent=n;
-    d.querySelector('button').onclick=function(){try{['pfc-token','pfc-papel','pfc-apres','pfc-apres-ativo','pfc-aba','pfc-aba-nome','pfc-aba-ab'].forEach(function(k){r.call(ss,k);});}catch(_){}
+    d.querySelector('button').onclick=function(){try{['pfc-token','pfc-papel','pfc-apres','pfc-apres-ativo','pfc-aba','pfc-aba-nome','pfc-aba-ab','pfc-aba-capa'].forEach(function(k){r.call(ss,k);});}catch(_){}
       window.close();setTimeout(function(){location.href='/fc3d/clientes/';},300);};
     document.body.appendChild(d);};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',selo);else selo();

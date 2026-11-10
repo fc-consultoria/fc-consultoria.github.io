@@ -14,6 +14,7 @@
   const SP='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_teste_entrar',SPK='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs';
   const m=document.getElementById('m'),erro=t=>{m.innerHTML='<b>Não foi possível abrir</b><p></p><p><a href="../">Ir para a Plataforma FC 3D</a></p>';m.querySelector('p').textContent=t;};
   const q0=new URLSearchParams(location.search),c=q0.get('c'),ab=q0.get('ab')==='1';
+  try{const e0=q0.get('e');if(ab&&e0)sessionStorage.setItem('pfc-aba-capa',e0);else sessionStorage.removeItem('pfc-aba-capa');}catch(_){}
   history.replaceState(null,'',location.pathname);/* o código não fica no histórico */
   if(!c){erro('Link incompleto. Abra pelo quadro "Ver como cliente" do seu acesso FC.');return;}
   try{
