@@ -622,6 +622,9 @@ async function abrir(token){
     sel.innerHTML='<option value="">Visão da FC</option>'+E.map(e=>`<option value="${escH(e.id)}" ${e.id===S.empresa?'selected':''}>${escH(e.nome)}</option>`).join('');
     sel.onchange=async()=>{sel.disabled=true;try{const r=await rpc('pfc_matriz_empresa',{p_token:token,p_empresa:sel.value});if(r&&r.erro)alert(r.erro);}catch(err){alert(err.message||'Não foi possível trocar de empresa.');}
       papelVer=sel.value?'gestor':papelVer;tab='inicio';sel.disabled=false;abrir(token);};
+    /* 09/11/2026 · cards do Painel da Matriz: ?abrir=<empresa> já entra dentro daquela empresa */
+    const ab=(new URLSearchParams(location.search).get('abrir')||'').toLowerCase();
+    if(ab&&!window.__fcAbriu&&E.some(e=>e.id===ab)){window.__fcAbriu=1;if(ab!==S.empresa){try{const r=await rpc('pfc_matriz_empresa',{p_token:token,p_empresa:ab});if(!(r&&r.erro)){papelVer='gestor';tab='inicio';return abrir(token);}}catch(_){}}}
   }
   $('#euNome').textContent=S.nome;
   const vc=$('#verComo');vc.hidden=!S.matriz;
