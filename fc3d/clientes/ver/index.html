@@ -13,7 +13,7 @@
 (async()=>{
   const SP='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_teste_entrar',SPK='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs';
   const m=document.getElementById('m'),erro=t=>{m.innerHTML='<b>Não foi possível abrir</b><p></p><p><a href="../">Ir para a Plataforma FC 3D</a></p>';m.querySelector('p').textContent=t;};
-  const c=new URLSearchParams(location.search).get('c');
+  const q0=new URLSearchParams(location.search),c=q0.get('c'),ab=q0.get('ab')==='1';
   history.replaceState(null,'',location.pathname);/* o código não fica no histórico */
   if(!c){erro('Link incompleto. Abra pelo quadro "Ver como cliente" do seu acesso FC.');return;}
   try{
@@ -22,7 +22,7 @@
     if(!d||d.erro||!d.token){erro((d&&d.erro)||'Confira a internet e tente de novo.');return;}
     sessionStorage.setItem('pfc-aba','1');
     sessionStorage.setItem('pfc-aba-nome',d.empresa_nome.replace(/^Teste FC · /,'')+(d.papel==='gestor'?' (Gestor)':' (Colaborador)'));
-    sessionStorage.setItem('pfc-token',d.token);
+    if(ab){sessionStorage.setItem('pfc-aba-ab',d.token);sessionStorage.removeItem('pfc-token');}else{sessionStorage.removeItem('pfc-aba-ab');sessionStorage.setItem('pfc-token',d.token);}
     ['pfc-papel','pfc-apres','pfc-apres-ativo'].forEach(k=>sessionStorage.removeItem(k));
     location.replace('../');
   }catch(_){erro('Sem conexão. Confira a internet e tente de novo.');}

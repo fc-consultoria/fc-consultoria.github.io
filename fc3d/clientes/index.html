@@ -692,13 +692,14 @@ function verCliQuadro(){return `<div class="linha-tit" style="margin-top:22px"><
   <div class="grid" style="align-items:start">${VERCLI.map(([id,n,d,cx])=>`<div class="card" style="text-align:left;cursor:default"><h3>${h(n)}</h3><span class="d">${h(d)}</span>
   <span style="font-size:12px;font-weight:700;margin-top:10px;display:block">Plataforma FC 3D</span>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><button type="button" class="btn pri" data-vercli="${id}|gestor">Gestor</button><button type="button" class="btn sec" data-vercli="${id}|vendedor">Colaborador</button></div>
+  <button type="button" class="btn sec" style="margin-top:6px;width:100%" data-vercli="${id}|vendedor|ab">▶ Apresentar desde a abertura</button>
   ${cx.length?`<span style="font-size:12px;font-weight:700;margin-top:12px;display:block">Central do Cliente</span><div style="display:flex;flex-direction:column;gap:6px;margin-top:6px">${cx.map(([t,u])=>`<a class="btn sec" style="text-decoration:none;font-size:13px;text-align:left" href="${u}" target="_blank" rel="noopener">${h(t)} ↗</a>`).join('')}</div>`:''}</div>`).join('')}</div>
   <p class="mute" style="margin-top:8px;font-size:13px">Central do Cliente: abre com o login do Painel da Matriz neste navegador. No Painel de Vendas em modo "como o vendedor vê", nada é gravado.</p>
   <p class="mute" id="verCliMsg" role="status" style="margin-top:8px;font-size:13px"></p>`;}
 document.addEventListener('click',async ev=>{const b=ev.target.closest&&ev.target.closest('[data-vercli]');if(!b||!S||!S.matriz)return;
-  const [emp,pp]=b.dataset.vercli.split('|'),msg=document.getElementById('verCliMsg');const w=window.open('about:blank','_blank');
+  const [emp,pp,ab]=b.dataset.vercli.split('|'),msg=document.getElementById('verCliMsg');const w=window.open('about:blank','_blank');
   try{const r=await rpc('pfc_teste_link',{p_token:S.token,p_emp:emp,p_papel:pp});if(!r||!r.codigo)throw new Error('Sem código');
-    if(w)w.location.href='ver/?c='+encodeURIComponent(r.codigo);else location.href='ver/?c='+encodeURIComponent(r.codigo);if(msg)msg.textContent='';}
+    const u='ver/?c='+encodeURIComponent(r.codigo)+(ab?'&ab=1':'');if(w)w.location.href=u;else location.href=u;if(msg)msg.textContent='';}
   catch(err){if(w)w.close();if(msg)msg.textContent='Não abriu: '+(err.message||'erro')+'. Se acabou de atualizar, confira se o SQL do "Ver como cliente" foi rodado no Supabase.';}});
 /* ---------- 08/11/2026 · Montagem Tipologia (só a FC): a tipologia 3D segue a sequência de montagem, passo a passo ---------- */
 const MTG=[
@@ -934,7 +935,20 @@ function detalhe(id){
 const IR=(()=>{const q=new URLSearchParams(location.search),e=(q.get('emp')||'').replace(/[^\w-]/g,''),v=q.get('ver');
   if(e||v)history.replaceState(null,'',location.pathname+location.hash);
   return e?{emp:e,ver:['gestor','vendedor'].includes(v)?v:'vendedor'}:null;})();
-const tk=ls.get(TK);
+/* 10/11/2026 · Apresentar desde a abertura (Ver como cliente da FC): a aba mostra a tela de entrada real do
+   colaborador; login e senha já preenchidos e o "Entrar" usa o acesso de teste guardado só nesta aba. Sair volta para a abertura. */
+const ABK=(()=>{try{return sessionStorage.getItem('pfc-aba')==='1'?sessionStorage.getItem('pfc-aba-ab'):null}catch(_){return null}})();
+if(ABK){
+  ls.del(TK);
+  const pre=()=>{const l=$('#inLogin'),c=$('#inCod');if(l)l.value='colaborador';if(c)c.value='apresentacao';};
+  document.addEventListener('submit',async e=>{if(e.target.id!=='entForm')return;e.preventDefault();e.stopImmediatePropagation();
+    const bt=$('#entBt');if(bt){bt.disabled=true;bt.textContent='Entrando…';}
+    try{ls.set(TK,ABK);tab='inicio';await abrir(ABK);}
+    finally{if(bt){bt.disabled=false;bt.textContent='Entrar';}pre();}},true);
+  $('#btSair').onclick=()=>{ls.del('pfc-apres');ls.del('pfc-apres-ativo');ls.del(TK);S=null;mostrarEntrada('');pre();scrollTo(0,0);};
+  pre();
+}
+const tk=ABK?null:ls.get(TK);
 if(tk)(async()=>{
   if(IR){try{const s0=await rpc('pfc_sessao',{p_token:tk});
     if(s0&&s0.matriz){if(s0.empresa!==IR.emp)await rpc('pfc_matriz_empresa',{p_token:tk,p_empresa:IR.emp});papelVer=IR.ver;tab='inicio';}}catch(_){}}
