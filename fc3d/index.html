@@ -184,6 +184,16 @@ dialog form{padding:22px;display:flex;flex-direction:column;gap:12px}
       <button class="btn pri" type="submit" id="lgBtn">Entrar</button>
       <p class="mute" style="font-size:12.5px">O código é pessoal. O aparelho fica conectado por 30 dias. Esqueceu? Peça um novo ao gestor ou à FC: (66) 9 9986-7984.</p>
     </form>
+    <form class="card lgform" id="fSenha" hidden autocomplete="on">
+      <h2 style="font-size:19px;margin:0">Crie a sua senha</h2>
+      <p class="mute" style="font-size:13.5px;margin:0">Primeiro acesso: escolha uma senha pessoal (mínimo 6 caracteres). Ela substitui o código provisório e é a que você vai usar daqui em diante.</p>
+      <div class="grid2">
+        <label class="f" for="nsA"><span>Nova senha</span><input id="nsA" type="password" autocomplete="new-password" minlength="6" required></label>
+        <label class="f" for="nsB"><span>Repita a senha</span><input id="nsB" type="password" autocomplete="new-password" minlength="6" required></label>
+      </div>
+      <p class="err" id="nsErr" role="alert"></p>
+      <button class="btn pri" type="submit" id="nsBtn">Salvar senha e entrar</button>
+    </form>
   </section>
 </div>
 
@@ -232,9 +242,21 @@ $('#fLogin').onsubmit=async e=>{e.preventDefault();const btn=$('#lgBtn');btn.dis
     if(ROLE==='fc'){if(lg.toLowerCase()!=='matriz')throw new Error('Login ou senha incorretos');r=await rpc('fc3d_login_matriz',{p_senha:cd});}
     else r=await rpc('fc3d_login',{p_login:lg,p_codigo:cd});
     if(r&&r.erro)throw new Error(r.erro);
+    $('#lgCod').value='';
+    if(r.definir_senha){PEND=r;$('#fLogin').hidden=true;$('#fSenha').hidden=false;$('#nsA').focus();return}
     SES=r;ls.set('fc3d.ses',r);if(!r.matriz){EMP=r.empresa;ls.set('fc3d.emp',EMP)}
-    $('#lgCod').value='';await iniciar();
+    await iniciar();
   }catch(err){$('#lgErr').textContent=err.message;}finally{btn.disabled=false}};
+let PEND=null;
+$('#fSenha').onsubmit=async e=>{e.preventDefault();const btn=$('#nsBtn');$('#nsErr').textContent='';
+  const n1=$('#nsA').value.trim(),n2=$('#nsB').value.trim();
+  if(n1.length<6){$('#nsErr').textContent='A senha precisa ter pelo menos 6 caracteres';return}
+  if(n1!==n2){$('#nsErr').textContent='As duas senhas não estão iguais';return}
+  btn.disabled=true;
+  try{await rpc('fc3d_definir_senha',{p_token:PEND.token,p_nova:n1});
+    const r=PEND;PEND=null;delete r.definir_senha;SES=r;ls.set('fc3d.ses',r);EMP=r.empresa;ls.set('fc3d.emp',EMP);
+    $('#nsA').value='';$('#nsB').value='';$('#fSenha').hidden=true;$('#fLogin').hidden=false;toast('Senha criada. Use-a nos próximos acessos.');await iniciar();
+  }catch(err){$('#nsErr').textContent=err.message}finally{btn.disabled=false}};
 function sair(msg){if(SES)sb.rpc('fc3d_sair',{p_token:SES.token});SES=null;D=null;ls.del('fc3d.ses');$('#vApp').hidden=true;$('#vLogin').hidden=false;if(msg)$('#lgErr').textContent=msg;}
 $('#btSair').onclick=()=>sair();
 
