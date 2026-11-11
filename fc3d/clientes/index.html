@@ -541,6 +541,8 @@ function formCad(on){$('#liAmb').hidden=on;$('#entForm').hidden=on;$('#demoForm'
   if(on){if(FIXO&&!cadEmp)fixarEmp(FIXO);setTimeout(()=>(cadEmp?$('#cNome'):$('#cEmp')).focus(),50);}}
 $('#entCad').onclick=()=>formCad(true);
 $('#cadTroca').onclick=()=>formCad(false);
+/* 11/11/2026 · link de cadastro da equipe (?e=cde&cad=1): já abre o formulário com a empresa preenchida */
+if(FIXO&&new URLSearchParams(location.search).get('cad')==='1')setTimeout(()=>{try{formCad(true);}catch(_){}},0);
 $('#cadForm').addEventListener('submit',async e=>{e.preventDefault();const msg=$('#cadMsg'),bt=$('#cadBt');msg.textContent='';
   if(!cadEmp){const k=empDoTexto($('#cEmp').value);if(k==='?guapore'){escolhaGuapore();msg.textContent='Escolha a unidade da Guaporé.';return;}
     if(!k){msg.textContent=$('#cEmp').value.trim()?'Não encontramos essa empresa. Confira o nome com o gestor ou fale com a FC.':'Informe o nome da sua empresa.';return;}
