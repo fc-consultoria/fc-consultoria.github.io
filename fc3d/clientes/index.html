@@ -802,8 +802,12 @@ function telaSoCat(){/* 11/11/2026 · Guaporé Vidros · vendedor só com o Cat�
   return `<div class="hero"><div><h2>Olá, ${h(nome)}!</h2><p>O seu acesso está liberado para o Catálogo 3D da ${h(S.empresa_nome||'empresa')}. As outras ferramentas da plataforma estão bloqueadas para o seu acesso.</p></div><div class="bts"><a class="btn cl" href="orientativo/?foco=1#cat">▤ Abrir o Catálogo 3D</a></div></div>
   ${window.PFCcat?PFCcat.card(S,'vendedor',true):''}
   <div class="grid"><a class="card" href="orientativo/?foco=1#cat" style="text-decoration:none;color:inherit"><span class="ic" aria-hidden="true">▤</span><h3>Catálogo 3D</h3><span class="d">${S.catalogo?'O catálogo de perfis da '+h(S.empresa_nome||'empresa')+', com os códigos da empresa. Toque no perfil para ver em 3D.':'Todos os perfis da linha com código e desenho, para consultar na hora do atendimento.'}</span><span class="pe"><span class="chip o">Disponível</span></span></a></div>`;}
-function famCard(p){if(!(S&&S.empresa==='cde'&&['gestor','vendedor'].includes(p)))return '';
-  return `<div class="card" style="cursor:default"><span class="ic" aria-hidden="true">🏗</span><h3>Linha Family 3D</h3><span class="d">Lançamento da Linha Family (Arkial): perfis reais em 3D, Qual Family (vento), Ambientes 3D com os diferenciais e o Simulador na obra com a tipologia abrindo e fechando na foto do vão.</span><span class="pe" style="display:flex;flex-wrap:wrap;gap:6px"><a class="chip o" href="/treinamento/family/" target="_blank" rel="noopener" style="text-decoration:none">↗ Linha Family 3D</a><a class="chip o" href="/treinamento/evento-cde/?app=1" target="_blank" rel="noopener" style="text-decoration:none">↗ Ambientes e Simulador na obra</a></span></div>`;}
+function famCard(p){/* 11/11/2026 · CDE (e a CDE de teste do "Ver como cliente"): Linha Family 3D, Ambientes 3D e Simulador na obra em cards separados */
+  if(!(S&&['cde','teste-cde'].includes(S.empresa)&&['gestor','vendedor'].includes(p)))return '';
+  const c=(ic,t,d,u,bt)=>`<a class="card" href="${u}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><span class="ic" aria-hidden="true">${ic}</span><h3>${t}</h3><span class="d">${d}</span><span class="pe"><span class="chip o">↗ ${bt}</span></span></a>`;
+  return c('🏗','Linha Family 3D','Lançamento da Linha Family (Arkial): perfis reais em 3D e Qual Family (vento).','/treinamento/family/','Abrir a Linha Family')
+   +c('🏠','Ambientes 3D','Ambientes em 3D com os diferenciais da Linha Family, para apresentar ao cliente.','/treinamento/evento-cde/?app=1#ambientes','Abrir os Ambientes')
+   +c('📷','Simulador na obra','Foto do vão bruto, contramarco, reboco e a esquadria Family abrindo e fechando na foto da obra.','/treinamento/evento-cde/?app=1#simulador','Abrir o Simulador');}
 function telaInicio(){
   if(soCat())return telaSoCat();
   const p=papel(),nome=S.matriz?'FC':(S.nome||'').split(' ')[0];
