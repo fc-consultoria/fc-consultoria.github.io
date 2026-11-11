@@ -720,21 +720,24 @@ function telaMtg(){
     <a class="btn pri" style="margin-top:12px;display:inline-block;text-decoration:none" href="mostruario/montagem-tipologia.html?t=${m.mo}">🎬 Abrir a apresentação</a>`:`<span class="mute" style="font-size:13px;margin-top:8px;display:block">Começa depois da aprovação da JCR 200.</span>`}
   </div>`).join('')}</div>
   <p class="mute" style="margin-top:14px;font-size:13px">Ordem: tipologias Suprema → linha Gold → fachadas Cortina e Atlanta.</p>`;}
-const itens=()=>MENU.filter(m=>m.p.includes(papel())&&(!m.fc||(S&&S.matriz))&&(!m.ok||m.ok()));
+/* 11/11/2026 · Guaporé Vidros: os vendedores (setor Vendas) ficam só com o Catálogo 3D; o resto da plataforma fica bloqueado para eles */
+const SO_CAT_EMP=['guapore-vidros'];
+const soCat=()=>!!(S&&SO_CAT_EMP.includes(S.empresa)&&papel()==='vendedor'&&(S.matriz?papelVer==='vendedor':S.setor==='vendas'));
+const itens=()=>soCat()?MENU.filter(m=>m.k==='inicio'):MENU.filter(m=>m.p.includes(papel())&&(!m.fc||(S&&S.matriz))&&(!m.ok||m.ok()));
 function render(){
-  if(!itens().some(m=>m.k===tab)&&tab!=='o3d')tab='inicio';
+  if(!itens().some(m=>m.k===tab)&&(tab!=='o3d'||soCat()))tab='inicio';
   $('#euPapel').textContent=S.matriz?'vendo como '+PAPEIS[papel()]:(S.setor&&S.setor!=='gestor'?(SETORES[S.setor]||S.setor):(PAPEIS[S.papel]||S.papel));
   $('#menu').innerHTML=itens().map(m=>`<button type="button" data-tab="${m.k}" ${m.k===tab?'aria-current="page"':''}><span aria-hidden="true">${m.i}</span>${m.n}</button>`).join('')+(['demo','gestor','vendedor'].includes(papel())?`<button type="button" data-cat3d><span aria-hidden="true">▤</span>Catálogo 3D</button>`:'');/* 03/11: gestor e colaborador também, com o catálogo da própria empresa */
   {const c3=$('#menu').querySelector('[data-cat3d]');if(c3)c3.onclick=()=>{location.href='orientativo/?foco=1#cat';};}
   /* 04/11/2026 · Simulador de Obra 3D no menu, ao lado do Catálogo 3D (só onde ele está ligado) */
-  if(window.PFCo3d&&['gestor','vendedor','demo'].includes(papel())&&(papel()==='demo'||(S.matriz&&!S.empresa)||PFCo3d.pode(S,papel()))){$('#menu').insertAdjacentHTML('beforeend',`<button type="button" data-o3dm ${tab==='o3d'?'aria-current="page"':''}><span aria-hidden="true">${S.obra3d_bloq?'🔒':'⬆'}</span>Simulador de Obra 3D</button>`);
+  if(window.PFCo3d&&!soCat()&&['gestor','vendedor','demo'].includes(papel())&&(papel()==='demo'||(S.matriz&&!S.empresa)||PFCo3d.pode(S,papel()))){$('#menu').insertAdjacentHTML('beforeend',`<button type="button" data-o3dm ${tab==='o3d'?'aria-current="page"':''}><span aria-hidden="true">${S.obra3d_bloq?'🔒':'⬆'}</span>Simulador de Obra 3D</button>`);
    $('#menu').querySelector('[data-o3dm]').onclick=()=>{tab='o3d';render();scrollTo(0,0);};/* 05/11 · aba própria: o Simulador não aparece mais na Apresentação */}
   $('#menu').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;try{if(sessionStorage.getItem('pfc-aba-ab'))sessionStorage.setItem('pfc-aba-tab',tab);}catch(_){}render();scrollTo(0,0);});
   if(S&&S.matriz)setTimeout(async()=>{const el=document.getElementById('demoPend');if(!el)return;try{const D=await rpc('pfc_adm_demo_lista',{p_token:S.token});const n=D.filter(d=>d.status==='pendente').length;if(n){el.hidden=false;el.textContent=n+' demonstrativo'+(n>1?'s':'')+' aguardando';}}catch(_){}},50);
   $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaInicio,apr:telaApr,o3d:telaO3d,ges:telaGes,mtg:telaMtg,vnd:telaVnd,cen:telaCen,prc:telaPrc,catc:()=>PFCcat.tela(S,papel())}[tab]||telaInicio)();
   ligar();if(tab==='tip'&&window.PFCapr)PFCapr.ligar();
   if(tab==='vnd')setTimeout(abrirVendas,0);if(tab==='cen')setTimeout(abrirCen,0);
-  if(tab==='inicio')dicasPl();
+  if(tab==='inicio'&&!soCat())dicasPl();
   if(window.PFCcat&&(tab==='inicio'||tab==='catc'))PFCcat.carregar(S,rpc,papel(),tab==='catc'?'tela':'card');
   if(tab==='ges')equipeCarregar();
   if(window.PFCo3d){PFCo3d._re=tab==='o3d'?()=>PFCo3d.carregar(S,cen,rpc,render,papel()):null;if(PFCo3d._re)PFCo3d._re();}/* 04/11/2026 · Obra em 3D (teste) */
@@ -742,7 +745,7 @@ function render(){
 }
 const vaiPara=k=>{tab=k;try{if(sessionStorage.getItem('pfc-aba-ab'))sessionStorage.setItem('pfc-aba-tab',tab);}catch(_){}render();scrollTo(0,0);};
 /* ponte para o guia Como usar (tutorial.js) */
-window.PFC={papel:()=>papel(),tab:()=>tab,ir:k=>vaiPara(k),matriz:()=>!!(S&&S.matriz),nome:()=>(S&&S.nome)||''};
+window.PFC={soCat:()=>soCat(),papel:()=>papel(),tab:()=>tab,ir:k=>vaiPara(k),matriz:()=>!!(S&&S.matriz),nome:()=>(S&&S.nome)||''};
 
 
 /* ---------- Divulgação da FC (Painel da Matriz · Marketing e comunicação) ----------
@@ -790,9 +793,15 @@ async function dicasPl(){
   const mb=$('#dicMais');if(mb)mb.onclick=()=>{dicTodas=!dicTodas;dicasPl();};
 }
 /* 10/11/2026 · Linha Family 3D (Arkial) dentro da plataforma da CDE: card no Início com a plataforma de lançamento e as ferramentas do Projeto Evento (Ambientes 3D e Simulador na obra) */
+function telaSoCat(){/* 11/11/2026 · Guaporé Vidros · vendedor só com o Catálogo 3D */
+  const nome=S.matriz?'FC':(S.nome||'').split(' ')[0];
+  return `<div class="hero"><div><h2>Olá, ${h(nome)}!</h2><p>O seu acesso está liberado para o Catálogo 3D da ${h(S.empresa_nome||'empresa')}. As outras ferramentas da plataforma estão bloqueadas para o seu acesso.</p></div><div class="bts"><a class="btn cl" href="orientativo/?foco=1#cat">▤ Abrir o Catálogo 3D</a></div></div>
+  ${window.PFCcat?PFCcat.card(S,'vendedor',true):''}
+  <div class="grid"><a class="card" href="orientativo/?foco=1#cat" style="text-decoration:none;color:inherit"><span class="ic" aria-hidden="true">▤</span><h3>Catálogo 3D</h3><span class="d">${S.catalogo?'O catálogo de perfis da '+h(S.empresa_nome||'empresa')+', com os códigos da empresa. Toque no perfil para ver em 3D.':'Todos os perfis da linha com código e desenho, para consultar na hora do atendimento.'}</span><span class="pe"><span class="chip o">Disponível</span></span></a></div>`;}
 function famCard(p){if(!(S&&S.empresa==='cde'&&['gestor','vendedor'].includes(p)))return '';
   return `<div class="card" style="cursor:default"><span class="ic" aria-hidden="true">🏗</span><h3>Linha Family 3D</h3><span class="d">Lançamento da Linha Family (Arkial): perfis reais em 3D, Qual Family (vento), Ambientes 3D com os diferenciais e o Simulador na obra com a tipologia abrindo e fechando na foto do vão.</span><span class="pe" style="display:flex;flex-wrap:wrap;gap:6px"><a class="chip o" href="/treinamento/family/" target="_blank" rel="noopener" style="text-decoration:none">↗ Linha Family 3D</a><a class="chip o" href="/treinamento/evento-cde/?app=1" target="_blank" rel="noopener" style="text-decoration:none">↗ Ambientes e Simulador na obra</a></span></div>`;}
 function telaInicio(){
+  if(soCat())return telaSoCat();
   const p=papel(),nome=S.matriz?'FC':(S.nome||'').split(' ')[0];
   const txt={gestor:'Acompanhe a equipe e use a plataforma para apresentar as esquadrias aos seus clientes.',vendedor:'Escolha a tipologia, monte o ambiente e apresente ao seu cliente em 3D.',arquiteto:'Veja os projetos, as plantas e as esquadrias preparadas para a sua obra.',demo:'Conheça a plataforma: abra as tipologias em 3D e veja o desenho técnico de cada montagem.'}[p];
   const mods=itens().filter(m=>m.k!=='inicio'&&m.k!=='apr');
@@ -985,7 +994,7 @@ window.PFCaprCtx={TIPS,LINHAS,h,papel:()=>papel(),sessao:()=>S,render:()=>render
 </script>
 <script src="toque.js?v=1"></script>
 <script src="apresentacao.js?v=16"></script>
-<script src="tutorial.js?v=10"></script>
+<script src="tutorial.js?v=11"></script>
 <script src="convite.js?v=2" defer></script>
 <script src="licenca.js?v=5" defer></script>
 <script src="leve.js?v=1"></script>

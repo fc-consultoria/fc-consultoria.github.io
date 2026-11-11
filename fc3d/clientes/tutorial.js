@@ -251,7 +251,7 @@
   }
   /* ===== Boas-vindas: 1ª entrada da pessoa no painel ===== */
   function boasVindas(){
-    if($('#tutBv')||aberto)return;var pp=window.PFC.papel(),g=GUIAS[pp];if(!g)return;
+    if($('#tutBv')||aberto)return;var pp=window.PFC.papel(),g=GUIAS[pp];if(!g||(window.PFC.soCat&&window.PFC.soCat()))return;
     var nome=(window.PFC.nome()||'').split(' ')[0];
     var d=document.createElement('div');d.id='tutBv';
     d.innerHTML='<div class="cx" role="dialog" aria-modal="true" aria-labelledby="tutBvT"><div class="ic" aria-hidden="true">▶</div>'+
@@ -280,7 +280,7 @@
 
   /* Botão "?" no topo: aparece só para o painel que tem guia. Chamado pela tela a cada troca. */
   function atualiza(){
-    var P=window.PFC;if(!P)return;var pp=P.papel(),tem=!!GUIAS[pp],b=$('#btAjuda');
+    var P=window.PFC;if(!P)return;var pp=P.papel(),tem=!!GUIAS[pp]&&!(P.soCat&&P.soCat()),b=$('#btAjuda');/* 11/11/2026: sem guia para quem só tem o Catálogo 3D */
     if(!b){var ref=$('#btTema');if(!ref)return;b=document.createElement('button');b.className='ic-bt';b.id='btAjuda';b.type='button';
       b.title='Como funciona este painel';b.setAttribute('aria-label','Como funciona este painel');b.className='ic-bt txt';
       b.innerHTML='<span aria-hidden="true">▶</span><span class="tx">Como funciona</span>';
