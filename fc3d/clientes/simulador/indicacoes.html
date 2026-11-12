@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Indicações de parceiros · Plataforma FC 3D</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+/* Indicações dos parceiros de negócio (11/11/2026) · só a FC · © FC Consultoria em Esquadria */
+:root{--bg:#eef3f3;--fg:#13232e;--mut:#5a6b72;--line:#d3dfe0;--teal:#02717d;--teal2:#025860;--tint:#e1f2f3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px Inter,system-ui,sans-serif}
+header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+.lg{width:38px;height:38px;border-radius:10px;background:var(--teal);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px}
+h1{font-size:16px;margin:0}header p{margin:0;font-size:12px;color:var(--mut)}
+.bt{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;color:var(--fg);border-radius:10px;padding:8px 11px;font:600 12px Inter,sans-serif;text-decoration:none;cursor:pointer}
+.bt.pri{background:var(--teal);border-color:var(--teal);color:#fff}
+main{max-width:900px;margin:0 auto;padding:14px}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px}
+.res div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px}.res small{color:var(--mut);font-size:12px}.res b{display:block;font-size:20px;margin-top:2px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.top b{font-size:15px}.mut{color:var(--mut);font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+label{font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+input,select{width:100%;margin-top:3px;border:1px solid var(--line);border-radius:10px;padding:8px;font:600 13px Inter,sans-serif;background:#fff;color:var(--fg)}
+.ck{display:flex;align-items:center;gap:6px;text-transform:none;font-size:13px;color:var(--fg);letter-spacing:0;margin-top:20px}.ck input{width:auto;margin:0}
+.ac{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.vazio{text-align:center;color:var(--mut);padding:40px 10px}
+footer{text-align:center;font-size:11px;color:var(--mut);padding:16px}
+#gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;z-index:9}
+</style>
+</head>
+<body>
+<div id="gate"><div><b style="font-size:18px">Abrindo as indicações…</b><p class="mut">Conferindo o acesso FC.</p></div></div>
+<header>
+  <div class="lg">FC</div>
+  <div style="min-width:0"><h1>Indicações de parceiros</h1><p>Comissão só na 1ª licença · renovação não gera comissão</p></div>
+  <a class="bt" href="./" style="margin-left:auto">Simulador</a>
+  <a class="bt" href="/fc3d/clientes/">← Voltar para o painel</a>
+</header>
+<main>
+  <div class="res" id="res"></div>
+  <div id="lista"></div>
+</main>
+<footer>Desenvolvido por FC Consultoria em Esquadria · CNPJ 52.985.682/0001-32</footer>
+<script src="/fc3d/clientes/sessao.js?v=2"></script>
+<script>
+(function(){
+const API='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/',KEY='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs';
+const ST={nova:'Nova',contato:'Em contato',vendida:'Vendida',perdida:'Não fechou'};
+const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const brl=v=>(+v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+let tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
+let L=[];
+const rpc=(fn,a)=>fetch(API+fn,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify(a)}).then(async r=>{const j=await r.json().catch(()=>null);if(!r.ok)throw new Error((j&&j.message)||'erro '+r.status);return j;});
+function nega(t,p){$('#gate').innerHTML='<div style="max-width:380px"><div style="font-size:34px">🔒</div><b style="font-size:19px">'+t+'</b><p class="mut" style="font-size:14px;line-height:1.5">'+p+'</p><a class="bt pri" href="/fc3d/clientes/">Ir para a Plataforma FC 3D</a></div>';}
+const com=r=>r.status==='vendida'&&r.valor_licenca?Math.round(r.valor_licenca*(+r.comissao_pct||10))/100:0;
+function desenha(){
+  const vend=L.filter(r=>r.status==='vendida'),aPagar=vend.filter(r=>!r.comissao_paga).reduce((s,r)=>s+com(r),0),pago=vend.filter(r=>r.comissao_paga).reduce((s,r)=>s+com(r),0);
+  $('#res').innerHTML=`<div><small>Indicações</small><b>${L.length}</b></div><div><small>Vendidas</small><b>${vend.length}</b></div><div><small>Comissão a pagar</small><b>${brl(aPagar)}</b></div><div><small>Comissão paga</small><b>${brl(pago)}</b></div>`;
+  $('#lista').innerHTML=L.length?L.map((r,i)=>{const dt=new Date(r.criado).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}),w=String(r.whats||'').replace(/\D/g,'');
+   return `<div class="card"><div class="top"><div><b>${esc(r.nome)}</b><div class="mut">${dt} · indicado por ${esc(r.indicado_por||'')}${r.empresa_nome?' ('+esc(r.empresa_nome)+')':''} · ${esc(r.whats)}</div></div>
+    <a class="bt pri" href="https://wa.me/${w.length<=11?'55'+w:w}" target="_blank" rel="noopener">Chamar no WhatsApp</a></div>
+    <div class="grid"><div><label>Status<select data-i="${i}" data-k="status">${Object.keys(ST).map(k=>`<option value="${k}" ${k===r.status?'selected':''}>${ST[k]}</option>`).join('')}</select></label></div>
+     <div><label>Valor da licença (R$)<input data-i="${i}" data-k="valor_licenca" type="number" inputmode="decimal" value="${r.valor_licenca==null?'':r.valor_licenca}"></label></div>
+     <div><label>Comissão (${+r.comissao_pct||10}%)<input value="${com(r)?brl(com(r)):''}" disabled></label></div>
+     <div><label class="ck"><input type="checkbox" data-i="${i}" data-k="comissao_paga" ${r.comissao_paga?'checked':''}> Comissão paga</label></div></div>
+    <div class="ac"><input data-i="${i}" data-k="obs" placeholder="Observação" value="${esc(r.obs||'')}" style="flex:1;min-width:200px;margin:0"><button class="bt" data-salva="${i}">Salvar</button><span class="mut" id="ok${i}"></span></div></div>`;}).join('')
+   :'<div class="vazio">Nenhuma indicação ainda. Quando o parceiro usar "Indicar para a FC" no Simulador de obra, ela aparece aqui.</div>';
+  document.querySelectorAll('[data-salva]').forEach(b=>b.onclick=async()=>{const i=+b.dataset.salva,r=L[i],g=k=>document.querySelector(`[data-i="${i}"][data-k="${k}"]`);
+    const v=g('valor_licenca').value;r.status=g('status').value;r.valor_licenca=v===''?null:+v;r.comissao_paga=g('comissao_paga').checked;r.obs=g('obs').value;
+    b.disabled=true;try{await rpc('pfc_indicacao_atualiza',{p_token:tk,p_id:r.id,p_status:r.status,p_valor:r.valor_licenca,p_paga:r.comissao_paga,p_obs:r.obs});desenha();$('#ok'+i).textContent='Salvo';}
+    catch(e){b.disabled=false;$('#ok'+i).textContent='Não salvou: '+e.message;}});
+}
+if(!tk){nega('Entre na Plataforma FC 3D','As indicações abrem com o acesso FC.');return;}
+rpc('pfc_sessao',{p_token:tk}).then(d=>{
+  if(!d||!d.matriz){nega('Só para a FC','As indicações dos parceiros ficam no acesso da FC.');return;}
+  return rpc('pfc_indicacoes_lista',{p_token:tk}).then(j=>{L=j||[];$('#gate').remove();desenha();});
+}).catch(e=>nega('Não foi possível abrir',esc(e.message||'Confira a internet e abra de novo.')));
+})();
+</script>
+</body>
+</html>

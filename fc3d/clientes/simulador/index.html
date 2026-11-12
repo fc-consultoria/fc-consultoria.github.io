@@ -208,7 +208,39 @@
       a.style.cssText='margin-left:auto;font:600 12px Inter,sans-serif;color:#025860;text-decoration:none;border:1px solid #b9dfe2;border-radius:10px;padding:8px 10px;white-space:nowrap';
       var t=document.getElementById('themeToggle');if(t){t.style.marginLeft='8px';hd.insertBefore(a,t);}else hd.appendChild(a);
       if(window.SIM_GESTOR){var g=document.createElement('a');g.href='recebidas.html';g.textContent='Obras recebidas';g.style.cssText='margin-left:8px;font:600 12px Inter,sans-serif;color:#025860;text-decoration:none;border:1px solid #b9dfe2;border-radius:10px;padding:8px 10px;white-space:nowrap';hd.insertBefore(g,t||null);}}
+    /* 11/11/2026 · Parceiro de negócio: "Indicar para a FC" (nome + WhatsApp; comissão registrada) · FC: lista de indicações */
+    var BT='margin-left:8px;font:600 12px Inter,sans-serif;text-decoration:none;border-radius:10px;padding:8px 10px;white-space:nowrap;cursor:pointer;';
+    fetch(API+'pfc_parceiro',{method:'POST',headers:H,body:JSON.stringify({p_token:tk})}).then(function(r){return r.ok?r.json():null;}).then(function(p){
+      if(!p||!hd)return;var t=document.getElementById('themeToggle');
+      if(p.matriz){var l=document.createElement('a');l.href='indicacoes.html';l.textContent='Indicações';l.style.cssText=BT+'color:#025860;border:1px solid #b9dfe2';hd.insertBefore(l,t||null);}
+      if(p.parceiro){var i=document.createElement('button');i.type='button';i.id='simIndicar';i.textContent='Indicar para a FC';i.style.cssText=BT+'color:#fff;background:#02717d;border:1px solid #02717d';i.onclick=indicar;hd.insertBefore(i,t||null);}
+    }).catch(function(){});
    }).catch(function(){nega('Sem conexão','Confira a internet e abra de novo.');});
+  var API='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/',H={apikey:'sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs','Content-Type':'application/json'};
+  function indicar(){
+    var m=document.createElement('div');m.style.cssText='position:fixed;inset:0;z-index:2147482000;background:rgba(10,25,28,.55);display:flex;align-items:center;justify-content:center;padding:16px;font:14px Inter,system-ui,sans-serif';
+    var I='width:100%;box-sizing:border-box;padding:11px;border:1px solid #b9dfe2;border-radius:10px;font:16px Inter,system-ui,sans-serif;margin:4px 0 10px;color:#13232e;background:#fff';
+    m.innerHTML='<div style="max-width:360px;width:100%;background:#fff;color:#13232e;border-radius:16px;padding:20px"><b style="font-size:17px">Indicar para a FC</b>'+
+      '<p style="margin:6px 0 12px;color:#5a6b72;font-size:13px">Gostou da ferramenta? Deixe o nome e o WhatsApp que a FC Consultoria entra em contato.</p>'+
+      '<label style="font-size:13px">Nome do interessado<input id="indN" style="'+I+'" placeholder="Ex.: João · Vidraçaria Central"></label>'+
+      '<label style="font-size:13px">WhatsApp (com DDD)<input id="indW" inputmode="tel" style="'+I+'" placeholder="(66) 9 0000-0000"></label>'+
+      '<p id="indM" style="margin:0 0 8px;font-size:13px;color:#b42318"></p>'+
+      '<div style="display:flex;gap:8px"><button id="indE" style="flex:1;padding:11px;border:0;border-radius:10px;background:#02717d;color:#fff;font:600 14px Inter,sans-serif;cursor:pointer">Enviar indicação</button>'+
+      '<button id="indX" style="padding:11px 14px;border:1px solid #d3dfe0;border-radius:10px;background:#fff;font:600 14px Inter,sans-serif;cursor:pointer;color:#13232e">Fechar</button></div>'+
+      '<p id="indL" style="margin:12px 0 0;font-size:12px;color:#5a6b72"></p></div>';
+    document.body.appendChild(m);
+    var $=function(x){return document.getElementById(x);};
+    $('indX').onclick=function(){m.remove();};m.onclick=function(e){if(e.target===m)m.remove();};
+    function lista(){fetch(API+'pfc_indicacoes_lista',{method:'POST',headers:H,body:JSON.stringify({p_token:tk})}).then(function(r){return r.ok?r.json():[];}).then(function(L){
+      if(!L||!L.length)return;var v=L.filter(function(x){return x.status==='vendida';}).length;$('indL').textContent='Suas indicações: '+L.length+(v?' · '+v+' vendida'+(v>1?'s':''):'');}).catch(function(){});}
+    lista();
+    $('indE').onclick=function(){var n=$('indN').value.trim(),w=$('indW').value.trim();
+      if(n.length<2||w.replace(/\D/g,'').length<10){$('indM').textContent='Preencha o nome e o WhatsApp com DDD.';return;}
+      var b=$('indE');b.disabled=true;b.textContent='Enviando…';$('indM').textContent='';
+      fetch(API+'pfc_indicar',{method:'POST',headers:H,body:JSON.stringify({p_token:tk,p_nome:n,p_whats:w})}).then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error((j&&j.message)||'erro');return j;});})
+       .then(function(){b.textContent='Indicação enviada ✓';$('indM').style.color='#166534';$('indM').textContent='Obrigado! A FC vai entrar em contato.';$('indN').value='';$('indW').value='';setTimeout(function(){b.disabled=false;b.textContent='Enviar indicação';},2000);lista();})
+       .catch(function(e){b.disabled=false;b.textContent='Enviar indicação';$('indM').textContent=e.message||'Não foi possível enviar. Confira a internet.';});};
+  }
 })();
 </script><script src="/fc3d/clientes/sessao.js?v=2"></script><script src="/fc3d/clientes/uso.js?v=2" defer></script>
 
