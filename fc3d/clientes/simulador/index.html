@@ -128,6 +128,14 @@
   .passos5{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-width:42rem;margin:0 auto}
   .passos5 .step{cursor:pointer;padding:6px 4px} #step3{display:none!important}
   .etp{border:1px solid #b9dfe2;border-radius:14px;padding:12px;background:#fffaf5}
+  .tipg-t{font:700 10px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:8px 0 6px}
+  .tipg-g{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .tipg button{display:flex;flex-direction:column;align-items:center;gap:4px;border:1px solid #d3e6e8;border-radius:12px;background:#fff;padding:7px 4px 6px;cursor:pointer;transition:.15s;font:600 10.5px/1.2 Inter,sans-serif;color:#334155;text-align:center}
+  .tipg button:hover{border-color:#02717d}
+  .tipg button[aria-pressed="true"]{border-color:#02717d;background:#e6f4f5;box-shadow:inset 0 0 0 1px #02717d;color:#025860}
+  .tipg svg{width:40px;height:40px}
+  html.dark .tipg button{background:#1e293b;border-color:#334155;color:#cbd5e1}
+  html.dark .tipg button[aria-pressed="true"]{background:#0f3b40;border-color:#22c3c9;color:#e2f7f8}
   html.dark .etp{border-color:#334155;background:#1e293b}
   .etp h4{margin:0 0 4px;font:700 13px Inter,sans-serif;color:#025860;display:flex;align-items:center;gap:8px}
   html.dark .etp h4{color:#8cc9ce}
@@ -487,7 +495,9 @@
             <span class="w-1.5 h-4 rounded-full bg-accent"></span>
             <h3 class="text-[11px] uppercase tracking-[0.14em] font-bold text-slate-500 dark:text-slate-400">Produto</h3>
           </div>
-          <div class="relative">
+          <!-- 11/11/2026: escolha visual · todas as tipologias à vista (o select fica escondido, só guarda o valor) -->
+          <div id="gridTip" class="tipg"></div>
+          <div class="relative" style="display:none">
             <select id="selProduto" class="w-full appearance-none rounded-xl border border-orange-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 pr-9 text-sm text-slate-800 dark:text-slate-200 font-medium outline-none transition focus:border-accent/60 focus:ring-2 focus:ring-accent/10 cursor-pointer">
             </select>
             <svg class="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -538,7 +548,7 @@
           <div id="gridCores" class="grid grid-cols-3 gap-2"></div>
         </section>
 
-        <section>
+        <section style="display:none"><!-- 11/11/2026: Acabamento retirado da tela (fica o padrão) -->
           <div class="flex items-center gap-2 mb-2">
             <span class="w-1.5 h-4 rounded-full bg-accent"></span>
             <h3 class="text-[11px] uppercase tracking-[0.14em] font-bold text-slate-500 dark:text-slate-400">Acabamento (Alumínio)</h3>
@@ -2151,7 +2161,7 @@
       btnRemover.disabled = false;
       const vao = vaoAtivo();
       if (vao) {
-        $('selProduto').value = vao.produto.id;
+        $('selProduto').value = vao.produto.id; if (window.marcaTip) marcaTip();
         atualizarInfoProduto(vao.produto);
         $('gridCores').querySelectorAll('[data-cor]').forEach(b => b.classList.toggle('swatch-active', b.dataset.cor === vao.cor.id));
         $('gridAcabamentos').querySelectorAll('[data-acabamento]').forEach(b => b.classList.toggle('swatch-active', b.dataset.acabamento === vao.acabamento.id));
@@ -2189,6 +2199,26 @@
     const grp = (g, rot) => `<optgroup label="${rot}">` + PRODUTOS.filter(p => p.grupo === g).map(p => `<option value="${p.id}">${p.nome}</option>`).join('') + '</optgroup>';
     sel.innerHTML = grp('Janelas', 'Janelas') + grp('Portas', 'Portas');
     sel.value = state.defaultProduto.id;
+    /* 11/11/2026: grade com todas as tipologias (desenho simples de cada uma) */
+    const ico = p => { const f = p.fam || {}, P = !!f.porta || f.type === 'giro', w = P ? 24 : 34, h = P ? 36 : 26, x0 = (40 - w) / 2, y0 = (40 - h) / 2, L = 'stroke="currentColor" fill="none" stroke-width="1.6"';
+      let g = `<rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="1.5" ${L}/>`, top = y0;
+      if (f.bandeira) { const bh = h * 0.28; g += `<line x1="${x0}" y1="${y0 + bh}" x2="${x0 + w}" y2="${y0 + bh}" ${L}/>`; top = y0 + bh; }
+      const n = f.type === 'maximar' ? (f.mod || 1) : (f.n || 1), hh = y0 + h - top, sh = f.type === 'maximar' ? hh / n : hh, sw = f.type === 'maximar' ? w : w / n;
+      for (let i = 0; i < n; i++) {
+        const X = f.type === 'maximar' ? x0 : x0 + sw * i, Y = f.type === 'maximar' ? top + sh * i : top;
+        if (i) g += f.type === 'maximar' ? `<line x1="${x0}" y1="${Y}" x2="${x0 + w}" y2="${Y}" ${L}/>` : `<line x1="${X}" y1="${top}" x2="${X}" y2="${y0 + h}" ${L}/>`;
+        if (f.type === 'correr') { const m = Y + sh / 2, d = i % 2 ? -1 : 1, c = X + sw / 2; g += `<path d="M${c - 4 * d} ${m}h${8 * d}m${-3 * d} -3l${3 * d} 3l${-3 * d} 3" ${L}/>`; }
+        else if (f.type === 'maximar') g += `<path d="M${X + 2} ${Y + sh - 1}L${X + w / 2} ${Y + 2}L${X + w - 2} ${Y + sh - 1}" ${L} stroke-dasharray="2 2"/>`;
+        else if (f.type === 'oscilo') g += `<path d="M${X + 2} ${Y + sh - 2}L${X + sw / 2} ${Y + 2}L${X + sw - 2} ${Y + sh - 2}M${X + sw - 2} ${Y + 2}L${X + 2} ${Y + sh / 2}L${X + sw - 2} ${Y + sh - 2}" ${L} stroke-dasharray="2 2"/>`;
+        else if (f.type === 'giro') { const ld = (n === 2 && i === 1) ? X : X + sw; g += `<path d="M${ld === X ? X + sw : X} ${Y + 2}L${ld === X ? X + 2 : X + sw - 2} ${Y + sh / 2}L${ld === X ? X + sw : X} ${Y + sh - 2}" ${L} stroke-dasharray="2 2"/>`; }
+      }
+      return `<svg viewBox="0 0 40 40" aria-hidden="true">${g}</svg>`; };
+    const curto = p => p.nome.replace('Janela de correr ', 'Correr ').replace('Porta de correr ', 'Correr ').replace('Porta de giro ', 'Giro ').replace('Janela oscilo-batente', 'Oscilo-batente').replace(' com bandeira', ' + bandeira');
+    const gTip = $('gridTip');
+    gTip.innerHTML = ['Janelas', 'Portas'].map(gr => `<div class="tipg-t">${gr}</div><div class="tipg-g">` + PRODUTOS.filter(p => p.grupo === gr).map(p => `<button type="button" data-tip="${p.id}" title="${p.nome}">${ico(p)}<span>${curto(p)}</span></button>`).join('') + '</div>').join('');
+    window.marcaTip = () => gTip.querySelectorAll('[data-tip]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tip === sel.value ? 'true' : 'false'));
+    gTip.querySelectorAll('[data-tip]').forEach(b => b.onclick = () => { sel.value = b.dataset.tip; sel.dispatchEvent(new Event('change')); marcaTip(); });
+    marcaTip();
 
     sel.addEventListener('change', () => {
       const vao = vaoAtivo();
