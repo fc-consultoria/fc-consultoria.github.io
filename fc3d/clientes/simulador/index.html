@@ -12,7 +12,7 @@
 <script>window.tailwind = window.tailwind || {}; /* CSS já compilado em tw.css (funciona sem internet) */</script>
 <script src="lib/three.min.js"></script>
 <script src="lib/qrcode.js"></script>
-<script src="tipologias.js?v=1"></script>
+<script src="tipologias.js?v=2"></script>
 <script>
   tailwind.config = {
     darkMode: 'class',
@@ -789,8 +789,10 @@
   PRODUTOS.forEach(p => { p.antigo = true; });
   if (window.FCTipo && FCTipo.LISTA) FCTipo.LISTA.forEach(t => {
     let d = { W: 1500, H: 1200 }; try { d = FCTipo.dims(t.desc); } catch (e) {}
-    PRODUTOS.push({ id: t.id, grupo: t.cat, nome: t.nome, folhas: t.cat, tipo: 'fc2d', desc: t.desc, dimensoes: { largura: d.W / 1000, altura: d.H / 1000 }, descricao: 'Medida sugerida. Ajuste a largura e a altura do vão. Linha definida no escritório.' });
+    PRODUTOS.push({ id: t.id, grupo: t.cat, nome: t.nome, folhas: t.cat, tipo: 'fc2d', desc: t.desc, mov: !!(FCTipo.move && FCTipo.move(t.desc)), dimensoes: { largura: d.W / 1000, altura: d.H / 1000 }, descricao: 'Medida sugerida. Ajuste a largura e a altura do vão. Linha definida no escritório.' });
   });
+  /* esquadria que abre e fecha na foto: Linha Family 3D ou tipologia do Banco FC que tem folha móvel */
+  function movel(v) { return !!(v && v.produto && (v.produto.tipo === 'family' || (v.produto.tipo === 'fc2d' && v.produto.mov))); }
   const PRODUTO_PADRAO = PRODUTOS.find(p => p.id === 'FC-015') || PRODUTOS.find(p => !p.antigo) || PRODUTOS[0];
 
   // ==========================================================
@@ -937,7 +939,12 @@
     api.syncCtrls = vao => {
       const fam = vao && vao.produto.tipo === 'family';
       const mostra = (id, on) => { const e = el(id); e.classList.toggle('hidden', !on); e.style.display = on ? '' : 'none'; };
-      mostra('famMov', fam); if (!fam) return;
+      mostra('famMov', movel(vao)); mostra('famVista', fam);
+      if (!fam && movel(vao)) { /* tipologia do Banco FC: abrir, fechar e abertura */
+        const mv = vao.mov; el('famAbrir').textContent = mv.abT > 0 ? 'Fechar' : 'Abrir';
+        ['famOscilo', 'famPersBox', 'famTela'].forEach(id => mostra(id, false));
+        el('famAb').value = Math.round(mv.abT * 100); el('famAbLbl').textContent = Math.round(mv.abT * 100) + '%'; return; }
+      if (!fam) return;
       const c = vao.produto.fam, mv = vao.mov;
       el('famAbrir').textContent = mv.abT > 0 ? 'Fechar' : 'Abrir';
       el('famVista').textContent = mv.vista === 'fora' ? 'Foto tirada de fora' : 'Foto tirada de dentro';
@@ -947,7 +954,7 @@
       mostra('famPersBox', !!c.persiana); el('famPe').value = Math.round(mv.peT * 100); el('famPeLbl').textContent = Math.round(mv.peT * 100) + '%';
       mostra('famTela', !!c.tela); el('famTela').textContent = 'Tela mosquiteira: ' + (mv.tela ? 'ligada' : 'desligada');
     };
-    const ativo = () => { const v = vaoAtivo(); return v && v.produto.tipo === 'family' ? v : null; };
+    const ativo = () => { const v = vaoAtivo(); return movel(v) ? v : null; };
     api.montarControles = () => {
       el('famAbrir').addEventListener('click', () => { const v = ativo(); if (!v) return; v.mov.abT = v.mov.abT > 0 ? 0 : 1; api.syncCtrls(v); });
       el('famAb').addEventListener('input', () => { const v = ativo(); if (!v) return; v.mov.abT = el('famAb').value / 100; v.mov.ab = v.mov.abT; renderizarVao(v); api.syncCtrls(v); });
@@ -960,7 +967,7 @@
     };
     // animação suave de abrir/fechar
     function tick() {
-      state.vaos.forEach(v => { if (!v.mov || v.produto.tipo !== 'family') return; let mudou = false;
+      state.vaos.forEach(v => { if (!v.mov || !movel(v)) return; let mudou = false;
         ['ab', 'pe'].forEach(k => { const d = v.mov[k + 'T'] - v.mov[k]; if (Math.abs(d) > .003) { v.mov[k] += d * .12; mudou = true; } else if (d !== 0) { v.mov[k] = v.mov[k + 'T']; mudou = true; } });
         if (mudou) renderizarVao(v); });
       requestAnimationFrame(tick);
@@ -969,7 +976,7 @@
     let gravando = false;
     function gravarVideo() {
       if (gravando || !state.img) { if (!state.img) el('famVideoMsg').textContent = 'Suba a foto e marque um vão primeiro.'; return; }
-      const vs = state.vaos.filter(v => v.produto.tipo === 'family' && v.pts.length === 4);
+      const vs = state.vaos.filter(v => movel(v) && v.pts.length === 4);
       if (!vs.length) { el('famVideoMsg').textContent = 'Coloque pelo menos uma esquadria em um vão.'; return; }
       const rec = document.createElement('canvas'); rec.width = view.width; rec.height = view.height; const rg = rec.getContext('2d');
       let stream, mr; try { stream = rec.captureStream(30); const tipo = ['video/webm;codecs=vp9', 'video/webm', 'video/mp4'].find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t)); mr = new MediaRecorder(stream, tipo ? { mimeType: tipo, videoBitsPerSecond: 6e6 } : undefined); }
@@ -1082,7 +1089,7 @@
       el('ambTabs').querySelectorAll('.obra-tab').forEach(b => b.onclick = () => { const i = +b.dataset.i; if (i !== idx) abrirAmbiente(i); });
       el('ambNome').value = (obra.amb[idx] && obra.amb[idx].nome) || '';
       el('ambExcluir').disabled = obra.amb.length < 2;
-      if (cliente) { el('cliTitulo').textContent = (obra.nome || 'Sua obra') + (obra.cliente ? ' · ' + obra.cliente : ''); el('cliAbrir').style.display = state.vaos.some(v => v.produto.tipo === 'family') ? '' : 'none'; el('cliAbrir').textContent = state.vaos.some(v => v.mov && v.mov.abT > 0) ? 'Fechar as esquadrias' : 'Abrir as esquadrias'; return; }
+      if (cliente) { el('cliTitulo').textContent = (obra.nome || 'Sua obra') + (obra.cliente ? ' · ' + obra.cliente : ''); el('cliAbrir').style.display = state.vaos.some(movel) ? '' : 'none'; el('cliAbrir').textContent = state.vaos.some(v => v.mov && v.mov.abT > 0) ? 'Fechar as esquadrias' : 'Abrir as esquadrias'; return; }
       const lista = await listaDB();
       el('obraLista').innerHTML = '<option value="">Obras salvas neste aparelho (' + lista.length + ')</option>' + lista.map(o => `<option value="${o.id}"${o.id === obra.id ? ' selected' : ''}>${esc(o.nome || 'Obra sem nome')}${o.cliente ? ' · ' + esc(o.cliente) : ''} · ${o.n} amb.</option>`).join('');
     }
@@ -1123,8 +1130,8 @@
         if (orig.some(o => o.cm)) { fase('Contramarco', (v, o) => { v.et.cm = o.cm; }); await espera(1900); }
         if (orig.some(o => o.reb)) { fase('Reboco', (v, o) => { v.et.reb = o.reb; }); await espera(1900); }
         fase('Esquadria', (v, o) => { v.et.esq = o.esq; });
-        await espera(1300); state.vaos.forEach(v => { if (v.mov && v.produto.tipo === 'family' && v.et.esq) v.mov.abT = 1; });
-        await espera(3200); state.vaos.forEach(v => { if (v.mov && v.produto.tipo === 'family') v.mov.abT = 0; });
+        await espera(1300); state.vaos.forEach(v => { if (v.mov && movel(v) && v.et.esq) v.mov.abT = 1; });
+        await espera(3200); state.vaos.forEach(v => { if (v.mov && movel(v)) v.mov.abT = 0; });
         await espera(2200);
       }
       await new Promise(ok => { mr.onstop = ok; mr.stop(); }); ativo = false; gravando = false;
@@ -1185,7 +1192,7 @@
       capturar();
       const n = obra.amb.filter(a => a.foto).length;
       if (!n) { modalQR('<b>QR para o cliente</b><p>Suba a foto de pelo menos um ambiente e aplique as tipologias.</p><button type="button" class="btn" id="qrFechar">Fechar</button>'); el('qrFechar').onclick = () => el('qrModal').remove(); return; }
-      modalQR(`<b>QR para o cliente</b><p>${n} ambiente${n > 1 ? 's' : ''} desta obra vão para o celular do cliente, ${state.vaos.some(v => v.produto.tipo === 'family') ? 'com as tipologias abrindo e fechando' : 'com as tipologias aplicadas na foto'}.</p>
+      modalQR(`<b>QR para o cliente</b><p>${n} ambiente${n > 1 ? 's' : ''} desta obra vão para o celular do cliente, ${state.vaos.some(movel) ? 'com as tipologias abrindo e fechando' : 'com as tipologias aplicadas na foto'}.</p>
         <label>Nome do cliente<input id="qrCli" value="${esc(obra.cliente || '')}" placeholder="Ex.: Sr. João"></label>
         <label>Vendedor<input id="qrVend" value="${esc(lsGet('fcsim_vendedor') || '')}" placeholder="Seu nome"></label>
         <div class="qr-acoes"><button type="button" class="btn btn-accent" id="qrGerar">Gerar QR</button><button type="button" class="btn" id="qrFechar">Cancelar</button></div><p id="qrMsg" class="qr-msg"></p>`);
@@ -1281,7 +1288,7 @@
     API.init = async () => {
       el('famVideo').onclick = gravarVideo;
       el('btnVideoObra').onclick = gravarVideo; el('btnQrCliente').onclick = abrirQR;
-      el('cliAbrir').onclick = () => { const algum = state.vaos.some(v => v.mov && v.mov.abT > 0); state.vaos.forEach(v => { if (v.mov && v.produto.tipo === 'family') v.mov.abT = algum ? 0 : 1; }); el('cliAbrir').textContent = algum ? 'Abrir as esquadrias' : 'Fechar as esquadrias'; };
+      el('cliAbrir').onclick = () => { const algum = state.vaos.some(v => v.mov && v.mov.abT > 0); state.vaos.forEach(v => { if (v.mov && movel(v)) v.mov.abT = algum ? 0 : 1; }); el('cliAbrir').textContent = algum ? 'Abrir as esquadrias' : 'Fechar as esquadrias'; };
       const ver = new URLSearchParams(location.search).get('ver');
       if (ver) { await abrirCliente(ver); return; }
       el('obraNome').oninput = () => { obra.nome = el('obraNome').value; salvar(); };
@@ -1537,28 +1544,39 @@
   /* 12/11/2026: desenho do Banco de Tipologias FC aplicado sobre a foto.
      O desenho é gerado na medida do vão (largura × altura) e guardado; enquanto carrega, o vão fica sem esquadria por um instante. */
   const fcTex = new Map(), fcVazio = document.createElement('canvas'); fcVazio.width = fcVazio.height = 2;
-  function texFC(vao) {
-    const p = vao.produto, md = Object.assign({}, medidasVao(vao)), mm = vao.med || {};
-    /* sem medida digitada: mantém a proporção do vão marcado na foto (o perfil não fica esticado) */
-    if (!(+mm.W && +mm.H) && vao.pts && vao.pts.length === 4) { try { const q = ordenarPontos(vao.pts), d = (a, b) => Math.hypot(a.x - b.x, a.y - b.y), qw = (d(q[0], q[1]) + d(q[3], q[2])) / 2, qh = (d(q[0], q[3]) + d(q[1], q[2])) / 2;
-      if (qw > 5 && qh > 5) { if (+mm.H) md.W = Math.round(md.H * qw / qh / 10) * 10; else md.H = Math.round(md.W * qh / qw / 10) * 10; } } catch (er) {} }
-    const key = [p.id, vao.cor.id, vao.vidro.id, md.W, md.H].join('|');
-    let e = fcTex.get(key);
-    if (e) return e.ok ? e.c : fcVazio;
-    if (!window.FCTipo) return fcVazio;
-    if (fcTex.size > 80) fcTex.delete(fcTex.keys().next().value);
+  const FC_PASSOS = 12; // quadros do abre e fecha (0 = fechada, 12 = aberta)
+  function fcCarregar(key, p, cor, vidro, W, H, a) {
+    let e = fcTex.get(key); if (e) { fcTex.delete(key); fcTex.set(key, e); return e; } // mais recente no fim (limpeza)
+    if (fcTex.size > 90) fcTex.delete(fcTex.keys().next().value);
     e = { ok: false, c: document.createElement('canvas') }; fcTex.set(key, e);
     let svg = '';
-    try { svg = FCTipo.svg(p.desc, { cor: vao.cor.id, vidro: vao.vidro.id, sentido: false, contexto: false, foto: true, W: md.W, H: md.H, px: 1024 }); } catch (er) { console.warn('tipologia', p.id, er); return fcVazio; }
+    try { svg = FCTipo.svg(p.desc, { cor, vidro, sentido: false, contexto: false, foto: true, W, H, px: (a > 0 && a < 1) ? 720 : 1024, abre: a }); } catch (er) { console.warn('tipologia', p.id, er); return e; }
     const img = new Image();
     img.onload = () => {
       e.c.width = img.width || 1024; e.c.height = img.height || 768;
       const g = e.c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0, e.c.width, e.c.height);
       try { g.getImageData(0, 0, 1, 1); e.ok = true; } catch (er) { console.warn('desenho bloqueado pelo navegador', er); fcTex.delete(key); return; }
-      state.vaos.forEach(v => { if (v.produto && v.produto.tipo === 'fc2d') renderizarVao(v); });
+      clearTimeout(fcCarregar.t); fcCarregar.t = setTimeout(() => state.vaos.forEach(v => { if (v.produto && v.produto.tipo === 'fc2d') renderizarVao(v); }), 16);
     };
     img.onerror = () => { fcTex.delete(key); console.warn('falha ao carregar desenho', p.id); };
     img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    return e;
+  }
+  function texFC(vao) {
+    if (!window.FCTipo) return fcVazio;
+    const p = vao.produto, md = Object.assign({}, medidasVao(vao)), mm = vao.med || {};
+    /* sem medida digitada: mantém a proporção do vão marcado na foto (o perfil não fica esticado) */
+    if (!(+mm.W && +mm.H) && vao.pts && vao.pts.length === 4) { try { const q = ordenarPontos(vao.pts), d = (a, b) => Math.hypot(a.x - b.x, a.y - b.y), qw = (d(q[0], q[1]) + d(q[3], q[2])) / 2, qh = (d(q[0], q[3]) + d(q[1], q[2])) / 2;
+      if (qw > 5 && qh > 5) { if (+mm.H) md.W = Math.round(md.H * qw / qh / 10) * 10; else md.H = Math.round(md.W * qh / qw / 10) * 10; } } catch (er) {} }
+    const base = [p.id, vao.cor.id, vao.vidro.id, md.W, md.H].join('|');
+    const passo = p.mov && vao.mov ? Math.round(Math.max(0, Math.min(1, vao.mov.ab || 0)) * FC_PASSOS) : 0;
+    const quadro = k => fcCarregar(base + '|' + k, p, vao.cor.id, vao.vidro.id, md.W, md.H, k / FC_PASSOS);
+    const e = quadro(passo);
+    /* vai abrir: deixa os outros quadros prontos, um de cada vez */
+    if (p.mov && vao.mov && (vao.mov.abT > 0 || passo > 0)) { const alvo = Math.round(vao.mov.abT * FC_PASSOS), dir = alvo >= passo ? 1 : -1; for (let k = passo; k !== alvo + dir && k >= 0 && k <= FC_PASSOS; k += dir) quadro(k); }
+    if (e.ok) return e.c;
+    /* quadro ainda carregando: usa o mais próximo que já está pronto */
+    for (let d = 1; d <= FC_PASSOS; d++) for (const k of [passo - d, passo + d]) { if (k < 0 || k > FC_PASSOS) continue; const o = fcTex.get(base + '|' + k); if (o && o.ok) return o.c; }
     return fcVazio;
   }
 

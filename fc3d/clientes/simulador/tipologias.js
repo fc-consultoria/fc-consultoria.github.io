@@ -148,6 +148,7 @@ function make(desc,opt){
  opt=Object.assign({cor:'branco',vidro:'incolor',sentido:true,contexto:true},opt||{});
  const s=parse(desc), c=COR[opt.cor]||COR.branco, g=VID[opt.vidro]||VID.incolor, p='fc'+(++SEQ);
  const D0=dims(s), W=Math.round(+opt.W||D0.W), H=Math.round(+opt.H||D0.H);
+ const A=Math.max(0,Math.min(1,+opt.abre||0)); // abertura 0 (fechada) a 1 (aberta)
  const pad=Math.max(W,H)*0.16+200;
  const VBW=W+pad*2, VBH=H+pad*2;
  const X0=pad,Y0=pad;
@@ -204,6 +205,10 @@ function make(desc,opt){
  const hinge=(x,y)=>R(x-8,y,16,90,c.s,'rx="5"');
  const leafT=s.porta?58:46, M=/MARCO LARGO/.test(s.d)?95:(/SEM MARCO/.test(s.d)?22:50), T=42;
 
+ // abrir/fechar: o que a folha deixa de cobrir mostra o interior; a folha gira/corre por cima
+ const gap=(x,y,w,h)=>{ if(w>1&&h>1) R(x,y,w,h,`url(#${p}int)`); };
+ const gIn=(ax,ay,kx,ky)=>push(`<g transform="translate(${ax.toFixed(1)} ${ay.toFixed(1)}) scale(${kx.toFixed(4)} ${ky.toFixed(4)}) translate(${(-ax).toFixed(1)} ${(-ay).toFixed(1)})">`);
+ const gOut=(x,y,w,h,o)=>{ R(x,y,w,h,'#000',`opacity="${(o*A).toFixed(3)}"`); push('</g>'); };
  // ---------- módulos ----------
  function leafBox(x,y,w,h,f,persiana){frame(x,y,w,h,leafT);fill(x+leafT,y+leafT,w-2*leafT,h-2*leafT,f,persiana)}
  // fechaduras / fechos
@@ -232,21 +237,25 @@ function make(desc,opt){
   return {plane,mov,dir,lock:'lateral'};
  }
  function correr(x,y,w,h,nOverride){
-  const n=nOverride||s.n, ov=45, lw=(w+ov*(n-1))/n, L=correrLayout(n);
+  const n=nOverride||s.n, ov=45, lw=(w+ov*(n-1))/n, L=correrLayout(n), st=lw-ov, sh=new Array(n).fill(0);
+  if(A>0&&n>1){ if(L.lock==='central2') sh[1]=-st*A*0.94;
+   else if(L.lock==='lateral'){ for(let i=1;i<n;i++) if(L.mov[i]) sh[i]=-i*st*A*0.97; }
+   else for(let i=0;i<n;i++) if(L.mov[i]) sh[i]=L.dir[i]*st*A*0.94; }
+  const lxOf=i=>x+i*st+sh[i];
   if(s.atras){R(x,y,w*0.5,h,`url(#${p}wall)`);}
+  if(A>0){ const iv=[...Array(n).keys()].map(i=>[lxOf(i),lxOf(i)+lw]).sort((u,v)=>u[0]-v[0]); let cur=x;
+   iv.forEach(([u,v])=>{ if(u>cur) gap(cur,y,u-cur,h); cur=Math.max(cur,v); }); if(cur<x+w) gap(cur,y,x+w-cur,h); }
   const order=[...Array(n).keys()].sort((a,b)=>L.plane[a]-L.plane[b]);
   order.forEach(i=>{
-   const lx=x+i*(lw-ov);
+   const lx=lxOf(i);
    if(L.plane[i]>0) R(lx+14,y+10,lw,h-10,'#000','opacity=".14"');
    leafBox(lx,y,lw,h,s.fills[i%s.fills.length],s.integrada);
   });
-  for(let i=0;i<n;i++){ if(!L.mov[i]) continue; const lx=x+i*(lw-ov); arrow(lx+lw/2, y+h*0.64, L.dir[i], Math.min(220,lw*0.35)); }
-  const lxOf=i=>x+i*(lw-ov);
+  for(let i=0;i<n;i++){ if(!L.mov[i]) continue; const lx=lxOf(i); arrow(lx+lw/2, y+h*0.64, L.dir[i], Math.min(220,lw*0.35)); }
   if(L.lock==='lateral'){ fechLateral(lxOf(n-1)+lw-leafT/2,y,h,'r'); }
   else if(L.lock==='duplo'){ fechLateral(lxOf(0)+leafT/2,y,h,'l'); fechLateral(lxOf(n-1)+lw-leafT/2,y,h,'r'); }
   else if(L.lock==='central2'){ fechCentral(lxOf(1)+leafT/2,y,h); }
-  else if(L.lock==='central'){ const hcen=n/2; // encontro entre as folhas do meio (frontais)
-   fechCentral(lxOf(hcen-1)+lw-leafT/2,y,h); }
+  else if(L.lock==='central'){ const hcen=n/2; fechCentral(lxOf(hcen-1)+lw-leafT/2,y,h); }
  }
  function canto(x,y,w,h){ // janela/porta de canto: duas faces, sem coluna no encontro
   const n=s.n, a=/02 FOLHAS - 03 FOLHAS/.test(s.d)?2:Math.floor(n/2), b=n-a;
@@ -261,9 +270,12 @@ function make(desc,opt){
  function giro(x,y,w,h,kind){
   const n=s.n, lw=w/n;
   for(let i=0;i<n;i++){
-   const lx=x+i*lw; leafBox(lx,y,lw,h,s.fills[i%s.fills.length]);
+   const lx=x+i*lw;
    const left = n===1? true : (n===4? i<2 : i<n/2); // dobradiça do lado de fora
    const hx= left? lx : lx+lw, ox= left? lx+lw : lx;
+   const ax= kind==='pivo'? (left? lx+lw*0.13: lx+lw*0.87) : hx;
+   if(A>0){ gap(lx,y,lw,h); gIn(ax,y,Math.cos(A*1.3),1); }
+   leafBox(lx,y,lw,h,s.fills[i%s.fills.length]);
    if(kind==='pivo'){ const px= left? lx+lw*0.13: lx+lw*0.87; push(`<circle cx="${px}" cy="${y+leafT/2}" r="12" fill="${c.s}"/><circle cx="${px}" cy="${y+h-leafT/2}" r="12" fill="${c.s}"/>`); tubo(left? lx+lw-leafT-60: lx+leafT+60, y+h*0.25, h*0.5); sym([left?lx+lw:lx,y+leafT, px,y+h/2, left?lx+lw:lx,y+h-leafT]); }
    else if(kind==='vaivem'){ hinge(left?lx+8:lx+lw-8,y+h*0.12); hinge(left?lx+8:lx+lw-8,y+h*0.8); sym([hx,y+leafT,ox,y+h/2,hx,y+h-leafT]); R((left?lx+lw-leafT-180:lx+leafT+30),y+h*0.45,150,260,`url(#${p}met)`,'rx="8" opacity=".85"'); }
    else { hinge(left?lx+8:lx+lw-8,y+h*0.12); hinge(left?lx+8:lx+lw-8,y+h*0.78);
@@ -271,21 +283,27 @@ function make(desc,opt){
     if(ativa){ if(s.kind==='portinhola'){R((left?lx+lw-leafT/2:lx+leafT/2)-10,y+h/2-40,20,80,c.s,'rx="8"')} else lever(left? lx+lw-leafT/2 : lx+leafT/2, y+h-1050*(h/2150), left?-1:1); }
     else if(n>1 && i===Math.floor(n/2)-1){ R(lx+lw-leafT/2-8,y+leafT+40,16,160,c.s,'rx="6"'); R(lx+lw-leafT/2-8,y+h-leafT-200,16,160,c.s,'rx="6"'); }
     sym([hx,y+leafT,ox-(left?leafT:-leafT),y+h/2,hx,y+h-leafT]); }
+   if(A>0) gOut(lx,y,lw,h,0.3);
   }
  }
  function camarao(x,y,w,h){
-  const n=s.n, lw=w/n, central=/CENTRAL/.test(s.d);
-  for(let i=0;i<n;i++){const lx=x+i*lw; leafBox(lx,y,lw,h,s.fills[i%s.fills.length]); if(/TRAVESSA/.test(s.d)) R(lx+leafT,y+h*0.5,lw-2*leafT,leafT*1.3,`url(#${p}fh)`,`stroke="${c.s}" stroke-opacity=".7" stroke-width="3"`); R(lx,y,lw,h,i%2?'#000':'#fff',`opacity="${i%2?.07:.08}"`);
-   const joint = central ? (i>0 && i!==n/2) : i>0; if(joint){hinge(lx,y+h*0.15);hinge(lx,y+h*0.75)} }
+  const n=s.n, lw=w/n, central=/CENTRAL/.test(s.d), kc=1-0.8*A;
+  if(A>0) gap(x,y,w,h);
+  for(let i=0;i<n;i++){const lx=x+i*lw;
+   if(A>0) gIn(central&&i>=n/2? x+w : x, y, kc, 1);
+   leafBox(lx,y,lw,h,s.fills[i%s.fills.length]); if(/TRAVESSA/.test(s.d)) R(lx+leafT,y+h*0.5,lw-2*leafT,leafT*1.3,`url(#${p}fh)`,`stroke="${c.s}" stroke-opacity=".7" stroke-width="3"`); R(lx,y,lw,h,i%2?'#000':'#fff',`opacity="${i%2?.07:.08}"`);
+   const joint = central ? (i>0 && i!==n/2) : i>0; if(joint){hinge(lx,y+h*0.15);hinge(lx,y+h*0.75)}
+   if(A>0) gOut(lx,y,lw,h,i%2?0.32:0.06); }
   hinge(x+8,y+h*0.15);hinge(x+8,y+h*0.75); if(central){hinge(x+w-8,y+h*0.15);hinge(x+w-8,y+h*0.75)}
-  if(central){ fechCentral(x+w/2,y,h); } else { fechLateral(x+w-leafT/2,y,h,'r'); }
+  if(A<0.02){ if(central){ fechCentral(x+w/2,y,h); } else { fechLateral(x+w-leafT/2,y,h,'r'); } }
   if(opt.sentido){ if(central){ const a=[],b=[]; for(let i=0;i<=n/2;i++){a.push(x+i*lw, i%2? y+h*0.18 : y+h*0.08); b.push(x+w-i*lw, i%2? y+h*0.18 : y+h*0.08)} sym(a); sym(b); arrow(x+w*0.3,y+h*0.64,-1); arrow(x+w*0.7,y+h*0.64,1); }
    else { const pts=[];for(let i=0;i<=n;i++)pts.push(x+i*lw, i%2? y+h*0.18 : y+h*0.08);sym(pts); arrow(x+w/2,y+h*0.64,-1,260); } }
  }
  function guilhotina(x,y,w,h){
-  const hh=(h+45)/2;
-  leafBox(x,y,w,hh,'vd'); R(x+10,y+hh-45+10,w,hh,'#000','opacity=".14"'); leafBox(x,y+hh-45,w,hh,'vd');
-  R(x+w/2-70,y+hh-45+leafT/2-9,140,18,c.s,'rx="8"'); arrowV(x+w/2,y+hh+hh/2,-1,160);
+  const hh=(h+45)/2, up=A*(hh-45)*0.92;
+  leafBox(x,y,w,hh,'vd'); if(A>0) gap(x,y+h-up,w,up);
+  R(x+10,y+hh-45+10-up,w,hh,'#000','opacity=".14"'); leafBox(x,y+hh-45-up,w,hh,'vd');
+  R(x+w/2-70,y+hh-45-up+leafT/2-9,140,18,c.s,'rx="8"'); arrowV(x+w/2,y+hh+hh/2,-1,160);
  }
  function grid(x,y,w,h,kind,rowsSpec){
   // rowsSpec: array of row types; cols from s
@@ -304,17 +322,20 @@ function make(desc,opt){
  function cell(x,y,w,h,t){
   if(t==='basc'){ // módulo basculante: 3 básculas no eixo horizontal + alavanca
    frame(x,y,w,h,leafT*0.8); const ix=x+leafT*0.8, iy=y+leafT*0.8, iw=w-leafT*1.6-46, ih=h-leafT*1.6, nb=3, bh=ih/nb;
-   for(let i=0;i<nb;i++){ const by=iy+i*bh; R(ix,by,iw,bh,`url(#${p}fh)`,'opacity=".9"'); glass(ix+12,by+12,iw-24,bh-24);
+   for(let i=0;i<nb;i++){ const by=iy+i*bh; if(A>0){ gap(ix,by,iw,bh); gIn(ix,by+bh/2,1,1-0.82*A); } R(ix,by,iw,bh,`url(#${p}fh)`,'opacity=".9"'); glass(ix+12,by+12,iw-24,bh-24);
     push(`<line x1="${ix}" y1="${by+bh/2}" x2="${ix+iw}" y2="${by+bh/2}" stroke="${c.s}" stroke-width="5" stroke-dasharray="14 10" opacity=".55"/><circle cx="${ix+8}" cy="${by+bh/2}" r="9" fill="${c.s}"/><circle cx="${ix+iw-8}" cy="${by+bh/2}" r="9" fill="${c.s}"/>`);
+    if(A>0) gOut(ix,by,iw,bh,0.25);
     if(opt.sentido) sym([ix+iw*0.15,by+bh*0.18, ix+iw*0.5,by+bh/2, ix+iw*0.15,by+bh*0.82]); }
    R(ix+iw+6,iy,40,ih,`url(#${p}fv)`,`stroke="${c.s}" stroke-opacity=".4"`); R(ix+iw+12,iy+ih*0.55,28,ih*0.3,`url(#${p}met)`,'rx="12"'); R(ix+iw-4,iy+ih*0.83,60,24,c.s,'rx="10"');
    return;
   }
   if(t==='max'||t==='piv'){
+   if(A>0){ gap(x,y,w,h); gIn(x+w/2,y,t==='piv'?Math.cos(A*1.35):1,t==='max'?1-0.5*A:1); }
    leafBox(x,y,w,h,s.base==='vz'?'vz':'vd');
    if(t==='max'){ sym([x+leafT,y+leafT, x+w/2,y+h-leafT, x+w-leafT,y+leafT]); R(x+w/2-50,y+h-leafT/2-9,100,18,c.s,'rx="8"') }
    else if(t==='basc'){ }
    else { push(`<line x1="${x+w/2}" y1="${y+leafT}" x2="${x+w/2}" y2="${y+h-leafT}" stroke="${c.s}" stroke-width="5" stroke-dasharray="18 12" opacity=".5"/><circle cx="${x+w/2}" cy="${y+leafT/2}" r="11" fill="${c.s}"/><circle cx="${x+w/2}" cy="${y+h-leafT/2}" r="11" fill="${c.s}"/>`); R(x+w-leafT/2-10,y+h/2-50,20,100,c.s,'rx="8"'); sym([x+leafT,y+leafT, x+w/2,y+h/2, x+leafT,y+h-leafT]); sym([x+w-leafT,y+leafT, x+w/2,y+h/2, x+w-leafT,y+h-leafT]); }
+   if(A>0) gOut(x,y,w,h,0.25);
   } else if(t==='vz') fill(x,y,w,h,'vz');
   else if(t==='lb') fill(x,y,w,h,'lb');
   else if(t==='rip') fill(x,y,w,h,'rip');
@@ -337,7 +358,7 @@ function make(desc,opt){
   if(sg||pele){ rows.length=0; rows.push('fixa','fixa','fixa'); }
   const j=sg?18:(pele?40:56), rh=(h-j*(rows.length+1))/rows.length, cw=(w-j*(cols+1))/cols;
   R(x,y,w,h,sg?'#14181a':`url(#${p}fh)`);
-  for(let r=0;r<rows.length;r++)for(let ci=0;ci<cols;ci++){const mx=x+j+ci*(cw+j),my=y+j+r*(rh+j); if(rows[r]==='max'){leafBox(mx,my,cw,rh,'vd'); sym([mx+leafT,my+leafT,mx+cw/2,my+rh-leafT,mx+cw-leafT,my+leafT])} else R(mx,my,cw,rh,`url(#${p}gl)`)}
+  for(let r=0;r<rows.length;r++)for(let ci=0;ci<cols;ci++){const mx=x+j+ci*(cw+j),my=y+j+r*(rh+j); if(rows[r]==='max'){ if(A>0){ gap(mx,my,cw,rh); gIn(mx+cw/2,my,1,1-0.5*A); } leafBox(mx,my,cw,rh,'vd'); if(A>0) gOut(mx,my,cw,rh,0.25); sym([mx+leafT,my+leafT,mx+cw/2,my+rh-leafT,mx+cw-leafT,my+leafT])} else R(mx,my,cw,rh,`url(#${p}gl)`)}
   push(`<svg x="${x}" y="${y}" width="${w}" height="${h}" overflow="hidden"><polygon points="${w*0.1},0 ${w*0.32},0 ${w*0.02},${h} ${-w*0.2},${h}" fill="url(#${p}rf)" opacity=".5"/><polygon points="${w*0.55},0 ${w*0.6},0 ${w*0.38},${h} ${w*0.33},${h}" fill="#fff" opacity=".16"/></svg>`);
   if(!sg) for(let ci=0;ci<=cols;ci++) R(x+ci*(cw+j),y,j,h,`url(#${p}fv)`,'opacity=".9"');
   if(s.canto){ R(x+w-8,y,16,h,c.s) }
@@ -363,6 +384,7 @@ function make(desc,opt){
  }
  function tubo2(x1,y1,x2,y2){push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="url(#${p}met)" stroke-width="60" stroke-linecap="round"/>`)}
  function portao(x,y,w,h){
+  if(A>0){ gap(x,y,w,h); gIn(x,y,Math.cos(A*1.3),1); }
   frame(x,y,w,h,70); const ix=x+70,iy=y+70,iw=w-140,ih=h-140, d=s.d;
   const tubes=(yy,hh)=>{for(let k=yy;k<yy+hh-40;k+=130) R(ix,k,iw,100,`url(#${p}fh)`,`stroke="${c.s}" stroke-opacity=".4"`)};
   const round=(yy,hh)=>{for(let k=ix+20;k<ix+iw-30;k+=95) R(k,yy,50,hh,`url(#${p}fv)`,'rx="25"')};
@@ -376,6 +398,7 @@ function make(desc,opt){
   else if(/VENEZIANA/.test(d)) fill(ix,iy,iw,ih,'vz');
   else lam(iy,ih);
   lever(x+w-35,y+h*0.52,-1); hinge(x+8,y+h*0.12); hinge(x+8,y+h*0.8);
+  if(A>0) gOut(x,y,w,h,0.3);
  }
  function brise(x,y,w,h){
   glass(x,y,w,h); for(let k=1;k<4;k++) barH(x,y+k*h/4-20,w,40);
@@ -458,7 +481,8 @@ function categoria(desc){
  if(s.base==='rip') cat='Ripados';
  return cat;
 }
-globalThis.FCTipo={svg:make,parse,titulo,categoria,COR,VID,dims:d=>dims(parse(d))};
+globalThis.FCTipo={svg:make,parse,titulo,categoria,COR,VID,dims:d=>dims(parse(d)),
+ move:d=>{const k=parse(d).kind; return !['fixo','guarda','brise','revest'].includes(k) && (k!=='fachada'||/MAXIM/.test(d)); }};
 })();
 
 FCTipo.CATS=["Janelas de correr","Maxim-ar e basculantes","Janelas camarão","Janelas especiais","Portas de correr","Portas camarão","Portas de giro e pivotantes","Painéis fixos","Ripados","Fachadas","Guarda-corpo e sacadas","Portões","Brises"];
