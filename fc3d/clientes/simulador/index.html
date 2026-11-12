@@ -171,6 +171,8 @@
   .medidas input{width:100%;margin-top:3px;border:1px solid #b9dfe2;border-radius:10px;padding:8px;font:600 14px Inter,sans-serif;background:#fff;color:#0f172a}
   html.dark .medidas input{background:#0f172a;color:#e2e8f0;border-color:#334155}
   #adBefore{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;display:none}
+  /* 11/11/2026 · Comparar antes e depois: mostra só a esquadria aplicada, sem os pontos e o contorno de ajuste */
+  #canvasWrap.comparando #ui,#canvasWrap.comparando #hint{display:none!important}
   #adLinha{position:absolute;top:0;bottom:0;width:3px;margin-left:-1.5px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.25);pointer-events:none;display:none}
   #adLinha:after{content:"◀ ▶";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;color:#025860;border-radius:99px;padding:6px 8px;font:700 11px Inter,sans-serif;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.3)}
   .adTag{position:absolute;top:8px;padding:3px 9px;border-radius:99px;background:rgba(15,23,42,.7);color:#fff;font:700 11px Inter,sans-serif;pointer-events:none;display:none}
@@ -2519,7 +2521,7 @@
   const AD = (() => {
     let pos = 0; const api = {};
     api.foto = im => { try { const k = Math.min(1, 1400 / Math.max(im.naturalWidth || im.width, im.naturalHeight || im.height)), c = document.createElement('canvas'); c.width = Math.round((im.naturalWidth || im.width) * k); c.height = Math.round((im.naturalHeight || im.height) * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); $('adBefore').src = c.toDataURL('image/jpeg', .85); } catch (_) {} };
-    api.aplicar = () => { const on = pos > 0 && !!state.img, i = $('adBefore'); if (!i) return;
+    api.aplicar = () => { const on = pos > 0 && !!state.img, i = $('adBefore'); if (!i) return; $('canvasWrap').classList.toggle('comparando', on || window._cmpAtivo === true);
       i.style.display = on ? 'block' : 'none'; i.style.clipPath = 'inset(0 ' + (100 - pos) + '% 0 0)'; i.style.webkitClipPath = i.style.clipPath;
       const l = $('adLinha'); l.style.display = on && pos < 100 ? 'block' : 'none'; l.style.left = pos + '%';
       $('adTagA').style.display = on ? 'block' : 'none'; $('adTagD').style.display = on && pos < 100 ? 'block' : 'none'; };
@@ -2610,7 +2612,9 @@
       $('btnVideoObra2').onclick = () => OBRA.gravarVideo();
       $('btnQr2').onclick = () => OBRA.abrirQR(); $('btnEscritorio').onclick = () => OBRA.abrirEscritorio();
       $('btnResumo').onclick = RESUMO;
-      $('adRange').addEventListener('input', () => AD.set($('adRange').value));
+      $('adRange').addEventListener('input', () => { window._cmpAtivo = true; AD.set($('adRange').value); });
+      /* depois de comparar, os pontos de ajuste só voltam quando tocar na foto */
+      $('canvasWrap').addEventListener('pointerdown', () => { if (window._cmpAtivo) { window._cmpAtivo = false; AD.aplicar(); } }, true);
       document.querySelectorAll('[data-ir]').forEach(s => s.addEventListener('click', () => { const e = $({ 1: 'canvasWrap', 2: 'etpCM', 3: 'etpReb', 4: 'etpEsq', 5: 'etpFim' }[s.dataset.ir]); if (e && e.offsetParent) e.scrollIntoView({ behavior: 'smooth', block: 'center' }); }));
 
       // escolher tipologia, cor, acabamento ou vidro já coloca a esquadria no vão
