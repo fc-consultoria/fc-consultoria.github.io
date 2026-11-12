@@ -127,6 +127,22 @@
   /* ===== 11/11/2026 · fluxo novo: vão bruto > contramarco > reboco > esquadria (FC Consultoria em Esquadria) ===== */
   .passos5{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-width:42rem;margin:0 auto}
   .passos5 .step{cursor:pointer;padding:6px 4px} #step3{display:none!important}
+  /* 11/11/2026 · a foto da obra fica sempre na tela: a página não rola inteira; a foto e o painel de comandos rolam cada um no seu espaço.
+     Celular/tablet em pé: foto em cima (metade da tela) e comandos embaixo. Notebook, tablet deitado e TV: foto à esquerda e comandos à direita. */
+  html,body{height:100%}
+  body{height:100vh;height:100dvh;min-height:0!important;overflow:hidden}
+  #simLay{min-height:0}
+  #simMain,#simAside{min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  @media (max-width:1023.98px){
+    #simMain{flex:0 0 auto;max-height:56dvh;border-bottom:2px solid #b9dfe2}
+    #simAside{flex:1 1 auto;border-top:0}
+  }
+  @media (max-width:1023.98px) and (orientation:landscape) and (min-width:700px){
+    #simLay{flex-direction:row}
+    #simMain{flex:1 1 auto;max-height:none;border-bottom:0}
+    #simAside{flex:0 0 340px;width:340px;border-left:1px solid #fde4cc}
+  }
+  @media (min-width:1800px){#simAside{width:440px!important}}
   .etp{border:1px solid #b9dfe2;border-radius:14px;padding:12px;background:#fffaf5}
   .tipg-t{font:700 10px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:8px 0 6px}
   .tipg-g{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
@@ -276,10 +292,10 @@
 </header>
 
 <!-- CONTAINER PRINCIPAL -->
-<div class="flex flex-col lg:flex-row flex-1 overflow-hidden">
+<div id="simLay" class="flex flex-col lg:flex-row flex-1 overflow-hidden">
 
   <!-- MAIN -->
-  <main class="flex-1 flex flex-col min-h-0 overflow-y-auto">
+  <main id="simMain" class="flex-1 flex flex-col min-h-0 overflow-y-auto">
     <!-- Obra · vários ambientes (FC) -->
     <div id="obraBar" class="shrink-0 px-3 pt-3">
       <div class="max-w-3xl mx-auto obra-card">
@@ -442,7 +458,7 @@
   </main>
 
   <!-- SIDEBAR -->
-  <aside class="w-full lg:w-[380px] shrink-0 border-t lg:border-t-0 lg:border-l border-orange-100 dark:border-slate-800 bg-white dark:bg-slate-900 lg:overflow-y-auto shadow-xl shadow-orange-900/5 z-10">
+  <aside id="simAside" class="w-full lg:w-[380px] shrink-0 border-t lg:border-t-0 lg:border-l border-orange-100 dark:border-slate-800 bg-white dark:bg-slate-900 lg:overflow-y-auto shadow-xl shadow-orange-900/5 z-10">
     <div class="p-4 space-y-6 pb-20 lg:pb-4">
 
       <!-- Vãos -->
