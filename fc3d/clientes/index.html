@@ -728,6 +728,10 @@ const SO_CAT_EMP=['guapore-vidros'];
 /* 11/11/2026 · Brito Esquadrias (Bruno) · licença do Orientativo 3D: Gestor = Tipologias, Catálogo 3D e Equipe; Colaborador = Tipologias e Catálogo 3D.
    Empresa nesta lista só vê os módulos listados (Início e Catálogo 3D sempre). Para liberar mais um módulo, acrescente a chave (ex.: 'apr'). */
 const LIC_MODS={'brito-esquadrias':['tip','ges']};
+/* 11/11/2026 · Simulador de obra novo (foto do vão → contramarco → reboco → tipologia): primeiro cliente pagante a usar é a Brito Esquadrias.
+   Contrato dele não muda (só ganha a ferramenta). Para liberar a outra empresa, acrescente o código dela aqui. */
+const SIM_NOVO_EMP=['brito-esquadrias'];
+const simNovo=()=>!!(S&&SIM_NOVO_EMP.includes(S.empresa)&&['gestor','vendedor'].includes(papel())&&!soCat());
 const licOk=k=>!(S&&LIC_MODS[S.empresa])||k==='inicio'||LIC_MODS[S.empresa].includes(k);
 const soCat=()=>!!(S&&SO_CAT_EMP.includes(S.empresa)&&papel()==='vendedor'&&(S.matriz?papelVer==='vendedor':S.setor==='vendas'));
 const itens=()=>soCat()?MENU.filter(m=>m.k==='inicio'):MENU.filter(m=>m.p.includes(papel())&&(!m.fc||(S&&S.matriz))&&licOk(m.k)&&(!m.ok||m.ok()));
@@ -736,6 +740,7 @@ function render(){
   $('#euPapel').textContent=S.matriz?'vendo como '+PAPEIS[papel()]:(S.setor&&S.setor!=='gestor'?(SETORES[S.setor]||S.setor):(PAPEIS[S.papel]||S.papel));
   $('#menu').innerHTML=itens().map(m=>`<button type="button" data-tab="${m.k}" ${m.k===tab?'aria-current="page"':''}><span aria-hidden="true">${m.i}</span>${m.n}</button>`).join('')+(['demo','gestor','vendedor'].includes(papel())?`<button type="button" data-cat3d><span aria-hidden="true">▤</span>Catálogo 3D</button>`:'');/* 03/11: gestor e colaborador também, com o catálogo da própria empresa */
   {const c3=$('#menu').querySelector('[data-cat3d]');if(c3)c3.onclick=()=>{location.href='orientativo/?foco=1#cat';};}
+  if(simNovo()){$('#menu').insertAdjacentHTML('beforeend',`<button type="button" data-simnovo><span aria-hidden="true">📷</span>Simulador de obra</button>`);$('#menu').querySelector('[data-simnovo]').onclick=()=>{location.href='simulador/';};}
   /* 04/11/2026 · Simulador de Obra 3D no menu, ao lado do Catálogo 3D (só onde ele está ligado) */
   if(window.PFCo3d&&!soCat()&&['gestor','vendedor','demo'].includes(papel())&&licOk('o3d')&&(papel()==='demo'||(S.matriz&&!S.empresa)||PFCo3d.pode(S,papel()))){$('#menu').insertAdjacentHTML('beforeend',`<button type="button" data-o3dm ${tab==='o3d'?'aria-current="page"':''}><span aria-hidden="true">${S.obra3d_bloq?'🔒':'⬆'}</span>Simulador de Obra 3D</button>`);
    $('#menu').querySelector('[data-o3dm]').onclick=()=>{tab='o3d';render();scrollTo(0,0);};/* 05/11 · aba própria: o Simulador não aparece mais na Apresentação */}
