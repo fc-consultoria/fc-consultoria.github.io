@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Sala de apresentação · FC Consultoria em Esquadria</title>
+<link rel="stylesheet" href="../simulador/fonts.css">
+<style>
+/* Sala de apresentação · Plataforma FC 3D (11/11/2026)
+   Vídeo chamada da FC com o cliente: câmera, microfone e compartilhamento da tela da plataforma.
+   O cliente entra só pelo link da sala, sem login e sem acesso à plataforma.
+   © FC Consultoria em Esquadria · CNPJ 52.985.682/0001-32 */
+:root{--bg:#eef3f3;--fg:#13232e;--mut:#5a6b72;--line:#d3dfe0;--teal:#02717d;--teal2:#025860;--tint:#e1f2f3;--palco:#0f1c22}
+*{box-sizing:border-box}[hidden]{display:none!important}html,body{height:100%}body{margin:0;background:var(--bg);color:var(--fg);font:15px Inter,system-ui,sans-serif;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border-bottom:1px solid var(--line)}
+.lg{width:36px;height:36px;border-radius:10px;background:var(--teal);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
+h1{font-size:15px;margin:0}header p{margin:0;font-size:12px;color:var(--mut)}
+.bt{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:#fff;color:var(--fg);border-radius:12px;padding:10px 14px;font:600 14px Inter,sans-serif;text-decoration:none;cursor:pointer;min-height:44px}
+.bt.pri{background:var(--teal);border-color:var(--teal);color:#fff}.bt.off{background:#fde8e8;border-color:#f3b4b4;color:#9b1c1c}.bt.red{background:#b42318;border-color:#b42318;color:#fff}
+.bt:disabled{opacity:.5;cursor:default}
+main{flex:1;display:flex;flex-direction:column;min-height:0}
+.centro{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
+.cx{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;max-width:440px;width:100%}
+.cx h2{margin:0 0 6px;font-size:20px}.cx p{color:var(--mut);margin:0 0 14px;line-height:1.5}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:10px}
+input{width:100%;margin-top:4px;border:1px solid var(--line);border-radius:10px;padding:11px;font:16px Inter,sans-serif;color:var(--fg);background:#fff}
+.palco{flex:1;position:relative;background:var(--palco);min-height:0;overflow:hidden}
+.palco video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--palco)}
+.mini{position:absolute;right:12px;bottom:12px;width:min(28vw,220px);aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:#24343b;border:2px solid rgba(255,255,255,.25);z-index:2}
+.mini video{object-fit:cover}.mini.eu{right:auto;left:12px}
+.mini span{position:absolute;left:6px;bottom:4px;color:#fff;font-size:11px;text-shadow:0 1px 2px #000;z-index:1}
+.aviso{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#cfe3e5;text-align:center;padding:20px;font-size:15px;line-height:1.5;z-index:1}
+.barra{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:10px;background:#fff;border-top:1px solid var(--line)}
+.link{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center;padding:8px 10px;background:var(--tint);font-size:13px}
+.link code{background:#fff;border-radius:8px;padding:6px 8px;font-size:12px;word-break:break-all}
+.st{font-size:12px;color:var(--mut);text-align:center;padding:4px}
+footer{text-align:center;font-size:11px;color:var(--mut);padding:6px}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+<header>
+  <div class="lg">FC</div>
+  <div style="min-width:0"><h1>Sala de apresentação</h1><p id="sub">FC Consultoria em Esquadria · Plataforma FC 3D</p></div>
+  <a class="bt" id="volta" href="/fc3d/clientes/" style="margin-left:auto;min-height:36px;padding:7px 11px;font-size:12px" hidden>← Voltar para o painel</a>
+</header>
+<main id="main"><div class="centro"><div class="cx"><h2>Abrindo a sala…</h2></div></div></main>
+<footer>Desenvolvido por FC Consultoria em Esquadria · CNPJ 52.985.682/0001-32 · imagens demonstrativas</footer>
+<script>
+(function(){
+const PFC='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/',PFCK='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs';
+/* sinalização da chamada: canal em tempo real (o mesmo já usado nas apresentações ao vivo da FC) */
+const RT=window.supabase.createClient('https://cpkjphodruyxfouirhpd.supabase.co','sb_publishable_d0HEeWsaqOeZIQKGftlF-Q_B8BUOWWg',{auth:{persistSession:false}});
+const ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:stun2.l.google.com:19302']}]};
+const WA='5566999867984',$=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const q=new URLSearchParams(location.search),SALA=(q.get('s')||'').replace(/[^a-z0-9]/gi,'').slice(0,24);
+const linkSala=c=>location.origin+location.pathname+'?s='+c;
+const jitsi=c=>'https://meet.jit.si/FCConsultoria-'+c;
+function tela(h){$('#main').innerHTML=h;}
+function caixa(t,p,extra){tela(`<div class="centro"><div class="cx"><h2>${t}</h2><p>${p}</p>${extra||''}</div></div>`);}
+async function midia(video){
+  try{return await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:video?{width:{ideal:640},height:{ideal:480},facingMode:'user'}:false});}
+  catch(e){if(video){try{return await navigator.mediaDevices.getUserMedia({audio:true,video:false});}catch(_){}}return null;}
+}
+function vid(muted){const v=document.createElement('video');v.autoplay=true;v.playsInline=true;v.muted=!!muted;v.setAttribute('playsinline','');return v;}
+
+/* ================= FC conduzindo ================= */
+async function anfitriao(){
+  let tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
+  if(!tk){caixa('Entre na Plataforma FC 3D','A sala de apresentação é criada pelo acesso FC.','<a class="bt pri" href="/fc3d/clientes/">Ir para a Plataforma FC 3D</a>');return;}
+  let d=null;try{const r=await fetch(PFC+'pfc_sessao',{method:'POST',headers:{apikey:PFCK,'Content-Type':'application/json'},body:JSON.stringify({p_token:tk})});d=r.ok?await r.json():null;}catch(_){}
+  if(!d||!d.matriz){caixa('Só para a FC','A sala de apresentação é aberta pelo acesso FC. O cliente entra pelo link que você manda.','<a class="bt pri" href="/fc3d/clientes/">Ir para a Plataforma FC 3D</a>');return;}
+  $('#volta').hidden=false;
+  let cod='';try{cod=localStorage.getItem('fc_sala_cod')||'';}catch(_){}
+  caixa('Nova apresentação','Crie a sala e mande o link para o cliente. Ele entra pelo navegador, sem instalar nada e sem acesso à plataforma. Depois é só compartilhar a tela da Sua Fábrica em 3D ou do Simulador.',
+   `<label>Nome do cliente (opcional)<input id="hCli" placeholder="Ex.: João · Vidraçaria Central"></label><button class="bt pri" id="hNova" style="width:100%">Criar sala e ligar a câmera</button>${cod?`<button class="bt" id="hVolta" style="width:100%;margin-top:8px">Voltar para a última sala</button>`:''}`);
+  $('#hNova').onclick=()=>{const c=(crypto.randomUUID?crypto.randomUUID().replace(/-/g,''):Math.random().toString(36).slice(2)+Date.now().toString(36)).slice(0,12);try{localStorage.setItem('fc_sala_cod',c);}catch(_){}conduzir(c,$('#hCli').value.trim());};
+  if($('#hVolta'))$('#hVolta').onclick=()=>conduzir(cod,'');
+}
+async function conduzir(c,cli){
+  const S={cam:null,tela:null,pcs:{},rem:{},ps:[],camOn:true,micOn:true};
+  S.cam=await midia(true);
+  if(!S.cam){caixa('Câmera e microfone bloqueados','Permita a câmera e o microfone no navegador (cadeado ao lado do endereço) e tente de novo.','<button class="bt pri" onclick="location.reload()">Tentar de novo</button>');return;}
+  const u=linkSala(c),msg=`Olá${cli?' '+cli:''}! Aqui é o Fernando, da FC Consultoria em Esquadria. Vou te apresentar a Plataforma FC 3D por vídeo. Na hora combinada, abra este link pelo celular ou computador e toque em Entrar: ${u}`;
+  tela(`<div class="link">Link do cliente: <code>${esc(u)}</code><button class="bt" id="cp" style="min-height:34px;padding:6px 10px;font-size:12px">Copiar</button><a class="bt pri" style="min-height:34px;padding:6px 10px;font-size:12px" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msg)}">Enviar no WhatsApp</a></div>
+   <div class="palco" id="palco"><div class="aviso" id="av">Aguardando o cliente entrar pelo link…</div></div>
+   <div class="st" id="st">Sala aberta · ninguém na sala ainda</div>
+   <div class="barra"><button class="bt" id="bMic">🎙 Microfone</button><button class="bt" id="bCam">📷 Câmera</button><button class="bt pri" id="bTela">🖥 Compartilhar tela</button>
+    <a class="bt" href="/fc3d/clientes/#tip" target="_blank" rel="noopener">Abrir Sua Fábrica em 3D</a><a class="bt" href="/fc3d/clientes/simulador/" target="_blank" rel="noopener">Abrir Simulador</a>
+    <a class="bt" href="${jitsi(c)}" target="_blank" rel="noopener" title="Se a chamada não conectar, use esta sala reserva">Sala reserva</a><button class="bt red" id="bFim">Encerrar</button></div>`);
+  $('#cp').onclick=()=>{try{navigator.clipboard.writeText(u).then(()=>{$('#cp').textContent='Copiado';});}catch(_){}};
+  const palco=$('#palco');const eu=document.createElement('div');eu.className='mini eu';const ev=vid(true);ev.srcObject=S.cam;eu.appendChild(ev);eu.insertAdjacentHTML('beforeend','<span>Você</span>');palco.appendChild(eu);
+  const ch=RT.channel('fcsala-'+c,{config:{broadcast:{self:false},presence:{key:'fc'}}});
+  const env=(event,payload)=>ch.send({type:'broadcast',event,payload});
+  function desenha(){
+    const n=S.ps.length;(document.getElementById('st')||{}).textContent=n?('Na sala: '+S.ps.map(p=>p.n+(p.e?' · '+p.e:'')).join(', ')):'Sala aberta · ninguém na sala ainda';
+    $('#av').style.display=Object.keys(S.rem).length?'none':'flex';
+    palco.querySelectorAll('.cli').forEach(x=>{if(!S.rem[x.dataset.k])x.remove();});
+    Object.entries(S.rem).forEach(([k,st],i)=>{let b=palco.querySelector(`.cli[data-k="${k}"]`);if(!b){b=document.createElement('div');b.className='cli';b.dataset.k=k;const v=vid(false);v.srcObject=st;b.appendChild(v);palco.appendChild(b);v.play().catch(()=>{});}
+      b.style.cssText=i===0?'position:absolute;inset:0':'';if(i>0){b.className='cli mini';b.style.bottom=(12+i*0)+'px';}});
+  }
+  function ligar(k){
+    if(S.pcs[k])S.pcs[k].close();const pc=new RTCPeerConnection(ICE);S.pcs[k]=pc;
+    S.cam.getTracks().forEach(t=>pc.addTrack(t,S.cam));if(S.tela)S.tela.getTracks().forEach(t=>pc.addTrack(t,S.tela));
+    pc.onicecandidate=e=>{if(e.candidate)env('rtc',{to:k,ice:e.candidate.toJSON()});};
+    pc.ontrack=e=>{S.rem[k]=e.streams[0];desenha();};
+    pc.onconnectionstatechange=()=>{if(pc.connectionState==='failed'){(document.getElementById('st')||{}).textContent='A conexão com o cliente não fechou. Peça para ele sair e entrar de novo, ou use a Sala reserva.';}};
+    let nova=true;pc.onnegotiationneeded=async()=>{try{const of=await pc.createOffer();await pc.setLocalDescription(of);env('rtc',{to:k,nova,sdp:pc.localDescription.toJSON(),tela:S.tela?S.tela.id:''});nova=false;}catch(e){console.warn(e);}};
+  }
+  const lista=()=>Object.entries(ch.presenceState()).filter(([k])=>k!=='fc').map(([k,v])=>Object.assign({key:k},v[0]||{})).sort((a,b)=>(a.t||0)-(b.t||0)).slice(0,4);
+  ch.on('presence',{event:'sync'},()=>{const antes=new Set(S.ps.map(p=>p.key));S.ps=lista();const agora=new Set(S.ps.map(p=>p.key));
+      Object.keys(S.pcs).forEach(k=>{if(!agora.has(k)){S.pcs[k].close();delete S.pcs[k];delete S.rem[k];}});desenha();})
+    .on('broadcast',{event:'refaz'},({payload})=>{if(payload&&payload.key)ligar(payload.key);})
+    .on('broadcast',{event:'rtc'},async({payload:p})=>{if(!p||p.to!=='fc')return;const pc=S.pcs[p.from];if(!pc)return;try{if(p.sdp)await pc.setRemoteDescription(p.sdp);if(p.ice)await pc.addIceCandidate(p.ice);}catch(e){console.warn(e);}})
+    .subscribe(async s=>{if(s==='SUBSCRIBED')await ch.track({n:'FC',fc:1});});
+  const mark=()=>{$('#bMic').className='bt'+(S.micOn?'':' off');$('#bMic').textContent=S.micOn?'🎙 Microfone':'🔇 Microfone desligado';$('#bCam').className='bt'+(S.camOn?'':' off');$('#bCam').textContent=S.camOn?'📷 Câmera':'🚫 Câmera desligada';
+    $('#bTela').textContent=S.tela?'⏹ Parar de compartilhar':'🖥 Compartilhar tela';};mark();
+  $('#bMic').onclick=()=>{S.micOn=!S.micOn;S.cam.getAudioTracks().forEach(t=>t.enabled=S.micOn);mark();};
+  $('#bCam').onclick=()=>{S.camOn=!S.camOn;S.cam.getVideoTracks().forEach(t=>t.enabled=S.camOn);mark();};
+  async function pararTela(){if(!S.tela)return;const id=S.tela.id;S.tela.getTracks().forEach(t=>t.stop());Object.values(S.pcs).forEach(pc=>pc.getSenders().forEach(s=>{if(s.track&&s.track.kind==='video'&&!S.cam.getTracks().includes(s.track))pc.removeTrack(s);}));
+    S.tela=null;env('tela',{on:false,id});mark();}
+  $('#bTela').onclick=async()=>{if(S.tela){pararTela();return;}
+    if(!navigator.mediaDevices.getDisplayMedia){alert('Este aparelho não compartilha a tela pelo navegador. Use um computador.');return;}
+    try{S.tela=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{ideal:15}},audio:false});}catch(_){S.tela=null;return;}
+    const tr=S.tela.getVideoTracks()[0];try{tr.contentHint='detail';}catch(_){}tr.onended=pararTela;
+    env('tela',{on:true,id:S.tela.id});Object.values(S.pcs).forEach(pc=>pc.addTrack(tr,S.tela));mark();};
+  $('#bFim').onclick=async()=>{if(!confirm('Encerrar a apresentação?'))return;try{await env('fim',{});}catch(_){}
+    [S.cam,S.tela].forEach(s=>s&&s.getTracks().forEach(t=>t.stop()));Object.values(S.pcs).forEach(p=>p.close());try{await ch.untrack();RT.removeChannel(ch);}catch(_){}
+    try{localStorage.removeItem('fc_sala_cod');}catch(_){}caixa('Apresentação encerrada','A sala foi fechada. O link enviado ao cliente não abre mais a chamada.','<a class="bt pri" href="./">Nova apresentação</a> <a class="bt" href="/fc3d/clientes/">Voltar para o painel</a>');};
+}
+
+/* ================= Cliente entrando pelo link ================= */
+function convidado(){
+  let nome='',emp='';try{const o=JSON.parse(localStorage.getItem('fc_sala_conv')||'{}');nome=o.n||'';emp=o.e||'';}catch(_){}
+  caixa('Apresentação da Plataforma FC 3D','O Fernando, da FC Consultoria em Esquadria, vai apresentar a plataforma por vídeo. Coloque seu nome e toque em Entrar. O navegador vai pedir a câmera e o microfone.',
+   `<label>Seu nome<input id="cN" value="${esc(nome)}" autocomplete="name"></label><label>Empresa<input id="cE" value="${esc(emp)}" autocomplete="organization"></label><p id="cM" style="color:#b42318;margin:0 0 8px;font-size:13px"></p>
+    <button class="bt pri" id="cGo" style="width:100%">Entrar com câmera</button><button class="bt" id="cGo2" style="width:100%;margin-top:8px">Entrar só com microfone</button>`);
+  const vai=video=>{nome=$('#cN').value.trim().slice(0,40);emp=$('#cE').value.trim().slice(0,40);if(nome.length<2){$('#cM').textContent='Coloque o seu nome.';return;}
+    try{localStorage.setItem('fc_sala_conv',JSON.stringify({n:nome,e:emp}));}catch(_){}entrar(video);};
+  $('#cGo').onclick=()=>vai(true);$('#cGo2').onclick=()=>vai(false);
+  async function entrar(video){
+    const eu=await midia(video);
+    const KEY='cv-'+Math.random().toString(36).slice(2,10),T0=Date.now();let pc=null,fc=false,telaId='',micOn=true;
+    tela(`<div class="palco" id="palco"><video id="vGr"></video><div class="aviso" id="av">⏳ Aguardando o Fernando…</div><div class="mini" id="mFc" hidden><video id="vFc"></video><span>Fernando · FC</span></div>${eu&&eu.getVideoTracks().length?'<div class="mini eu"><video id="vEu"></video><span>Você</span></div>':''}</div>
+      <div class="st" id="st">Conectando…</div>
+      <div class="barra"><button class="bt" id="bMic">🎙 Microfone</button><button class="bt" id="bSom" hidden>🔊 Ativar o som</button><a class="bt" href="https://wa.me/${WA}" target="_blank" rel="noopener">WhatsApp da FC</a><button class="bt red" id="bSai">Sair</button></div>`);
+    const vGr=$('#vGr'),vFc=$('#vFc');[vGr,vFc].forEach(v=>{v.autoplay=true;v.playsInline=true;v.setAttribute('playsinline','');});
+    if($('#vEu')){const v=$('#vEu');v.muted=true;v.autoplay=true;v.playsInline=true;v.setAttribute('playsinline','');v.srcObject=eu;}
+    if(!eu){$('#bMic').disabled=true;$('#bMic').textContent='🔇 Sem microfone';}
+    const ch=RT.channel('fcsala-'+SALA,{config:{broadcast:{self:false},presence:{key:KEY}}});
+    const env=(event,payload)=>ch.send({type:'broadcast',event,payload});
+    const streams={};
+    function monta(){if(!document.getElementById('vGr')||!document.getElementById('av'))return;const ids=Object.keys(streams),tel=telaId&&streams[telaId],cam=ids.map(i=>streams[i]).find(s=>s!==tel)||null;
+      if(tel){vGr.srcObject=tel;vGr.style.objectFit='contain';$('#mFc').hidden=!cam;if(cam)vFc.srcObject=cam;}
+      else if(cam){vGr.srcObject=cam;vGr.style.objectFit='contain';$('#mFc').hidden=true;}
+      $('#av').style.display=(tel||cam)?'none':'flex';
+      const p=vGr.play();if(p&&p.catch)p.catch(()=>{vGr.muted=true;vGr.play().catch(()=>{});$('#bSom').hidden=false;});if(!$('#mFc').hidden)vFc.play().catch(()=>{});}
+    $('#bSom').onclick=()=>{vGr.muted=false;vGr.play().catch(()=>{});$('#bSom').hidden=true;};
+    function novoPc(){if(pc)pc.close();pc=new RTCPeerConnection(ICE);
+      pc.ontrack=e=>{const s=e.streams[0];if(!s)return;streams[s.id]=s;s.onremovetrack=()=>{if(!s.getTracks().length){delete streams[s.id];monta();}};monta();};
+      pc.onicecandidate=e=>{if(e.candidate)env('rtc',{to:'fc',from:KEY,ice:e.candidate.toJSON()});};
+      pc.onconnectionstatechange=()=>{const s=pc&&pc.connectionState;if(s==='connected')(document.getElementById('st')||{}).textContent='Ao vivo com a FC Consultoria';
+        if(s==='failed')(document.getElementById('st')||{}).innerHTML='A conexão não fechou nesta rede. <a href="'+jitsi(SALA)+'" target="_blank" rel="noopener">Entrar pela sala reserva</a>';};}
+    ch.on('broadcast',{event:'rtc'},async({payload:p})=>{if(!p||p.to!==KEY)return;try{
+        if(p.sdp){if(p.tela!==undefined)telaId=p.tela||'';const novo=!pc||!!p.nova;if(novo){Object.keys(streams).forEach(k=>delete streams[k]);novoPc();}
+          await pc.setRemoteDescription(p.sdp);
+          if(novo&&eu)eu.getTracks().forEach(t=>pc.addTrack(t,eu));
+          const an=await pc.createAnswer();await pc.setLocalDescription(an);env('rtc',{to:'fc',from:KEY,sdp:pc.localDescription.toJSON()});monta();}
+        if(p.ice&&pc)await pc.addIceCandidate(p.ice);}catch(e){console.warn(e);}})
+      .on('broadcast',{event:'tela'},({payload})=>{telaId=payload&&payload.on?payload.id:'';if(!payload.on&&streams[payload.id])delete streams[payload.id];monta();})
+      .on('broadcast',{event:'fim'},()=>{if(pc)pc.close();if(eu)eu.getTracks().forEach(t=>t.stop());try{RT.removeChannel(ch);}catch(_){}
+        caixa('Apresentação encerrada','Obrigado por participar! Para falar sobre a Plataforma FC 3D, chame a FC no WhatsApp.',`<a class="bt pri" href="https://wa.me/${WA}" target="_blank" rel="noopener">WhatsApp da FC · (66) 9 9986-7984</a>`);})
+      .on('presence',{event:'sync'},()=>{const tem=!!ch.presenceState().fc;
+        if(tem&&!fc){fc=true;(document.getElementById('st')||{}).textContent='Conectando com o Fernando…';env('refaz',{key:KEY});}
+        else if(!tem&&fc){fc=false;if(pc){pc.close();pc=null;}Object.keys(streams).forEach(k=>delete streams[k]);monta();(document.getElementById('av')||{}).textContent='⏸ O Fernando saiu por um instante. A chamada volta sozinha.';(document.getElementById('st')||{}).textContent='Aguardando o Fernando';}
+        else if(!tem)(document.getElementById('st')||{}).textContent='Aguardando o Fernando abrir a sala';})
+      .subscribe(async s=>{if(s==='SUBSCRIBED')await ch.track({n:nome,e:emp,t:T0});});
+    $('#bMic').onclick=()=>{if(!eu)return;micOn=!micOn;eu.getAudioTracks().forEach(t=>t.enabled=micOn);$('#bMic').className='bt'+(micOn?'':' off');$('#bMic').textContent=micOn?'🎙 Microfone':'🔇 Microfone desligado';};
+    $('#bSai').onclick=async()=>{if(pc)pc.close();if(eu)eu.getTracks().forEach(t=>t.stop());try{await ch.untrack();RT.removeChannel(ch);}catch(_){}
+      caixa('Você saiu da apresentação','Para voltar, toque em Entrar de novo.','<button class="bt pri" onclick="location.reload()">Entrar de novo</button>');};
+  }
+}
+if(SALA.length>=8)convidado();else anfitriao();
+})();
+</script>
+<script src="/fc3d/clientes/sessao.js?v=2"></script>
+</body>
+</html>

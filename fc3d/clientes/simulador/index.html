@@ -213,6 +213,7 @@
     fetch(API+'pfc_parceiro',{method:'POST',headers:H,body:JSON.stringify({p_token:tk})}).then(function(r){return r.ok?r.json():null;}).then(function(p){
       if(!p||!hd)return;var t=document.getElementById('themeToggle');
       if(p.matriz){var l=document.createElement('a');l.href='indicacoes.html';l.textContent='Indicações';l.style.cssText=BT+'color:#025860;border:1px solid #b9dfe2';hd.insertBefore(l,t||null);}
+      if(p.matriz){var sl=document.createElement('a');sl.href='../sala/';sl.textContent='Sala de apresentação';sl.style.cssText=BT+'color:#025860;border:1px solid #b9dfe2';hd.insertBefore(sl,t||null);}
       if(p.parceiro){var i=document.createElement('button');i.type='button';i.id='simIndicar';i.textContent='Indicar para a FC';i.style.cssText=BT+'color:#fff;background:#02717d;border:1px solid #02717d';i.onclick=indicar;hd.insertBefore(i,t||null);}
     }).catch(function(){});
    }).catch(function(){nega('Sem conexão','Confira a internet e abra de novo.');});
