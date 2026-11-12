@@ -1,0 +1,20 @@
+{
+  "id": "/fc3d/clientes/",
+  "name": "Plataforma FC 3D · FC Consultoria",
+  "short_name": "FC 3D",
+  "description": "Plataforma FC 3D: Sua Fábrica em 3D e Simulador de obra. Uso exclusivo de empresas licenciadas. Desenvolvido pela FC Consultoria em Esquadria.",
+  "lang": "pt-BR",
+  "start_url": "/fc3d/clientes/?o=app",
+  "scope": "/fc3d/clientes/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f2f4f6",
+  "theme_color": "#02717d",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "/img/app-icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/img/app-icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/img/app-icone-192-m.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/img/app-icone-512-m.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
