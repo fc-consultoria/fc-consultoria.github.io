@@ -734,10 +734,10 @@ function telaMtg(){
 const SO_CAT_EMP=['guapore-vidros'];
 /* 11/11/2026 · Brito Esquadrias (Bruno) · licença do Orientativo 3D: Gestor = Tipologias, Catálogo 3D e Equipe; Colaborador = Tipologias e Catálogo 3D.
    Empresa nesta lista só vê os módulos listados (Início e Catálogo 3D sempre). Para liberar mais um módulo, acrescente a chave (ex.: 'apr'). */
-const LIC_MODS={'brito-esquadrias':['tip','ges']};
+const LIC_MODS={'brito-esquadrias':['tip','ges'],'parceiro-obras':['tip']/* 12/11/2026 · serralheiro parceiro: Tipologias, Catálogo 3D e Simulador de obra */};
 /* 11/11/2026 · Simulador de obra novo (foto do vão → contramarco → reboco → tipologia): primeiro cliente pagante a usar é a Brito Esquadrias.
    Contrato dele não muda (só ganha a ferramenta). Para liberar a outra empresa, acrescente o código dela aqui. */
-const SIM_NOVO_EMP=['brito-esquadrias'];
+const SIM_NOVO_EMP=['brito-esquadrias','parceiro-obras'];
 const simNovo=()=>!!(S&&SIM_NOVO_EMP.includes(S.empresa)&&['gestor','vendedor'].includes(papel())&&!soCat());
 const licOk=k=>!(S&&LIC_MODS[S.empresa])||k==='inicio'||LIC_MODS[S.empresa].includes(k);
 const soCat=()=>!!(S&&SO_CAT_EMP.includes(S.empresa)&&papel()==='vendedor'&&(S.matriz?papelVer==='vendedor':S.setor==='vendas'));
