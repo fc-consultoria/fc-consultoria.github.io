@@ -533,11 +533,11 @@
       <div id="configPanel" class="space-y-5 transition-opacity">
         <!-- 12/11/2026: trena · medida do vão bruto marcada na foto (referência para o lançamento) -->
         <section class="etp" id="etpTrena">
-          <h4><span class="n">2</span>Medida do vão bruto <small style="font-weight:500;color:#94a3b8">(trena)</small></h4>
-          <p>Passe a trena no vão sem reboco e digite a medida. Ela fica marcada na foto, no lado do antes, como referência para o lançamento.</p>
+          <h4><span class="n">2</span>Medida do vão <small style="font-weight:500;color:#94a3b8">(trena)</small></h4>
+          <p>Passe a trena no vão e digite a medida. Ela fica marcada na foto, no lado do antes, como referência para o lançamento.</p>
           <div class="medidas"><label>Largura (mm)<input id="trW" type="number" inputmode="numeric" min="100" max="20000" step="10"></label><label>Altura (mm)<input id="trH" type="number" inputmode="numeric" min="100" max="20000" step="10"></label></div>
           <button type="button" id="btnTrena" class="btn w-full mt-2">Passar a trena</button>
-          <p style="font-size:10px;margin-top:4px">Medida informada pelo vendedor · conferir na obra. Com reboco aplicado a trena não aparece.</p>
+          <p style="font-size:10px;margin-top:4px">Medida informada pelo vendedor · conferir na obra.</p>
         </section>
         <section class="etp" id="etpCM">
           <h4><span class="n">2</span>Aplicar contramarco <small style="font-weight:500;color:#94a3b8">(opcional)</small></h4>
@@ -1872,10 +1872,10 @@
   }
 
   /* 12/11/2026 · TRENA: medida do vão bruto marcada na foto como uma trena passando de canto a canto.
-     Só aparece com medida digitada e sem reboco. No "Comparar antes e depois" fica no lado do antes. */
+     Aparece sempre que a medida for digitada, com o vão bruto ou já acabado. No "Comparar antes e depois" fica no lado do antes. */
   const TRENA = (() => {
     const api = {}; let anim = null; // { t0, ids }
-    const tem = v => v && v.pts && v.pts.length === 4 && v.bruto && (+v.bruto.W || +v.bruto.H) && !(v.et && v.et.reb);
+    const tem = v => v && v.pts && v.pts.length === 4 && v.bruto && (+v.bruto.W || +v.bruto.H);
     function fita(g, a, b, out, prog, txt, esc) {
       const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy); if (L < 4 || prog <= 0) return;
       const ux = dx / L, uy = dy / L, nx = out.x, ny = out.y, off = 22 * esc, T = 15 * esc;
@@ -2806,7 +2806,7 @@
       await OBRA.abrirAmbiente(i); await OBRA.espera(200); state.vaos.forEach(renderizarVao);
       const img = gerarComposicao().toDataURL('image/jpeg', .85);
       const vs = state.vaos.filter(v => v.pts.length === 4).map((v, j) => { const md = medidasVao(v), fam = v.produto.tipo === 'family'; return { n: j + 1, cm: v.et.cm ? 'Sim' : 'Não', reb: v.et.reb ? 'Sim · ' + (PAREDES.find(p => p.id === v.et.parede) || PAREDES[0]).nome : 'Não',
-        tip: v.et.esq ? v.produto.nome : 'Sem esquadria', linha: v.et.esq ? 'Definir no escritório' : '—', cor: v.et.esq ? v.cor.nome + ' · ' + v.acabamento.nome : '—', vidro: v.et.esq ? v.vidro.nome : '—', med: (v.bruto && (+v.bruto.W || +v.bruto.H) ? 'Vão bruto ' + (v.bruto.W || '—') + ' × ' + (v.bruto.H || '—') + ' mm' + (v.et.esq ? ' · ' : '') : '') + (v.et.esq ? 'Esquadria ' + md.W + ' × ' + md.H + ' mm' : (v.bruto ? '' : '—')) }; });
+        tip: v.et.esq ? v.produto.nome : 'Sem esquadria', linha: v.et.esq ? 'Definir no escritório' : '—', cor: v.et.esq ? v.cor.nome + ' · ' + v.acabamento.nome : '—', vidro: v.et.esq ? v.vidro.nome : '—', med: (v.bruto && (+v.bruto.W || +v.bruto.H) ? 'Vão ' + (v.bruto.W || '—') + ' × ' + (v.bruto.H || '—') + ' mm' + (v.et.esq ? ' · ' : '') : '') + (v.et.esq ? 'Esquadria ' + md.W + ' × ' + md.H + ' mm' : (v.bruto ? '' : '—')) }; });
       partes.push({ nome: o.amb[i].nome || ('Ambiente ' + (i + 1)), img, vs });
     }
     await OBRA.abrirAmbiente(volta);
@@ -2843,7 +2843,7 @@
       $('btnCMVer').onclick = CMVER.abrir;
       const trena = () => { const x = v(); if (!x) return; const W = +$('trW').value, H = +$('trH').value; x.bruto = (W >= 100 || H >= 100) ? { W: W >= 100 ? W : null, H: H >= 100 ? H : null } : null; renderizarVao(x); if (x.bruto) TRENA.tocar([x.id]); };
       $('trW').addEventListener('change', trena); $('trH').addEventListener('change', trena);
-      $('btnTrena').onclick = () => { const x = v(); if (!x) return; if (!x.bruto) { $('trW').focus(); return; } if (x.et.reb) { x.et.reb = false; re(x); } TRENA.tocar([x.id]); };
+      $('btnTrena').onclick = () => { const x = v(); if (!x) return; if (!x.bruto) { $('trW').focus(); return; } TRENA.tocar([x.id]); };
       $('btnVideoObra2').onclick = () => OBRA.gravarVideo();
       $('btnQr2').onclick = () => OBRA.abrirQR(); $('btnEscritorio').onclick = () => OBRA.abrirEscritorio();
       $('btnResumo').onclick = RESUMO;
