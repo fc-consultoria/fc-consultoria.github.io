@@ -221,7 +221,7 @@
     var m=document.createElement('div');m.style.cssText='position:fixed;inset:0;z-index:2147482000;background:rgba(10,25,28,.55);display:flex;align-items:center;justify-content:center;padding:16px;font:14px Inter,system-ui,sans-serif';
     var I='width:100%;box-sizing:border-box;padding:11px;border:1px solid #b9dfe2;border-radius:10px;font:16px Inter,system-ui,sans-serif;margin:4px 0 10px;color:#13232e;background:#fff';
     m.innerHTML='<div style="max-width:360px;width:100%;background:#fff;color:#13232e;border-radius:16px;padding:20px"><b style="font-size:17px">Indicar para a FC</b>'+
-      '<p style="margin:6px 0 12px;color:#5a6b72;font-size:13px">Gostou da ferramenta? Deixe o nome e o WhatsApp que a FC Consultoria entra em contato.</p>'+
+      '<p style="margin:6px 0 12px;color:#5a6b72;font-size:13px">Gostou da ferramenta? Deixe o nome e o WhatsApp que a FC Consultoria entra em contato. Valores e condições são tratados só direto com a FC.</p>'+
       '<label style="font-size:13px">Nome do interessado<input id="indN" style="'+I+'" placeholder="Ex.: João · Vidraçaria Central"></label>'+
       '<label style="font-size:13px">WhatsApp (com DDD)<input id="indW" inputmode="tel" style="'+I+'" placeholder="(66) 9 0000-0000"></label>'+
       '<p id="indM" style="margin:0 0 8px;font-size:13px;color:#b42318"></p>'+
@@ -589,11 +589,7 @@
           <button type="button" id="btnResumo" class="btn w-full" style="margin-top:6px">Resumo técnico da obra (PDF)</button>
           <p id="fimMsg" style="margin:6px 0 0"></p>
         </section>
-        <section class="etp" id="secValores">
-          <h4>Valores e condições de pagamento</h4>
-          <p>Estrutura pronta, desligada para este cliente.</p>
-          <div class="medidas"><label>Valor total<input id="valTotal" type="text"></label><label>Condições<input id="valCond" type="text"></label></div>
-        </section>
+        <!-- 11/11/2026: sem campo de valor no simulador; valor só direto com a FC -->
       </div>
     </div>
   </aside>
@@ -2568,7 +2564,7 @@
       $('btnResumo').onclick = RESUMO;
       $('adRange').addEventListener('input', () => AD.set($('adRange').value));
       document.querySelectorAll('[data-ir]').forEach(s => s.addEventListener('click', () => { const e = $({ 1: 'canvasWrap', 2: 'etpCM', 3: 'etpReb', 4: 'etpEsq', 5: 'etpFim' }[s.dataset.ir]); if (e && e.offsetParent) e.scrollIntoView({ behavior: 'smooth', block: 'center' }); }));
-      if (CFG_CLIENTE.valores) $('secValores').style.display = 'block';
+
       // escolher tipologia, cor, acabamento ou vidro já coloca a esquadria no vão
       [['selProduto', 'change'], ['gridCores', 'click'], ['gridAcabamentos', 'click'], ['gridVidros', 'click']].forEach(([id, ev]) => { const e = $(id); if (e) e.addEventListener(ev, () => { const x = v(); if (x && !x.et.esq) x.et.esq = true; }, true); });
     };
