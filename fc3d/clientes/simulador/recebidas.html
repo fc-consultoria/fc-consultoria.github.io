@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Obras recebidas · Simulador de obra · Plataforma FC 3D</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+/* Obras recebidas do Simulador de obra (11/11/2026) · painel do Gestor · © FC Consultoria em Esquadria */
+:root{--bg:#eef3f3;--card:#fff;--fg:#13232e;--mut:#5a6b72;--line:#d3dfe0;--teal:#02717d;--teal2:#025860;--tint:#e1f2f3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px Inter,system-ui,sans-serif}
+header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+.lg{width:38px;height:38px;border-radius:10px;background:var(--teal);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px}
+h1{font-size:16px;margin:0}header p{margin:0;font-size:12px;color:var(--mut)}
+.bt{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;color:var(--fg);border-radius:10px;padding:8px 11px;font:600 12px Inter,sans-serif;text-decoration:none;cursor:pointer}
+.bt.pri{background:var(--teal);border-color:var(--teal);color:#fff}
+main{max-width:860px;margin:0 auto;padding:14px}
+.fil{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.fil button[aria-pressed=true]{background:var(--teal);border-color:var(--teal);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.top b{font-size:15px}.mut{color:var(--mut);font-size:12px}
+.st{align-self:flex-start;font-size:11px;font-weight:700;border-radius:20px;padding:3px 9px;background:var(--tint);color:var(--teal2)}.st.lancado{background:#dcfce7;color:#166534}.st.arquivado{background:#eceff1;color:#5a6b72}
+.amb{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}.amb b{font-size:13px}
+.vao{font-size:13px;padding:3px 0}.obs{margin-top:8px;background:#fff8e6;border-radius:8px;padding:8px;font-size:13px}
+.ac{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}select{border:1px solid var(--line);border-radius:10px;padding:7px;font:600 12px Inter,sans-serif;background:#fff}
+.vazio{text-align:center;color:var(--mut);padding:40px 10px}
+footer{text-align:center;font-size:11px;color:var(--mut);padding:16px}
+#gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;z-index:9}
+</style>
+</head>
+<body>
+<div id="gate"><div><b style="font-size:18px">Abrindo as obras recebidas…</b><p class="mut">Conferindo o seu acesso à Plataforma FC 3D.</p></div></div>
+<header>
+  <div class="lg" id="sg">FC</div>
+  <div style="min-width:0"><h1>Obras recebidas</h1><p id="emp">Enviadas pela equipe pelo Simulador de obra</p></div>
+  <a class="bt" href="./" style="margin-left:auto">Simulador</a>
+  <a class="bt" href="/fc3d/clientes/">← Voltar para o painel</a>
+</header>
+<main>
+  <div class="fil" role="group" aria-label="Filtrar">
+    <button class="bt" data-f="novo" aria-pressed="true">Novas</button>
+    <button class="bt" data-f="lancado" aria-pressed="false">Lançadas no sistema</button>
+    <button class="bt" data-f="arquivado" aria-pressed="false">Arquivadas</button>
+    <button class="bt" data-f="todas" aria-pressed="false">Todas</button>
+  </div>
+  <div id="lista"></div>
+</main>
+<footer>Medidas demonstrativas: conferir na obra antes de produzir. A linha é escolhida no escritório, no sistema da empresa.<br>Desenvolvido por FC Consultoria em Esquadria · CNPJ 52.985.682/0001-32</footer>
+<script src="/fc3d/clientes/sessao.js?v=2"></script>
+<script>
+(function(){
+const API='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/',KEY='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs';
+const PROD={'j-cr2':'Janela de correr 2 folhas','j-cr2b':'Janela de correr 2 folhas com bandeira','j-cr3':'Janela de correr 3 folhas','j-cr4':'Janela de correr 4 folhas','j-max1':'Maxim-ar','j-max2':'Maxim-ar 2 módulos','j-osc':'Janela oscilo-batente','p-cr2':'Porta de correr 2 folhas','p-cr3':'Porta de correr 3 folhas','p-cr4':'Porta de correr 4 folhas','p-giro1':'Porta de giro 1 folha','p-giro2':'Porta de giro 2 folhas'};
+const PAD={'j-cr2':[1500,1200],'j-cr2b':[1500,1500],'j-cr3':[2000,1200],'j-cr4':[2400,1200],'j-max1':[800,600],'j-max2':[700,1000],'j-osc':[800,1100],'p-cr2':[2000,2200],'p-cr3':[2600,2200],'p-cr4':[3200,2300],'p-giro1':[900,2150],'p-giro2':[1600,2150]};
+const ST={novo:'Nova',lancado:'Lançada no sistema',arquivado:'Arquivada'};
+const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
+let L=[],filtro='novo';
+const rpc=(fn,a)=>fetch(API+fn,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify(a)}).then(async r=>{const j=await r.json().catch(()=>null);if(!r.ok)throw new Error((j&&j.message)||'erro '+r.status);return j;});
+function nega(t,p){$('#gate').innerHTML='<div style="max-width:380px"><div style="font-size:34px">🔒</div><b style="font-size:19px">'+t+'</b><p class="mut" style="font-size:14px;line-height:1.5">'+p+'</p><a class="bt pri" href="/fc3d/clientes/">Ir para a Plataforma FC 3D</a></div>';}
+function vaos(a){return (a.vaos||[]).map((v,j)=>{const md=v.med||{},pd=PAD[v.produto]||[0,0],W=Math.round(+md.W||pd[0]),H=Math.round(+md.H||pd[1]);
+  return 'Vão '+(j+1)+': '+(v.et&&v.et.esq===false?'sem esquadria':(PROD[v.produto]||'Esquadria'))+(W?' · '+W+' × '+H+' mm':'')+(v.et&&v.et.cm?' · contramarco':'');});}
+function texto(r){const d=r.dados||{},ls=['Obra: '+(d.nome||'sem nome')+(r.cliente?' · Cliente: '+r.cliente:'')];(d.amb||[]).forEach(a=>{ls.push('',a.nome||'Ambiente');vaos(a).forEach(x=>ls.push(x));});if(r.obs)ls.push('','Obs.: '+r.obs);return ls.join('\n');}
+function desenha(){
+  const V=L.filter(r=>filtro==='todas'||(r.status||'novo')===filtro);
+  $('#lista').innerHTML=V.length?V.map(r=>{const d=r.dados||{},i=L.indexOf(r),dt=new Date(r.escritorio_em).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+   return `<div class="card"><div class="top"><div><b>${esc(d.nome||'Obra sem nome')}</b>${r.cliente?` · ${esc(r.cliente)}`:''}<div class="mut">${dt} · enviado por ${esc(r.vendedor||r.enviado_por||'equipe')}${(d.amb||[]).length>1?' · '+d.amb.length+' ambientes':''}</div></div><span class="st ${esc(r.status||'novo')}">${ST[r.status||'novo']}</span></div>
+   ${(d.amb||[]).map(a=>`<div class="amb"><b>${esc(a.nome||'Ambiente')}</b>${vaos(a).map(x=>`<div class="vao">${esc(x)}</div>`).join('')||'<div class="vao mut">Sem vão marcado</div>'}</div>`).join('')}
+   ${r.obs?`<div class="obs"><b>Obs.:</b> ${esc(r.obs)}</div>`:''}
+   <div class="ac"><a class="bt pri" href="./?ver=${encodeURIComponent(r.id)}" target="_blank" rel="noopener">Ver fotos da obra</a><button class="bt" data-cp="${i}">Copiar medidas</button>
+   <select data-st="${i}" aria-label="Status">${Object.keys(ST).map(k=>`<option value="${k}" ${k===(r.status||'novo')?'selected':''}>${ST[k]}</option>`).join('')}</select></div></div>`;}).join('')
+   :'<div class="vazio">Nenhuma obra '+(filtro==='todas'?'recebida':ST[filtro].toLowerCase())+' ainda. Quando a equipe usar "Enviar ao escritório" no Simulador de obra, ela aparece aqui.</div>';
+  document.querySelectorAll('[data-cp]').forEach(b=>b.onclick=()=>{try{navigator.clipboard.writeText(texto(L[+b.dataset.cp])).then(()=>{b.textContent='Copiado';setTimeout(()=>b.textContent='Copiar medidas',1500);});}catch(_){}});
+  document.querySelectorAll('[data-st]').forEach(s=>s.onchange=async()=>{const r=L[+s.dataset.st],ant=r.status;r.status=s.value;try{await rpc('pfc_sim_status',{p_token:tk,p_id:r.id,p_status:s.value});desenha();}catch(e){r.status=ant;alert('Não foi possível mudar o status: '+e.message);desenha();}});
+}
+document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{filtro=b.dataset.f;document.querySelectorAll('[data-f]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));desenha();});
+if(!tk){nega('Entre na Plataforma FC 3D','As obras recebidas abrem pela plataforma, com o login do gestor.');return;}
+rpc('pfc_sessao',{p_token:tk}).then(d=>{
+  if(!d||!(d.matriz||d.papel==='gestor')){nega('Só para o gestor','As obras recebidas ficam no painel do gestor da empresa.');return;}
+  $('#sg').textContent=String(d.sigla||'FC').slice(0,4).toUpperCase();if(d.empresa_nome)$('#emp').textContent=d.empresa_nome+' · enviadas pela equipe pelo Simulador de obra';
+  return rpc('pfc_sim_recebidas',{p_token:tk}).then(j=>{L=j||[];$('#gate').remove();desenha();});
+}).catch(e=>nega('Não foi possível abrir',esc(e.message||'Confira a internet e abra de novo.')));
+})();
+</script>
+</body>
+</html>
