@@ -47,11 +47,13 @@ footer{text-align:center;font-size:11px;color:var(--mut);padding:16px}
 </main>
 <footer>Medidas demonstrativas: conferir na obra antes de produzir. A linha é escolhida no escritório, no sistema da empresa.<br>Desenvolvido por FC Consultoria em Esquadria · CNPJ 52.985.682/0001-32</footer>
 <script src="/fc3d/clientes/sessao.js?v=2"></script>
+<script src="tipologias.js?v=1"></script>
 <script>
 (function(){
 const API='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/',KEY='sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs';
 const PROD={'j-cr2':'Janela de correr 2 folhas','j-cr2b':'Janela de correr 2 folhas com bandeira','j-cr3':'Janela de correr 3 folhas','j-cr4':'Janela de correr 4 folhas','j-max1':'Maxim-ar','j-max2':'Maxim-ar 2 módulos','j-osc':'Janela oscilo-batente','p-cr2':'Porta de correr 2 folhas','p-cr3':'Porta de correr 3 folhas','p-cr4':'Porta de correr 4 folhas','p-giro1':'Porta de giro 1 folha','p-giro2':'Porta de giro 2 folhas'};
 const PAD={'j-cr2':[1500,1200],'j-cr2b':[1500,1500],'j-cr3':[2000,1200],'j-cr4':[2400,1200],'j-max1':[800,600],'j-max2':[700,1000],'j-osc':[800,1100],'p-cr2':[2000,2200],'p-cr3':[2600,2200],'p-cr4':[3200,2300],'p-giro1':[900,2150],'p-giro2':[1600,2150]};
+if(window.FCTipo&&FCTipo.LISTA)FCTipo.LISTA.forEach(t=>{PROD[t.id]=t.nome;try{const d=FCTipo.dims(t.desc);PAD[t.id]=[d.W,d.H]}catch(e){}}); /* 12/11/2026: Banco de Tipologias FC */
 const ST={novo:'Nova',lancado:'Lançada no sistema',arquivado:'Arquivada'};
 const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
