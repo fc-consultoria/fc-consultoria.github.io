@@ -12,7 +12,7 @@
 <script>window.tailwind = window.tailwind || {}; /* CSS já compilado em tw.css (funciona sem internet) */</script>
 <script src="lib/three.min.js"></script>
 <script src="lib/qrcode.js"></script>
-<script src="tipologias.js?v=2"></script>
+<script src="tipologias.js?v=3"></script>
 <script>
   tailwind.config = {
     darkMode: 'class',
@@ -571,6 +571,23 @@
           </button>
         </section>
 
+        <!-- 12/11/2026: Está na frente (pessoa, mesa, andaime na frente do vão) -->
+        <section id="frenteBox">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-1.5 h-4 rounded-full bg-accent"></span>
+            <h3 class="text-[11px] uppercase tracking-[0.14em] font-bold text-slate-500 dark:text-slate-400">Está na frente do vão</h3>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-2">Tem pessoa, mesa ou andaime na frente? Pinte por cima e a esquadria fica atrás.</p>
+          <div class="grid grid-cols-3 gap-2">
+            <button id="frPincel" class="btn dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600">Pincel</button>
+            <button id="frBorracha" class="btn dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600">Borracha</button>
+            <button id="frLimpar" class="btn dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600">Limpar</button>
+          </div>
+          <label class="block mt-2 text-[11px] text-slate-500 dark:text-slate-400">Tamanho do pincel <b id="frTamLbl" class="text-accent">22</b>
+            <input id="frTam" type="range" min="4" max="70" value="22" class="w-full mt-1"></label>
+          <p id="frMsg" class="mt-1 text-[10px] text-slate-500 dark:text-slate-400"></p>
+        </section>
+
         <!-- Movimento (Linha Family 3D) -->
         <section id="famMov" class="hidden">
           <div class="flex items-center gap-2 mb-2">
@@ -789,10 +806,10 @@
   PRODUTOS.forEach(p => { p.antigo = true; });
   if (window.FCTipo && FCTipo.LISTA) FCTipo.LISTA.forEach(t => {
     let d = { W: 1500, H: 1200 }; try { d = FCTipo.dims(t.desc); } catch (e) {}
-    PRODUTOS.push({ id: t.id, grupo: t.cat, nome: t.nome, folhas: t.cat, tipo: 'fc2d', desc: t.desc, mov: !!(FCTipo.move && FCTipo.move(t.desc)), dimensoes: { largura: d.W / 1000, altura: d.H / 1000 }, descricao: 'Medida sugerida. Ajuste a largura e a altura do vão. Linha definida no escritório.' });
+    PRODUTOS.push({ id: t.id, grupo: t.cat, nome: t.nome, folhas: t.cat, tipo: 'fc2d', desc: t.desc, mov: !!(FCTipo.move && FCTipo.move(t.desc)), persiana: !!(FCTipo.persiana && FCTipo.persiana(t.desc)), dimensoes: { largura: d.W / 1000, altura: d.H / 1000 }, descricao: 'Medida sugerida. Ajuste a largura e a altura do vão. Linha definida no escritório.' });
   });
   /* esquadria que abre e fecha na foto: Linha Family 3D ou tipologia do Banco FC que tem folha móvel */
-  function movel(v) { return !!(v && v.produto && (v.produto.tipo === 'family' || (v.produto.tipo === 'fc2d' && v.produto.mov))); }
+  function movel(v) { return !!(v && v.produto && (v.produto.tipo === 'family' || (v.produto.tipo === 'fc2d' && (v.produto.mov || v.produto.persiana)))); }
   const PRODUTO_PADRAO = PRODUTOS.find(p => p.id === 'FC-015') || PRODUTOS.find(p => !p.antigo) || PRODUTOS[0];
 
   // ==========================================================
@@ -942,9 +959,12 @@
       mostra('famMov', movel(vao)); mostra('famVista', fam);
       if (!fam && movel(vao)) { /* tipologia do Banco FC: abrir, fechar e abertura */
         const mv = vao.mov; el('famAbrir').textContent = mv.abT > 0 ? 'Fechar' : 'Abrir';
-        ['famOscilo', 'famPersBox', 'famTela'].forEach(id => mostra(id, false));
+        ['famOscilo', 'famTela'].forEach(id => mostra(id, false));
+        mostra('famPersBox', !!vao.produto.persiana); el('famPe').value = Math.round(mv.peT * 100); el('famPeLbl').textContent = Math.round(mv.peT * 100) + '%';
+        el('famAbrir').style.display = vao.produto.mov ? '' : 'none'; el('famAb').closest('label').style.display = vao.produto.mov ? '' : 'none';
         el('famAb').value = Math.round(mv.abT * 100); el('famAbLbl').textContent = Math.round(mv.abT * 100) + '%'; return; }
       if (!fam) return;
+      el('famAbrir').style.display = ''; el('famAb').closest('label').style.display = '';
       const c = vao.produto.fam, mv = vao.mov;
       el('famAbrir').textContent = mv.abT > 0 ? 'Fechar' : 'Abrir';
       el('famVista').textContent = mv.vista === 'fora' ? 'Foto tirada de fora' : 'Foto tirada de dentro';
@@ -1033,7 +1053,7 @@
 
     // ---------- vão <-> dados ----------
     const ser = v => ({ pts: v.pts.map(p => ({ x: +p.x.toFixed(1), y: +p.y.toFixed(1) })), produto: v.produto.id, cor: v.cor.id, acab: v.acabamento.id, vidro: v.vidro.id, flipped: !!v.flipped, blend: v.blend, opacidade: v.opacidade,
-      mov: v.mov ? { abT: v.mov.abT, peT: v.mov.peT, tela: v.mov.tela, vista: v.mov.vista, modo: v.mov.modo } : null, et: Object.assign({}, v.et), med: v.med ? Object.assign({}, v.med) : null });
+      mov: v.mov ? { abT: v.mov.abT, peT: v.mov.peT, tela: v.mov.tela, vista: v.mov.vista, modo: v.mov.modo } : null, et: Object.assign({}, v.et), med: v.med ? Object.assign({}, v.med) : null, frente: v.frente && v.frente.length ? v.frente : undefined });
     function restaurar(d) {
       const v = criarVao(d.pts);
       v.produto = PRODUTOS.find(p => p.id === d.produto) || v.produto; v.cor = CORES.find(c => c.id === d.cor) || v.cor;
@@ -1042,6 +1062,7 @@
       v.overlayCanvas.style.mixBlendMode = v.blend === 'normal' ? 'normal' : v.blend; v.overlayCanvas.style.opacity = String(v.opacidade);
       if (d.mov) Object.assign(v.mov, d.mov, { ab: d.mov.abT || 0, pe: d.mov.peT || 0 });
       v.et = d.et ? Object.assign({ cm: false, reb: false, parede: 'gelo', esq: true }, d.et) : { cm: false, reb: false, parede: 'gelo', esq: true }; v.med = d.med || null;
+      v.frente = Array.isArray(d.frente) ? d.frente : [];
       renderizarVao(v); return v;
     }
     function capturar() { if (!obra || API.carregando || cliente) return; const a = obra.amb[idx]; if (!a) return; a.vaos = state.vaos.filter(v => v.pts.length === 4).map(ser); a.anot = JSON.parse(JSON.stringify(state.annotations || [])); }
@@ -1545,12 +1566,12 @@
      O desenho é gerado na medida do vão (largura × altura) e guardado; enquanto carrega, o vão fica sem esquadria por um instante. */
   const fcTex = new Map(), fcVazio = document.createElement('canvas'); fcVazio.width = fcVazio.height = 2;
   const FC_PASSOS = 12; // quadros do abre e fecha (0 = fechada, 12 = aberta)
-  function fcCarregar(key, p, cor, vidro, W, H, a) {
+  function fcCarregar(key, p, cor, vidro, W, H, a, pe) {
     let e = fcTex.get(key); if (e) { fcTex.delete(key); fcTex.set(key, e); return e; } // mais recente no fim (limpeza)
     if (fcTex.size > 90) fcTex.delete(fcTex.keys().next().value);
     e = { ok: false, c: document.createElement('canvas') }; fcTex.set(key, e);
     let svg = '';
-    try { svg = FCTipo.svg(p.desc, { cor, vidro, sentido: false, contexto: false, foto: true, W, H, px: (a > 0 && a < 1) ? 720 : 1024, abre: a }); } catch (er) { console.warn('tipologia', p.id, er); return e; }
+    try { svg = FCTipo.svg(p.desc, { cor, vidro, sentido: false, contexto: false, foto: true, W, H, px: (a > 0 && a < 1) || (pe > 0 && pe < 1) ? 720 : 1024, abre: a, persiana: p.persiana ? pe : undefined }); } catch (er) { console.warn('tipologia', p.id, er); return e; }
     const img = new Image();
     img.onload = () => {
       e.c.width = img.width || 1024; e.c.height = img.height || 768;
@@ -1568,16 +1589,17 @@
     /* sem medida digitada: mantém a proporção do vão marcado na foto (o perfil não fica esticado) */
     if (!(+mm.W && +mm.H) && vao.pts && vao.pts.length === 4) { try { const q = ordenarPontos(vao.pts), d = (a, b) => Math.hypot(a.x - b.x, a.y - b.y), qw = (d(q[0], q[1]) + d(q[3], q[2])) / 2, qh = (d(q[0], q[3]) + d(q[1], q[2])) / 2;
       if (qw > 5 && qh > 5) { if (+mm.H) md.W = Math.round(md.H * qw / qh / 10) * 10; else md.H = Math.round(md.W * qh / qw / 10) * 10; } } catch (er) {} }
-    const base = [p.id, vao.cor.id, vao.vidro.id, md.W, md.H].join('|');
+    const PE = 8, peP = p.persiana && vao.mov ? Math.round(Math.max(0, Math.min(1, vao.mov.pe || 0)) * PE) : 0;
+    const base = [p.id, vao.cor.id, vao.vidro.id, md.W, md.H, peP].join('|');
     const passo = p.mov && vao.mov ? Math.round(Math.max(0, Math.min(1, vao.mov.ab || 0)) * FC_PASSOS) : 0;
-    const quadro = k => fcCarregar(base + '|' + k, p, vao.cor.id, vao.vidro.id, md.W, md.H, k / FC_PASSOS);
+    const quadro = k => fcCarregar(base + '|' + k, p, vao.cor.id, vao.vidro.id, md.W, md.H, p.mov ? k / FC_PASSOS : 0, peP / PE);
     const e = quadro(passo);
     /* vai abrir: deixa os outros quadros prontos, um de cada vez */
     if (p.mov && vao.mov && (vao.mov.abT > 0 || passo > 0)) { const alvo = Math.round(vao.mov.abT * FC_PASSOS), dir = alvo >= passo ? 1 : -1; for (let k = passo; k !== alvo + dir && k >= 0 && k <= FC_PASSOS; k += dir) quadro(k); }
-    if (e.ok) return e.c;
+    if (e.ok) { vao._fcUlt = e.c; vao._fcUltP = p.id; return e.c; }
     /* quadro ainda carregando: usa o mais próximo que já está pronto */
     for (let d = 1; d <= FC_PASSOS; d++) for (const k of [passo - d, passo + d]) { if (k < 0 || k > FC_PASSOS) continue; const o = fcTex.get(base + '|' + k); if (o && o.ok) return o.c; }
-    return fcVazio;
+    return vao._fcUlt && vao._fcUltP === p.id ? vao._fcUlt : fcVazio;
   }
 
   function obterTextura(produto, cor, acabamento, vidro) {
@@ -1811,7 +1833,33 @@
     return c;
   }
 
+  /* 12/11/2026 · Está na frente: pinta por cima do que fica na frente do vão (pessoa, mesa, andaime)
+     e a foto original volta para cima da esquadria nesses pontos. Traços guardados em coordenadas da foto. */
+  const PINCEL = { on: false, borracha: false, r: 22, cur: null, traco: null };
+  function renderFrente(vao) {
+    const c = vao.frenteCanvas; if (!c) return;
+    if (c.width !== vao.overlayCanvas.width || c.height !== vao.overlayCanvas.height) { c.width = vao.overlayCanvas.width; c.height = vao.overlayCanvas.height; }
+    const g = c.getContext('2d'); g.clearRect(0, 0, c.width, c.height);
+    if (!state.img || !vao.frente || !vao.frente.length || !(vao.et && vao.et.esq || vao.et && (vao.et.cm || vao.et.reb))) return;
+    const s = state.escalaOverlay;
+    g.lineCap = 'round'; g.lineJoin = 'round'; g.strokeStyle = g.fillStyle = '#000';
+    vao.frente.forEach(t => {
+      g.globalCompositeOperation = t.e ? 'destination-out' : 'source-over';
+      const p = t.p, r = t.r * s;
+      if (p.length <= 2) { g.beginPath(); g.arc(p[0] * s, p[1] * s, r, 0, Math.PI * 2); g.fill(); return; }
+      g.lineWidth = r * 2; g.beginPath(); g.moveTo(p[0] * s, p[1] * s);
+      for (let i = 2; i < p.length; i += 2) g.lineTo(p[i] * s, p[i + 1] * s);
+      g.stroke();
+    });
+    g.globalCompositeOperation = 'source-in'; g.drawImage(view, 0, 0, c.width, c.height);
+    if (PINCEL.on && vao.id === state.vaoAtivoId) { g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(255,122,0,.32)'; g.fillRect(0, 0, c.width, c.height); }
+    g.globalCompositeOperation = 'source-over';
+  }
+
   function renderizarVao(vao) {
+    try { renderizarVaoBase(vao); } finally { renderFrente(vao); }
+  }
+  function renderizarVaoBase(vao) {
     const ctx = vao.overlayCtx, canvas = vao.overlayCanvas;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (!state.img || vao.pts.length !== 4) return;
@@ -1841,6 +1889,8 @@
    */
   function renderizarUI() {
     uctx.clearRect(0, 0, ui.width, ui.height);
+    if (PINCEL.on && PINCEL.cur) { const r = PINCEL.r * (view.width / (view.getBoundingClientRect().width || view.width)), k = ui.width / view.width;
+      uctx.save(); uctx.beginPath(); uctx.arc(PINCEL.cur.x * k, PINCEL.cur.y * k, r * k, 0, Math.PI * 2); uctx.lineWidth = 2; uctx.strokeStyle = PINCEL.borracha ? '#0ea5e9' : '#ff7a00'; uctx.setLineDash([5, 4]); uctx.stroke(); uctx.restore(); }
 
     state.vaos.forEach(vao => {
       if (vao.pts.length === 0) return;
@@ -2075,6 +2125,17 @@
       return;
     }
 
+    // 2B. Está na frente: pincel / borracha no vão ativo
+    if (PINCEL.on && !state.modoCriacao) {
+      const v = state.vaos.find(x => x.id === state.vaoAtivoId);
+      if (v && v.pts.length === 4) {
+        e.preventDefault(); try { wrap.setPointerCapture(e.pointerId); } catch (_) {}
+        const r = PINCEL.r * (view.width / view.getBoundingClientRect().width);
+        PINCEL.traco = { r: +r.toFixed(1), e: PINCEL.borracha ? 1 : 0, p: [+p.x.toFixed(1), +p.y.toFixed(1)] };
+        v.frente = v.frente || []; v.frente.push(PINCEL.traco); renderFrente(v); return;
+      }
+    }
+
     // 3. Lógica de Criação de Vãos
     if (state.modoCriacao) {
       state.ptsTemp.push(p);
@@ -2116,6 +2177,13 @@
       return;
     }
 
+    if (PINCEL.on) {
+      PINCEL.cur = p;
+      if (PINCEL.traco) { e.preventDefault(); const t = PINCEL.traco.p, lx = t[t.length - 2], ly = t[t.length - 1];
+        if (Math.hypot(p.x - lx, p.y - ly) > PINCEL.traco.r * 0.25) { t.push(+p.x.toFixed(1), +p.y.toFixed(1)); const v = state.vaos.find(x => x.id === state.vaoAtivoId); if (v) renderFrente(v); } }
+      renderizarUI();
+      if (PINCEL.traco) return;
+    }
     if (!arrastandoVao) return;
     e.preventDefault();
     const vao = state.vaos.find(v => v.id === arrastandoVao.vaoId);
@@ -2126,6 +2194,7 @@
   }
 
   function onPointerUp(e) {
+    if (PINCEL.traco) { PINCEL.traco = null; try { wrap.releasePointerCapture(e.pointerId); } catch (_) {} return; }
     if (state.draggingBubble) {
       state.draggingBubble = null;
       return;
@@ -2167,6 +2236,13 @@
     overlayCanvas.style.mixBlendMode = state.defaultBlend === 'normal' ? 'normal' : state.defaultBlend;
     overlayCanvas.style.opacity = String(state.defaultOpacidade);
     overlayContainer.appendChild(overlayCanvas);
+    /* 12/11/2026: camada "Está na frente" — a foto original volta por cima da esquadria onde o vendedor pintou */
+    const frenteCanvas = document.createElement('canvas');
+    frenteCanvas.className = 'absolute inset-0 w-full h-full pointer-events-none';
+    frenteCanvas.width = state.overlayW; frenteCanvas.height = state.overlayH;
+    overlayContainer.appendChild(frenteCanvas);
+    const rmOverlay = overlayCanvas.remove.bind(overlayCanvas);
+    overlayCanvas.remove = () => { rmOverlay(); frenteCanvas.remove(); };
 
     const vao = {
       id,
@@ -2182,7 +2258,8 @@
       et: { cm: false, reb: false, parede: 'gelo', esq: false }, // 11/11/2026: vão bruto › contramarco › reboco › esquadria
       med: null,
       overlayCanvas,
-      overlayCtx: overlayCanvas.getContext('2d')
+      overlayCtx: overlayCanvas.getContext('2d'),
+      frenteCanvas, frente: []
     };
     state.vaos.push(vao);
     state.vaoAtivoId = vao.id;
@@ -2470,6 +2547,7 @@
       g.globalAlpha = vao.opacidade;
       g.globalCompositeOperation = vao.blend === 'normal' ? 'source-over' : vao.blend;
       g.drawImage(vao.overlayCanvas, 0, 0, out.width, out.height);
+      if (vao.frenteCanvas && vao.frente && vao.frente.length) { g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.drawImage(vao.frenteCanvas, 0, 0, out.width, out.height); }
     });
 
     g.globalAlpha = 1;
@@ -2740,6 +2818,25 @@
     atualizarDica();
   }
   
+  /* 12/11/2026 · comandos do Está na frente */
+  (function () {
+    const b = id => document.getElementById(id); if (!b('frPincel')) return;
+    const vAt = () => state.vaos.find(x => x.id === state.vaoAtivoId);
+    const sync = () => {
+      b('frPincel').classList.toggle('btn-accent', PINCEL.on && !PINCEL.borracha); b('frBorracha').classList.toggle('btn-accent', PINCEL.on && PINCEL.borracha);
+      b('frPincel').textContent = PINCEL.on && !PINCEL.borracha ? 'Pintando…' : 'Pincel';
+      wrap.style.cursor = PINCEL.on ? 'crosshair' : '';
+      b('frMsg').textContent = PINCEL.on ? (vAt() ? 'Passe o dedo ou o mouse sobre o que está na frente. Toque de novo no botão para terminar.' : 'Selecione um vão primeiro.') : '';
+      state.vaos.forEach(renderFrente); if (!PINCEL.on) PINCEL.cur = null; renderizarUI();
+    };
+    const modo = borr => { if (PINCEL.on && PINCEL.borracha === borr) PINCEL.on = false; else { PINCEL.on = true; PINCEL.borracha = borr; } sync(); };
+    b('frPincel').onclick = () => modo(false);
+    b('frBorracha').onclick = () => modo(true);
+    b('frLimpar').onclick = () => { const v = vAt(); if (!v) return; v.frente = []; renderFrente(v); };
+    b('frTam').oninput = () => { PINCEL.r = +b('frTam').value; b('frTamLbl').textContent = PINCEL.r; renderizarUI(); };
+    $('selVao') && $('selVao').addEventListener('change', () => setTimeout(sync, 0));
+    window.addEventListener('keydown', e => { if (e.key === 'Escape' && PINCEL.on) { PINCEL.on = false; sync(); } });
+  })();
   init();
   
 
