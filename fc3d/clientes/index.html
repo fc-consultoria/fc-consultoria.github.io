@@ -478,7 +478,7 @@ function desenho(id){
 
 /* ---------- sessão ---------- */
 let S=null,papelVer=null,tab=(['tip','amb','apr','ges','mtg','vnd','cen','prc'].includes(location.hash.slice(1))?location.hash.slice(1):'inicio'),filtro='todas';
-const VENTO=['jcr200','jcr400','jvz300','pcr200','gjc2f','gjc4f','gpc2fpe'];/* com Simular pressão de vento: manter igual ao mostruario/vento.js */
+const VENTO=[];/* Versão 1 (11/11/2026): Simular pressão de vento saiu da ferramenta. Lista antiga: 'jcr200','jcr400','jvz300','pcr200','gjc2f','gjc4f','gpc2fpe' *//* com Simular pressão de vento: manter igual ao mostruario/vento.js */
 const papel=()=>S&&S.matriz?(papelVer==='compras'?'vendedor':(papelVer||'gestor')):S&&S.papel;/* 09/11/2026: prévia 'Compras' da FC vê como colaborador do setor Compras */
 
 async function rpc(fn,args){const r=await sb.rpc(fn,args);if(r.error)throw new Error(r.error.message);return r.data;}
@@ -941,7 +941,7 @@ function detalhe(id){
    <span class="chip t" style="align-self:flex-start">${LINHAS[t.l].n}${t.cd?' · '+h(t.cd):''}</span><h2 style="font-size:21px">${h(t.n)}</h2><p>${h(t.d)}</p>
    <dl><dt>Abertura</dt><dd>${t.ab}</dd><dt>Folhas</dt><dd>${t.f}</dd><dt>Indicada para</dt><dd>${h(t.uso)}</dd></dl>
    ${(()=>{/* abre direto a tipologia do card, sem escolher linha/tipologia de novo */const eq=papel()!=='arquiteto'&&papel()!=='demo';return eq&&t.mo?`<a class="btn pri" href="mostruario/?t=${t.mo}">🧊 Orientativo 3D · conhecer e montar</a>${VENTO.includes(t.mo)?`<a class="btn sec" href="mostruario/?t=${t.mo}&vento=1">🌬 Simular pressão de vento</a>`:''}`:t.m3d?`<a class="btn pri" href="montagens/?m=${t.m3d}&fixo=1#cor">🧊 Ver em 3D</a>`:'';})()}
-   ${t.tec?`<a class="btn pri" href="${t.tec}">📐 Desenho técnico interativo</a>`:''}
+   <!-- Versão 1 (11/11/2026): botão Desenho técnico interativo saiu -->
    ${t.obra?`<a class="btn pri" href="${OBRA(t.obra)}" target="_blank" rel="noopener">Abrir em 3D com as medidas da obra</a>`:''}
    ${!t.m3d&&!t.obra&&!t.mo?'<button class="btn sec" disabled title="Chega nas próximas etapas">Ver em 3D · em breve</button>':''}   <p class="aviso">Desenho esquemático, sem escala. Medidas, pesos e acabamentos devem ser confirmados com o fornecedor da empresa.</p>
    <button class="btn sec" id="detFecha">Fechar</button></div></div>`;
