@@ -281,6 +281,29 @@
     <h1 class="text-sm font-bold tracking-tight text-slate-900 dark:text-white truncate">Simulador de obra</h1>
     <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate"><span id="simEmpresa">Foto da obra · esquadria no vão</span></p>
   </div>
+  <!-- 11/11/2026 · vídeo tutorial (coloque o endereço do vídeo em SIM_TUTORIAL; vazio = "em breve") -->
+  <button type="button" id="btnComoUsar" class="shrink-0" style="display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;background:#02717d;color:#fff;font:600 12px Inter,sans-serif;padding:7px 12px;cursor:pointer;white-space:nowrap" title="Vídeo: como usar o Simulador de obra">▶ <span>Assistir como usar</span></button>
+  <div id="tutModal" style="display:none;position:fixed;inset:0;z-index:2147482500;background:rgba(8,16,20,.8);align-items:center;justify-content:center;padding:16px">
+    <div style="background:#fff;color:#14212a;border-radius:16px;width:100%;max-width:860px;padding:16px;font:400 14px/1.5 Inter,sans-serif">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><b style="font-size:16px">Como usar o Simulador de obra</b><button type="button" id="tutFechar" style="margin-left:auto;border:1px solid #d3e6e8;background:#fff;border-radius:10px;padding:6px 12px;cursor:pointer;font-weight:600">Fechar</button></div>
+      <div id="tutCorpo"></div>
+    </div>
+  </div>
+  <script>
+  window.SIM_TUTORIAL = ''; /* ex.: 'https://www.youtube.com/embed/XXXX' ou '/fc3d/clientes/simulador/tutorial.mp4' */
+  (function(){
+    var m=document.getElementById('tutModal'),c=document.getElementById('tutCorpo');document.addEventListener('DOMContentLoaded',function(){document.body.appendChild(m);});
+    function fechar(){m.style.display='none';c.innerHTML='';}
+    document.getElementById('btnComoUsar').onclick=function(){
+      var u=window.SIM_TUTORIAL;
+      c.innerHTML=!u?'<div style="text-align:center;padding:28px 10px"><div style="font-size:38px">🎬</div><b style="font-size:17px">Vídeo em preparação</b><p style="color:#5a6872;margin:6px 0 14px">Em breve o passo a passo em vídeo estará aqui. Por enquanto, siga as etapas da tela:</p><ol style="text-align:left;display:inline-block;margin:0;padding-left:20px;list-style:decimal"><li><b>Foto</b>: tire ou escolha a foto do vão.</li><li><b>Vão</b>: toque em + Novo Vão e marque os 4 cantos.</li><li><b>Contramarco e reboco</b> (opcional).</li><li><b>Esquadria</b>: escolha a tipologia, a cor e o vidro.</li><li><b>Enviar</b>: link e QR para o cliente ou envio ao escritório.</li></ol></div>'
+        :/\.(mp4|webm)$/i.test(u)?'<video src="'+u+'" controls autoplay playsinline style="width:100%;border-radius:10px;background:#000"></video>'
+        :'<div style="position:relative;padding-top:56.25%"><iframe src="'+u+'" style="position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:10px" allow="autoplay; fullscreen" allowfullscreen></iframe></div>';
+      m.style.display='flex';};
+    document.getElementById('tutFechar').onclick=fechar;m.onclick=function(e){if(e.target===m)fechar();};
+  })();
+  </script>
+  <style>@media (max-width:640px){#btnComoUsar span{display:none}}</style>
   
   <!-- Botão Dark Mode -->
   <button id="themeToggle" class="ml-auto p-2 rounded-xl border border-orange-100 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-orange-50 dark:hover:bg-slate-700 transition-colors">
