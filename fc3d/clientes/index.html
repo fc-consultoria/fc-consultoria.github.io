@@ -626,6 +626,11 @@ async function abrir(token){
   try{S=await rpc('pfc_sessao',{p_token:token});S.token=token;if(S&&S.demo){ls.del(TK);ls.del('pfc-papel');S=null;location.replace('demo/');return;}}
   catch(err){const eraDemo=ls.get('pfc-papel')==='demo';ls.del(TK);ls.del('pfc-papel');S=null;const m=err.message||'';if(/demonstrativo/i.test(m)){formDemo(true);mostrarEntrada('');demoFim(m);return;}if(eraDemo){formDemo(true);mostrarEntrada('');$('#demoMsg').textContent='O demonstrativo foi aberto em outro aparelho. Para usar aqui, entre de novo com o mesmo WhatsApp.';return;}mostrarEntrada(/pausad/i.test(m)?m:'');return;}
   if(S.demo)ls.set('pfc-papel','demo');else ls.del('pfc-papel');
+  /* 14/11/2026 · app Medidor de Obras: abre direto no Simulador de obra; "Ver a esquadria em 3D" abre só o Simulador Fábrica 3D com volta ao Medidor */
+  {const q=new URLSearchParams(location.search);if(q.get('app')==='medidor'&&!S.matriz&&['parceiro-obras','teste-medidor-obras'].includes(S.empresa)){
+    if(!q.get('ver3d')){location.replace('simulador/?app=medidor');return;}
+    tab='tip';if(!document.getElementById('medVolta')){const v=document.createElement('a');v.id='medVolta';v.href='simulador/?app=medidor';v.textContent='← Voltar ao Medidor de Obras';
+      v.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:2147481500;border-radius:99px;background:#063238;color:#fff;font:700 15px Inter,system-ui,sans-serif;padding:13px 22px;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.35);white-space:nowrap';document.body.appendChild(v);}}}
   $('#entrada').hidden=true;$('#app').hidden=false;
   /* 29/10/2026 · botão flutuante Substituir perfil retirado da plataforma (const ok=false). Para voltar, troque false pela condição abaixo. */
   {const ok=false&&!S.demo&&(S.matriz||((S.papel==='gestor'||S.papel==='vendedor')&&['cde','cde-vidros','casa-bandeirante','guapore-vidros','guapore-sinop'].includes(S.empresa)));let b=document.getElementById('sbBtH');
