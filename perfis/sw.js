@@ -5,7 +5,7 @@
    - Imagens, fontes e biblioteca 3D: usa a cópia guardada (mais rápido) e só baixa se faltar.
    - "Baixar tudo": quando o app está instalado, guarda todos os perfis (cerca de 11 MB).
    © FC Consultoria em Esquadria · uso exclusivo */
-const VERSAO = 'cat3d-v1';
+const VERSAO = 'cat3d-v2';
 const CACHE = 'fc-' + VERSAO;
 const ESSENCIAL = ['/perfis/', '/perfis/?o=app', '/perfis/offline.json', '/perfis/manifest.webmanifest'];
 const CDN = /^https:\/\/(cdn\.jsdelivr\.net|cdnjs\.cloudflare\.com|fonts\.googleapis\.com|fonts\.gstatic\.com)\//;
