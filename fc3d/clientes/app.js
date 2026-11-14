@@ -8,21 +8,37 @@
   if(window.top!==window||window.FCApp)return;window.FCApp=1;
   var R='/fc3d/clientes/',h=document.head||document.documentElement;
   function tag(n,a){var e=document.createElement(n);for(var k in a)e.setAttribute(k,a[k]);h.appendChild(e);}
-  if(!document.querySelector('link[rel="manifest"]'))tag('link',{rel:'manifest',href:R+'manifest.webmanifest'});
-  tag('link',{rel:'apple-touch-icon',href:'/img/app-icone-192.png'});
-  tag('meta',{name:'apple-mobile-web-app-capable',content:'yes'});
-  tag('meta',{name:'mobile-web-app-capable',content:'yes'});
-  tag('meta',{name:'apple-mobile-web-app-title',content:'FC 3D'});
-  if('serviceWorker' in navigator)navigator.serviceWorker.register(R+'sw.js',{scope:R}).catch(function(){});
-
+  /* 14/11/2026 · o app só pode ser instalado por quem está logado numa empresa cadastrada
+     e com a instalação liberada pela FC (Empresas e acessos). Link do cliente final (?ver=) nunca oferece o app. */
   var app=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
-  if(app)return;
+  if(app){if('serviceWorker' in navigator)navigator.serviceWorker.register(R+'sw.js',{scope:R}).catch(function(){});return;}
+  var Q=new URLSearchParams(location.search);
+  if(Q.get('ver')||Q.get('cliente')||/\/(ver|obra)\//.test(location.pathname))return;
+  var liberado=false;
+  function ligar(){
+    if(liberado)return;liberado=true;
+    if(!document.querySelector('link[rel="manifest"]'))tag('link',{rel:'manifest',href:R+'manifest.webmanifest'});
+    tag('link',{rel:'apple-touch-icon',href:'/img/app-icone-192.png'});
+    tag('meta',{name:'apple-mobile-web-app-capable',content:'yes'});
+    tag('meta',{name:'mobile-web-app-capable',content:'yes'});
+    tag('meta',{name:'apple-mobile-web-app-title',content:'FC 3D'});
+    if('serviceWorker' in navigator)navigator.serviceWorker.register(R+'sw.js',{scope:R}).catch(function(){});
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mostrar);else mostrar();
+  }
+  var tkVisto=null;
+  function conferir(){
+    var tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
+    if(!tk||tk===tkVisto)return;tkVisto=tk;
+    fetch('https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_sessao',{method:'POST',headers:{apikey:'sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs','Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
+      .then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.app===true)ligar();}).catch(function(){});
+  }
+  conferir();var iv=setInterval(function(){if(liberado)clearInterval(iv);else conferir();},4000);
   var ua=navigator.userAgent;
   var ios=/iphone|ipad|ipod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   var movel=ios||/android|mobile/i.test(ua);
   var dentroApp=/Instagram/i.test(ua)?'Instagram':/FBAN|FBAV|FB_IAB/i.test(ua)?'Facebook':/WhatsApp/i.test(ua)?'WhatsApp':/; wv\)/.test(ua)?'aplicativo':'';
   var pedido=null,btn=null;
-  addEventListener('beforeinstallprompt',function(e){e.preventDefault();pedido=e;mostrar();});
+  addEventListener('beforeinstallprompt',function(e){e.preventDefault();if(!liberado)return;pedido=e;mostrar();});
   addEventListener('appinstalled',function(){if(btn)btn.remove();});
 
   function caixa(titulo,html){
@@ -36,7 +52,7 @@
     document.body.appendChild(d);
   }
   function mostrar(){
-    if(btn||!document.body)return;
+    if(!liberado||btn||!document.body)return;
     try{if(sessionStorage.getItem('fc-app-oculto'))return;}catch(_){}
     if(!movel&&!pedido)return;
     btn=document.createElement('button');btn.type='button';btn.id='fcAppBtn';
@@ -53,5 +69,4 @@
     };
     document.body.appendChild(btn);
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mostrar);else mostrar();
 })();
