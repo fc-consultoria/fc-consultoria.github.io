@@ -220,6 +220,123 @@
   .env-vazio{font-size:12px;color:#94a3b8;padding:6px 0}
 </style>
 
+
+<!-- ===== 14/11/2026 · LABORATÓRIO · layout novo do Simulador (celular primeiro): foto primeiro, etapas, desfazer pontos ===== -->
+<style>
+  body.lab{background:#0c171a!important}
+  body.lab #passos, body.lab #obraBar, body.lab #toolbar, body.lab > footer{display:none!important}
+  /* topo */
+  #hdr{position:relative;z-index:40;display:flex;align-items:center;gap:10px;padding:10px 12px;background:linear-gradient(120deg,#062e34,#0b4a52);color:#e8f3f4;flex:none}
+  #hdr .hd-logo{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#c9d4d6,#8fa3a7);color:#063238;font:800 13px Outfit,Inter,sans-serif;letter-spacing:-.02em;flex:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
+  #hdr .hd-tit{min-width:0;flex:1}
+  #hdr h1{margin:0;font:700 15px/1.15 Outfit,Inter,sans-serif;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #hdr h1 em{font-style:normal;font:800 9px Inter,sans-serif;letter-spacing:.12em;background:#2ec4b6;color:#062e34;border-radius:6px;padding:2px 6px;vertical-align:2px;margin-left:4px}
+  #hdr p{margin:2px 0 0;font:500 11px Inter,sans-serif;color:#9fc4c8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hd-ic{flex:none;width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#e8f3f4;display:grid;place-items:center;cursor:pointer;font:700 16px Inter,sans-serif}
+  .hd-ic:active{transform:scale(.95)}
+  #hdMenu{position:absolute;right:10px;top:56px;width:min(290px,calc(100vw - 20px));background:#fff;border-radius:16px;padding:8px;box-shadow:0 18px 50px rgba(0,0,0,.35);display:none;flex-direction:column;gap:4px;z-index:60}
+  #hdMenu.on{display:flex}
+  #hdMenu > *{display:flex!important;align-items:center;gap:10px;width:100%!important;margin:0!important;box-sizing:border-box;text-align:left;padding:12px 12px!important;border-radius:11px!important;border:0!important;background:#f1f6f6!important;color:#0b3a40!important;font:600 14px Inter,sans-serif!important;text-decoration:none;cursor:pointer;min-height:46px}
+  #hdMenu > #simIndicar{background:#02717d!important;color:#fff!important}
+  #hdMenu svg{width:18px;height:18px}
+  /* palco da foto */
+  body.lab #simLay{flex-direction:column!important;min-height:0}
+  body.lab #simMain{flex:1 1 auto!important;max-height:none!important;border:0!important;overflow:hidden!important;position:relative;background:radial-gradient(120% 80% at 50% 0%,#17343a 0%,#0c171a 70%)}
+  body.lab #labStage{height:100%;padding:10px!important;display:flex;align-items:center;justify-content:center;box-sizing:border-box}
+  body.lab #labStage > div{height:100%;display:flex;flex-direction:column;justify-content:center;max-width:none!important}
+  body.lab #canvasWrap{border:0!important;border-radius:14px!important;box-shadow:0 12px 40px rgba(0,0,0,.5)!important;margin:0 auto;flex:none}
+  body.lab #adBar{margin:8px auto 0;max-width:520px;width:100%;box-sizing:border-box;padding:6px 12px}
+  body.lab .aviso-fixo{margin:6px auto 0;background:transparent;border:0;color:#7fa3a8;font-size:10px;padding:0;max-width:520px}
+  body.lab:not([data-etapa="2"]) #ui{opacity:0}
+  body.lab #hint{font-size:12px!important;padding:7px 14px!important;background:rgba(6,46,52,.88)!important;color:#fff!important;border:0!important;bottom:10px!important}
+  body.lab:not([data-etapa="2"]) #hint{display:none!important}
+  /* tela sem foto */
+  @media (max-height:700px){body.lab #dropzone > div:first-child{display:none!important}}
+  body.lab #dropzone{border:2px dashed rgba(143,201,206,.35)!important;background:rgba(255,255,255,.04)!important;color:#e8f3f4;width:min(440px,100%);margin:0 auto;padding:26px 18px!important;border-radius:22px!important}
+  body.lab #dropzone h2{color:#fff!important;font:700 19px Outfit,Inter,sans-serif!important}
+  body.lab #dropzone p{color:#9fc4c8!important;font-size:13px!important}
+  body.lab #dropzone > div:first-child{background:rgba(46,196,182,.15)!important;border:0!important;width:64px!important;height:64px!important}
+  body.lab #dropzone .btn{min-height:52px;font-size:15px;border-radius:14px;padding:12px 20px}
+  body.lab #dropzone .btn:not(.btn-accent){background:rgba(255,255,255,.1);color:#e8f3f4;border-color:rgba(255,255,255,.2)}
+  .lab-vh{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;overflow:hidden!important;pointer-events:none}
+  /* barra flutuante dos pontos */
+  #ptBar{position:absolute;left:50%;top:10px;transform:translateX(-50%);z-index:30;display:none;gap:6px;padding:6px;border-radius:16px;background:rgba(6,30,34,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:calc(100% - 16px)}
+  body.lab[data-etapa="2"].comfoto #ptBar{display:flex}
+  #ptBar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:64px;min-height:50px;padding:5px 8px;border:0;border-radius:12px;background:rgba(255,255,255,.1);color:#e8f3f4;font:600 11px Inter,sans-serif;cursor:pointer}
+  #ptBar button svg{width:20px;height:20px}
+  #ptBar button:disabled{opacity:.35}
+  #ptBar button.ok{background:#2ec4b6;color:#062e34}
+  #ptBar button:active{transform:scale(.95)}
+  #lupa{position:absolute;top:10px;width:118px;height:118px;border-radius:50%;border:3px solid #fff;box-shadow:0 6px 20px rgba(0,0,0,.5);pointer-events:none;display:none;z-index:25;background:#000}
+  /* painel de etapas (embaixo no celular, à direita no computador) */
+  body.lab #simAside{flex:0 0 auto!important;width:100%!important;max-height:52dvh;display:flex;flex-direction:column;overflow:hidden!important;border:0!important;border-radius:22px 22px 0 0;background:#f3f6f7;box-shadow:0 -12px 34px rgba(0,0,0,.4)!important;z-index:20}
+  body.lab #simAside.mini{max-height:none}
+  body.lab #simAside.mini #labBody{display:none}
+  body.lab #simAside.mini #labMiniTx{display:block}
+  #labGrab{display:flex;justify-content:center;padding:7px 0 2px;cursor:pointer;flex:none}
+  #labGrab i{width:42px;height:5px;border-radius:9px;background:#c3d0d2}
+  #labNav{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:2px 10px 8px;flex:none}
+  #labNav button{display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;padding:4px 0;cursor:pointer;color:#7b9094;font:600 10.5px Inter,sans-serif;position:relative}
+  #labNav button b{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:#e3eaeb;color:#7b9094;transition:.2s}
+  #labNav button b svg{width:18px;height:18px}
+  #labNav button.ok b{background:#d5f2ee;color:#0f766e}
+  #labNav button.ok b:after{content:"✓";position:absolute;top:0;right:calc(50% - 22px);width:15px;height:15px;border-radius:9px;background:#0f9d8f;color:#fff;font:800 9px/15px Inter,sans-serif;text-align:center}
+  #labNav button.on{color:#063238}
+  #labNav button.on b{background:#063238;color:#fff;box-shadow:0 6px 14px -4px rgba(6,50,56,.55)}
+  #labHead{padding:0 16px 6px;flex:none}
+  #labHead small{font:700 10px Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#0f9d8f}
+  #labHead h2{margin:1px 0 0;font:700 18px/1.2 Outfit,Inter,sans-serif;color:#0b2f34}
+  #labMiniTx{display:none;margin:3px 0 0;font:500 12.5px/1.4 Inter,sans-serif;color:#557075}
+  #labBody{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:4px 14px 14px}
+  #labFoot{flex:none;display:flex;gap:8px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));border-top:1px solid #dfe8e9;background:#fff}
+  #labFoot button{flex:1;min-height:50px;border-radius:14px;font:700 15px Inter,sans-serif;cursor:pointer;border:1px solid #cfdcde;background:#fff;color:#0b3a40}
+  #labFoot #labAvanca{flex:1.6;background:#063238;border-color:#063238;color:#fff}
+  #labFoot button:disabled{opacity:.35}
+  .lab-p{display:none}.lab-p.on{display:block;animation:fadeUp .25s ease both}
+  .lab-intro{margin:0 0 12px;font:500 13px/1.5 Inter,sans-serif;color:#557075}
+  .lab-blk{background:#fff;border:1px solid #dde7e8;border-radius:16px;padding:12px;margin-bottom:10px}
+  .lab-t{font:700 10.5px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#7b9094;margin:0 0 8px}
+  .lab-g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .lab-g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .lab-big{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:74px;border-radius:16px;border:1px solid #cfdcde;background:#fff;color:#0b3a40;font:700 13px Inter,sans-serif;cursor:pointer;text-align:center;padding:8px}
+  .lab-big svg{width:24px;height:24px}
+  .lab-big.pri{background:#063238;border-color:#063238;color:#fff}
+  .lab-big:active{transform:scale(.97)}
+  .lab-lbl{display:block;font:700 11px Inter,sans-serif;color:#557075;margin:10px 0 0}
+  .lab-lbl input,.lab-lbl select{display:block;width:100%;box-sizing:border-box;margin-top:4px}
+  body.lab .lab-p .obra-in,body.lab .lab-p select{min-height:46px;font-size:15px;border-radius:12px;border:1px solid #cfdcde}
+  body.lab .lab-p .btn{min-height:46px;font-size:13px;border-radius:12px}
+  body.lab .lab-p .etp{background:#fff;border-color:#dde7e8;border-radius:16px}
+  body.lab .lab-p .etp.on{background:#f1fbf9;border-color:#7fd3c8}
+  body.lab .lab-p .etp h4 .n{display:none}
+  body.lab .lab-p .medidas input{min-height:48px;font-size:17px}
+  body.lab .lab-p section{margin-bottom:12px}
+  body.lab #ambTabs{flex-wrap:wrap;overflow:visible}
+  body.lab .obra-tab{padding:10px 14px;font-size:13px}
+  .lab-semvao{display:none;padding:12px;border-radius:14px;background:#fff6e5;border:1px solid #f5d38a;color:#7a4b00;font:600 13px/1.45 Inter,sans-serif;margin-bottom:10px}
+  .lab-p.semvao .lab-semvao{display:block}
+  .lab-p.semvao > :not(.lab-semvao):not(.lab-intro){opacity:.35;pointer-events:none}
+  .lab-mais{border:1px solid #dde7e8;border-radius:16px;background:#fff;padding:4px 12px;margin-bottom:10px}
+  .lab-mais summary{cursor:pointer;font:700 13px Inter,sans-serif;color:#0b3a40;padding:10px 0}
+  .lab-cred{margin:14px 0 0;text-align:center;font:500 10px Inter,sans-serif;color:#94a3b8}
+  #labToast{position:fixed;left:50%;bottom:calc(140px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#062e34;color:#fff;font:600 13px Inter,sans-serif;padding:11px 16px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:2147482000;display:none;max-width:88vw;text-align:center}
+  /* computador, tablet deitado e TV: foto à esquerda, etapas à direita */
+  @media (min-width:1024px), (orientation:landscape) and (min-width:700px){
+    body.lab #simLay{flex-direction:row!important}
+    body.lab #simAside{width:400px!important;max-height:none!important;border-radius:0;box-shadow:-10px 0 30px rgba(0,0,0,.3)!important}
+    body.lab #simAside.mini #labBody{display:block}
+    body.lab #simAside.mini #labMiniTx{display:none}
+    #labGrab{display:none}
+    #labToast{bottom:30px}
+  }
+  @media (orientation:landscape) and (max-width:1023.98px) and (min-width:700px){ body.lab #simAside{width:340px!important} }
+  /* modo escuro */
+  html.dark body.lab #simAside{background:#0f1c20}
+  html.dark #labHead h2{color:#e2f1f2} html.dark .lab-blk, html.dark .lab-big, html.dark .lab-mais, html.dark body.lab .lab-p .etp{background:#162a2f;border-color:#24414a;color:#d6e8ea}
+  html.dark #labFoot{background:#0f1c20;border-color:#24414a} html.dark #labFoot button{background:#162a2f;color:#e2f1f2;border-color:#24414a}
+  html.dark #labFoot #labAvanca{background:#2ec4b6;color:#062e34;border-color:#2ec4b6}
+  html.dark #labNav button b{background:#1a3036} html.dark #labNav button.on b{background:#2ec4b6;color:#062e34}
+</style>
 <script src="/fc3d/clientes/app.js?v=1" defer></script>
 </head>
 
@@ -246,7 +363,7 @@
     if(!d||!(d.matriz||d.papel==='gestor'||d.papel==='vendedor')){nega('Acesso não liberado','O Simulador de obra é da equipe da empresa licenciada. Fale com a FC Consultoria.');return;}
     window.SIM_EMP=d.empresa_nome||(d.matriz?'FC Consultoria em Esquadria':'');window.SIM_SIGLA=d.sigla||(d.matriz?'FC':'');window.SIM_NOME=d.matriz?'':(d.nome||'');window.SIM_GESTOR=!!(d.matriz||d.papel==='gestor');
     window.SIM_MARCA();ov.remove();
-    var hd=document.querySelector('header');if(hd&&!document.getElementById('simVolta')){var a=document.createElement('a');a.id='simVolta';a.href='/fc3d/clientes/';a.textContent='← Voltar para o painel';
+    var hd=document.getElementById('hdMenu');if(hd&&!document.getElementById('simVolta')){var a=document.createElement('a');a.id='simVolta';a.href='/fc3d/clientes/';a.textContent='← Voltar para o painel';
       a.style.cssText='margin-left:auto;font:600 12px Inter,sans-serif;color:#025860;text-decoration:none;border:1px solid #b9dfe2;border-radius:10px;padding:8px 10px;white-space:nowrap';
       var t=document.getElementById('themeToggle');if(t){t.style.marginLeft='8px';hd.insertBefore(a,t);}else hd.appendChild(a);
       if(window.SIM_GESTOR){var g=document.createElement('a');g.href='recebidas.html';g.textContent='Obras recebidas';g.style.cssText='margin-left:8px;font:600 12px Inter,sans-serif;color:#025860;text-decoration:none;border:1px solid #b9dfe2;border-radius:10px;padding:8px 10px;white-space:nowrap';hd.insertBefore(g,t||null);}}
@@ -287,17 +404,14 @@
 })();
 </script><script src="/fc3d/clientes/sessao.js?v=2"></script><script src="/fc3d/clientes/uso.js?v=2" defer></script>
 
-<!-- TOPBAR -->
-<header class="shrink-0 border-b border-orange-100 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 py-3 flex items-center gap-3 shadow-sm z-20">
-  <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-accent2 grid place-items-center shadow-lg shadow-accent/20">
-    <span id="simSigla" class="text-white font-black text-sm tracking-tighter">FC</span>
+<!-- TOPBAR · laboratório 14/11/2026 -->
+<header id="hdr">
+  <div class="hd-logo"><span id="simSigla">FC</span></div>
+  <div class="hd-tit">
+    <h1>Simulador de obra</h1>
+    <p><span id="simEmpresa">Foto da obra · esquadria no vão</span></p>
   </div>
-  <div class="min-w-0">
-    <h1 class="text-sm font-bold tracking-tight text-slate-900 dark:text-white truncate">Simulador de obra</h1>
-    <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate"><span id="simEmpresa">Foto da obra · esquadria no vão</span></p>
-  </div>
-  <!-- 11/11/2026 · vídeo tutorial (coloque o endereço do vídeo em SIM_TUTORIAL; vazio = "em breve") -->
-  <button type="button" id="btnComoUsar" class="shrink-0" style="display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;background:#02717d;color:#fff;font:600 12px Inter,sans-serif;padding:7px 12px;cursor:pointer;white-space:nowrap" title="Vídeo: como usar o Simulador de obra">▶ <span>Assistir como usar</span></button>
+  <button type="button" id="btnComoUsar" class="hd-ic" title="Como usar">?</button>
   <div id="tutModal" style="display:none;position:fixed;inset:0;z-index:2147482500;background:rgba(8,16,20,.8);align-items:center;justify-content:center;padding:16px">
     <div style="background:#fff;color:#14212a;border-radius:16px;width:100%;max-width:860px;padding:16px;font:400 14px/1.5 Inter,sans-serif">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><b style="font-size:16px">Como usar o Simulador de obra</b><button type="button" id="tutFechar" style="margin-left:auto;border:1px solid #d3e6e8;background:#fff;border-radius:10px;padding:6px 12px;cursor:pointer;font-weight:600">Fechar</button></div>
@@ -311,25 +425,24 @@
     function fechar(){m.style.display='none';c.innerHTML='';}
     document.getElementById('btnComoUsar').onclick=function(){
       var u=window.SIM_TUTORIAL;
-      c.innerHTML=!u?'<div style="text-align:center;padding:28px 10px"><div style="font-size:38px">🎬</div><b style="font-size:17px">Vídeo em preparação</b><p style="color:#5a6872;margin:6px 0 14px">Em breve o passo a passo em vídeo estará aqui. Por enquanto, siga as etapas da tela:</p><ol style="text-align:left;display:inline-block;margin:0;padding-left:20px;list-style:decimal"><li><b>Foto</b>: tire ou escolha a foto do vão.</li><li><b>Vão</b>: toque em + Novo Vão e marque os 4 cantos.</li><li><b>Contramarco e reboco</b> (opcional).</li><li><b>Esquadria</b>: escolha a tipologia, a cor e o vidro.</li><li><b>Enviar</b>: link e QR para o cliente ou envio ao escritório.</li></ol></div>'
+      c.innerHTML=!u?'<div style="text-align:center;padding:28px 10px"><div style="font-size:38px">🎬</div><b style="font-size:17px">Vídeo em preparação</b><p style="color:#5a6872;margin:6px 0 14px">Siga as etapas da parte de baixo da tela:</p><ol style="text-align:left;display:inline-block;margin:0;padding-left:20px;list-style:decimal"><li><b>Foto</b>: tire a foto de cada vão (pode tirar todas primeiro).</li><li><b>Vão</b>: toque nos 4 cantos. Errou? <b>Desfazer</b> ou <b>Marcar de novo</b>.</li><li><b>Medidas</b>: passe a trena e digite a medida do vão.</li><li><b>Esquadria</b>: tipologia, cor, vidro, contramarco e reboco.</li><li><b>Obra</b>: nome da obra, cliente e envio (link, QR ou escritório).</li></ol></div>'
         :/\.(mp4|webm)$/i.test(u)?'<video src="'+u+'" controls autoplay playsinline style="width:100%;border-radius:10px;background:#000"></video>'
         :'<div style="position:relative;padding-top:56.25%"><iframe src="'+u+'" style="position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:10px" allow="autoplay; fullscreen" allowfullscreen></iframe></div>';
       m.style.display='flex';};
     document.getElementById('tutFechar').onclick=fechar;m.onclick=function(e){if(e.target===m)fechar();};
   })();
   </script>
-  <style>@media (max-width:640px){#btnComoUsar span{display:none}}</style>
-  
-  <!-- Botão Dark Mode -->
-  <button id="themeToggle" class="ml-auto p-2 rounded-xl border border-orange-100 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-orange-50 dark:hover:bg-slate-700 transition-colors">
-    <svg id="iconSun" class="w-5 h-5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>
-    </svg>
-    <svg id="iconMoon" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-    </svg>
-  </button>
+  <button type="button" id="hdMenuBtn" class="hd-ic" title="Menu" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <div id="hdMenu">
+    <button id="themeToggle" type="button">
+      <svg id="iconSun" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+      <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      Tema claro / escuro
+    </button>
+  </div>
+  <script>(function(){var b=document.getElementById('hdMenuBtn'),m=document.getElementById('hdMenu');b.onclick=function(e){e.stopPropagation();m.classList.toggle('on');};document.addEventListener('click',function(e){if(!m.contains(e.target)&&e.target!==b)m.classList.remove('on');});m.addEventListener('click',function(e){if(e.target.closest('a,button'))setTimeout(function(){m.classList.remove('on');},50);});})();</script>
 </header>
+
 
 <!-- CONTAINER PRINCIPAL -->
 <div id="simLay" class="flex flex-col lg:flex-row flex-1 overflow-hidden">
@@ -1969,7 +2082,7 @@
    * Desenha o polígono de seleção e os pontos numerados.
    */
   function desenharPoligono(pts, ativo, ehTemp) {
-    const lw = Math.max(2, ui.width * 0.0045);
+    const kk = ui.width / (ui.getBoundingClientRect().width || ui.width); const lw = Math.max(2, 2.5 * kk);
     uctx.save();
     uctx.lineJoin = 'round'; uctx.lineCap = 'round';
 
@@ -1995,7 +2108,7 @@
       uctx.stroke();
     }
 
-    const r = Math.max(10, ui.width * 0.015);
+    const r = Math.max(6, 12 * kk);
     pts.forEach((p, i) => {
       uctx.beginPath();
       uctx.arc(p.x, p.y, r, 0, Math.PI * 2);
@@ -2221,7 +2334,7 @@
     const vao = state.vaos.find(v => v.id === state.vaoAtivoId);
     if (!vao) return;
 
-    const raio = Math.max(24, view.width * 0.035);
+    const raio = 30 * (view.width / (view.getBoundingClientRect().width || view.width));
     for (let i = 0; i < vao.pts.length; i++) {
       const d = Math.hypot(vao.pts[i].x - p.x, vao.pts[i].y - p.y);
       if (d < raio) { arrastandoVao = { vaoId: vao.id, index: i }; return; }
@@ -2904,8 +3017,267 @@
     $('selVao') && $('selVao').addEventListener('change', () => setTimeout(sync, 0));
     window.addEventListener('keydown', e => { if (e.key === 'Escape' && PINCEL.on) { PINCEL.on = false; sync(); } });
   })();
+
+  /* ==========================================================
+     14/11/2026 · LABORATÓRIO · layout novo por etapas (celular primeiro)
+     1 Foto → 2 Vão (4 cantos, desfazer, marcar de novo, lupa) → 3 Medidas → 4 Esquadria → 5 Obra e envio
+     FC Consultoria em Esquadria
+     ========================================================== */
+  const SHELL = (() => {
+    const nada = { sync() {}, ir() {} };
+    if (new URLSearchParams(location.search).get('ver')) return nada;
+    const body = document.body, aside = $('simAside'), main = $('simMain');
+    body.classList.add('lab');
+    const IC = {
+      foto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+      gal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>',
+      vao: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h5M4 4v5M20 4h-5M20 4v5M4 20h5M4 20v-5M20 20h-5M20 20v-5"/></svg>',
+      med: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M6 7v4M10 7v3M14 7v4M18 7v3"/></svg>',
+      esq: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1.5"/><path d="M12 3v18M3 12h18"/></svg>',
+      env: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>',
+      desf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>',
+      rem: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>',
+      ok: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+      mais: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
+    };
+    const ETP = [
+      { n: 'Foto', ic: IC.foto, tit: 'Fotografe os vãos', mini: 'Toque em Tirar foto. Pode fotografar todos os vãos da obra antes de continuar.' },
+      { n: 'Vão', ic: IC.vao, tit: 'Marque os 4 cantos', mini: 'Toque nos 4 cantos do vão na foto. Errou? Desfazer. Para ajustar, arraste o ponto.' },
+      { n: 'Medidas', ic: IC.med, tit: 'Medida do vão', mini: '' },
+      { n: 'Esquadria', ic: IC.esq, tit: 'Escolha a esquadria', mini: '' },
+      { n: 'Obra', ic: IC.env, tit: 'Dados da obra e envio', mini: '' }
+    ];
+    let cur = 1;
+    const H = (tag, html, attrs) => { const e = document.createElement(tag); if (html != null) e.innerHTML = html; if (attrs) Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v)); return e; };
+    const sec = id => { const e = $(id); return e ? (e.closest('section') || e) : null; };
+    const put = (pai, ...els) => els.forEach(x => { if (x) pai.appendChild(x); });
+
+    // ---------- palco da foto ----------
+    const stage = $('dropzone').parentElement.parentElement; stage.id = 'labStage';
+    // entradas de arquivo: invisíveis (não display:none) para abrir câmera/galeria pelos botões novos
+    ['inputGaleria', 'inputCamera'].forEach(id => { const i = $(id); i.classList.remove('hidden'); i.classList.add('lab-vh'); });
+    const dz = $('dropzone'); dz.querySelector('h2').textContent = 'Comece pela foto do vão';
+    dz.querySelector('p').textContent = 'Fotografe a parede onde a esquadria será instalada. Pode tirar a foto de todos os vãos da obra antes de continuar.';
+    const dzRow = dz.querySelector('.mt-5'); if (dzRow && dzRow.children.length === 2) { const [gal, cam] = dzRow.children; gal.classList.remove('btn-accent'); cam.classList.add('btn-accent'); dzRow.insertBefore(cam, gal); }
+
+    const ptBar = H('div', `<button type="button" id="labDesf">${IC.desf}Desfazer</button><button type="button" id="labRem">${IC.rem}Marcar de novo</button><button type="button" id="labNovoV">${IC.mais}Outro vão</button><button type="button" id="labPronto" class="ok">${IC.ok}Pronto</button>`, { id: 'ptBar' });
+    main.appendChild(ptBar);
+    const lupa = H('canvas', null, { id: 'lupa', width: '236', height: '236' }); wrap.appendChild(lupa);
+
+    // ---------- painel de etapas ----------
+    const sobra = H('div', null, { id: 'labSobra', style: 'display:none' });
+    while (aside.firstChild) sobra.appendChild(aside.firstChild);
+    const grab = H('div', '<i></i>', { id: 'labGrab', title: 'Mostrar / esconder os comandos' });
+    const nav = H('nav', ETP.map((e, i) => `<button type="button" data-e="${i + 1}"><b>${e.ic}</b>${e.n}</button>`).join(''), { id: 'labNav' });
+    const head = H('div', '<small id="labNum"></small><h2 id="labTit"></h2><p id="labMiniTx"></p>', { id: 'labHead' });
+    const bodyP = H('div', null, { id: 'labBody' });
+    const foot = H('div', '<button type="button" id="labVolta">◀ Voltar</button><button type="button" id="labAvanca">Avançar ▶</button>', { id: 'labFoot' });
+    put(aside, grab, nav, head, bodyP, foot, sobra);
+    const P = []; for (let i = 1; i <= 5; i++) { const p = H('div', null, { class: 'lab-p', 'data-p': i }); bodyP.appendChild(p); P[i] = p; }
+    const AVISO_SV = '<div class="lab-semvao">Primeiro marque o vão na foto (etapa 2 · Vão).</div>';
+
+    // 1 · Foto
+    P[1].innerHTML = `<p class="lab-intro">Tire a foto de <b>cada vão ou ambiente</b>. Pode fotografar todos primeiro e depois marcar um por um.</p>
+      <div class="lab-g2" id="labFotoBtns" style="margin-bottom:10px"><button type="button" class="lab-big pri" id="labCam">${IC.foto}Tirar outra foto</button><button type="button" class="lab-big" id="labGal">${IC.gal}Outra da galeria</button></div>
+      <div class="lab-blk"><div class="lab-t">Fotos desta obra</div><div id="labTabs"></div><label class="lab-lbl" id="labAmbNome">Nome desta foto (ex.: Sala, Quarto, Fachada)</label><div class="lab-g2" id="labFotoAcoes" style="margin-top:10px"></div></div>`;
+    $('labTabs').appendChild($('ambTabs'));
+    $('labAmbNome').appendChild($('ambNome')); $('ambNome').classList.add('obra-in');
+    const btTrocar = $('btnTrocar'), btExcl = $('btnExcluirFoto'), btAmbEx = $('ambExcluir');
+    btTrocar.lastChild.textContent = ' Trocar'; btExcl.lastChild.textContent = ' Excluir'; btAmbEx.textContent = 'Remover';
+    put($('labFotoAcoes'), btTrocar, btAmbEx); sobra.appendChild(btExcl); btTrocar.lastChild.textContent = ' Trocar foto'; btAmbEx.textContent = 'Remover foto';
+    $('ambNovo').style.display = 'none'; sobra.appendChild($('ambNovo'));
+    // nova foto = novo ambiente (sem abrir o teclado no nome)
+    const novaFoto = inp => { if (state.img) { const nm = $('ambNome'), f = () => nm.blur(); nm.addEventListener('focus', f, { once: true }); setTimeout(() => nm.removeEventListener('focus', f), 600); $('ambNovo').click(); } $(inp).click(); };
+    $('labCam').onclick = () => novaFoto('inputCamera');
+    $('labGal').onclick = () => novaFoto('inputGaleria');
+
+    // 2 · Vão
+    P[2].innerHTML = `<p class="lab-intro">Toque nos <b>4 cantos</b> do vão na foto. Para ajustar, segure o ponto e arraste: a lupa mostra o canto de perto.</p>
+      <div class="lab-g3" style="margin-bottom:10px"><button type="button" class="lab-big" id="labDesf2">${IC.desf}Desfazer</button><button type="button" class="lab-big" id="labRem2">${IC.rem}Marcar de novo</button><button type="button" class="lab-big" id="labNovoV2">${IC.mais}Outro vão</button></div>
+      <div class="lab-blk"><div class="lab-t">Vãos nesta foto</div><div id="labVaos"></div></div><div id="labLimpa"></div>`;
+    const selBox = $('selVao').closest('.flex.gap-2'); put($('labVaos'), selBox, $('vaoInfo'));
+    $('btnLimparTudo').lastChild.textContent = ' Apagar todos os vãos desta foto'; $('btnLimparTudo').classList.add('w-full'); put($('labLimpa'), $('btnLimparTudo'));
+
+    // 3 · Medidas
+    P[3].innerHTML = `<p class="lab-intro">Passe a trena no vão bruto e digite largura e altura. A medida fica marcada na foto como referência para o orçamento.</p>${AVISO_SV}`;
+    put(P[3], $('etpTrena'));
+
+    // 4 · Esquadria
+    P[4].innerHTML = `<p class="lab-intro">Escolha o tipo, a cor e o vidro. Sem marca nem linha: a linha é definida no escritório, no sistema da empresa.</p>${AVISO_SV}`;
+    const mais4 = H('details', '<summary>Mais ajustes (contramarco, reboco, objetos na frente, balão)</summary>', { class: 'lab-mais' });
+    put(P[4], $('etpEsq'), sec('gridTip'), sec('gridCores'), sec('gridVidros'), $('famMov'), mais4);
+    put(mais4, $('etpCM'), $('etpReb'), $('frenteBox'), sec('selBlend'));
+    const balao = $('btnAnotacaoBalao'); balao.classList.add('w-full'); balao.lastChild.textContent = ' Colocar balão de observação na foto'; put(mais4, balao);
+
+    // 5 · Obra e envio
+    P[5].innerHTML = `<p class="lab-intro">Com as fotos e medidas prontas, preencha os dados da obra e envie.</p>
+      <div class="lab-blk"><div class="lab-t">Dados da obra</div><label class="lab-lbl" id="labOn" style="margin-top:0">Nome da obra</label><label class="lab-lbl" id="labOc">Cliente</label>
+      <label class="lab-lbl" id="labOl">Obras salvas neste aparelho</label><div class="lab-g2" id="labOb" style="margin-top:8px"></div><div id="labOm" style="margin-top:8px"></div></div>
+      <div id="labEnv"></div><div class="lab-g2" id="labImg" style="margin-top:10px"></div>
+      <button type="button" class="btn w-full" id="labIndicar" style="display:none;margin-top:10px;background:#02717d;color:#fff;border-color:#02717d">Indicar para a FC</button>`;
+    $('obraNome').placeholder = 'Ex.: Residência Silva'; $('obraCliente').placeholder = 'Nome do cliente';
+    put($('labOn'), $('obraNome')); put($('labOc'), $('obraCliente')); put($('labOl'), $('obraLista'));
+    put($('labOb'), $('obraNova'), $('obraExcluir')); put($('labOm'), $('obraMsg'), $('envBox'));
+    put($('labEnv'), $('etpFim')); put($('labImg'), $('btnPreview'), $('btnSalvar'));
+    $('btnPreview').className = 'btn'; $('btnSalvar').className = 'btn';
+    $('labIndicar').onclick = () => { const b = $('simIndicar'); if (b) b.click(); };
+    bodyP.appendChild(H('p', 'Desenvolvido por FC Consultoria em Esquadria · CNPJ 52.985.682/0001-32 · imagens demonstrativas', { class: 'lab-cred' }));
+
+    // ---------- avisos curtos ----------
+    let tT = null; const toast = t => { let e = $('labToast'); if (!e) { e = H('div', null, { id: 'labToast' }); body.appendChild(e); } e.textContent = t; e.style.display = 'block'; clearTimeout(tT); tT = setTimeout(() => e.style.display = 'none', 2600); };
+
+    // ---------- pontos: desfazer, marcar de novo, lupa ----------
+    const HIST = []; const REM = { id: null, old: null };
+    const cp = pts => pts.map(p => ({ x: p.x, y: p.y }));
+    const vaoOk = () => state.vaos.some(v => v.pts.length === 4);
+    function refresh() { sincronizarSidebar(); renderTudo(); atualizarPassos(); atualizarDica(); }
+    function cancelarCriacao() {
+      state.modoCriacao = false; state.ptsTemp = []; wrap.classList.remove('modo-criacao');
+      if (REM.id && state.vaos.some(v => v.id === REM.id)) state.vaoAtivoId = REM.id; else if (!state.vaoAtivoId && state.vaos.length) state.vaoAtivoId = state.vaos[state.vaos.length - 1].id;
+      REM.id = null; REM.old = null; refresh();
+    }
+    function desfazer() {
+      if (state.modoCriacao && state.ptsTemp.length) { state.ptsTemp.pop(); renderizarUI(); atualizarDica(); sync(); return; }
+      if (state.modoCriacao && REM.id) { cancelarCriacao(); toast('Voltou a marcação anterior.'); return; }
+      const h = HIST.pop();
+      if (!h) { if (state.modoCriacao && vaoOk()) { cancelarCriacao(); return; } toast('Nada para desfazer.'); return; }
+      const v = state.vaos.find(x => x.id === h.id);
+      if (h.t === 'criou') {
+        if (v) { v.overlayCanvas.remove(); state.vaos = state.vaos.filter(x => x !== v); }
+        state.vaoAtivoId = null; state.modoCriacao = true; state.ptsTemp = cp(h.pts.slice(0, 3)); wrap.classList.add('modo-criacao');
+      } else if (v) { v.pts = cp(h.pts); state.vaoAtivoId = v.id; renderizarVao(v); }
+      refresh();
+    }
+    function remarcar() {
+      if (state.modoCriacao && !REM.id) { state.ptsTemp = []; renderizarUI(); atualizarDica(); sync(); return; }
+      const v = vaoAtivo() || state.vaos[state.vaos.length - 1];
+      if (!v) { iniciarNovoVao(); return; }
+      REM.id = v.id; REM.old = cp(v.pts); iniciarNovoVao(); toast('Toque de novo nos 4 cantos deste vão.');
+    }
+    function outroVao() { if (state.modoCriacao) cancelarCriacao(); REM.id = null; iniciarNovoVao(); }
+    function pronto() {
+      if (state.modoCriacao) { if (!vaoOk() && !REM.id) { toast('Toque nos 4 cantos do vão primeiro.'); return; } cancelarCriacao(); }
+      ir(3);
+    }
+    [['labDesf', desfazer], ['labDesf2', desfazer], ['labRem', remarcar], ['labRem2', remarcar], ['labNovoV', outroVao], ['labNovoV2', outroVao], ['labPronto', pronto]].forEach(([id, f]) => $(id).onclick = f);
+
+    // marcar de novo: os 4 toques trocam os pontos do mesmo vão (mantém tipologia, cor, medidas)
+    const _criarVao = criarVao;
+    criarVao = function (pts) {
+      if (REM.id) { const v = state.vaos.find(x => x.id === REM.id); if (v) { HIST.push({ t: 'rem', id: v.id, pts: REM.old }); v.pts = pts.slice(); state.vaoAtivoId = v.id; REM.id = null; REM.old = null; renderizarVao(v); return v; } REM.id = null; }
+      return _criarVao(pts);
+    };
+
+    // lupa
+    const lctx = lupa.getContext('2d');
+    function lupaDesenha(p) {
+      const r = view.getBoundingClientRect(); if (!r.width) return; const k = r.width / view.width, Z = 2.6, sw = 118 / (Z * k), S = 236;
+      lctx.save(); lctx.clearRect(0, 0, S, S); lctx.beginPath(); lctx.arc(S / 2, S / 2, S / 2, 0, Math.PI * 2); lctx.clip();
+      lctx.fillStyle = '#000'; lctx.fillRect(0, 0, S, S);
+      lctx.drawImage(view, p.x - sw / 2, p.y - sw / 2, sw, sw, 0, 0, S, S);
+      lctx.drawImage(ui, p.x - sw / 2, p.y - sw / 2, sw, sw, 0, 0, S, S);
+      lctx.strokeStyle = '#2ec4b6'; lctx.lineWidth = 2; lctx.beginPath(); lctx.moveTo(S / 2 - 16, S / 2); lctx.lineTo(S / 2 + 16, S / 2); lctx.moveTo(S / 2, S / 2 - 16); lctx.lineTo(S / 2, S / 2 + 16); lctx.stroke();
+      lctx.restore();
+      const esq = p.x < view.width / 2; lupa.style.left = esq ? '' : '10px'; lupa.style.right = esq ? '10px' : ''; lupa.style.display = 'block';
+    }
+    const lupaFora = () => { lupa.style.display = 'none'; };
+
+    // eventos na foto: antes (captura) e depois do comando original
+    let pre = null, arrTemp = false, dragIni = null;
+    wrap.addEventListener('pointerdown', e => {
+      pre = { cria: state.modoCriacao, n: state.ptsTemp.length, nv: state.vaos.length, rem: REM.id };
+      // fora da etapa Vão os pontos ficam escondidos e não se mexem sem querer
+      if (cur !== 2 && !PINCEL.on && state.annotationTool === null && !state.modoCriacao) {
+        const v = vaoAtivo(); if (v && v.pts.length === 4) { const p = pontoDoEvento(e), raio = 30 * (view.width / (view.getBoundingClientRect().width || view.width));
+          if (v.pts.some(q => Math.hypot(q.x - p.x, q.y - p.y) < raio)) { e.stopImmediatePropagation(); e.preventDefault(); } }
+      }
+    }, true);
+    wrap.addEventListener('pointerdown', e => {
+      if (!pre) return; const p = pontoDoEvento(e);
+      if (pre.cria && state.modoCriacao && state.ptsTemp.length === pre.n + 1) { arrTemp = true; lupaDesenha(p); }
+      else if (pre.cria && !state.modoCriacao) {
+        if (state.vaos.length > pre.nv) { const v = state.vaos[state.vaos.length - 1]; HIST.push({ t: 'criou', id: v.id, pts: cp(v.pts) }); arrastandoVao = { vaoId: v.id, index: 3 }; }
+        else if (state.vaoAtivoId) arrastandoVao = { vaoId: state.vaoAtivoId, index: 3 };
+        dragIni = null; lupaDesenha(p); setTimeout(() => toast('Vão marcado. Arraste os pontos para ajustar ou toque em Pronto.'), 150);
+      } else if (arrastandoVao) { const v = state.vaos.find(x => x.id === arrastandoVao.vaoId); if (v) { dragIni = { id: v.id, pts: cp(v.pts) }; lupaDesenha(p); } }
+      pre = null; sync();
+    });
+    wrap.addEventListener('pointermove', e => {
+      if (arrTemp && state.modoCriacao && state.ptsTemp.length) { e.preventDefault(); const p = pontoDoEvento(e); state.ptsTemp[state.ptsTemp.length - 1] = p; renderizarUI(); lupaDesenha(p); return; }
+      if (arrastandoVao) lupaDesenha(pontoDoEvento(e));
+    });
+    const solta = () => {
+      if (dragIni) { const v = state.vaos.find(x => x.id === dragIni.id); if (v && JSON.stringify(cp(v.pts)) !== JSON.stringify(dragIni.pts)) HIST.push({ t: 'drag', id: v.id, pts: dragIni.pts }); dragIni = null; }
+      arrTemp = false; lupaFora(); sync();
+    };
+    ['pointerup', 'pointercancel'].forEach(ev => wrap.addEventListener(ev, solta));
+
+    // ---------- foto sempre inteira na tela ----------
+    function fit() {
+      if (!state.img || wrap.classList.contains('hidden')) { wrap.style.width = ''; return; }
+      const extra = ($('adBar').offsetHeight ? $('adBar').offsetHeight + 8 : 0) + (stage.querySelector('.aviso-fixo') ? stage.querySelector('.aviso-fixo').offsetHeight + 6 : 0);
+      const W = main.clientWidth - 20, Hh = main.clientHeight - 20 - extra, r = view.width / view.height;
+      wrap.style.width = Math.max(140, Math.floor(Math.min(W, Hh * r))) + 'px';
+    }
+    try { new ResizeObserver(() => requestAnimationFrame(fit)).observe(main); } catch (_) { window.addEventListener('resize', fit); }
+    try { new MutationObserver(() => requestAnimationFrame(fit)).observe(view, { attributes: true, attributeFilter: ['width', 'height'] }); } catch (_) {}
+
+    // ---------- navegação ----------
+    function ir(n) {
+      n = Math.max(1, Math.min(5, n | 0));
+      if (n > 1 && !state.img) { toast('Primeiro tire a foto do vão.'); n = 1; }
+      if (n !== 2 && state.modoCriacao) cancelarCriacao();
+      cur = n; body.dataset.etapa = String(n);
+      if (n === 2 && state.img) {
+        if (!vaoOk() && !state.modoCriacao) iniciarNovoVao();
+        else if (!state.vaoAtivoId && state.vaos.length && !state.modoCriacao) { state.vaoAtivoId = state.vaos[state.vaos.length - 1].id; sincronizarSidebar(); }
+        renderizarUI();
+      }
+      P.forEach((p, i) => p && p.classList.toggle('on', i === n));
+      aside.classList.toggle('mini', n === 2 || (n === 1 && !state.img));
+      bodyP.scrollTop = 0; atualizarDica(); sync(); requestAnimationFrame(fit);
+    }
+    nav.querySelectorAll('button').forEach(b => b.onclick = () => ir(+b.dataset.e));
+    grab.onclick = () => aside.classList.toggle('mini');
+    $('labVolta').onclick = () => ir(cur - 1);
+    $('labAvanca').onclick = () => {
+      if (cur === 1 && !state.img) { toast('Toque em Tirar foto para começar.'); return; }
+      if (cur === 2) { pronto(); return; }
+      ir(cur + 1);
+    };
+
+    function sync() {
+      const v = vaoAtivo() || state.vaos.find(x => x.pts.length === 4), ok = !!(v && v.pts.length === 4);
+      const feito = [!!state.img, ok, ok && !!v.bruto, ok && !!(v.et && v.et.esq), false];
+      nav.querySelectorAll('button').forEach((b, i) => { b.classList.toggle('on', i + 1 === cur); b.classList.toggle('ok', feito[i] && i + 1 !== cur); });
+      body.classList.toggle('comfoto', !!state.img);
+      $('labNum').textContent = 'Etapa ' + cur + ' de 5'; $('labTit').textContent = ETP[cur - 1].tit; $('labMiniTx').textContent = ETP[cur - 1].mini;
+      $('labVolta').disabled = cur === 1;
+      $('labAvanca').style.display = cur === 5 ? 'none' : '';
+      $('labAvanca').textContent = cur === 2 ? 'Pronto ▶' : cur === 4 ? 'Dados da obra ▶' : 'Avançar ▶';
+      $('labFotoBtns').style.display = state.img ? '' : 'none'; if (cur === 1 && !state.img) aside.classList.add('mini');
+      const podeDesf = (state.modoCriacao && (state.ptsTemp.length > 0 || !!REM.id)) || HIST.length > 0;
+      ['labDesf', 'labDesf2'].forEach(id => $(id).disabled = !podeDesf);
+      ['labRem', 'labRem2'].forEach(id => $(id).disabled = !(state.vaos.length || (state.modoCriacao && state.ptsTemp.length)));
+      [3, 4].forEach(i => P[i].classList.toggle('semvao', !ok));
+      $('labIndicar').style.display = $('simIndicar') ? '' : 'none';
+    }
+
+    // ganchos nos comandos originais
+    const _passos = atualizarPassos; atualizarPassos = function () { _passos(); sync(); };
+    const _dica = atualizarDica; atualizarDica = function () {
+      _dica(); if (!state.img) return;
+      if (state.modoCriacao) hint.textContent = (REM.id ? 'Marcando de novo · ' : '') + `Toque no canto ${state.ptsTemp.length + 1} de 4`;
+      else if (state.vaoAtivoId && cur === 2) hint.textContent = 'Arraste os pontos para ajustar';
+    };
+    const _cfg = configurarCanvas; configurarCanvas = function (img) { HIST.length = 0; REM.id = null; _cfg(img); if (!OBRA.carregando) setTimeout(() => ir(2), 90); else requestAnimationFrame(fit); };
+    const _reset = resetar; resetar = function () { HIST.length = 0; REM.id = null; _reset(); if (cur !== 1) ir(1); else sync(); };
+
+    return { sync, ir: n => ir(n), iniciar: () => ir(state.img ? 2 : 1) };
+  })();
+
   init();
-  
+  SHELL.iniciar();
 
 })();
 </script>
