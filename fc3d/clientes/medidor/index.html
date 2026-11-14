@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#063238">
+<title>Medidor de Obras · FC Consultoria</title>
+<link rel="icon" href="/img/logo-fc-160.jpg">
+<link rel="apple-touch-icon" href="/img/app-icone-192.png">
+<meta name="apple-mobile-web-app-title" content="Medidor de Obras">
+<!-- 14/11/2026 · Entrada direta do app Medidor de Obras: só o Simulador de obra.
+     Login da empresa do Medidor -> abre o Simulador no modo app. Outros logins (inclusive o da FC) não entram aqui.
+     © FC Consultoria em Esquadria · uso exclusivo -->
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%;background:radial-gradient(120% 80% at 50% 0%,#17343a 0%,#0c171a 70%);color:#e8f3f4;font:15px/1.5 Inter,system-ui,-apple-system,sans-serif}
+  main{min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px 20px calc(24px + env(safe-area-inset-bottom))}
+  .bx{width:100%;max-width:380px;text-align:center}
+  .lg{width:64px;height:64px;border-radius:18px;margin:0 auto 14px;display:grid;place-items:center;background:linear-gradient(145deg,#c9d4d6,#8fa3a7);color:#063238;font:800 22px Inter,sans-serif;box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
+  h1{margin:0;font-size:24px;letter-spacing:.01em}
+  .sub{margin:6px 0 22px;color:#9fc4c8;font-size:14px}
+  input{display:block;width:100%;padding:14px;border-radius:13px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:17px;margin-bottom:10px}
+  input::placeholder{color:#8fb0b4}
+  button{width:100%;padding:15px;border:0;border-radius:13px;background:#2ec4b6;color:#062e34;font:800 16px Inter,sans-serif;cursor:pointer;margin-top:4px}
+  button:disabled{opacity:.6}
+  .msg{min-height:22px;margin:10px 0 0;color:#ffb4a8;font-size:14px}
+  .rod{margin-top:26px;font-size:11px;color:#6f9196}
+  a{color:#2ec4b6}
+</style>
+</head>
+<body>
+<main><div class="bx">
+  <div class="lg">FC</div>
+  <h1>Medidor de Obras</h1>
+  <p class="sub">Foto do vão, medidas e esquadria na obra.<br>Entre com o login da sua empresa.</p>
+  <div id="form">
+    <input id="lg" placeholder="Login" autocomplete="username" autocapitalize="none">
+    <input id="cd" placeholder="Código" autocomplete="current-password" autocapitalize="characters">
+    <button id="en" type="button">Entrar</button>
+    <p class="msg" id="msg"></p>
+  </div>
+  <p class="rod">Uso exclusivo de empresas licenciadas · Desenvolvido por FC Consultoria em Esquadria · CNPJ 52.985.682/0001-32<br>
+  <a href="https://wa.me/5566999867984?text=Ol%C3%A1%2C%20FC!%20Quero%20conhecer%20o%20Medidor%20de%20Obras.">Falar com a FC</a></p>
+</div></main>
+<script>
+(function(){
+  var API='https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/',H={apikey:'sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs','Content-Type':'application/json'};
+  var MED=['parceiro-obras','teste-medidor-obras'],SIM='/fc3d/clientes/simulador/?app=medidor';
+  function rpc(f,b){return fetch(API+f,{method:'POST',headers:H,body:JSON.stringify(b)}).then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error((j&&j.message)||'Erro');return j;});});}
+  function $(i){return document.getElementById(i);}
+  var ls={g:function(k){try{return localStorage.getItem(k);}catch(_){return null;}},s:function(k,v){try{localStorage.setItem(k,v);}catch(_){}},d:function(k){try{localStorage.removeItem(k);}catch(_){}}};
+  try{localStorage.setItem('fc-app-medidor','1');}catch(_){}
+  function ok(d){return d&&!d.matriz&&MED.indexOf(d.empresa)>=0;}
+  // já entrou com login do Medidor: vai direto para o Simulador
+  var tk=ls.g('pfc-token');
+  if(tk){$('form').style.opacity='.5';rpc('pfc_sessao',{p_token:tk}).then(function(d){if(ok(d))location.replace(SIM);else $('form').style.opacity='';}).catch(function(){$('form').style.opacity='';});}
+  $('en').onclick=function(){
+    var b=this,m=$('msg');m.textContent='';b.disabled=true;b.textContent='Conferindo…';
+    rpc('pfc_login',{p_login:$('lg').value,p_codigo:$('cd').value}).then(function(r){
+      if(!r||r.erro||!r.token)throw new Error((r&&r.erro)||'Login ou código incorretos');
+      if(MED.indexOf(r.empresa)<0){rpc('pfc_sair',{p_token:r.token}).catch(function(){});throw new Error('Este login não é do Medidor de Obras. Fale com a FC.');}
+      ls.s('pfc-token',r.token);location.replace(SIM);
+    }).catch(function(e){m.textContent=e.message;b.disabled=false;b.textContent='Entrar';});
+  };
+  $('cd').addEventListener('keydown',function(e){if(e.key==='Enter')$('en').click();});
+})();
+</script>
+</body>
+</html>
