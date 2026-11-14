@@ -71,7 +71,7 @@ function tela(){estilo();
     return `<h3 class="ap-h">${h(C().LINHAS[l].n)}</h3><div class="ap-g">${it.map(t=>`<button type="button" class="ap-c" data-apt="${t.mo}"><div class="ap-th"><img loading="lazy" alt="" src="${MO}mini/${t.mo}.webp?v=1"></div><b>${h(t.n)}</b><span>${t.cd?h(t.cd)+' · ':''}${h(t.uso||'')}</span><i>Abrir em 3D</i></button>`).join('')}</div>`;};
   return `<div class="cab"><div><h2>Apresentação</h2><p class="mute">Toque na esquadria para ela sair da tela e girar em 3D. Nos <b>+</b> aparece a prévia de cada ponto${podeCompleto()?'; em “Ver este corte no Orientativo” abre o 3D completo':''}.</p></div></div>
   <div class="ap-fl">${bt('todas','Todas')}${bt('jan','Janelas')}${bt('por','Portas')}</div>${bloco('res')}${bloco('gld')}
-  <p class="mute" style="font-size:13px;margin-top:18px">A fachada continua em <a href="#" data-ir="tip">Tipologias → Fachadas</a>, com as medidas da obra.</p>`;}
+  <p class="mute" style="font-size:13px;margin-top:18px">A fachada continua em <a href="#" data-ir="tip">Simulador Fábrica 3D → Fachadas</a>, com as medidas da obra.</p>`;}
 function ligar(){estilo();
   /* Tipologias: a miniatura 3D do card abre a esquadria saindo da tela; o resto do card continua abrindo o detalhe */
   /* selo "Clique para ver em 3D" em cima da miniatura: abre igual a clicar na imagem */

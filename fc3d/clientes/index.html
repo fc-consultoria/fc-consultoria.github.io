@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FC Consultoria em Esquadria">
 <meta property="og:title" content="Plataforma FC 3D · Sua fábrica em 3D na mão da equipe">
-<meta property="og:description" content="Simulador de obra, Tipologias em 3D e Catálogo 3D. Entre com o seu login e código.">
+<meta property="og:description" content="Simulador de obra, Simulador Fábrica 3D e Catálogo 3D. Entre com o seu login e código.">
 <meta property="og:url" content="https://fc-consultoria.github.io/fc3d/clientes/">
 <meta property="og:image" content="https://fc-consultoria.github.io/img/og-plataforma-fc3d.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -251,7 +251,7 @@ a.card:hover{border-color:var(--teal);transform:translateY(-1px)}
       <h1>Apresente esquadrias em <em>3D</em> para quem decide a obra.</h1>
       <p class="sub">A ferramenta da sua equipe para mostrar tipologias, ambientes e projetos ao cliente final, ao arquiteto e ao engenheiro.</p>
       <ul>
-        <li><b>▦</b>Tipologias de mercado em 3D</li>
+        <li><b>▦</b>Simulador Fábrica 3D: a esquadria montada peça por peça</li>
         <li id="liAmb"><b>⌂</b>Ambientes para montar a obra</li>
         <li><b>▶</b>Modo apresentação para TV e telão</li>
         <li><b>✓</b>Orientativo 3D para a equipe</li>
@@ -361,7 +361,7 @@ const MENU=[
   {k:'prc',n:'Precificação de Kits',i:'💲',p:['vendedor'],ok:()=>podePrc()/* 09/11/2026: card de Compras, só CDE */},
   {k:'cen',n:'Ferramentas do setor',i:'🗂',p:['vendedor'],ok:()=>podeCen()/* 08/11/2026: Compras, Marketing e Coordenação da CB (o que ficava na Central do Cliente) */},
   {k:'catc',n:'Clientes do Catálogo',i:'📊',p:['gestor','vendedor'],ok:()=>!!(window.PFCcat&&PFCcat.pode(S,papel()))/* 08/11/2026: acessos, clientes e cotações do catálogo da loja (Guaporé Vidros e Sinop) */},
-  {k:'tip',n:'Tipologias',i:'▦',p:['gestor','vendedor','arquiteto','demo']},
+  {k:'tip',n:'Simulador Fábrica 3D',i:'▦',p:['gestor','vendedor','arquiteto','demo']},
   /* 09/11/2026 · Ambientes (Monte sua Casa) inativo em toda a plataforma */
   {k:'apr',n:'Apresentação',i:'▶',p:['gestor','vendedor','arquiteto']/* fora do demonstrativo: lá ficam só Tipologias e Catálogo 3D */},
   {k:'ges',n:'Equipe',i:'👥',p:['gestor']/* 03/11/2026: andamento da equipe por setor (só o gestor e a FC dentro da empresa) */},
@@ -835,7 +835,7 @@ function famCard(p){/* 11/11/2026 · CDE (e a CDE de teste do "Ver como cliente"
 function telaInicio(){
   if(soCat())return telaSoCat();
   const p=papel(),nome=S.matriz?'FC':(S.nome||'').split(' ')[0];
-  const txt={gestor:'Acompanhe a equipe e use a plataforma para apresentar as esquadrias aos seus clientes.',vendedor:'Escolha a tipologia, monte o ambiente e apresente ao seu cliente em 3D.',arquiteto:'Veja os projetos, as plantas e as esquadrias preparadas para a sua obra.',demo:'Conheça a plataforma: abra as tipologias em 3D e veja o desenho técnico de cada montagem.'}[p];
+  const txt={gestor:'Acompanhe a equipe e use a plataforma para apresentar as esquadrias aos seus clientes.',vendedor:'Mostre ao seu cliente como a esquadria é fabricada no Simulador Fábrica 3D e simule a obra com a foto do vão.',arquiteto:'Veja os projetos, as plantas e as esquadrias preparadas para a sua obra.',demo:'Conheça a plataforma: abra o Simulador Fábrica 3D e veja como cada esquadria é montada.'}[p];
   const mods=itens().filter(m=>m.k!=='inicio'&&m.k!=='apr');
   /* 09/11/2026 · Montagem Tipologia: o cliente vê o card com cadeado (Aguardando liberação da FC); só a FC abre */
   const MTG_LOCK=!S.matriz||!!papelVer;if(!S.matriz&&licOk('mtg')&&['gestor','vendedor'].includes(p)&&!mods.some(m=>m.k==='mtg')){const mm=MENU.find(m=>m.k==='mtg');if(mm)mods.push(mm);}
@@ -882,8 +882,8 @@ var TIP_MANUT=true;
    no tecnico/index.html.enc e no montagens/index.html.enc. */
 var GOLD_MANUT=true;window.GOLD_MANUT=GOLD_MANUT;
 const goldTrava=t=>GOLD_MANUT&&t&&t.l==='gld'&&!(S&&S.matriz);
-function telaTipManut(){return `<div class="cab"><div><h2>Tipologias</h2><p class="mute">Janelas, portas e fachadas em 3D.</p></div></div>
-  <div class="hero" style="margin-top:8px"><div><span class="chip" style="background:#F2C14E;color:#4A3300">🔧 Em manutenção</span><h2 style="margin-top:8px">Tipologias em manutenção</h2><p>Estamos atualizando as tipologias em 3D. Em breve elas voltam a ficar disponíveis para a sua equipe.</p><p style="margin-top:6px;opacity:.85">Enquanto isso, o Catálogo 3D continua disponível.</p></div></div>`;}
+function telaTipManut(){return `<div class="cab"><div><h2>Simulador Fábrica 3D</h2><p class="mute">Modelo de fábrica em 3D: veja como cada esquadria é fabricada e montada, peça por peça, para explicar ao cliente.</p></div></div>
+  <div class="hero" style="margin-top:8px"><div><span class="chip" style="background:#F2C14E;color:#4A3300">🔧 Em manutenção</span><h2 style="margin-top:8px">Simulador Fábrica 3D em manutenção</h2><p>Estamos atualizando os modelos de fábrica em 3D. Em breve elas voltam a ficar disponíveis para a sua equipe.</p><p style="margin-top:6px;opacity:.85">Enquanto isso, o Catálogo 3D continua disponível.</p></div></div>`;}
 function telaTip(){if(TIP_MANUT&&!S.matriz)return telaTipManut();
   const L=TIPS.filter(t=>(!t.aj||S.matriz)&&t.l==='res'&&(filtro==='todas'||t.g===filtro)),G=TIPS.filter(t=>(!t.aj||S.matriz||GOLD_MANUT)&&t.l==='gld'&&(filtro==='todas'||t.g===filtro)),F=TIPS.filter(t=>t.l==='fac'&&(filtro==='todas'||filtro==='fac'));
   /* tipologias com Simular pressão de vento no Mostruário (mesma lista do mostruario/vento.js: DIAG + VTX) */
@@ -893,7 +893,7 @@ function telaTip(){if(TIP_MANUT&&!S.matriz)return telaTipManut();
    return `${go}<div class="des">${t.mo?`<img class="mini3d" style="max-width:88%;max-height:150px" loading="lazy" alt="${h(t.n)} em 3D" title="Toque para ver em 3D" src="mostruario/mini/${t.mo}.webp?v=1" data-ap3d="${t.mo}"><span class="ver3d" data-ap3db="${t.mo}" role="button" tabindex="0">⟳ Clique para ver em 3D</span>`:desenho(t.id)}</div>${t.aj?`<span class="chip a" title="Oculto para os clientes">⚠ Oculto · ajustar</span>`:''}<h3>${h(t.n)}</h3><span class="d">${t.cd?'<b style="font-weight:600">'+h(t.cd)+'</b> · ':''}${h(t.uso)}</span>${t.aj?`<span class="d" style="color:#b45309"><b>Ajuste pendente:</b> ${h(t.aj)}. Só a FC vê esta tipologia.</span>`:''}<span class="pe">${eqV&&VENTO.includes(t.mo)?`<span class="vt-tag" role="link" tabindex="0" data-vento="${t.mo}" title="Abrir direto no Simular pressão de vento">🌬 Simular pressão de vento</span>`:''}${t.tec?'<span class="tec-ok">🧊 3D e 📐 desenho técnico →</span>':t.obra?'<span class="tec-ok">🧊 Abrir em 3D com as medidas da obra →</span>':'<span class="tec-em">Desenho técnico em breve</span>'}</span>${fim}`;};
   const card=t=>{if(goldTrava(t))return cardTrava(t);let c=card0(t);
    if(GOLD_MANUT&&t.l==='gld')c=c.replace('<h3>','<span class="chip a" style="background:#F2C14E;color:#4A3300;align-self:flex-start" title="Bloqueada para os clientes">🔧 Em manutenção · só a FC abre</span><h3>');return c;};
-  return `<div class="cab"><div><h2>Tipologias</h2><p class="mute">Janelas, portas e fachadas de mercado para escolher e apresentar ao cliente.</p></div>
+  return `<div class="cab"><div><h2>Simulador Fábrica 3D</h2><p class="mute">Modelo de fábrica em 3D: veja como cada esquadria é fabricada e montada, peça por peça, para explicar ao cliente.</p></div>
    <div class="filtros" role="group" aria-label="Filtrar">${[['todas','Todas'],['jan','Janelas'],['por','Portas'],['fac','Fachadas']].map(([k,n])=>`<button type="button" data-f="${k}" aria-pressed="${filtro===k}">${n}</button>`).join('')}</div></div>
    ${vitrine()}
    ${filtro!=='fac'?`<div class="linha-tit" id="ln-sup"><h3 style="font-size:15px">Linha Suprema</h3></div><div class="grid">${L.map(card).join('')}</div>
@@ -912,7 +912,7 @@ function telaAmb(){const casa=`<a class="card" href="ambientes/casa.html"><span 
 function telaO3d(){return window.PFCo3d?PFCo3d.html(S,papel()):'';}
 function telaApr(){if(papel()==='demo')return '';return `<div class="cab"><div><h2>Modo apresentação</h2><p class="mute">Tela cheia, sem menus, para mostrar na TV ou no telão.</p></div></div>
   <div class="hero" style="margin-bottom:12px"><div><span class="chip" style="background:#F2C14E;color:#4A3300">Logo logo · novidade</span><h2 style="margin-top:8px">Novo módulo de apresentação</h2><p>Abra a tipologia ou o ambiente em tela cheia, gire o 3D com o dedo ou o mouse e mostre os detalhes na reunião com o cliente ou o arquiteto.</p></div><div class="bts"><span class="btn sec" style="border-color:rgba(255,255,255,.4);color:#dbe3e8;cursor:default">Em breve</span></div></div>
-  <p class="mute" style="font-size:13px">A fachada continua em <a href="#" data-ir="tip">Tipologias → Fachadas</a>, com as medidas da obra.</p>`;}
+  <p class="mute" style="font-size:13px">A fachada continua em <a href="#" data-ir="tip">Simulador Fábrica 3D → Fachadas</a>, com as medidas da obra.</p>`;}
 /* ---------- Equipe (03/11/2026): andamento da empresa por setor, para o gestor de qualquer empresa ---------- */
 let eqDias=7,eqAberto=null,eqDados=null;
 const EQ_INICIO=new Date('2026-11-03T00:00:00-04:00');/* registro do uso começou aqui: antes disso não mostra nada, para ninguém */
@@ -1020,7 +1020,7 @@ if(ABK){
 #pfcCapa .cb{margin-top:22px;border:0;background:#f2b75a;color:#06172e;font:700 18px var(--f-display,system-ui);padding:14px 34px;border-radius:14px;cursor:pointer;animation:pfcIn .9s .6s ease both}#pfcCapa .cb:hover{background:#ffd08a}
 #pfcCapa .cf{margin-top:36px;display:flex;align-items:center;gap:10px;opacity:.85;font-size:12.5px;animation:pfcIn .9s .75s ease both}#pfcCapa .cf img{height:38px;width:auto;background:#fff;border-radius:8px;padding:4px 8px}
 @keyframes pfcIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){#pfcCapa *{animation:none!important}}</style>
-<div class="ci"><div class="cg">${h(C.sg)}</div><h1>${h(C.n)}</h1><p class="ct">Plataforma FC 3D · Catálogo 3D</p><p class="cs">Tipologias · Catálogo 3D · Apresentação ao cliente</p>
+<div class="ci"><div class="cg">${h(C.sg)}</div><h1>${h(C.n)}</h1><p class="ct">Plataforma FC 3D · Catálogo 3D</p><p class="cs">Simulador Fábrica 3D · Catálogo 3D · Apresentação ao cliente</p>
 <button type="button" class="cb">Entrar ▶</button><div class="cf"><img src="/img/logo-fc-160.jpg" alt="FC Consultoria" onerror="this.remove()"><span>Desenvolvido por FC Consultoria em Esquadria</span></div></div>`;
     document.body.appendChild(d);const sai=()=>{d.classList.add('sai');setTimeout(()=>d.remove(),650);const l=$('#inLogin');if(l)l.focus();};
     d.querySelector('.cb').onclick=sai;d.querySelector('.cb').focus();};
@@ -1038,10 +1038,10 @@ window.PFCaprCtx={TIPS,LINHAS,h,papel:()=>papel(),sessao:()=>S,render:()=>render
 })();
 </script>
 <script src="toque.js?v=1"></script>
-<script src="apresentacao.js?v=17"></script>
-<script src="tutorial.js?v=11"></script>
-<script src="convite.js?v=2" defer></script>
-<script src="licenca.js?v=5" defer></script>
+<script src="apresentacao.js?v=18"></script>
+<script src="tutorial.js?v=12"></script>
+<script src="convite.js?v=3" defer></script>
+<script src="licenca.js?v=6" defer></script>
 <script src="leve.js?v=1"></script>
 <script src="sessao.js?v=2"></script>
 <script src="uso.js?v=2" defer></script>

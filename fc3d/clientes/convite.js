@@ -16,7 +16,7 @@
   const tk=lg('pfc-token');if(!tk)return;
   const q=new URLSearchParams(location.search),pg=location.pathname;
   const eh3d=/\/(mostruario|orientativo|montagens)\//.test(pg),tip=/\/mostruario\//.test(pg)?(q.get('t')||'jcr200'):'';
-  const tela=()=>{if(tip)return 'Orientativo 3D · '+tip.toUpperCase();if(/\/orientativo\//.test(pg))return 'Tipologias'+(location.hash.length>1?' · '+location.hash.slice(1).toUpperCase():'');
+  const tela=()=>{if(tip)return 'Orientativo 3D · '+tip.toUpperCase();if(/\/orientativo\//.test(pg))return 'Simulador Fábrica 3D'+(location.hash.length>1?' · '+location.hash.slice(1).toUpperCase():'');
     if(/\/montagens\//.test(pg))return 'Montagens';if(/\/tecnico\//.test(pg))return 'Desenho técnico';
     const m=document.querySelector('#menu [aria-current]');return m?(m.textContent||'').replace(/^[^A-Za-zÀ-ú]+/,'').trim()||'Início':'Início';};
   let tips=[];try{tips=JSON.parse(lg('pfc-cv-tips'))||[];}catch(_){}

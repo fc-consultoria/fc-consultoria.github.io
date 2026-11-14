@@ -44,7 +44,7 @@ const SEG=`<div class="bx">🔒 <b>Segurança:</b> a FC Consultoria em Esquadria
 async function passo1(){
   const v=ped||{};const o=caixa(`<h2 id="licTit">Licença da Plataforma FC 3D</h2>
    <p class="mute" style="margin-top:6px">Licença anual no nome da sua empresa. Preencha os dados e a FC entra em contato pelo WhatsApp com os planos e a forma de pagamento.</p>
-   <ul><li>Tipologias Suprema e Gold em 3D, com desenho técnico e aplicação de cada perfil</li><li>Apresentação em tela cheia para TV e telão</li><li>Licença no nome da sua empresa</li></ul>
+   <ul><li>Simulador Fábrica 3D (linhas Suprema e Gold), com desenho técnico e aplicação de cada perfil</li><li>Apresentação em tela cheia para TV e telão</li><li>Licença no nome da sua empresa</li></ul>
    <form id="licF" autocomplete="on" novalidate><div class="gr">
     <div class="w"><label class="f" for="lEmp">Nome da empresa</label><input class="in" id="lEmp" autocomplete="organization" maxlength="100" value="${h(v.empresa||ctx.empresa||'')}"></div>
     <div><label class="f" for="lDoc">CNPJ (ou CPF)</label><input class="in" id="lDoc" inputmode="numeric" maxlength="20" value="${h(v.documento||'')}"></div>
