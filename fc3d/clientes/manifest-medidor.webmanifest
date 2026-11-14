@@ -1,0 +1,20 @@
+{
+  "id": "/fc3d/clientes/?app=medidor",
+  "name": "Medidor de Obras · FC Consultoria",
+  "short_name": "Medidor de Obras",
+  "description": "Medidor de Obras: Simulador de obra, Simulador Fábrica 3D e Catálogo 3D. Uso exclusivo de empresas licenciadas. Desenvolvido pela FC Consultoria em Esquadria.",
+  "lang": "pt-BR",
+  "start_url": "/fc3d/clientes/?app=medidor",
+  "scope": "/fc3d/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b2a30",
+  "theme_color": "#063238",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "/img/app-icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/img/app-icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/img/app-icone-192-m.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/img/app-icone-512-m.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
