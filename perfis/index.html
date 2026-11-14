@@ -370,7 +370,7 @@ body:has(#v3.fsm) #rcB,body:has(#v3.fsm) #vtT{display:none!important}#v3 .vb .fs
     var fc=false;document.getElementById('cgFc').onclick=function(e){e.preventDefault();fc=!fc;document.getElementById('cgL').style.display=fc?'none':'';document.getElementById('cgC').placeholder=fc?'Senha da FC':'Código';this.textContent=fc?'Login da empresa':'Acesso FC';};
     document.getElementById('cgE').onclick=function(){var m=document.getElementById('cgM'),b=this;m.textContent='';b.disabled=true;b.textContent='Conferindo…';
       var p=fc?prpc('pfc_login_matriz',{p_senha:document.getElementById('cgC').value}):prpc('pfc_login',{p_login:document.getElementById('cgL').value,p_codigo:document.getElementById('cgC').value});
-      p.then(function(r){if(!r||r.erro||!r.token)throw new Error((r&&r.erro)||'Login ou código incorretos');LS.s('pfc-token',r.token);return confere(true);})
+      p.then(function(r){if(!r||r.erro||!r.token)throw new Error((r&&r.erro)||'Login ou código incorretos');LS.s('pfc-token',r.token);return confere(true).then(function(ok){if(ok)location.reload();return ok;});})
        .catch(function(e){m.textContent=e.message;b.disabled=false;b.textContent='Entrar';});};
   }
   function confere(doLogin){
