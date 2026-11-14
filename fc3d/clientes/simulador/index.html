@@ -374,11 +374,12 @@
     window.SIM_EMP=d.empresa_nome||(d.matriz?'FC Consultoria em Esquadria':'');window.SIM_SIGLA=d.sigla||(d.matriz?'FC':'');window.SIM_NOME=d.matriz?'':(d.nome||'');window.SIM_SEMG=!!(d.sem_gestor&&!d.matriz);window.SIM_GESTOR=!!(d.matriz||d.papel==='gestor'||window.SIM_SEMG);
     window.SIM_MED=APPM&&!d.matriz&&['parceiro-obras','teste-medidor-obras'].indexOf(d.empresa)>=0;
     if(QM.get('app')==='medidor'&&!window.SIM_MED){location.replace('/fc3d/clientes/medidor/');return;}
-    if(window.SIM_MED){document.title='Medidor de Obras';var h1=document.querySelector('#hdr h1');if(h1)h1.textContent='Medidor de Obras';var b3=document.getElementById('labVer3d');if(b3)b3.style.display='flex';}
+    if(window.SIM_MED){document.title='Medidor de Obras';var h1=document.querySelector('#hdr h1');if(h1)h1.textContent='Medidor de Obras';}
     window.SIM_MARCA();ov.remove();
     var hd=document.getElementById('hdMenu');
     if(hd&&window.SIM_MED&&!document.getElementById('medV3')){var t0=document.getElementById('themeToggle');
-      var v3=document.createElement('a');v3.id='medV3';v3.href='/fc3d/clientes/?app=medidor&ver3d=1#tip';v3.textContent='🧊 Ver a esquadria em 3D';hd.insertBefore(v3,t0||null);
+      /* 14/11/2026 · sem 'Ver a esquadria em 3D' no Medidor (confundia com Catálogo e bloqueio) */
+      var v3=document.createElement('span');v3.id='medV3';v3.style.display='none';hd.insertBefore(v3,t0||null);
       if(window.SIM_GESTOR){var gr=document.createElement('a');gr.href='recebidas.html?app=medidor';gr.textContent='📥 Obras recebidas';hd.insertBefore(gr,v3);}
       var sa=document.createElement('button');sa.type='button';sa.id='medSair';sa.textContent='Sair';sa.onclick=function(){if(!confirm('Sair do Medidor de Obras neste aparelho?'))return;try{localStorage.removeItem('pfc-token');}catch(_){}location.href='/fc3d/clientes/medidor/';};hd.appendChild(sa);}
     if(hd&&!window.SIM_MED&&!document.getElementById('simVolta')){var a=document.createElement('a');a.id='simVolta';a.href='/fc3d/clientes/';a.textContent='← Voltar para o painel';
@@ -3122,7 +3123,7 @@
     put(P[3], $('etpTrena'));
 
     // 4 · Esquadria
-    P[4].innerHTML = `<p class="lab-intro">Escolha o tipo, a cor e o vidro. Sem marca nem linha: a linha é definida no escritório, no sistema da empresa.</p>${AVISO_SV}<a id="labVer3d" class="lab-big" href="/fc3d/clientes/?app=medidor&ver3d=1#tip" style="display:${window.SIM_MED ? 'flex' : 'none'};flex-direction:row;min-height:50px;margin-bottom:10px;text-decoration:none">🧊 Ver a esquadria em 3D</a>`;
+    P[4].innerHTML = `<p class="lab-intro">Escolha o tipo, a cor e o vidro. Sem marca nem linha: a linha é definida no escritório, no sistema da empresa.</p>${AVISO_SV}`;
     const mais4 = H('details', '<summary>Mais ajustes (contramarco, reboco, objetos na frente, balão)</summary>', { class: 'lab-mais' });
     put(P[4], $('etpEsq'), sec('gridTip'), sec('gridCores'), sec('gridVidros'), $('famMov'), mais4);
     put(mais4, $('etpCM'), $('etpReb'), $('frenteBox'), sec('selBlend'));
