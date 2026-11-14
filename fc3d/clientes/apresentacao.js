@@ -63,7 +63,7 @@ img.mini3d{max-width:88%;max-height:150px;object-fit:contain;cursor:zoom-in;tran
 @media (max-width:600px){.ap-hd b{font-size:15px}.ap-hd div{display:none}.ap-hd button{padding:7px 10px;font-size:13px}.ap-dc{display:none}.ap-pv::before{display:none}.ap-pv{left:16px!important;right:16px;width:auto;top:auto!important;bottom:16px}}
 @media (prefers-reduced-motion:reduce){.ap-th img,.ap-c{transition:none}.ap-pv .ap-m{animation:none}}`;
 function estilo(){if(document.getElementById('apCss'))return;const s=document.createElement('style');s.id='apCss';s.textContent=css;document.head.appendChild(s);}
-const lista=()=>TIPS_().filter(t=>t.mo&&(!t.aj||(C().sessao()||{}).matriz)&&(filtro==='todas'||t.g===filtro));
+const lista=()=>TIPS_().filter(t=>t.mo&&(!t.aj||(C().sessao()||{}).matriz)&&!(window.GOLD_MANUT&&t.l==='gld'&&!(C().sessao()||{}).matriz)&&(filtro==='todas'||t.g===filtro));
 const podeCompleto=()=>papel()!=='arquiteto'&&papel()!=='demo';
 function tela(){estilo();
   const L=lista(),bt=(f,n)=>`<button type="button" data-apf="${f}" aria-pressed="${filtro===f}">${n}</button>`;
@@ -104,7 +104,7 @@ function iniciaTour(){paraTour();pausa=Date.now()+2500;tour=setInterval(()=>{if(
   setTimeout(()=>{if(tour&&fr&&fr.dataset.ok&&fr.src.includes('lite=1')&&!pv.classList.contains('on'))fr.contentWindow.postMessage({fc3d:'proximo'},'*');},3000);}
 function paraTour(){if(tour){clearInterval(tour);tour=null;}}
 function abrir(t,img){
-  atual=TIPS_().find(x=>x.mo===t);if(!atual)return;if(!ov)monta();iniciaTour();
+  atual=TIPS_().find(x=>x.mo===t);if(!atual)return;if(window.GOLD_MANUT&&atual.l==='gld'&&!(C().sessao()||{}).matriz){atual=null;return;}/* 14/11/2026 · Gold em manutenção */if(!ov)monta();iniciaTour();
   hd.querySelector('b').textContent=atual.n;hd.querySelector('small').textContent=atual.cd||'';hd.querySelector('.ap-v').hidden=true;hd.classList.remove('baixo');
   pv.querySelector('.ap-m').hidden=!podeCompleto();hd.querySelector('.ap-o3').hidden=!podeCompleto();
   [ov,hd,ld,dc].forEach(e=>e.hidden=false);void ov.offsetWidth;ov.classList.add('on');document.body.style.overflow='hidden';
