@@ -248,7 +248,7 @@
   body.lab #adBar{margin:8px auto 0;max-width:520px;width:100%;box-sizing:border-box;padding:6px 12px}
   body.lab .aviso-fixo{margin:6px auto 0;background:transparent;border:0;color:#7fa3a8;font-size:10px;padding:0;max-width:520px}
   body.lab:not([data-etapa="2"]) #ui{opacity:0}
-  body.lab #hint{font-size:12px!important;padding:7px 14px!important;background:rgba(6,46,52,.88)!important;color:#fff!important;border:0!important;bottom:10px!important}
+  body.lab #hintX{font-size:12px!important;padding:7px 14px!important;background:rgba(6,46,52,.88)!important;color:#fff!important;border:0!important;bottom:10px!important}
   body.lab:not([data-etapa="2"]) #hint{display:none!important}
   /* tela sem foto */
   @media (max-height:700px){body.lab #dropzone > div:first-child{display:none!important}}
@@ -260,13 +260,20 @@
   body.lab #dropzone .btn:not(.btn-accent){background:rgba(255,255,255,.1);color:#e8f3f4;border-color:rgba(255,255,255,.2)}
   .lab-vh{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;overflow:hidden!important;pointer-events:none}
   /* barra flutuante dos pontos */
-  #ptBar{position:absolute;left:50%;top:10px;transform:translateX(-50%);z-index:30;display:none;gap:6px;padding:6px;border-radius:16px;background:rgba(6,30,34,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:calc(100% - 16px)}
-  body.lab[data-etapa="2"].comfoto #ptBar{display:flex}
-  #ptBar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:64px;min-height:50px;padding:5px 8px;border:0;border-radius:12px;background:rgba(255,255,255,.1);color:#e8f3f4;font:600 11px Inter,sans-serif;cursor:pointer}
-  #ptBar button svg{width:20px;height:20px}
+  /* 14/11/2026 · comandos dos pontos fora da foto: no painel de baixo, na altura do polegar */
+  #ptBar #labPronto{display:none}
+  #ptBar{display:none;grid-template-columns:repeat(3,1fr);gap:6px;padding:2px 12px 8px;flex:none}
+  body.lab[data-etapa="2"].comfoto #simAside.mini #ptBar{display:grid}
+  #ptBar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:58px;padding:6px 4px;border:1px solid #cfdcde;border-radius:14px;background:#fff;color:#0b3a40;font:700 11.5px/1.15 Inter,sans-serif;cursor:pointer}
+  #ptBar button svg{width:22px;height:22px}
   #ptBar button:disabled{opacity:.35}
-  #ptBar button.ok{background:#2ec4b6;color:#062e34}
+  #ptBar button.ok{background:#063238;border-color:#063238;color:#fff}
   #ptBar button:active{transform:scale(.95)}
+  html.dark #ptBar button{background:#162a2f;border-color:#24414a;color:#e2f1f2} html.dark #ptBar button.ok{background:#2ec4b6;color:#062e34}
+  body.lab #hint{display:none!important}
+  body.lab[data-etapa="2"] #adBar{display:none!important}
+  body.lab #labMiniTx{font:700 14px/1.35 Inter,sans-serif;color:#0f766e}
+  body.lab .lab-p .aviso-fixo{display:block;color:#7b9094;font-size:10px;margin:12px 0 0;background:none;border:0;padding:0}
   #lupa{position:absolute;top:10px;width:118px;height:118px;border-radius:50%;border:3px solid #fff;box-shadow:0 6px 20px rgba(0,0,0,.5);pointer-events:none;display:none;z-index:25;background:#000}
   /* painel de etapas (embaixo no celular, à direita no computador) */
   body.lab #simAside{flex:0 0 auto!important;width:100%!important;max-height:52dvh;display:flex;flex-direction:column;overflow:hidden!important;border:0!important;border-radius:22px 22px 0 0;background:#f3f6f7;box-shadow:0 -12px 34px rgba(0,0,0,.4)!important;z-index:20}
@@ -3061,7 +3068,7 @@
     const dzRow = dz.querySelector('.mt-5'); if (dzRow && dzRow.children.length === 2) { const [gal, cam] = dzRow.children; gal.classList.remove('btn-accent'); cam.classList.add('btn-accent'); dzRow.insertBefore(cam, gal); }
 
     const ptBar = H('div', `<button type="button" id="labDesf">${IC.desf}Desfazer</button><button type="button" id="labRem">${IC.rem}Marcar de novo</button><button type="button" id="labNovoV">${IC.mais}Outro vão</button><button type="button" id="labPronto" class="ok">${IC.ok}Pronto</button>`, { id: 'ptBar' });
-    main.appendChild(ptBar);
+
     const lupa = H('canvas', null, { id: 'lupa', width: '236', height: '236' }); wrap.appendChild(lupa);
 
     // ---------- painel de etapas ----------
@@ -3072,7 +3079,7 @@
     const head = H('div', '<small id="labNum"></small><h2 id="labTit"></h2><p id="labMiniTx"></p>', { id: 'labHead' });
     const bodyP = H('div', null, { id: 'labBody' });
     const foot = H('div', '<button type="button" id="labVolta">◀ Voltar</button><button type="button" id="labAvanca">Avançar ▶</button>', { id: 'labFoot' });
-    put(aside, grab, nav, head, bodyP, foot, sobra);
+    put(aside, grab, nav, head, ptBar, bodyP, foot, sobra);
     const P = []; for (let i = 1; i <= 5; i++) { const p = H('div', null, { class: 'lab-p', 'data-p': i }); bodyP.appendChild(p); P[i] = p; }
     const AVISO_SV = '<div class="lab-semvao">Primeiro marque o vão na foto (etapa 2 · Vão).</div>';
 
@@ -3121,6 +3128,7 @@
     put($('labEnv'), $('etpFim')); put($('labImg'), $('btnPreview'), $('btnSalvar'));
     $('btnPreview').className = 'btn'; $('btnSalvar').className = 'btn';
     $('labIndicar').onclick = () => { const b = $('simIndicar'); if (b) b.click(); };
+    { const av = stage.querySelector('.aviso-fixo'); if (av) bodyP.appendChild(av); }
     bodyP.appendChild(H('p', 'Desenvolvido por FC Consultoria em Esquadria · CNPJ 52.985.682/0001-32 · imagens demonstrativas', { class: 'lab-cred' }));
 
     // ---------- avisos curtos ----------
@@ -3198,7 +3206,7 @@
       else if (pre.cria && !state.modoCriacao) {
         if (state.vaos.length > pre.nv) { const v = state.vaos[state.vaos.length - 1]; HIST.push({ t: 'criou', id: v.id, pts: cp(v.pts) }); arrastandoVao = { vaoId: v.id, index: 3 }; }
         else if (state.vaoAtivoId) arrastandoVao = { vaoId: state.vaoAtivoId, index: 3 };
-        dragIni = null; lupaDesenha(p); setTimeout(() => toast('Vão marcado. Arraste os pontos para ajustar ou toque em Pronto.'), 150);
+        dragIni = null; lupaDesenha(p); 
       } else if (arrastandoVao) { const v = state.vaos.find(x => x.id === arrastandoVao.vaoId); if (v) { dragIni = { id: v.id, pts: cp(v.pts) }; lupaDesenha(p); } }
       pre = null; sync();
     });
@@ -3251,7 +3259,7 @@
       const feito = [!!state.img, ok, ok && !!v.bruto, ok && !!(v.et && v.et.esq), false];
       nav.querySelectorAll('button').forEach((b, i) => { b.classList.toggle('on', i + 1 === cur); b.classList.toggle('ok', feito[i] && i + 1 !== cur); });
       body.classList.toggle('comfoto', !!state.img);
-      $('labNum').textContent = 'Etapa ' + cur + ' de 5'; $('labTit').textContent = ETP[cur - 1].tit; $('labMiniTx').textContent = ETP[cur - 1].mini;
+      $('labNum').textContent = 'Etapa ' + cur + ' de 5'; $('labTit').textContent = ETP[cur - 1].tit; $('labMiniTx').textContent = cur === 2 && state.img ? hint.textContent : ETP[cur - 1].mini;
       $('labVolta').disabled = cur === 1;
       $('labAvanca').style.display = cur === 5 ? 'none' : '';
       $('labAvanca').textContent = cur === 2 ? 'Pronto ▶' : cur === 4 ? 'Dados da obra ▶' : 'Avançar ▶';
@@ -3267,8 +3275,9 @@
     const _passos = atualizarPassos; atualizarPassos = function () { _passos(); sync(); };
     const _dica = atualizarDica; atualizarDica = function () {
       _dica(); if (!state.img) return;
-      if (state.modoCriacao) hint.textContent = (REM.id ? 'Marcando de novo · ' : '') + `Toque no canto ${state.ptsTemp.length + 1} de 4`;
-      else if (state.vaoAtivoId && cur === 2) hint.textContent = 'Arraste os pontos para ajustar';
+      if (state.modoCriacao) hint.textContent = (REM.id ? 'Marcando de novo · ' : '') + `Toque no canto ${state.ptsTemp.length + 1} de 4 na foto`;
+      else if (state.vaoAtivoId && cur === 2) hint.textContent = 'Vão marcado. Arraste um ponto para ajustar ou toque em Pronto.';
+      if (cur === 2) { const mt = $('labMiniTx'); if (mt) mt.textContent = hint.textContent; }
     };
     const _cfg = configurarCanvas; configurarCanvas = function (img) { HIST.length = 0; REM.id = null; _cfg(img); if (!OBRA.carregando) setTimeout(() => ir(2), 90); else requestAnimationFrame(fit); };
     const _reset = resetar; resetar = function () { HIST.length = 0; REM.id = null; _reset(); if (cur !== 1) ir(1); else sync(); };
