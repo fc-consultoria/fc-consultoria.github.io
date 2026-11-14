@@ -78,7 +78,7 @@ function desenha(){
 document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{filtro=b.dataset.f;document.querySelectorAll('[data-f]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));desenha();});
 if(!tk){nega('Entre na Plataforma FC 3D','As obras recebidas abrem pela plataforma, com o login do gestor.');return;}
 rpc('pfc_sessao',{p_token:tk}).then(d=>{
-  if(!d||!(d.matriz||d.papel==='gestor')){nega('Só para o gestor','As obras recebidas ficam no painel do gestor da empresa.');return;}
+  if(!d||!(d.matriz||d.papel==='gestor'||(d.sem_gestor&&d.papel==='vendedor'))){nega('Só para o gestor','As obras recebidas ficam no painel do gestor da empresa.');return;}
   $('#sg').textContent=String(d.sigla||'FC').slice(0,4).toUpperCase();if(d.empresa_nome)$('#emp').textContent=d.empresa_nome+' · enviadas pela equipe pelo Simulador de obra';
   return rpc('pfc_sim_recebidas',{p_token:tk}).then(j=>{L=j||[];$('#gate').remove();desenha();});
 }).catch(e=>nega('Não foi possível abrir',esc(e.message||'Confira a internet e abra de novo.')));

@@ -368,7 +368,7 @@
   fetch('https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_sessao',{method:'POST',headers:{apikey:'sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs','Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
    .then(function(r){return r.ok?r.json():null;}).then(function(d){
     if(!d||!(d.matriz||d.papel==='gestor'||d.papel==='vendedor')){nega('Acesso não liberado','O Simulador de obra é da equipe da empresa licenciada. Fale com a FC Consultoria.');return;}
-    window.SIM_EMP=d.empresa_nome||(d.matriz?'FC Consultoria em Esquadria':'');window.SIM_SIGLA=d.sigla||(d.matriz?'FC':'');window.SIM_NOME=d.matriz?'':(d.nome||'');window.SIM_GESTOR=!!(d.matriz||d.papel==='gestor');
+    window.SIM_EMP=d.empresa_nome||(d.matriz?'FC Consultoria em Esquadria':'');window.SIM_SIGLA=d.sigla||(d.matriz?'FC':'');window.SIM_NOME=d.matriz?'':(d.nome||'');window.SIM_SEMG=!!(d.sem_gestor&&!d.matriz);window.SIM_GESTOR=!!(d.matriz||d.papel==='gestor'||window.SIM_SEMG);
     window.SIM_MARCA();ov.remove();
     var hd=document.getElementById('hdMenu');if(hd&&!document.getElementById('simVolta')){var a=document.createElement('a');a.id='simVolta';a.href='/fc3d/clientes/';a.textContent='← Voltar para o painel';
       a.style.cssText='margin-left:auto;font:600 12px Inter,sans-serif;color:#025860;text-decoration:none;border:1px solid #b9dfe2;border-radius:10px;padding:8px 10px;white-space:nowrap';
@@ -1419,15 +1419,15 @@
         <label>Vendedor<input id="escVend" value="${esc(lsGet('fcsim_vendedor') || window.SIM_NOME || '')}" placeholder="Seu nome"></label>
         <label>Observação para o orçamentista<input id="escObs" placeholder="Ex.: cliente quer preto fosco, conferir prumo"></label>
         <label>WhatsApp do orçamentista (opcional)<input id="escTel" inputmode="tel" value="${esc(lsGet('fcsim_orc_tel') || '')}" placeholder="(66) 9 0000-0000"></label>
-        <div class="qr-acoes">${temLogin ? '<button type="button" class="btn btn-accent" id="escGestor">Enviar ao painel do Gestor</button>' : ''}<button type="button" class="btn" id="escWa">Enviar no WhatsApp</button><button type="button" class="btn" id="qrFechar">Cancelar</button></div><p id="escMsg" class="qr-msg"></p>`);
+        <div class="qr-acoes">${temLogin ? '<button type="button" class="btn btn-accent" id="escGestor">' + (window.SIM_SEMG ? 'Enviar para Obras recebidas' : 'Enviar ao painel do Gestor') + '</button>' : ''}<button type="button" class="btn" id="escWa">Enviar no WhatsApp</button><button type="button" class="btn" id="qrFechar">Cancelar</button></div><p id="escMsg" class="qr-msg"></p>`);
       el('qrFechar').onclick = () => el('qrModal').remove();
       const m = el('escMsg');
       let subida = null;
       const prepara = async () => { if (!navigator.onLine) throw new Error('sem internet'); lsSet('fcsim_vendedor', el('escVend').value.trim()); salvar(true); if (!subida) subida = await subirObra(el('escVend').value.trim()); return subida; };
       if (el('escGestor')) el('escGestor').onclick = async () => { const b = el('escGestor'); b.disabled = true; b.textContent = 'Enviando…';
         try { const r = await prepara(); const tk = localStorage.getItem('pfc-token'); await rpc('pfc_sim_escritorio', { p_token: tk, p_id: r.id, p_obs: el('escObs').value.trim() });
-          b.textContent = 'Enviado ao Gestor ✓'; m.textContent = 'A obra já aparece em "Obras recebidas" no painel do Gestor.'; }
-        catch (e) { b.disabled = false; b.textContent = 'Enviar ao painel do Gestor'; m.textContent = 'Não foi possível enviar agora (' + e.message + '). Confira a internet e tente de novo.'; } };
+          b.textContent = window.SIM_SEMG ? 'Enviado ✓' : 'Enviado ao Gestor ✓'; m.textContent = window.SIM_SEMG ? 'A obra já aparece em "Obras recebidas" (menu ☰).' : 'A obra já aparece em "Obras recebidas" no painel do Gestor.'; }
+        catch (e) { b.disabled = false; b.textContent = window.SIM_SEMG ? 'Enviar para Obras recebidas' : 'Enviar ao painel do Gestor'; m.textContent = 'Não foi possível enviar agora (' + e.message + '). Confira a internet e tente de novo.'; } };
       el('escWa').onclick = async () => { const b = el('escWa'); b.disabled = true; b.textContent = 'Preparando…';
         try { const r = await prepara(); const txt = textoObra(r.link, el('escObs').value.trim()); const tel = el('escTel').value.replace(/\D/g, ''); lsSet('fcsim_orc_tel', el('escTel').value.trim());
           let foi = false;
