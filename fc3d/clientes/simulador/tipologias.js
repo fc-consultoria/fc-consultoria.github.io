@@ -163,7 +163,7 @@ function make(desc,opt){
  <linearGradient id="${p}wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#efebe5"/><stop offset="1" stop-color="#d9d2c8"/></linearGradient>
  <linearGradient id="${p}floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9b2a7"/><stop offset="1" stop-color="#8f877c"/></linearGradient>
  <linearGradient id="${p}sill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f2ef"/><stop offset="1" stop-color="#a9a49c"/></linearGradient>
- <linearGradient id="${p}int" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b4246"/><stop offset="1" stop-color="#1f2427"/></linearGradient>
+ <linearGradient id="${p}int" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b4246"/><stop offset="1" stop-color="#1f2427"/></linearGradient><linearGradient id="${p}gapf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset=".12" stop-color="#000" stop-opacity=".07"/><stop offset="1" stop-color="#000" stop-opacity=".03"/></linearGradient>
  <linearGradient id="${p}met" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6d7277"/><stop offset=".45" stop-color="#e9ecee"/><stop offset="1" stop-color="#5d6267"/></linearGradient>
  <pattern id="${p}vz" width="40" height="38" patternUnits="userSpaceOnUse"><rect width="40" height="38" fill="${c.s}"/><rect y="3" width="40" height="30" fill="url(#${p}fh)"/></pattern>
  <pattern id="${p}vzc" width="40" height="34" patternUnits="userSpaceOnUse"><rect width="40" height="34" fill="url(#${p}fh)"/><rect y="32" width="40" height="2" fill="${c.s}" opacity=".7"/></pattern>
@@ -206,7 +206,8 @@ function make(desc,opt){
  const leafT=s.porta?58:46, M=/MARCO LARGO/.test(s.d)?95:(/SEM MARCO/.test(s.d)?22:50), T=42;
 
  // abrir/fechar: o que a folha deixa de cobrir mostra o interior; a folha gira/corre por cima
- const gap=(x,y,w,h)=>{ if(w>1&&h>1) R(x,y,w,h,`url(#${p}int)`); };
+ // 15/11/2026: na foto da obra o vão aberto mostra o fundo real da foto (só uma sombra leve de profundidade no alto e na lateral)
+ const gap=(x,y,w,h)=>{ if(!(w>1&&h>1)) return; if(opt.foto){ R(x,y,w,h,`url(#${p}gapf)`); return; } R(x,y,w,h,`url(#${p}int)`); };
  const gIn=(ax,ay,kx,ky)=>push(`<g transform="translate(${ax.toFixed(1)} ${ay.toFixed(1)}) scale(${kx.toFixed(4)} ${ky.toFixed(4)}) translate(${(-ax).toFixed(1)} ${(-ay).toFixed(1)})">`);
  const gOut=(x,y,w,h,o)=>{ R(x,y,w,h,'#000',`opacity="${(o*A).toFixed(3)}"`); push('</g>'); };
  // ---------- módulos ----------
