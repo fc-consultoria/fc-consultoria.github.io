@@ -234,6 +234,10 @@
   #hdr p{margin:2px 0 0;font:500 11px Inter,sans-serif;color:#9fc4c8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hd-ic{flex:none;width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#e8f3f4;display:grid;place-items:center;cursor:pointer;font:700 16px Inter,sans-serif}
   .hd-ic:active{transform:scale(.95)}
+  #hdNova{flex:none;display:inline-flex;align-items:center;gap:5px;height:38px;padding:0 13px;border-radius:12px;border:0;background:#2ec4b6;color:#062e34;font:700 13px Inter,sans-serif;cursor:pointer;white-space:nowrap}
+  #hdNova b{font-size:18px;line-height:1;font-weight:800}
+  #hdNova:active{transform:scale(.95)}
+  body.cliente #hdNova{display:none!important}
   #hdMenu{position:absolute;right:10px;top:56px;width:min(290px,calc(100vw - 20px));background:#fff;border-radius:16px;padding:8px;box-shadow:0 18px 50px rgba(0,0,0,.35);display:none;flex-direction:column;gap:4px;z-index:60}
   #hdMenu.on{display:flex}
   #hdMenu > *{display:flex!important;align-items:center;gap:10px;width:100%!important;margin:0!important;box-sizing:border-box;text-align:left;padding:12px 12px!important;border-radius:11px!important;border:0!important;background:#f1f6f6!important;color:#0b3a40!important;font:600 14px Inter,sans-serif!important;text-decoration:none;cursor:pointer;min-height:46px}
@@ -465,6 +469,7 @@
     <h1>Simulador de obra</h1>
     <p><span id="simEmpresa">Foto da obra · esquadria no vão</span></p>
   </div>
+  <button type="button" id="hdNova" title="Começar uma nova obra"><b>+</b> Nova obra</button>
   <button type="button" id="btnComoUsar" class="hd-ic" title="Como usar">?</button>
   <div id="tutModal" style="display:none;position:fixed;inset:0;z-index:2147482500;background:rgba(8,16,20,.8);align-items:center;justify-content:center;padding:16px">
     <div style="background:#fff;color:#14212a;border-radius:16px;width:100%;max-width:860px;padding:16px;font:400 14px/1.5 Inter,sans-serif">
@@ -1219,7 +1224,8 @@
 
     // ---------- banco no aparelho (IndexedDB) ----------
     const db = () => new Promise((ok, er) => { const r = indexedDB.open('fc-simulador-obras', 1); r.onupgradeneeded = () => r.result.createObjectStore('obras', { keyPath: 'id' }); r.onsuccess = () => ok(r.result); r.onerror = () => er(r.error); });
-    async function salvarDB(o) { try { const d = await db(); await new Promise(ok => { const t = d.transaction('obras', 'readwrite'); t.objectStore('obras').put(o); t.oncomplete = ok; t.onerror = ok; }); } catch (_) {} }
+    const vazia = o => !o.nome && !o.cliente && !(o.amb || []).some(a => a.foto);
+    async function salvarDB(o) { if (o && vazia(o)) { await apagarDB(o.id); return; } try { const d = await db(); await new Promise(ok => { const t = d.transaction('obras', 'readwrite'); t.objectStore('obras').put(o); t.oncomplete = ok; t.onerror = ok; }); } catch (_) {} }
     async function lerDB(id) { try { const d = await db(); return await new Promise(ok => { const r = d.transaction('obras').objectStore('obras').get(id); r.onsuccess = () => ok(r.result || null); r.onerror = () => ok(null); }); } catch (_) { return null; } }
     async function listaDB() { try { const d = await db(); return await new Promise(ok => { const out = []; const c = d.transaction('obras').objectStore('obras').openCursor(); c.onsuccess = e => { const k = e.target.result; if (k) { const v = k.value; out.push({ id: v.id, nome: v.nome, cliente: v.cliente, em: v.em, n: (v.amb || []).length }); k.continue(); } else ok(out.sort((a, b) => (b.em || 0) - (a.em || 0))); }; c.onerror = () => ok(out); }); } catch (_) { return []; } }
     async function apagarDB(id) { try { const d = await db(); await new Promise(ok => { const t = d.transaction('obras', 'readwrite'); t.objectStore('obras').delete(id); t.oncomplete = ok; t.onerror = ok; }); } catch (_) {} }
@@ -1503,14 +1509,17 @@
       el('obraExcluir').onclick = async () => { if (Date.now() - confO > 3000) { confO = Date.now(); el('obraExcluir').textContent = 'Toque de novo para excluir'; setTimeout(() => el('obraExcluir').textContent = 'Excluir obra', 3000); return; }
         el('obraExcluir').textContent = 'Excluir obra'; await apagarDB(obra.id); const l = await listaDB(); obra = null; await trocarObra(l.length ? await lerDB(l[0].id) : novaObra()); };
       el('obraLista').onchange = async () => { const id = el('obraLista').value; if (!id || id === obra.id) return; const o = await lerDB(id); if (o) await trocarObra(o); };
-      // abre a última obra usada neste aparelho
+      /* 15/11/2026: ao abrir, começa na tela de início com uma obra nova.
+         Só volta para a última se ela estava em andamento (não finalizada) há menos de 30 min,
+         por exemplo quando o celular recarrega a página ao abrir a câmera. As outras ficam em "Obras salvas". */
       const ult = lsGet('fcsim_obra_atual'); let o = ult ? await lerDB(ult) : null;
-      if (!o) { const l = await listaDB(); if (l.length) o = await lerDB(l[0].id); }
+      if (o && (o.id === lsGet('fcsim_obra_final') || Date.now() - (o.em || 0) > 30 * 60 * 1000)) o = null;
       obra = o || novaObra(); if (!obra.amb || !obra.amb.length) obra.amb = novaObra().amb;
       const ia = +(lsGet('fcsim_obra_amb') || 0); idx = ia < obra.amb.length ? ia : 0;
       if (obra.amb[idx].foto) await abrirAmbiente(idx, true); else desenharBarra();
       assinatura = sig(); salvarDB(obra); lsSet('fcsim_obra_atual', obra.id);
     };
+    API.finalizar = () => { if (obra) lsSet('fcsim_obra_final', obra.id); };
     return API;
   })();
 
@@ -3202,13 +3211,20 @@
       const nm = $('obraNome');
       if (!nm.value.trim()) { nm.focus(); toast('Digite o nome da obra para salvar.'); return; }
       if (await OBRA.salvarAgora()) {
-        const nomeSalvo = nm.value.trim();
+        const nomeSalvo = nm.value.trim(); OBRA.finalizar();
         // salvou: abre direto um orçamento novo, começando pela foto (o salvo fica em "Obras salvas")
         $('obraNova').click();
         setTimeout(() => { ir(1); $('labSalvoTx').textContent = ''; toast('✓ "' + nomeSalvo + '" salvo. Novo orçamento aberto: comece pela foto.'); }, 250);
       }
     };
     $('labIndicar').onclick = () => { const b = $('simIndicar'); if (b) b.click(); };
+    /* 15/11/2026 · botão Nova obra sempre visível no topo */
+    $('hdNova').onclick = () => {
+      const temAlgo = state.img || $('obraNome').value.trim() || $('obraCliente').value.trim();
+      if (temAlgo && !confirm('Começar uma nova obra?\n\nA obra atual fica guardada em "Obras salvas" (etapa Obra).')) return;
+      if (temAlgo) OBRA.finalizar();
+      $('obraNova').click(); setTimeout(() => { ir(1); if (temAlgo) toast('Nova obra aberta. Comece pela foto.'); }, 250);
+    };
     { const av = stage.querySelector('.aviso-fixo'); if (av) bodyP.appendChild(av); }
     bodyP.appendChild(H('p', 'Desenvolvido por FC Consultoria em Esquadria · CNPJ 52.985.682/0001-32 · imagens demonstrativas', { class: 'lab-cred' }));
 
