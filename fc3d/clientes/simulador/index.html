@@ -339,6 +339,14 @@
   body.lab.frmodo #labNav{display:none}
   body.lab.frmodo #labFoot{display:none}
   body.lab.frmodo #ui{opacity:1}
+  #frBar .fr-seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#e3eaeb;border-radius:13px;padding:4px;margin-bottom:8px}
+  #frBar .fr-seg button{min-height:40px;border:0;border-radius:10px;background:transparent;color:#557075;font:700 13px Inter,sans-serif;cursor:pointer}
+  #frBar .fr-seg button.on{background:#fff;color:#063238;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+  #frBar .fr-acoes{display:flex;gap:8px}
+  #frBar .fr-acoes > button{flex:1}
+  #frbApagar{min-height:50px;border-radius:14px;border:0;background:#e11d48;color:#fff;font:700 15px Inter,sans-serif;cursor:pointer;margin-bottom:env(safe-area-inset-bottom)}
+  #frbApagar:disabled{opacity:.6}
+  html.dark #frBar .fr-seg{background:#0b1619} html.dark #frBar .fr-seg button.on{background:#162a2f;color:#e2f1f2}
   #frBar .fr-g{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
   #frBar .fr-g button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:56px;border:1px solid #cfdcde;border-radius:14px;background:#fff;color:#0b3a40;font:700 11.5px/1.1 Inter,sans-serif;cursor:pointer;font-size:20px}
   #frBar .fr-g button span{font-size:11.5px}
@@ -1519,6 +1527,7 @@
       if (obra.amb[idx].foto) await abrirAmbiente(idx, true); else desenharBarra();
       assinatura = sig(); salvarDB(obra); lsSet('fcsim_obra_atual', obra.id);
     };
+    API.trocarFoto = url => { if (cliente || !obra) return; const a = obra.amb[idx]; if (!a) return; a.foto = url; salvar(true); desenharBarra(); };
     API.finalizar = () => { if (obra) lsSet('fcsim_obra_final', obra.id); };
     return API;
   })();
@@ -2042,6 +2051,94 @@
     g.globalCompositeOperation = 'source-in'; g.drawImage(view, 0, 0, c.width, c.height);
     if (PINCEL.on && vao.id === state.vaoAtivoId) { g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(255,122,0,.32)'; g.fillRect(0, 0, c.width, c.height); }
     g.globalCompositeOperation = 'source-over';
+  }
+
+  /* 15/11/2026 · APAGAR DA FOTO: some com a mesa, o andaime ou o entulho e preenche com a parede e o piso em volta.
+     Preenche o buraco com pedaços reais da foto vizinha que combinam com a borda (como o preenchimento inteligente dos editores de foto).
+     mask: canvas do tamanho da foto, pintado onde é para apagar. Devolve um canvas com a foto nova. */
+  function apagarDaFoto(mask) {
+    const W = view.width, H = view.height;
+    const md = mask.getContext('2d').getImageData(0, 0, W, H).data;
+    let x0 = W, y0 = H, x1 = -1, y1 = -1;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (md[(y * W + x) * 4 + 3] > 16) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    if (x1 < 0) return null;
+    const pad = Math.max(40, Math.round(Math.max(x1 - x0, y1 - y0) * 0.7));
+    const bx = Math.max(0, x0 - pad), by = Math.max(0, y0 - pad), bw = Math.min(W, x1 + pad + 1) - bx, bh = Math.min(H, y1 + pad + 1) - by, N = bw * bh;
+    const out = document.createElement('canvas'); out.width = W; out.height = H; const og = out.getContext('2d');
+    og.drawImage(state.img, 0, 0, W, H);
+    const im = og.getImageData(bx, by, bw, bh), d = im.data;
+    // máscara do recorte (com 2 px a mais para não sobrar contorno do objeto)
+    const m0 = new Uint8Array(N); for (let y = 0; y < bh; y++) for (let x = 0; x < bw; x++) m0[y * bw + x] = md[((y + by) * W + x + bx) * 4 + 3] > 16 ? 1 : 0;
+    const m = new Uint8Array(N), R = 2;
+    for (let y = 0; y < bh; y++) for (let x = 0; x < bw; x++) { if (!m0[y * bw + x]) continue; for (let j = -R; j <= R; j++) for (let i = -R; i <= R; i++) { const xx = x + i, yy = y + j; if (xx >= 0 && yy >= 0 && xx < bw && yy < bh) m[yy * bw + xx] = 1; } }
+    // preenchimento por pedaços: cada buraco recebe um pedaço real da foto vizinha que combina com a borda (parede, piso, rodapé)
+    const known = new Uint8Array(N); for (let k = 0; k < N; k++) known[k] = m[k] ? 0 : 1;
+    // guia: cor esperada em cada ponto do buraco (pirâmide push-pull das cores em volta)
+    const G = (() => {
+      const lv = []; { const P = new Float32Array(N * 3), Wt = new Float32Array(N); for (let k = 0; k < N; k++) if (!m[k]) { Wt[k] = 1; P[k * 3] = d[k * 4]; P[k * 3 + 1] = d[k * 4 + 1]; P[k * 3 + 2] = d[k * 4 + 2]; } lv.push({ w: bw, h: bh, P, Wt }); }
+      while (lv[lv.length - 1].w > 1 || lv[lv.length - 1].h > 1) {
+        const a = lv[lv.length - 1], w2 = Math.ceil(a.w / 2), h2 = Math.ceil(a.h / 2), P = new Float32Array(w2 * h2 * 3), Wt = new Float32Array(w2 * h2);
+        for (let y = 0; y < a.h; y++) for (let x = 0; x < a.w; x++) { const s0 = y * a.w + x, t = (y >> 1) * w2 + (x >> 1); Wt[t] += a.Wt[s0]; P[t * 3] += a.P[s0 * 3]; P[t * 3 + 1] += a.P[s0 * 3 + 1]; P[t * 3 + 2] += a.P[s0 * 3 + 2]; }
+        for (let t = 0; t < w2 * h2; t++) if (Wt[t] > 0) { const k = Math.min(1, Wt[t]) / Wt[t]; P[t * 3] *= k; P[t * 3 + 1] *= k; P[t * 3 + 2] *= k; Wt[t] = Math.min(1, Wt[t]); }
+        lv.push({ w: w2, h: h2, P, Wt });
+      }
+      let F = (() => { const a = lv[lv.length - 1], o = new Float32Array(3); if (a.Wt[0] > 0) for (let c = 0; c < 3; c++) o[c] = a.P[c] / a.Wt[0]; return o; })();
+      for (let l = lv.length - 2; l >= 0; l--) {
+        const a = lv[l], up = lv[l + 1], o = new Float32Array(a.w * a.h * 3);
+        for (let y = 0; y < a.h; y++) for (let x = 0; x < a.w; x++) {
+          const k = y * a.w + x, u = 1 - a.Wt[k];
+          const fx = Math.min(up.w - 1, Math.max(0, (x - 0.5) / 2)), fy = Math.min(up.h - 1, Math.max(0, (y - 0.5) / 2)), ix = Math.floor(fx), iy = Math.floor(fy), jx = Math.min(up.w - 1, ix + 1), jy = Math.min(up.h - 1, iy + 1), ax = fx - ix, ay = fy - iy;
+          for (let c = 0; c < 3; c++) { const v = u > 0 ? (F[(iy * up.w + ix) * 3 + c] * (1 - ax) + F[(iy * up.w + jx) * 3 + c] * ax) * (1 - ay) + (F[(jy * up.w + ix) * 3 + c] * (1 - ax) + F[(jy * up.w + jx) * 3 + c] * ax) * ay : 0; o[k * 3 + c] = a.P[k * 3 + c] + u * v; }
+        }
+        F = o;
+      }
+      return F;
+    })();
+    const PH = 4, PS = 2 * PH + 1;
+    // centros de origem válidos: pedaço inteiro fora do objeto (soma da máscara por área)
+    const S = new Int32Array((bw + 1) * (bh + 1)); for (let y = 0; y < bh; y++) { let r = 0; for (let x = 0; x < bw; x++) { r += m[y * bw + x]; S[(y + 1) * (bw + 1) + x + 1] = S[y * (bw + 1) + x + 1] + r; } }
+    const okSrc = (cx, cy) => { if (cx < PH || cy < PH || cx >= bw - PH || cy >= bh - PH) return false; const xa = cx - PH, ya = cy - PH, xb = cx + PH + 1, yb = cy + PH + 1; return S[yb * (bw + 1) + xb] - S[ya * (bw + 1) + xb] - S[yb * (bw + 1) + xa] + S[ya * (bw + 1) + xa] === 0; };
+    const offX = new Int16Array(N), offY = new Int16Array(N), temOff = new Uint8Array(N);
+    const RS = Math.max(40, Math.round(Math.max(x1 - x0, y1 - y0) * 0.9));
+    let semente = 12345; const rnd = () => (semente = (semente * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+    const custo = (tx, ty, sx, sy, limite) => { let e = 0, n = 0;
+      for (let j = -PH; j <= PH; j++) { const yy = ty + j; if (yy < 0 || yy >= bh) continue; for (let i = -PH; i <= PH; i++) { const xx = tx + i; if (xx < 0 || xx >= bw) continue; const t = yy * bw + xx, q = ((sy + j) * bw + sx + i) * 4;
+        if (known[t]) { const tt = t * 4, dr = d[tt] - d[q], dg = d[tt + 1] - d[q + 1], db = d[tt + 2] - d[q + 2]; e += dr * dr + dg * dg + db * db; n++; }
+        else if (m0[t] || ((i + j) & 1) === 0) { const tg = t * 3, dr = G[tg] - d[q], dg = G[tg + 1] - d[q + 1], db = G[tg + 2] - d[q + 2]; e += (dr * dr + dg * dg + db * db) * 0.7; n += 0.7; }
+        if (n > 8 && e > limite * n * 1.5) return 1e18; } }
+      return n ? e / n : 1e18; };
+    let falta = 0; for (let k = 0; k < N; k++) if (!known[k]) falta++;
+    let voltas = 0, recentes = [];
+    while (falta > 0 && voltas++ < 4000) {
+      const front = [];
+      for (let y = 0; y < bh; y++) for (let x = 0; x < bw; x++) { const k = y * bw + x; if (known[k]) continue; if ((x > 0 && known[k - 1]) || (x < bw - 1 && known[k + 1]) || (y > 0 && known[k - bw]) || (y < bh - 1 && known[k + bw])) front.push(k); }
+      if (!front.length) break;
+      // prioridade: onde a borda tem mais pixels conhecidos (segue linhas de rodapé e piso)
+      const conf = k => { const x = k % bw, y = (k / bw) | 0; let c = 0; for (let j = -PH; j <= PH; j += 2) for (let i = -PH; i <= PH; i += 2) { const xx = x + i, yy = y + j; if (xx >= 0 && yy >= 0 && xx < bw && yy < bh && known[yy * bw + xx]) c++; } return c; };
+      front.sort((p, q) => conf(q) - conf(p));
+      for (const k of front) {
+        if (known[k]) continue; const tx = k % bw, ty = (k / bw) | 0;
+        let best = null, bestE = 1e18;
+        const tenta = (sx, sy) => { if (!okSrc(sx, sy)) return; const e = custo(tx, ty, sx, sy, bestE); if (e < bestE) { bestE = e; best = [sx, sy]; } };
+        // coerência: continuar o mesmo pedaço dos vizinhos já preenchidos
+        for (let j = -PH; j <= PH; j++) for (let i = -PH; i <= PH; i++) { const xx = tx + i, yy = ty + j; if (xx < 0 || yy < 0 || xx >= bw || yy >= bh) continue; const t = yy * bw + xx; if (temOff[t]) tenta(tx + offX[t], ty + offY[t]); }
+        recentes.forEach(o => tenta(tx + o[0], ty + o[1]));
+        for (let n = 0; n < 50; n++) tenta(tx + Math.round((rnd() * 2 - 1) * RS), ty + Math.round((rnd() * 2 - 1) * RS));
+        if (best) { let r = 12; while (r >= 1) { const [bx2, by2] = best; for (let n = 0; n < 6; n++) tenta(bx2 + Math.round((rnd() * 2 - 1) * r), by2 + Math.round((rnd() * 2 - 1) * r)); r >>= 1; } }
+        if (!best) { // sem origem perfeita: pega o pixel conhecido mais perto
+          for (let rr = 1; rr < 200 && !best; rr++) for (const [i, j] of [[rr, 0], [-rr, 0], [0, rr], [0, -rr]]) { const xx = tx + i, yy = ty + j; if (xx >= 0 && yy >= 0 && xx < bw && yy < bh && known[yy * bw + xx]) { const q = (yy * bw + xx) * 4; d[k * 4] = d[q]; d[k * 4 + 1] = d[q + 1]; d[k * 4 + 2] = d[q + 2]; known[k] = 1; falta--; best = 1; break; } }
+          continue;
+        }
+        const ox = best[0] - tx, oy = best[1] - ty; recentes.unshift([ox, oy]); if (recentes.length > 8) recentes.pop();
+        for (let j = -PH; j <= PH; j++) for (let i = -PH; i <= PH; i++) { const xx = tx + i, yy = ty + j; if (xx < 0 || yy < 0 || xx >= bw || yy >= bh) continue; const t = yy * bw + xx; if (known[t]) continue; const q = ((yy + oy) * bw + xx + ox) * 4; d[t * 4] = d[q]; d[t * 4 + 1] = d[q + 1]; d[t * 4 + 2] = d[q + 2]; known[t] = 1; offX[t] = ox; offY[t] = oy; temOff[t] = 1; falta--; }
+      }
+    }
+    // emenda suave no contorno
+    const c2 = new Uint8ClampedArray(d);
+    for (let y = 1; y < bh - 1; y++) for (let x = 1; x < bw - 1; x++) { const k = y * bw + x; let borda = false; for (let j = -1; j <= 1 && !borda; j++) for (let i = -1; i <= 1; i++) if (m[k + j * bw + i] !== m[k]) { borda = true; break; }
+      if (!borda) continue; for (let ch = 0; ch < 3; ch++) { let sv = 0; for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) sv += c2[(k + j * bw + i) * 4 + ch]; d[k * 4 + ch] = sv / 9; } }
+    og.putImageData(im, bx, by);
+    return out;
   }
 
   function renderizarVao(vao) {
@@ -3143,9 +3240,55 @@
     const lupa = H('canvas', null, { id: 'lupa', width: '236', height: '236' }); wrap.appendChild(lupa);
 
     /* 15/11/2026 · modo "Limpar o que está na frente": painel recolhido, foto grande e comandos na altura do polegar */
-    const frBar = H('div', `<div class="fr-g"><button type="button" id="frbPin" class="on">🖌️<span>Pintar</span></button><button type="button" id="frbBor">🩹<span>Borracha</span></button><button type="button" id="frbDesf">${IC.desf}<span>Desfazer</span></button><button type="button" id="frbLimp">🗑️<span>Limpar</span></button></div>
+    const frBar = H('div', `<div class="fr-seg"><button type="button" data-m="apg" class="on">🧽 Apagar da foto</button><button type="button" data-m="fr">👤 Deixar na frente</button></div><div class="fr-g"><button type="button" id="frbPin" class="on">🖌️<span>Pintar</span></button><button type="button" id="frbBor">🩹<span>Borracha</span></button><button type="button" id="frbDesf">${IC.desf}<span>Desfazer</span></button><button type="button" id="frbLimp">🗑️<span>Limpar</span></button></div>
       <label class="fr-tam">Pincel <input type="range" id="frbTam" min="6" max="70" value="22"><b id="frbTamLbl">22</b></label>
-      <button type="button" id="frbOk">${IC.ok}Pronto</button>`, { id: 'frBar' });
+      <div class="fr-acoes"><button type="button" id="frbApagar">✨ Apagar agora</button><button type="button" id="frbOk">${IC.ok}Pronto</button></div>`, { id: 'frBar' });
+
+    /* 15/11/2026 · Apagar da foto: pinta o objeto (vermelho) e o app preenche com o entorno */
+    const APG = { on: false, borracha: false, tr: [], cur: null, at: null, hist: [] };
+    const apgC = H('canvas', null, { id: 'apgMask' }); apgC.className = 'absolute inset-0 w-full h-full pointer-events-none'; apgC.style.zIndex = '7'; apgC.style.opacity = '.55';
+    wrap.appendChild(apgC);
+    function apgDesenha() {
+      if (apgC.width !== view.width || apgC.height !== view.height) { apgC.width = view.width; apgC.height = view.height; }
+      const g = apgC.getContext('2d'); g.clearRect(0, 0, apgC.width, apgC.height); if (!APG.on) return;
+      g.lineCap = g.lineJoin = 'round'; g.strokeStyle = g.fillStyle = '#ff1f1f';
+      APG.tr.forEach(t => { g.globalCompositeOperation = t.e ? 'destination-out' : 'source-over'; const p = t.p; if (p.length <= 2) { g.beginPath(); g.arc(p[0], p[1], t.r, 0, Math.PI * 2); g.fill(); return; } g.lineWidth = t.r * 2; g.beginPath(); g.moveTo(p[0], p[1]); for (let i = 2; i < p.length; i += 2) g.lineTo(p[i], p[i + 1]); g.stroke(); });
+      g.globalCompositeOperation = 'source-over';
+      if (APG.cur) { const r = PINCEL.r * (view.width / (view.getBoundingClientRect().width || view.width)); g.beginPath(); g.arc(APG.cur.x, APG.cur.y, r, 0, Math.PI * 2); g.lineWidth = Math.max(2, view.width / 300); g.strokeStyle = APG.borracha ? '#0ea5e9' : '#ffffff'; g.setLineDash([8, 6]); g.stroke(); g.setLineDash([]); }
+    }
+    const camadasVisiveis = on => { overlayContainer.style.visibility = on ? '' : 'hidden'; };
+    // a pintura do Apagar vem antes de qualquer outro comando na foto
+    wrap.addEventListener('pointerdown', e => {
+      if (!APG.on) return; e.stopImmediatePropagation(); e.preventDefault(); try { wrap.setPointerCapture(e.pointerId); } catch (_) {}
+      const p = pontoDoEvento(e), r = PINCEL.r * (view.width / view.getBoundingClientRect().width);
+      APG.at = { r, e: APG.borracha, p: [p.x, p.y] }; APG.tr.push(APG.at); APG.cur = p; apgDesenha();
+    }, true);
+    wrap.addEventListener('pointermove', e => {
+      if (!APG.on) return; e.stopImmediatePropagation(); const p = pontoDoEvento(e); APG.cur = p;
+      if (APG.at) { e.preventDefault(); const t = APG.at.p; if (Math.hypot(p.x - t[t.length - 2], p.y - t[t.length - 1]) > APG.at.r * 0.25) t.push(p.x, p.y); }
+      apgDesenha();
+    }, true);
+    ['pointerup', 'pointercancel'].forEach(ev => wrap.addEventListener(ev, e => { if (!APG.on) return; e.stopImmediatePropagation(); APG.at = null; try { wrap.releasePointerCapture(e.pointerId); } catch (_) {} }, true));
+    async function apgAplicar() {
+      if (!APG.tr.some(t => !t.e)) { toast('Primeiro pinte de vermelho o que quer apagar.'); return; }
+      const b = $('frbApagar'); b.disabled = true; b.textContent = 'Apagando…';
+      await new Promise(r => setTimeout(r, 30));
+      try {
+        const mk = document.createElement('canvas'); mk.width = view.width; mk.height = view.height; const g = mk.getContext('2d');
+        g.lineCap = g.lineJoin = 'round'; g.strokeStyle = g.fillStyle = '#000';
+        APG.tr.forEach(t => { g.globalCompositeOperation = t.e ? 'destination-out' : 'source-over'; const p = t.p; if (p.length <= 2) { g.beginPath(); g.arc(p[0], p[1], t.r, 0, Math.PI * 2); g.fill(); return; } g.lineWidth = t.r * 2; g.beginPath(); g.moveTo(p[0], p[1]); for (let i = 2; i < p.length; i += 2) g.lineTo(p[i], p[i + 1]); g.stroke(); });
+        const novo = apagarDaFoto(mk); if (!novo) { toast('Primeiro pinte de vermelho o que quer apagar.'); return; }
+        const ant = document.createElement('canvas'); ant.width = view.width; ant.height = view.height; ant.getContext('2d').drawImage(state.img, 0, 0, ant.width, ant.height);
+        APG.hist.push(ant.toDataURL('image/jpeg', 0.92)); if (APG.hist.length > 5) APG.hist.shift();
+        await apgUsar(novo.toDataURL('image/jpeg', 0.9));
+        APG.tr = []; apgDesenha(); toast('✓ Apagado da foto. Se sobrou algo, pinte de novo e toque em Apagar agora.');
+      } catch (er) { console.warn(er); toast('Não foi possível apagar nesta foto.'); }
+      finally { b.disabled = false; b.textContent = '✨ Apagar agora'; }
+    }
+    async function apgUsar(url) {
+      const img = await new Promise((ok, er) => { const i = new Image(); i.onload = () => ok(i); i.onerror = er; i.src = url; });
+      state.img = img; AD.foto(img); texCache.clear(); renderTudo(); OBRA.trocarFoto(url);
+    }
 
     // ---------- painel de etapas ----------
     const sobra = H('div', null, { id: 'labSobra', style: 'display:none' });
@@ -3188,7 +3331,7 @@
     // 4 · Esquadria
     P[4].innerHTML = `<p class="lab-intro">Escolha o tipo, a cor e o vidro. Sem marca nem linha: a linha é definida no escritório, no sistema da empresa.</p>${AVISO_SV}`;
     const mais4 = H('details', '<summary>Mais ajustes (contramarco, reboco, balão)</summary>', { class: 'lab-mais' });
-    const frBtn = H('button', '<b>🧹</b><span>Limpar o que está na frente<small>Pessoa, mesa, andaime ou planta na frente do vão</small></span>', { type: 'button', id: 'labFrente', class: 'lab-fr' });
+    const frBtn = H('button', '<b>🧹</b><span>Limpar a foto<small>Apagar mesa, andaime ou entulho da foto, ou deixar algo na frente da esquadria</small></span>', { type: 'button', id: 'labFrente', class: 'lab-fr' });
     put(P[4], $('etpEsq'), sec('gridTip'), sec('gridCores'), sec('gridVidros'), frBtn, $('famMov'), mais4);
     put(mais4, $('etpCM'), $('etpReb'), sec('selBlend'));
     sobra.appendChild($('frenteBox'));
@@ -3230,26 +3373,49 @@
 
     // ---------- modo limpar o que está na frente ----------
     const FR_TX = 'Passe o dedo sobre a pessoa ou o objeto que está na frente do vão. Ele volta para a frente da esquadria.';
-    let frOn = false;
-    function frMarca() { $('frbPin').classList.toggle('on', PINCEL.on && !PINCEL.borracha); $('frbBor').classList.toggle('on', PINCEL.on && PINCEL.borracha); }
+    const APG_TX = 'Pinte de vermelho a mesa, o andaime ou o entulho e toque em ✨ Apagar agora. O lugar é preenchido com a parede e o piso em volta.';
+    let frOn = false, frModo = 'apg';
+    function frMarca() {
+      const pin = frModo === 'apg' ? !APG.borracha : (PINCEL.on && !PINCEL.borracha), bor = frModo === 'apg' ? APG.borracha : (PINCEL.on && PINCEL.borracha);
+      $('frbPin').classList.toggle('on', pin); $('frbBor').classList.toggle('on', bor);
+      frBar.querySelectorAll('.fr-seg button').forEach(b => b.classList.toggle('on', b.dataset.m === frModo));
+      $('frbApagar').style.display = frModo === 'apg' ? '' : 'none';
+      $('frbPin').lastChild.textContent = frModo === 'apg' ? 'Pintar' : 'Pintar';
+    }
+    function frSetModo(m) {
+      frModo = m;
+      if (m === 'apg') { FRENTE.set(false); APG.on = true; APG.borracha = false; camadasVisiveis(false); }
+      else { APG.on = false; APG.cur = null; camadasVisiveis(true); const v = vaoAtivo(); if (v && !v.et.esq) { v.et.esq = true; renderizarVao(v); atualizarPassos(); } FRENTE.set(true, false); }
+      apgDesenha(); frMarca(); sync();
+    }
+    frBar.querySelectorAll('.fr-seg button').forEach(b => b.onclick = () => frSetModo(b.dataset.m));
     function frEntrar() {
+      if (!state.img) { toast('Primeiro tire a foto do vão.'); return; }
       const v = vaoAtivo() || state.vaos.find(x => x.pts.length === 4);
-      if (!v || v.pts.length !== 4) { toast('Primeiro marque o vão na foto.'); return; }
-      state.vaoAtivoId = v.id; sincronizarSidebar();
-      if (!v.et.esq) { v.et.esq = true; renderizarVao(v); atualizarPassos(); }
+      if (v) { state.vaoAtivoId = v.id; sincronizarSidebar(); }
       frOn = true; body.classList.add('frmodo'); aside.classList.add('mini');
-      FRENTE.set(true, false); frMarca(); sync(); requestAnimationFrame(fit);
+      frSetModo('apg'); requestAnimationFrame(fit);
     }
     function frSair() {
       if (!frOn) return; frOn = false; body.classList.remove('frmodo');
+      APG.on = false; APG.tr = []; APG.cur = null; apgDesenha(); camadasVisiveis(true);
       FRENTE.set(false); if (cur === 4) aside.classList.remove('mini'); sync(); requestAnimationFrame(fit);
     }
     $('labFrente').onclick = frEntrar;
-    $('frbPin').onclick = () => { FRENTE.set(true, false); frMarca(); };
-    $('frbBor').onclick = () => { FRENTE.set(true, true); frMarca(); };
-    $('frbDesf').onclick = () => { if (!FRENTE.desfazer()) toast('Nada para desfazer.'); };
-    $('frbLimp').onclick = () => { if (confirm('Apagar toda a pintura deste vão?')) FRENTE.limpar(); };
-    $('frbTam').oninput = () => { $('frbTamLbl').textContent = $('frbTam').value; FRENTE.tam(+$('frbTam').value); };
+    $('frbPin').onclick = () => { if (frModo === 'apg') APG.borracha = false; else FRENTE.set(true, false); frMarca(); };
+    $('frbBor').onclick = () => { if (frModo === 'apg') APG.borracha = true; else FRENTE.set(true, true); frMarca(); };
+    $('frbDesf').onclick = async () => {
+      if (frModo === 'apg') {
+        if (APG.tr.length) { APG.tr.pop(); apgDesenha(); return; }
+        if (APG.hist.length) { await apgUsar(APG.hist.pop()); toast('Foto voltou como estava antes de apagar.'); return; }
+        toast('Nada para desfazer.'); return;
+      }
+      const v = vaoAtivo(); if (!v) { toast('Selecione um vão.'); return; }
+      if (!FRENTE.desfazer()) toast('Nada para desfazer.');
+    };
+    $('frbLimp').onclick = () => { if (frModo === 'apg') { APG.tr = []; apgDesenha(); return; } if (confirm('Apagar toda a pintura deste vão?')) FRENTE.limpar(); };
+    $('frbApagar').onclick = apgAplicar;
+    $('frbTam').oninput = () => { $('frbTamLbl').textContent = $('frbTam').value; FRENTE.tam(+$('frbTam').value); apgDesenha(); };
     $('frbOk').onclick = () => { frSair(); toast('✓ Pronto.'); };
 
     // ---------- avisos curtos ----------
@@ -3316,7 +3482,7 @@
     wrap.addEventListener('pointerdown', e => {
       pre = { cria: state.modoCriacao, n: state.ptsTemp.length, nv: state.vaos.length, rem: REM.id };
       // fora da etapa Vão os pontos ficam escondidos e não se mexem sem querer
-      if (cur !== 2 && !PINCEL.on && state.annotationTool === null && !state.modoCriacao) {
+      if (cur !== 2 && !PINCEL.on && !APG.on && state.annotationTool === null && !state.modoCriacao) {
         const v = vaoAtivo(); if (v && v.pts.length === 4) { const p = pontoDoEvento(e), raio = 30 * (view.width / (view.getBoundingClientRect().width || view.width));
           if (v.pts.some(q => Math.hypot(q.x - p.x, q.y - p.y) < raio)) { e.stopImmediatePropagation(); e.preventDefault(); } }
       }
@@ -3382,8 +3548,8 @@
       const feito = [!!state.img, ok, ok && !!v.bruto, ok && !!(v.et && v.et.esq), false];
       nav.querySelectorAll('button').forEach((b, i) => { b.classList.toggle('on', i + 1 === cur); b.classList.toggle('ok', feito[i] && i + 1 !== cur); });
       body.classList.toggle('comfoto', !!state.img);
-      $('labNum').textContent = 'Etapa ' + cur + ' de 5'; $('labTit').textContent = ETP[cur - 1].tit; $('labMiniTx').textContent = frOn ? FR_TX : cur === 2 && state.img ? hint.textContent : ETP[cur - 1].mini;
-      if (frOn) $('labTit').textContent = 'Limpar o que está na frente';
+      $('labNum').textContent = 'Etapa ' + cur + ' de 5'; $('labTit').textContent = ETP[cur - 1].tit; $('labMiniTx').textContent = frOn ? (frModo === 'apg' ? APG_TX : (vaoAtivo() ? FR_TX : 'Marque o vão primeiro (etapa 2) para usar Deixar na frente.')) : cur === 2 && state.img ? hint.textContent : ETP[cur - 1].mini;
+      if (frOn) $('labTit').textContent = frModo === 'apg' ? 'Apagar da foto' : 'Deixar na frente da esquadria';
       $('labVolta').disabled = cur === 1;
       $('labAvanca').style.display = cur === 5 ? 'none' : '';
       $('labAvanca').textContent = cur === 2 ? 'Pronto ▶' : cur === 4 ? 'Dados da obra ▶' : 'Avançar ▶';
