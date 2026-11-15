@@ -325,6 +325,41 @@
   .lab-p.semvao > :not(.lab-semvao):not(.lab-intro){opacity:.35;pointer-events:none}
   .lab-mais{border:1px solid #dde7e8;border-radius:16px;background:#fff;padding:4px 12px;margin-bottom:10px}
   .lab-mais summary{cursor:pointer;font:700 13px Inter,sans-serif;color:#0b3a40;padding:10px 0}
+  /* 15/11/2026 · botão e barra do "Limpar o que está na frente" */
+  .lab-fr{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid #9ed8d1;background:#effaf8;border-radius:16px;padding:12px 14px;margin:0 0 12px;cursor:pointer;color:#0b3a40;font:700 14px/1.25 Inter,sans-serif}
+  .lab-fr b{font-size:24px;line-height:1}
+  .lab-fr small{display:block;font:500 11.5px/1.35 Inter,sans-serif;color:#557075;margin-top:2px}
+  .lab-fr:active{transform:scale(.98)}
+  #frBar{display:none;padding:2px 12px 8px;flex:none}
+  body.lab.frmodo #frBar{display:block}
+  body.lab.frmodo #labNav{display:none}
+  body.lab.frmodo #labFoot{display:none}
+  body.lab.frmodo #ui{opacity:1}
+  #frBar .fr-g{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  #frBar .fr-g button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:56px;border:1px solid #cfdcde;border-radius:14px;background:#fff;color:#0b3a40;font:700 11.5px/1.1 Inter,sans-serif;cursor:pointer;font-size:20px}
+  #frBar .fr-g button span{font-size:11.5px}
+  #frBar .fr-g button svg{width:22px;height:22px}
+  #frBar .fr-g button.on{background:#ff7a00;border-color:#ff7a00;color:#fff}
+  #frBar .fr-g button:active,#frbOk:active{transform:scale(.95)}
+  #frBar .fr-tam{display:flex;align-items:center;gap:10px;margin:8px 2px 6px;font:700 12px Inter,sans-serif;color:#557075}
+  #frBar .fr-tam input{flex:1}
+  #frBar .fr-tam b{min-width:22px;text-align:right;color:#ff7a00}
+  #frbOk{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:50px;border-radius:14px;border:0;background:#063238;color:#fff;font:700 15px Inter,sans-serif;cursor:pointer;margin-bottom:env(safe-area-inset-bottom)}
+  #frbOk svg{width:20px;height:20px}
+  html.dark .lab-fr{background:#123236;border-color:#24414a;color:#e2f1f2} html.dark .lab-fr small{color:#9fc4c8}
+  html.dark #frBar .fr-g button{background:#162a2f;border-color:#24414a;color:#e2f1f2} html.dark #frBar .fr-g button.on{background:#ff7a00;color:#fff}
+  .tipg-dica{display:none}
+  /* 15/11/2026 · celular em pé: tipologias numa fita que arrasta para o lado (a foto fica à vista) */
+  @media (max-width:1023.98px) and (orientation:portrait), (max-width:699.98px){
+    body.lab #gridTip .tipc{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -14px 8px;padding:2px 14px 4px;position:relative}
+    body.lab #gridTip .tipc::-webkit-scrollbar,body.lab #gridTip .tipg-g::-webkit-scrollbar{display:none}
+    body.lab #gridTip .tipc button{flex:none;align-items:center;padding:9px 14px;min-height:38px;font-size:13px}
+    body.lab #gridTip .tipg-g{display:flex;grid-template-columns:none;overflow-x:auto;overflow-y:hidden;max-height:none;gap:8px;margin:0 -14px;padding:2px 14px 6px;scroll-snap-type:x proximity;scroll-padding:0 14px;scrollbar-width:none;position:relative}
+    body.lab #gridTip .tipg-g button{flex:0 0 124px;scroll-snap-align:start;padding:6px 6px 8px;border-radius:14px;border-width:1.5px}
+    body.lab #gridTip .tipg-g button[aria-pressed="true"]{border-color:#02717d;box-shadow:inset 0 0 0 2px #02717d}
+    body.lab #gridTip .tipg-g span{-webkit-line-clamp:2;font-size:11.5px;min-height:2.5em}
+    body.lab .tipg-dica{display:block;text-align:center;font:600 10.5px Inter,sans-serif;color:#7b9094;margin:2px 0 4px}
+  }
   .lab-cred{margin:14px 0 0;text-align:center;font:500 10px Inter,sans-serif;color:#94a3b8}
   #labToast{position:fixed;left:50%;bottom:calc(140px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#062e34;color:#fff;font:600 13px Inter,sans-serif;padding:11px 16px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:2147482000;display:none;max-width:88vw;text-align:center}
   /* computador, tablet deitado e TV: foto à esquerda, etapas à direita */
@@ -2587,10 +2622,17 @@
     const gTip = $('gridTip'), thumbs = new Map();
     let catSel = state.defaultProduto.grupo;
     const mini = p => { if (!thumbs.has(p.id)) { let s = ''; try { s = FCTipo.svg(p.desc, { cor: 'branco', vidro: 'incolor', sentido: true, contexto: false, foto: true, px: 200 }).replace('preserveAspectRatio="none"', 'preserveAspectRatio="xMidYMid meet"').replace(/ width="\d+" height="\d+"/, ''); } catch (e) {} thumbs.set(p.id, s); } return thumbs.get(p.id); };
-    const marca = () => gTip.querySelectorAll('[data-tip]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tip === sel.value ? 'true' : 'false'));
+    const centra = suave => {
+      const cx = (g, b) => { if (g && b && g.scrollWidth > g.clientWidth + 2) g.scrollTo({ left: Math.max(0, b.offsetLeft - (g.clientWidth - b.offsetWidth) / 2), behavior: suave ? 'smooth' : 'auto' }); };
+      cx(gTip.querySelector('.tipc'), gTip.querySelector('.tipc [aria-pressed="true"]'));
+      cx(gTip.querySelector('.tipg-g'), gTip.querySelector('.tipg-g [aria-pressed="true"]'));
+    };
+    window.centraTip = () => requestAnimationFrame(() => centra(false));
+    const marca = () => { gTip.querySelectorAll('[data-tip]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tip === sel.value ? 'true' : 'false')); requestAnimationFrame(() => centra(true)); };
     const desenhaGrid = () => {
       gTip.innerHTML = '<div class="tipc">' + cats.map(c => `<button type="button" data-cat="${c}" aria-pressed="${c === catSel}">${c} <small>${NOVOS.filter(p => p.grupo === c).length}</small></button>`).join('') + '</div>'
-        + '<div class="tipg-g">' + NOVOS.filter(p => p.grupo === catSel).map(p => `<button type="button" data-tip="${p.id}" title="${p.nome}"><i>${mini(p)}</i><span>${p.nome}</span></button>`).join('') + '</div>';
+        + '<div class="tipg-g">' + NOVOS.filter(p => p.grupo === catSel).map(p => `<button type="button" data-tip="${p.id}" title="${p.nome}"><i>${mini(p)}</i><span>${p.nome}</span></button>`).join('') + '</div>'
+        + `<div class="tipg-dica">◀ Arraste para o lado · ${NOVOS.filter(p => p.grupo === catSel).length} modelos em ${catSel} ▶</div>`;
       marca();
     };
     /* ao trocar de vão, abre a categoria da tipologia dele */
@@ -3019,6 +3061,7 @@
   }
   
   /* 12/11/2026 · comandos do Está na frente */
+  const FRENTE = {};
   (function () {
     const b = id => document.getElementById(id); if (!b('frPincel')) return;
     const vAt = () => state.vaos.find(x => x.id === state.vaoAtivoId);
@@ -3033,6 +3076,12 @@
     b('frPincel').onclick = () => modo(false);
     b('frBorracha').onclick = () => modo(true);
     b('frLimpar').onclick = () => { const v = vAt(); if (!v) return; v.frente = []; renderFrente(v); };
+    /* 15/11/2026 · usado pelo modo "Limpar o que está na frente" do celular */
+    FRENTE.set = (on, borr) => { PINCEL.on = !!on; if (borr != null) PINCEL.borracha = !!borr; sync(); };
+    FRENTE.sync = sync;
+    FRENTE.desfazer = () => { const v = vAt(); if (!v || !v.frente || !v.frente.length) return false; v.frente.pop(); renderFrente(v); return true; };
+    FRENTE.limpar = () => { const v = vAt(); if (!v) return; v.frente = []; renderFrente(v); };
+    FRENTE.tam = n => { b('frTam').value = n; b('frTam').dispatchEvent(new Event('input')); };
     b('frTam').oninput = () => { PINCEL.r = +b('frTam').value; b('frTamLbl').textContent = PINCEL.r; renderizarUI(); };
     $('selVao') && $('selVao').addEventListener('change', () => setTimeout(sync, 0));
     window.addEventListener('keydown', e => { if (e.key === 'Escape' && PINCEL.on) { PINCEL.on = false; sync(); } });
@@ -3084,6 +3133,11 @@
 
     const lupa = H('canvas', null, { id: 'lupa', width: '236', height: '236' }); wrap.appendChild(lupa);
 
+    /* 15/11/2026 · modo "Limpar o que está na frente": painel recolhido, foto grande e comandos na altura do polegar */
+    const frBar = H('div', `<div class="fr-g"><button type="button" id="frbPin" class="on">🖌️<span>Pintar</span></button><button type="button" id="frbBor">🩹<span>Borracha</span></button><button type="button" id="frbDesf">${IC.desf}<span>Desfazer</span></button><button type="button" id="frbLimp">🗑️<span>Limpar</span></button></div>
+      <label class="fr-tam">Pincel <input type="range" id="frbTam" min="6" max="70" value="22"><b id="frbTamLbl">22</b></label>
+      <button type="button" id="frbOk">${IC.ok}Pronto</button>`, { id: 'frBar' });
+
     // ---------- painel de etapas ----------
     const sobra = H('div', null, { id: 'labSobra', style: 'display:none' });
     while (aside.firstChild) sobra.appendChild(aside.firstChild);
@@ -3092,7 +3146,7 @@
     const head = H('div', '<small id="labNum"></small><h2 id="labTit"></h2><p id="labMiniTx"></p>', { id: 'labHead' });
     const bodyP = H('div', null, { id: 'labBody' });
     const foot = H('div', '<button type="button" id="labVolta">◀ Voltar</button><button type="button" id="labAvanca">Avançar ▶</button>', { id: 'labFoot' });
-    put(aside, grab, nav, head, ptBar, bodyP, foot, sobra);
+    put(aside, grab, nav, head, ptBar, frBar, bodyP, foot, sobra);
     const P = []; for (let i = 1; i <= 5; i++) { const p = H('div', null, { class: 'lab-p', 'data-p': i }); bodyP.appendChild(p); P[i] = p; }
     const AVISO_SV = '<div class="lab-semvao">Primeiro marque o vão na foto (etapa 2 · Vão).</div>';
 
@@ -3124,9 +3178,11 @@
 
     // 4 · Esquadria
     P[4].innerHTML = `<p class="lab-intro">Escolha o tipo, a cor e o vidro. Sem marca nem linha: a linha é definida no escritório, no sistema da empresa.</p>${AVISO_SV}`;
-    const mais4 = H('details', '<summary>Mais ajustes (contramarco, reboco, objetos na frente, balão)</summary>', { class: 'lab-mais' });
-    put(P[4], $('etpEsq'), sec('gridTip'), sec('gridCores'), sec('gridVidros'), $('famMov'), mais4);
-    put(mais4, $('etpCM'), $('etpReb'), $('frenteBox'), sec('selBlend'));
+    const mais4 = H('details', '<summary>Mais ajustes (contramarco, reboco, balão)</summary>', { class: 'lab-mais' });
+    const frBtn = H('button', '<b>🧹</b><span>Limpar o que está na frente<small>Pessoa, mesa, andaime ou planta na frente do vão</small></span>', { type: 'button', id: 'labFrente', class: 'lab-fr' });
+    put(P[4], $('etpEsq'), sec('gridTip'), sec('gridCores'), sec('gridVidros'), frBtn, $('famMov'), mais4);
+    put(mais4, $('etpCM'), $('etpReb'), sec('selBlend'));
+    sobra.appendChild($('frenteBox'));
     const balao = $('btnAnotacaoBalao'); balao.classList.add('w-full'); balao.lastChild.textContent = ' Colocar balão de observação na foto'; put(mais4, balao);
 
     // 5 · Obra e envio
@@ -3155,6 +3211,30 @@
     $('labIndicar').onclick = () => { const b = $('simIndicar'); if (b) b.click(); };
     { const av = stage.querySelector('.aviso-fixo'); if (av) bodyP.appendChild(av); }
     bodyP.appendChild(H('p', 'Desenvolvido por FC Consultoria em Esquadria · CNPJ 52.985.682/0001-32 · imagens demonstrativas', { class: 'lab-cred' }));
+
+    // ---------- modo limpar o que está na frente ----------
+    const FR_TX = 'Passe o dedo sobre a pessoa ou o objeto que está na frente do vão. Ele volta para a frente da esquadria.';
+    let frOn = false;
+    function frMarca() { $('frbPin').classList.toggle('on', PINCEL.on && !PINCEL.borracha); $('frbBor').classList.toggle('on', PINCEL.on && PINCEL.borracha); }
+    function frEntrar() {
+      const v = vaoAtivo() || state.vaos.find(x => x.pts.length === 4);
+      if (!v || v.pts.length !== 4) { toast('Primeiro marque o vão na foto.'); return; }
+      state.vaoAtivoId = v.id; sincronizarSidebar();
+      if (!v.et.esq) { v.et.esq = true; renderizarVao(v); atualizarPassos(); }
+      frOn = true; body.classList.add('frmodo'); aside.classList.add('mini');
+      FRENTE.set(true, false); frMarca(); sync(); requestAnimationFrame(fit);
+    }
+    function frSair() {
+      if (!frOn) return; frOn = false; body.classList.remove('frmodo');
+      FRENTE.set(false); if (cur === 4) aside.classList.remove('mini'); sync(); requestAnimationFrame(fit);
+    }
+    $('labFrente').onclick = frEntrar;
+    $('frbPin').onclick = () => { FRENTE.set(true, false); frMarca(); };
+    $('frbBor').onclick = () => { FRENTE.set(true, true); frMarca(); };
+    $('frbDesf').onclick = () => { if (!FRENTE.desfazer()) toast('Nada para desfazer.'); };
+    $('frbLimp').onclick = () => { if (confirm('Apagar toda a pintura deste vão?')) FRENTE.limpar(); };
+    $('frbTam').oninput = () => { $('frbTamLbl').textContent = $('frbTam').value; FRENTE.tam(+$('frbTam').value); };
+    $('frbOk').onclick = () => { frSair(); toast('✓ Pronto.'); };
 
     // ---------- avisos curtos ----------
     let tT = null; const toast = t => { let e = $('labToast'); if (!e) { e = H('div', null, { id: 'labToast' }); body.appendChild(e); } e.textContent = t; e.style.display = 'block'; clearTimeout(tT); tT = setTimeout(() => e.style.display = 'none', 2600); };
@@ -3260,7 +3340,9 @@
       n = Math.max(1, Math.min(5, n | 0));
       if (n > 1 && !state.img) { toast('Primeiro tire a foto do vão.'); n = 1; }
       if (n !== 2 && state.modoCriacao) cancelarCriacao();
+      if (frOn) frSair();
       cur = n; body.dataset.etapa = String(n);
+      if (n === 4 && window.centraTip) setTimeout(window.centraTip, 30);
       if (n === 2 && state.img) {
         if (!vaoOk() && !state.modoCriacao) iniciarNovoVao();
         else if (!state.vaoAtivoId && state.vaos.length && !state.modoCriacao) { state.vaoAtivoId = state.vaos[state.vaos.length - 1].id; sincronizarSidebar(); }
@@ -3284,7 +3366,8 @@
       const feito = [!!state.img, ok, ok && !!v.bruto, ok && !!(v.et && v.et.esq), false];
       nav.querySelectorAll('button').forEach((b, i) => { b.classList.toggle('on', i + 1 === cur); b.classList.toggle('ok', feito[i] && i + 1 !== cur); });
       body.classList.toggle('comfoto', !!state.img);
-      $('labNum').textContent = 'Etapa ' + cur + ' de 5'; $('labTit').textContent = ETP[cur - 1].tit; $('labMiniTx').textContent = cur === 2 && state.img ? hint.textContent : ETP[cur - 1].mini;
+      $('labNum').textContent = 'Etapa ' + cur + ' de 5'; $('labTit').textContent = ETP[cur - 1].tit; $('labMiniTx').textContent = frOn ? FR_TX : cur === 2 && state.img ? hint.textContent : ETP[cur - 1].mini;
+      if (frOn) $('labTit').textContent = 'Limpar o que está na frente';
       $('labVolta').disabled = cur === 1;
       $('labAvanca').style.display = cur === 5 ? 'none' : '';
       $('labAvanca').textContent = cur === 2 ? 'Pronto ▶' : cur === 4 ? 'Dados da obra ▶' : 'Avançar ▶';
