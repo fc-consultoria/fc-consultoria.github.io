@@ -414,21 +414,21 @@
   var QM=new URLSearchParams(location.search),APPM=QM.get('app')==='medidor'||matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
   if(QM.get('app')==='medidor'){try{localStorage.setItem('fc-app-medidor','1');}catch(_){}}
   try{if(localStorage.getItem('fc-app-medidor'))APPM=APPM||QM.get('app')==='medidor';}catch(_){}
-  if(!tk){nega('Entre com o seu login','O Medidor de Obras e o Simulador de obra abrem depois de entrar com o login da empresa.');if(QM.get('app')==='medidor'){location.replace('/fc3d/clientes/medidor/');return;}return;}
+  if(!tk){nega('Entre com o seu login','A Visita de Obra abre depois de entrar com o login da empresa.');if(QM.get('app')==='medidor'){location.replace('/fc3d/clientes/medidor/');return;}return;}
   fetch('https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_sessao',{method:'POST',headers:{apikey:'sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs','Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
    .then(function(r){return r.ok?r.json():null;}).then(function(d){
     if(!d||!(d.matriz||d.papel==='gestor'||d.papel==='vendedor')){nega('Acesso não liberado','O Simulador de obra é da equipe da empresa licenciada. Fale com a FC Consultoria.');return;}
     window.SIM_EMP=d.empresa_nome||(d.matriz?'FC Consultoria em Esquadria':'');window.SIM_SIGLA=d.sigla||(d.matriz?'FC':'');window.SIM_NOME=d.matriz?'':(d.nome||'');window.SIM_SEMG=!!(d.sem_gestor&&!d.matriz);window.SIM_GESTOR=!!(d.matriz||d.papel==='gestor'||window.SIM_SEMG);
     window.SIM_MED=APPM&&!d.matriz&&['parceiro-obras','teste-medidor-obras'].indexOf(d.empresa)>=0;
     if(QM.get('app')==='medidor'&&!window.SIM_MED){location.replace('/fc3d/clientes/medidor/');return;}
-    if(window.SIM_MED){document.title='Medidor de Obras';var h1=document.querySelector('#hdr h1');if(h1)h1.textContent='Medidor de Obras';}
+    if(window.SIM_MED){document.title='Visita de Obra';var h1=document.querySelector('#hdr h1');if(h1)h1.textContent='Visita de Obra';}
     window.SIM_MARCA();ov.remove();
     var hd=document.getElementById('hdMenu');
     if(hd&&window.SIM_MED&&!document.getElementById('medV3')){var t0=document.getElementById('themeToggle');
       /* 14/11/2026 · sem 'Ver a esquadria em 3D' no Medidor (confundia com Catálogo e bloqueio) */
       var v3=document.createElement('span');v3.id='medV3';v3.style.display='none';hd.insertBefore(v3,t0||null);
       if(window.SIM_GESTOR){var gr=document.createElement('a');gr.href='recebidas.html?app=medidor';gr.textContent='📥 Obras recebidas';hd.insertBefore(gr,v3);}
-      var sa=document.createElement('button');sa.type='button';sa.id='medSair';sa.textContent='Sair';sa.onclick=function(){if(!confirm('Sair do Medidor de Obras neste aparelho?'))return;try{localStorage.removeItem('pfc-token');}catch(_){}location.href='/fc3d/clientes/medidor/';};hd.appendChild(sa);}
+      var sa=document.createElement('button');sa.type='button';sa.id='medSair';sa.textContent='Sair';sa.onclick=function(){if(!confirm('Sair da Visita de Obra neste aparelho?'))return;try{localStorage.removeItem('pfc-token');}catch(_){}location.href='/fc3d/clientes/medidor/';};hd.appendChild(sa);}
     if(hd&&!window.SIM_MED&&!document.getElementById('simVolta')){var a=document.createElement('a');a.id='simVolta';a.href='/fc3d/clientes/';a.textContent='← Voltar para o painel';
       a.style.cssText='margin-left:auto;font:600 12px Inter,sans-serif;color:#025860;text-decoration:none;border:1px solid #b9dfe2;border-radius:10px;padding:8px 10px;white-space:nowrap';
       var t=document.getElementById('themeToggle');if(t){t.style.marginLeft='8px';hd.insertBefore(a,t);}else hd.appendChild(a);

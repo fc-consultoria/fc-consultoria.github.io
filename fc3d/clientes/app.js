@@ -15,16 +15,16 @@
   var Q=new URLSearchParams(location.search);
   if(Q.get('ver')||Q.get('cliente')||/\/(ver|obra)\//.test(location.pathname))return;
   var liberado=false,MEDIDOR=['parceiro-obras','teste-medidor-obras'];
-  /* 14/11/2026 · Medidor de Obras: app próprio (nome e ícone separados do FC 3D) para as empresas do Medidor */
+  /* 14/11/2026 · Visita de Obra: app próprio (nome e ícone separados do FC 3D) para as empresas do Medidor */
   function ligar(emp){
     if(liberado)return;liberado=true;
     var med=MEDIDOR.indexOf(emp)>=0;
-    if(med){NOME_APP='Medidor de Obras';}
+    if(med){NOME_APP='Visita de Obra';}
     if(!document.querySelector('link[rel="manifest"]'))tag('link',{rel:'manifest',href:R+(med?'manifest-medidor.webmanifest':'manifest.webmanifest')});
     tag('link',{rel:'apple-touch-icon',href:'/img/app-icone-192.png'});
     tag('meta',{name:'apple-mobile-web-app-capable',content:'yes'});
     tag('meta',{name:'mobile-web-app-capable',content:'yes'});
-    tag('meta',{name:'apple-mobile-web-app-title',content:med?'Medidor de Obras':'FC 3D'});
+    tag('meta',{name:'apple-mobile-web-app-title',content:med?'Visita de Obra':'FC 3D'});
     if('serviceWorker' in navigator)navigator.serviceWorker.register(R+'sw.js',{scope:R}).catch(function(){});
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mostrar);else mostrar();
   }
@@ -59,7 +59,7 @@
     try{if(sessionStorage.getItem('fc-app-oculto'))return;}catch(_){}
     if(!movel&&!pedido)return;
     btn=document.createElement('button');btn.type='button';btn.id='fcAppBtn';
-    btn.innerHTML='📲 Instalar '+(NOME_APP==='Medidor de Obras'?'o Medidor de Obras':'no celular');btn.title='Instalar '+NOME_APP+' no aparelho';
+    btn.innerHTML='📲 Instalar '+(NOME_APP==='Visita de Obra'?'a Visita de Obra':'no celular');btn.title='Instalar '+NOME_APP+' no aparelho';
     btn.style.cssText='position:fixed;left:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:2147481000;border:0;border-radius:999px;background:#02717d;color:#fff;font:600 14px Inter,system-ui,sans-serif;padding:10px 16px;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer';
     var x=document.createElement('span');x.textContent=' ×';x.title='Esconder';x.style.cssText='margin-left:6px;opacity:.75;padding:0 2px';
     x.onclick=function(e){e.stopPropagation();btn.remove();try{sessionStorage.setItem('fc-app-oculto','1');}catch(_){}};

@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#063238">
-<title>Medidor de Obras · FC Consultoria</title>
+<title>Visita de Obra · FC Consultoria</title>
 <link rel="icon" href="/img/logo-fc-160.jpg">
 <link rel="apple-touch-icon" href="/img/app-icone-192.png">
-<meta name="apple-mobile-web-app-title" content="Medidor de Obras">
-<!-- 14/11/2026 · Entrada direta do app Medidor de Obras: só o Simulador de obra.
+<meta name="apple-mobile-web-app-title" content="Visita de Obra">
+<!-- 14/11/2026 · Entrada direta do app Visita de Obra: só o Simulador de obra.
      Login da empresa do Medidor -> abre o Simulador no modo app. Outros logins (inclusive o da FC) não entram aqui.
      © FC Consultoria em Esquadria · uso exclusivo -->
 <style>
@@ -32,8 +32,8 @@
 <body>
 <main><div class="bx">
   <div class="lg">FC</div>
-  <h1>Medidor de Obras</h1>
-  <p class="sub">Foto do vão, medidas e esquadria na obra.<br>Entre com o login da sua empresa.</p>
+  <h1>Visita de Obra</h1>
+  <p class="sub">Sugestão para o cliente e registro para o orçamento.<br>Entre com o login da sua empresa.</p>
   <div id="form">
     <input id="lg" placeholder="Login" autocomplete="username" autocapitalize="none">
     <input id="cd" placeholder="Código" autocomplete="current-password" autocapitalize="characters">
@@ -41,7 +41,7 @@
     <p class="msg" id="msg"></p>
   </div>
   <p class="rod">Uso exclusivo de empresas licenciadas · Desenvolvido por FC Consultoria em Esquadria · CNPJ 52.985.682/0001-32<br>
-  <a href="https://wa.me/5566999867984?text=Ol%C3%A1%2C%20FC!%20Quero%20conhecer%20o%20Medidor%20de%20Obras.">Falar com a FC</a></p>
+  <a href="https://wa.me/5566999867984?text=Ol%C3%A1%2C%20FC!%20Quero%20conhecer%20a%20Visita%20de%20Obra.">Falar com a FC</a></p>
 </div></main>
 <script>
 (function(){
@@ -59,7 +59,7 @@
     var b=this,m=$('msg');m.textContent='';b.disabled=true;b.textContent='Conferindo…';
     rpc('pfc_login',{p_login:$('lg').value,p_codigo:$('cd').value}).then(function(r){
       if(!r||r.erro||!r.token)throw new Error((r&&r.erro)||'Login ou código incorretos');
-      if(MED.indexOf(r.empresa)<0){rpc('pfc_sair',{p_token:r.token}).catch(function(){});throw new Error('Este login não é do Medidor de Obras. Fale com a FC.');}
+      if(MED.indexOf(r.empresa)<0){rpc('pfc_sair',{p_token:r.token}).catch(function(){});throw new Error('Este login não é da Visita de Obra. Fale com a FC.');}
       ls.s('pfc-token',r.token);location.replace(SIM);
     }).catch(function(e){m.textContent=e.message;b.disabled=false;b.textContent='Entrar';});
   };

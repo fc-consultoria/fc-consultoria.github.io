@@ -1,8 +1,8 @@
 {
   "id": "/fc3d/clientes/?app=medidor",
-  "name": "Medidor de Obras · FC Consultoria",
-  "short_name": "Medidor de Obras",
-  "description": "Medidor de Obras: Simulador de obra, Simulador Fábrica 3D e Catálogo 3D. Uso exclusivo de empresas licenciadas. Desenvolvido pela FC Consultoria em Esquadria.",
+  "name": "Visita de Obra · FC Consultoria",
+  "short_name": "Visita de Obra",
+  "description": "Visita de Obra: sugestão para o cliente e registro para o orçamento, com Fábrica 3D e Catálogo 3D. Uso exclusivo de empresas licenciadas. Desenvolvido pela FC Consultoria em Esquadria.",
   "lang": "pt-BR",
   "start_url": "/fc3d/clientes/medidor/",
   "scope": "/fc3d/",

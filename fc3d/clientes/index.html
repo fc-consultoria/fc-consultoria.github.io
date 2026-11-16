@@ -626,10 +626,10 @@ async function abrir(token){
   try{S=await rpc('pfc_sessao',{p_token:token});S.token=token;if(S&&S.demo){ls.del(TK);ls.del('pfc-papel');S=null;location.replace('demo/');return;}}
   catch(err){const eraDemo=ls.get('pfc-papel')==='demo';ls.del(TK);ls.del('pfc-papel');S=null;const m=err.message||'';if(/demonstrativo/i.test(m)){formDemo(true);mostrarEntrada('');demoFim(m);return;}if(eraDemo){formDemo(true);mostrarEntrada('');$('#demoMsg').textContent='O demonstrativo foi aberto em outro aparelho. Para usar aqui, entre de novo com o mesmo WhatsApp.';return;}mostrarEntrada(/pausad/i.test(m)?m:'');return;}
   if(S.demo)ls.set('pfc-papel','demo');else ls.del('pfc-papel');
-  /* 14/11/2026 · app Medidor de Obras: abre direto no Simulador de obra; "Ver a esquadria em 3D" abre só o Simulador Fábrica 3D com volta ao Medidor */
+  /* 14/11/2026 · app Visita de Obra: abre direto no Simulador de obra; "Ver a esquadria em 3D" abre só o Simulador Fábrica 3D com volta ao Medidor */
   {const q=new URLSearchParams(location.search);if(q.get('app')==='medidor'&&!S.matriz&&['parceiro-obras','teste-medidor-obras'].includes(S.empresa)){
     if(!q.get('ver3d')){location.replace('simulador/?app=medidor');return;}
-    tab='tip';if(!document.getElementById('medVolta')){const v=document.createElement('a');v.id='medVolta';v.href='simulador/?app=medidor';v.textContent='← Voltar ao Medidor de Obras';
+    tab='tip';if(!document.getElementById('medVolta')){const v=document.createElement('a');v.id='medVolta';v.href='simulador/?app=medidor';v.textContent='← Voltar à Visita de Obra';
       v.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:2147481500;border-radius:99px;background:#063238;color:#fff;font:700 15px Inter,system-ui,sans-serif;padding:13px 22px;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.35);white-space:nowrap';document.body.appendChild(v);}}}
   $('#entrada').hidden=true;$('#app').hidden=false;
   /* 29/10/2026 · botão flutuante Substituir perfil retirado da plataforma (const ok=false). Para voltar, troque false pela condição abaixo. */
@@ -710,7 +710,7 @@ document.addEventListener('click',ev=>{if(ev.target&&ev.target.id==='vndAbrir')a
 const VERCLI=[['teste-casa-bandeirante','Casa Bandeirante','Catálogo da CB',[['🧾 Painel de Vendas · como o vendedor vê','/treinamento/orcamento/?e=cb&ver=vend'],['🏢 Central do Cliente · por setor','/treinamento/consultorias.html?ver=cb&como=gestor']]],
  ['teste-guapore-vidros','Guaporé Vidros / Sinop','Catálogo da Guaporé',[['🧾 Portal Comercial · como o vendedor vê','/treinamento/guapore/portal-comercial.html?papel=vendedor'],['🏢 Central do Cliente · por setor','/treinamento/consultorias.html?ver=gb&como=gestor']]],
  ['teste-cde','CDE','Catálogo Suprema e Gold',[['🏢 Central do Cliente · por setor','/treinamento/consultorias.html?ver=cde&como=gestor']]],
- ['teste-medidor-obras','Medidor de Obras','Versão que o cliente compra: Simulador de obra, Simulador Fábrica 3D e Catálogo 3D',[]],
+ ['teste-medidor-obras','Visita de Obra','Versão que o cliente compra: Visita de Obra, Fábrica 3D e Catálogo 3D',[]],
  ['cliente-teste-fc','Cliente novo','Sem catálogo próprio',[]]];
 function verCliQuadro(){return `<div class="linha-tit" style="margin-top:22px"><h3>👁 Ver como cliente</h3><span class="chip t">só a FC vê</span></div>
   <p class="mute" style="margin:4px 0 10px">Abre uma aba nova como usuário da empresa, com todas as ferramentas. É uma empresa de teste espelhada: nada aparece para o cliente real. A sua aba FC continua aberta.</p>
@@ -754,7 +754,7 @@ const LIC_MODS={'brito-esquadrias':['tip','ges'],'parceiro-obras':['tip'],'teste
    Contrato dele não muda (só ganha a ferramenta). Para liberar a outra empresa, acrescente o código dela aqui. */
 const SIM_NOVO_EMP=['brito-esquadrias','parceiro-obras','teste-medidor-obras'];
 const simNovo=()=>!!(S&&SIM_NOVO_EMP.includes(S.empresa)&&['gestor','vendedor'].includes(papel())&&!soCat());
-/* 14/11/2026 · teste só no Medidor de Obras (antes Parceiro de obras) e no espelho de teste dele: Tipologias aparece como Simulador Fábrica 3D (modelo de fábrica em 3D, não base de tipologia) */
+/* 14/11/2026 · teste só na Visita de Obra (antes Parceiro de obras) e no espelho de teste dele: Tipologias aparece como Simulador Fábrica 3D (modelo de fábrica em 3D, não base de tipologia) */
 function FAB(){return !!(typeof S!=='undefined'&&S&&(S.empresa==='parceiro-obras'||S.empresa==='teste-medidor-obras'));}
 function NTIP(){return FAB()?'Simulador Fábrica 3D':'Tipologias';}
 const licOk=k=>!(S&&LIC_MODS[S.empresa])||k==='inicio'||LIC_MODS[S.empresa].includes(k);
