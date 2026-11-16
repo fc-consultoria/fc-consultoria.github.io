@@ -87,9 +87,7 @@ a{display:inline-block;margin-top:6px;padding:10px 18px;border-radius:99px;backg
         roteiro:function(a){var L=[],nI=alvos().length;
           L.push({d:3.4,cap:'',card:{t1:'Linha Otimizza HS-32',t2:casa+' · da planta à obra pronta'},fn:function(a){a.clica('#vCasa');a.clica('#v3d');a.orbita(.5)}});
           if(nI)L.push({d:13.2*nI+.4,cap:nI>1?'A equipe instala todas as esquadrias':'Instalação pela equipe',sub:'Perfis reais do catálogo Otimizza',fn:function(a){a.orbita(0);G.instalaTodas()}});
-          L.push({d:5,cap:'Raio-X da obra',sub:'Esquadrias Otimizza em destaque',fn:function(a){a.clica('#vRx');a.raiox(1);a.orbita(.7)}});
-          var e0=esqs()[0];if(e0)L.push({d:4.6,cap:'Perfis da seção real do catálogo',sub:'Linha Otimizza HS-32',fn:function(a){a.foco(e0.root,2.6,1.8)}});
-          if(a.existe('#iHr'))L.push({d:4.2,cap:'No fim de tarde',fn:function(a){a.raiox(0);a.clica('#vCasa');a.desliza('#iHr',17.5,19.25,3.6);a.orbita(.5)}});
+          if(a.existe('#iHr'))L.push({d:4.2,cap:'No fim de tarde',fn:function(a){a.clica('#vCasa');a.desliza('#iHr',17.5,19.25,3.6);a.orbita(.5)}});
           L.push({d:4.2,cap:'',card:{t1:'Esquadrias Otimizza HS-32',t2:'Harmony & Slim Anglo 90',t3:'Conheça a linha Otimizza'},fn:function(a){a.raiox(0);a.desliza('#iHr',19.25,17.5,2.5)}});
           return L},
         aoTerminar:function(a){a.raiox(0);a.clica('#vCasa');var r=$('#iHr');if(r){r.value=17.5;r.dispatchEvent(new Event('input',{bubbles:true}))}}});}
