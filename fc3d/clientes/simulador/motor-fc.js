@@ -165,6 +165,7 @@
       for (let i = 0; i <= passos; i++) pts.push([fe * 0.15 + jit(), bord(i, passos, ch - fe * 0.15, fe * 0.15)]);
       pts.forEach((p, i) => i ? mg.lineTo(p[0], p[1]) : mg.moveTo(p[0], p[1])); mg.closePath(); mg.fill();
       tg.globalCompositeOperation = 'destination-in'; tg.drawImage(m, 0, 0);
+      tg.globalCompositeOperation = 'source-over'; tg.clearRect(X, Y, VW, VH); // o vão fica aberto: reboco só em volta
       g.drawImage(t, 0, 0);
       // quina do reboco com o vão (sombra fina)
       g.strokeStyle = 'rgba(0,0,0,.18)'; g.lineWidth = Math.max(1.5, esc * 6); g.strokeRect(X, Y, VW, VH);
