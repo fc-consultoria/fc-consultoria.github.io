@@ -19,12 +19,13 @@
   header b{font-size:15px}header small{display:block;color:#9fc4c8;font-size:11px}
   header .tag{margin-left:auto;font:700 10px Inter,sans-serif;letter-spacing:.08em;background:#f3c969;color:#3b2a00;border-radius:999px;padding:4px 8px}
   main{flex:1;min-height:0;display:flex}
-  #palco{flex:1;min-width:0;position:relative;display:flex;align-items:center;justify-content:center;background:#1a2a2e;overflow:hidden;touch-action:none}
+  #palco{flex:1;min-width:0;position:relative;display:flex;flex-direction:column;background:#1a2a2e;overflow:hidden;touch-action:none}
+  #area{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center}
   #tela{max-width:100%;max-height:100%;display:none;touch-action:none;cursor:crosshair}
   #vazio{color:#cfe3e5;text-align:center;padding:24px;max-width:360px}
   #vazio .ic{font-size:42px}
   #lupa{position:absolute;width:132px;height:132px;border-radius:50%;border:3px solid #fff;box-shadow:0 6px 20px rgba(0,0,0,.45);pointer-events:none;display:none;left:12px;top:12px;background:#000}
-  #dica{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;background:rgba(6,50,56,.92);color:#fff;font-size:13px;padding:8px 12px;border-radius:12px;max-width:92%;text-align:center;pointer-events:none}
+  #dica{flex:none;background:#0b4a52;color:#e8f6f6;font-size:13px;padding:7px 12px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08)}
   #lado{width:340px;flex:none;background:#fff;border-left:1px solid var(--ln);display:flex;flex-direction:column;min-height:0}
   #passos{display:flex;gap:4px;padding:8px;border-bottom:1px solid var(--ln);overflow-x:auto}
   #passos button{flex:1 0 auto;border:1px solid var(--ln);background:#f6fafa;color:var(--mu);border-radius:10px;padding:7px 8px;font:700 11px Inter,sans-serif;cursor:pointer;white-space:nowrap}
@@ -73,11 +74,13 @@
 </header>
 <main>
   <div id="palco">
+    <div id="dica" hidden></div>
+    <div id="area">
     <div id="vazio"><div class="ic">📷</div><p><b>Comece pela foto do vão</b><br>Tire uma foto da obra ou escolha uma da galeria.</p>
       <label class="bt pri">Tirar / escolher foto<input id="arq" type="file" accept="image/*" hidden></label></div>
     <canvas id="tela"></canvas>
     <canvas id="lupa" width="132" height="132"></canvas>
-    <div id="dica" hidden></div>
+    </div>
   </div>
   <aside id="lado">
     <nav id="passos"></nav>
@@ -87,7 +90,7 @@
 </main>
 
 <script src="tipologias.js?v=4"></script>
-<script src="motor-fc.js?v=1"></script>
+<script src="motor-fc.js?v=2"></script>
 <script>
 /* Acesso: mesmo login da Plataforma FC 3D (FC, Gestor ou Colaborador). No computador da FC (localhost) abre direto para teste. */
 (function(){
@@ -193,12 +196,12 @@ tela.addEventListener('pointerdown',ev=>{
 });
 tela.addEventListener('pointermove',ev=>{if(!E.arraste)return;const p=ponto(ev);p[0]=Math.max(0,Math.min(tela.width,p[0]));p[1]=Math.max(0,Math.min(tela.height,p[1]));
   if(E.arraste.k!=null){va().c[E.arraste.k]=p;}else E.marcando[E.arraste.m]=p;mostraLupa(p);desenha();});
-const solta=()=>{if(!E.arraste)return;if(E.arraste.k!=null){const v=va();v.c=M.cantosEmOrdem(v.c);}E.arraste=null;escondeLupa();desenha();};
+const solta=()=>{if(!E.arraste)return;if(E.arraste.k!=null){const v=va();v.c=M.cantosEmOrdem(v.c);v._antes=null;}E.arraste=null;escondeLupa();desenha();};
 tela.addEventListener('pointerup',solta);tela.addEventListener('pointercancel',solta);
 
 function mostraLupa(p){const z=2.6,S=lupa.width;lg.save();lg.clearRect(0,0,S,S);lg.beginPath();lg.arc(S/2,S/2,S/2,0,7);lg.clip();
   lg.drawImage(E.foto,p[0]-S/2/z,p[1]-S/2/z,S/z,S/z,0,0,S,S);lg.strokeStyle='#2ec4b6';lg.lineWidth=1.5;lg.beginPath();lg.moveTo(S/2,S/2-14);lg.lineTo(S/2,S/2+14);lg.moveTo(S/2-14,S/2);lg.lineTo(S/2+14,S/2);lg.stroke();lg.restore();
-  const r=tela.getBoundingClientRect(),pr=$('palco').getBoundingClientRect(),sx=(p[0]*r.width/tela.width)+r.left-pr.left;
+  const r=tela.getBoundingClientRect(),pr=$('area').getBoundingClientRect(),sx=(p[0]*r.width/tela.width)+r.left-pr.left;
   lupa.style.left=(sx<pr.width/2?pr.width-S-12:12)+'px';lupa.style.display='block';}
 function escondeLupa(){lupa.style.display='none';}
 
@@ -222,6 +225,12 @@ function tela2(){
     const b2=document.createElement('button');b2.className='bt';b2.textContent='＋ Novo vão';b2.disabled=!E.vaos.length||!!E.marcando.length;b2.onclick=()=>{E._novo=true;E.marcando=[];tela2();dica('Toque nos 4 cantos do novo vão.');};
     const b3=document.createElement('button');b3.className='bt';b3.textContent='🗑 Remover vão';b3.disabled=!v;b3.onclick=()=>{if(!confirm('Remover o vão '+(E.ativo+1)+'?'))return;E.vaos.splice(E.ativo,1);E.ativo=E.vaos.length-1;tela2();};
     ln.append(b1,b2,b3);C.appendChild(ln);
+    if(v){const aj=document.createElement('button');aj.className='bt pri full';aj.style.marginTop='10px';aj.textContent='🎯 Ajustar cantos automático';
+      aj.onclick=()=>{const antes=v.c.map(p=>p.slice());let c=M.ajustarCantos(E.foto,v.c);c=M.ajustarCantos(E.foto,c,{raio:Math.hypot(tela.width,tela.height)*0.008});
+        const mudou=c.some((p,k)=>Math.hypot(p[0]-antes[k][0],p[1]-antes[k][1])>0.5);v.c=c;v._antes=mudou?antes:null;tela2();
+        dica(mudou?'Cantos ajustados nas bordas do vão. Confira e, se precisar, arraste.':'Não achei uma borda clara perto dos pontos. Ajuste arrastando.');};
+      C.appendChild(aj);
+      if(v._antes){const dz=document.createElement('button');dz.className='bt full';dz.style.marginTop='6px';dz.textContent='↶ Desfazer ajuste';dz.onclick=()=>{v.c=v._antes;v._antes=null;tela2();};C.appendChild(dz);}}
     if(v){C.appendChild(H(`<div class="rot">Medidas do vão (opcional)</div><p class="sub" style="margin:0 0 6px">Sem medida, a esquadria segue a proporção da foto.</p>`));
       const md=H(`<div class="med"><div><label>Largura (mm)</label><input id="mW" type="number" inputmode="numeric" placeholder="ex.: 1500" value="${v.W||''}"></div><div><label>Altura (mm)</label><input id="mH" type="number" inputmode="numeric" placeholder="ex.: 1200" value="${v.H||''}"></div></div>`);C.appendChild(md);
       md.querySelector('#mW').oninput=e=>{v.W=+e.target.value>=200?+e.target.value:null;desenha();};md.querySelector('#mH').oninput=e=>{v.H=+e.target.value>=200?+e.target.value:null;desenha();};
