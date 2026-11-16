@@ -47,6 +47,41 @@ a{display:inline-block;margin-top:6px;padding:10px 18px;border-radius:99px;backg
     document.getElementById('vt').hidden=false;
     if(sair){try{localStorage.removeItem('fc3d.ses')}catch(e){}}
   }
+
+  /* Raio-X + Vídeo Reels (16/11/2026): soma aos comandos que já existem nas tipologias 3D (cortes, desmontar, abrir folha).
+     Só entra nas tipologias (as que têm peças PCS); plantas, catálogo e páginas ficam como estão. Nada muda no banco. */
+  function raioX(h){
+    var marca='window.__fc3d={SC,CAM,PCS,secao,passo};';
+    if(h.indexOf(marca)<0||h.indexOf('</body>')<0)return h;
+    h=h.replace(marca,'window.__fc3d={SC,CAM,PCS,secao,passo,R:typeof R!=="undefined"?R:null,CT:typeof CT!=="undefined"?CT:null,ROOT:typeof ROOT!=="undefined"?ROOT:null};');
+    var src=new URL('raiox-fc.js?v=1',location.href).href;
+    var cfg='<script src="'+src+'"><\/script><script>('+String(ligaRaioX)+')();<\/script>';
+    var i=h.lastIndexOf('</body>');return h.slice(0,i)+cfg+h.slice(i);
+  }
+  function ligaRaioX(){
+    function go(){var F=window.__fc3d;if(!F||!F.R||!window.FCRaioX)return setTimeout(go,300);
+      var tit=((document.querySelector('.tt b')||{}).textContent||document.title).trim();
+      var slug=tit.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60);
+      var temA=function(){return !!document.querySelector('#iA')};
+      FCRaioX.init({R:F.R,SC:F.SC,CAM:F.CAM,CT:F.CT,alvo:function(){return F.ROOT||F.SC},
+        barra:document.querySelector('.tb'),cls:'bt',antes:document.getElementById('bFs'),
+        fundo:'#0f1012',arquivo:'otimizza-'+slug,
+        marca:{l1:'OTIMIZZA HS-32',l2:'FELD Perfis de Alumínio · seção real do catálogo',l3:'Plataforma desenvolvida por FC Consultoria em Esquadria'},
+        roteiro:function(a){var c=document.querySelectorAll('.tb [data-c]'),n=c.length,L=[];
+          L.push({d:3.2,cap:tit,fn:function(a){a.clica('.tb [data-v="ext"]');a.orbita(1)}});
+          if(a.existe('#bExp'))L.push({d:3.6,cap:'Desmontada: cada perfil no seu lugar',fn:function(a){a.orbita(.6);a.clica('#bExp')}},{d:2.4,cap:'E montada de novo',fn:function(a){a.clica('#bExp')}});
+          L.push({d:4,cap:'Raio-X: a esquadria por dentro',fn:function(a){a.raiox(1);a.orbita(1)}});
+          if(n){L.push({d:3.8,cap:'Corte real do catálogo',fn:function(a){a.orbita(0);a.raiox(0);a.clica('.tb [data-c]',0)}});
+            if(n>1)L.push({d:3.8,cap:'Outra seção, outro detalhe',fn:function(a){a.clica('.tb [data-c]',n-1)}});
+            L.push({d:.5,cap:'',fn:function(){var on=document.querySelector('.tb [data-c].on');on&&on.click()}});}
+          if(temA())L.push({d:4,cap:'Abrindo a folha',fn:function(a){a.desliza('#iA',0,100,3)}});
+          if(a.existe('.tb [data-v="int"]'))L.push({d:3.4,cap:'Vista interna',fn:function(a){a.clica('.tb [data-v="int"]');a.orbita(.5)}});
+          L.push({d:3.6,cap:'Esquadrias Otimizza HS-32',fn:function(a){if(temA())a.desliza('#iA',100,0,2);a.raiox(1);a.orbita(.8)}});
+          return L},
+        aoTerminar:function(a){a.raiox(0);var on=document.querySelector('.tb [data-c].on');on&&on.click();var r=document.querySelector('#iA');if(r&&+r.value){r.value=0;r.dispatchEvent(new Event('input',{bubbles:true}))}a.clica('.tb [data-v="ext"]')}
+      });}
+    go();
+  }
   if(!ses||!ses.token){TOP.location.replace(new URL('./',location.href).href);return}
   if(!id){erro('Abra pelo portal','Escolha a entrega no portal para ver em 3D.');return}
   fetch(SB_URL+'/rest/v1/rpc/fc3d_conteudo',{
@@ -61,7 +96,7 @@ a{display:inline-block;margin-top:6px;padding:10px 18px;border-radius:99px;backg
       erro('Não foi possível abrir',m);return;
     }
     if(typeof x.j!=='string'||x.j.length<100){erro('Conteúdo indisponível','Fale com a FC Consultoria.');return}
-    document.open();document.write(x.j);document.close();
+    document.open();document.write(raioX(x.j));document.close();
   }).catch(function(){erro('Sem conexão','Verifique a internet e tente de novo.')});
 })();
 </script>
