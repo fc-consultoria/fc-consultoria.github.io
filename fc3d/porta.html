@@ -51,12 +51,41 @@ a{display:inline-block;margin-top:6px;padding:10px 18px;border-radius:99px;backg
   /* Raio-X + Vídeo Reels (16/11/2026): soma aos comandos que já existem nas tipologias 3D (cortes, desmontar, abrir folha).
      Só entra nas tipologias (as que têm peças PCS); plantas, catálogo e páginas ficam como estão. Nada muda no banco. */
   function raioX(h){
+    var mp='window.__fc3d={SC,CAM,VAOS,corte,foca};';
+    if(h.indexOf(mp)>=0&&h.indexOf('</body>')>=0){/* plantas das casas: instalação com guindaste + vídeo */
+      h=h.replace(mp,'window.__fc3d={SC,CAM,VAOS,corte,foca,R:typeof R!=="undefined"?R:null,CT:typeof CT!=="undefined"?CT:null};');
+      var s2='<script src="'+new URL('raiox-fc.js?v=2',location.href).href+'"><\/script><script src="'+new URL('guindaste-fc.js?v=1',location.href).href+'"><\/script><script>('+String(ligaPlanta)+')();<\/script>';
+      var j=h.lastIndexOf('</body>');return h.slice(0,j)+s2+h.slice(j);}
     var marca='window.__fc3d={SC,CAM,PCS,secao,passo};';
     if(h.indexOf(marca)<0||h.indexOf('</body>')<0)return h;
     h=h.replace(marca,'window.__fc3d={SC,CAM,PCS,secao,passo,R:typeof R!=="undefined"?R:null,CT:typeof CT!=="undefined"?CT:null,ROOT:typeof ROOT!=="undefined"?ROOT:null};');
-    var src=new URL('raiox-fc.js?v=1',location.href).href;
+    var src=new URL('raiox-fc.js?v=2',location.href).href;
     var cfg='<script src="'+src+'"><\/script><script>('+String(ligaRaioX)+')();<\/script>';
     var i=h.lastIndexOf('</body>');return h.slice(0,i)+cfg+h.slice(i);
+  }
+  function ligaPlanta(){
+    function go(){var F=window.__fc3d;if(!F||!F.R||!F.CT||!window.FCRaioX||!window.FCGuindaste)return setTimeout(go,300);
+      var T=window.THREE,$=function(s){return document.querySelector(s)};
+      var tit=(($('.tt b')||{}).textContent||document.title).trim();
+      var slug=tit.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60);
+      var alvos=function(){return (F.VAOS||[]).filter(function(v){return v.esq&&v.esq.root&&v.esq.root.parent}).map(function(v){
+        return {obj:v.esq.root,fora:new T.Vector3(0,0,-1),chao:v.g.getWorldPosition(new T.Vector3()).y,solo:0,nome:((v.esq.typ&&v.esq.typ.nome)||'Esquadria')+' · '+(v.id||'')}})};
+      var escolhe=function(l){var tg=F.CT.target,best=l[0],d=1e9;l.forEach(function(a){var p=a.obj.getWorldPosition(new T.Vector3()),dd=p.distanceTo(tg);if(dd<d){d=dd;best=a}});return best};
+      var em3d=function(){var b=$('#v3d');if(b&&!b.classList.contains('on')){b.click();return new Promise(function(r){setTimeout(r,1500)})}};
+      var tools=$('header .tools'),pres=$('#bPres');
+      var G=FCGuindaste.init({SC:F.SC,CAM:F.CAM,CT:F.CT,alvos:alvos,escolhe:escolhe,antesDe:em3d,barra:tools,cls:'bt',antes:pres,legendaEm:document.body,
+        semAlvo:function(){alert('Coloque uma esquadria num vão para ver a instalação.')}});
+      FCRaioX.init({R:F.R,SC:F.SC,CAM:F.CAM,CT:F.CT,semRaioX:true,barra:tools,cls:'bt',antes:pres,fundo:'#0f1012',arquivo:'otimizza-'+slug,
+        marca:{l1:'OTIMIZZA HS-32',l2:'FELD Perfis de Alumínio · perfis reais do catálogo',l3:'Plataforma desenvolvida por FC Consultoria em Esquadria'},
+        roteiro:function(a){var L=[];
+          L.push({d:3,cap:tit,fn:function(a){a.clica('#vCasa');a.clica('#v3d');a.orbita(.6)}});
+          if(alvos().length)L.push({d:11,cap:'Instalação com guindaste',fn:function(a){a.orbita(0);G.instalaAtual()}});
+          if(a.existe('#vRx'))L.push({d:4,cap:'Estrutura raio-x: os perfis dentro da obra',fn:function(a){a.clica('#vRx');a.orbita(.7)}});
+          if(a.existe('#iHr'))L.push({d:4,cap:'No fim de tarde',fn:function(a){a.clica('#vCasa');a.desliza('#iHr',17.5,19.25,3.5)}});
+          L.push({d:3.6,cap:'Esquadrias Otimizza HS-32',fn:function(a){a.desliza('#iHr',19.25,17.5,2.5);a.orbita(.8)}});
+          return L},
+        aoTerminar:function(a){a.clica('#vCasa');var r=$('#iHr');if(r){r.value=17.5;r.dispatchEvent(new Event('input',{bubbles:true}))}}});}
+    go();
   }
   function ligaRaioX(){
     function go(){var F=window.__fc3d;if(!F||!F.R||!window.FCRaioX)return setTimeout(go,300);
