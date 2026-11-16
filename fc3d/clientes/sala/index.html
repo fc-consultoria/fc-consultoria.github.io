@@ -36,6 +36,9 @@ input{width:100%;margin-top:4px;border:1px solid var(--line);border-radius:10px;
 .link code{background:#fff;border-radius:8px;padding:6px 8px;font-size:12px;word-break:break-all}
 .st{font-size:12px;color:var(--mut);text-align:center;padding:4px}
 footer{text-align:center;font-size:11px;color:var(--mut);padding:6px}
+.duo{flex:1;display:flex;min-height:0}.duo .palco{flex:1}.duo.on .palco{flex:0 0 280px}
+.pf{flex:1;position:relative;background:#fff;min-width:0}.pf iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+@media(max-width:820px){.duo.on{flex-direction:column}.duo.on .palco{flex:0 0 170px}}
 .gtag{position:absolute;left:12px;top:12px;z-index:3;background:#b42318;color:#fff;font:600 12px Inter,sans-serif;padding:6px 11px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 .gtag::first-letter{animation:pisca 1.2s infinite}@keyframes pisca{50%{opacity:.25}}
 </style>
@@ -86,10 +89,10 @@ async function conduzir(c,cli){
   if(!S.cam){caixa('Câmera e microfone bloqueados','Permita a câmera e o microfone no navegador (cadeado ao lado do endereço) e tente de novo.','<button class="bt pri" onclick="location.reload()">Tentar de novo</button>');return;}
   const u=linkSala(c),msg=`Olá${cli?' '+cli:''}! Aqui é o Fernando, da FC Consultoria em Esquadria. Vou te apresentar a Plataforma FC 3D por vídeo. Na hora combinada, abra este link pelo celular ou computador e toque em Entrar: ${u}`;
   tela(`<div class="link">Link do cliente: <code>${esc(u)}</code><button class="bt" id="cp" style="min-height:34px;padding:6px 10px;font-size:12px">Copiar</button><a class="bt pri" style="min-height:34px;padding:6px 10px;font-size:12px" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msg)}">Enviar no WhatsApp</a></div>
-   <div class="palco" id="palco"><div class="aviso" id="av">Aguardando o cliente entrar pelo link…</div><div class="gtag" id="gTag" hidden>● Gravando</div></div>
+   <div class="duo" id="duo"><div class="pf" id="pf" hidden><iframe id="ifr" title="Plataforma FC 3D" allow="fullscreen"></iframe></div>
+   <div class="palco" id="palco"><div class="aviso" id="av">Aguardando o cliente entrar pelo link…</div><div class="gtag" id="gTag" hidden>● Gravando</div></div></div>
    <div class="st" id="st">Sala aberta · ninguém na sala ainda</div>
-   <div class="barra"><button class="bt" id="bMic">🎙 Microfone</button><button class="bt" id="bCam">📷 Câmera</button><button class="bt pri" id="bTela">🖥 Compartilhar tela</button><button class="bt" id="bGrav" title="Grava a tela compartilhada e o áudio da conversa no seu computador">⏺ Gravar</button>
-    <a class="bt" href="/fc3d/clientes/#tip" target="_blank" rel="noopener">Abrir Sua Fábrica em 3D</a><a class="bt" href="/fc3d/clientes/simulador/" target="_blank" rel="noopener">Abrir Simulador</a>
+   <div class="barra"><button class="bt" id="bMic">🎙 Microfone</button><button class="bt" id="bCam">📷 Câmera</button><button class="bt pri" id="bPlat" title="A plataforma abre aqui dentro da sala e o cliente vê só ela">▶ Apresentar a plataforma</button><button class="bt" id="bTela" title="Compartilhar outra aba ou janela do computador">🖥 Outra tela</button><button class="bt" id="bGrav" title="Grava a tela compartilhada e o áudio da conversa no seu computador">⏺ Gravar</button>
     <a class="bt" href="${jitsi(c)}" target="_blank" rel="noopener" title="Se a chamada não conectar, use esta sala reserva">Sala reserva</a><button class="bt red" id="bFim">Encerrar</button></div>`);
   $('#cp').onclick=()=>{try{navigator.clipboard.writeText(u).then(()=>{$('#cp').textContent='Copiado';});}catch(_){}};
   const palco=$('#palco');const eu=document.createElement('div');eu.className='mini eu';const ev=vid(true);ev.srcObject=S.cam;eu.appendChild(ev);eu.insertAdjacentHTML('beforeend','<span>Você</span>');palco.appendChild(eu);
@@ -117,16 +120,27 @@ async function conduzir(c,cli){
     .on('broadcast',{event:'rtc'},async({payload:p})=>{if(!p||p.to!=='fc')return;const pc=S.pcs[p.from];if(!pc)return;try{if(p.sdp)await pc.setRemoteDescription(p.sdp);if(p.ice)await pc.addIceCandidate(p.ice);}catch(e){console.warn(e);}})
     .subscribe(async s=>{if(s==='SUBSCRIBED')await ch.track({n:'FC',fc:1});});
   const mark=()=>{$('#bMic').className='bt'+(S.micOn?'':' off');$('#bMic').textContent=S.micOn?'🎙 Microfone':'🔇 Microfone desligado';$('#bCam').className='bt'+(S.camOn?'':' off');$('#bCam').textContent=S.camOn?'📷 Câmera':'🚫 Câmera desligada';
-    $('#bTela').textContent=S.tela?'⏹ Parar de compartilhar':'🖥 Compartilhar tela';};mark();
+    $('#bTela').textContent=S.tela&&!S.plat?'⏹ Parar de compartilhar':'🖥 Outra tela';$('#bPlat').textContent=S.plat?'⏹ Parar a apresentação':'▶ Apresentar a plataforma';$('#bPlat').className='bt '+(S.plat?'red':'pri');};mark();
   $('#bMic').onclick=()=>{S.micOn=!S.micOn;S.cam.getAudioTracks().forEach(t=>t.enabled=S.micOn);mark();};
   $('#bCam').onclick=()=>{S.camOn=!S.camOn;S.cam.getVideoTracks().forEach(t=>t.enabled=S.camOn);mark();};
+  function mostraPlat(on){$('#pf').hidden=!on;$('#duo').classList.toggle('on',on);}
   async function pararTela(){if(!S.tela)return;if(G.rec)gParar();const id=S.tela.id;S.tela.getTracks().forEach(t=>t.stop());Object.values(S.pcs).forEach(pc=>pc.getSenders().forEach(s=>{if(s.track&&s.track.kind==='video'&&!S.cam.getTracks().includes(s.track))pc.removeTrack(s);}));
-    S.tela=null;env('tela',{on:false,id});mark();}
-  $('#bTela').onclick=async()=>{if(S.tela){pararTela();return;}
+    S.tela=null;if(S.plat){S.plat=false;mostraPlat(false);}env('tela',{on:false,id});mark();}
+  function usarTela(st){S.tela=st;const tr=st.getVideoTracks()[0];try{tr.contentHint='detail';}catch(_){}tr.onended=pararTela;
+    env('tela',{on:true,id:st.id});Object.values(S.pcs).forEach(pc=>pc.addTrack(tr,st));mark();}
+  $('#bTela').onclick=async()=>{if(S.tela&&!S.plat){pararTela();return;}
     if(!navigator.mediaDevices.getDisplayMedia){alert('Este aparelho não compartilha a tela pelo navegador. Use um computador.');return;}
-    try{S.tela=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{ideal:15}},audio:false});}catch(_){S.tela=null;return;}
-    const tr=S.tela.getVideoTracks()[0];try{tr.contentHint='detail';}catch(_){}tr.onended=pararTela;
-    env('tela',{on:true,id:S.tela.id});Object.values(S.pcs).forEach(pc=>pc.addTrack(tr,S.tela));mark();};
+    let st=null;try{st=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{ideal:15}},audio:false});}catch(_){return;}
+    if(S.tela)await pararTela();usarTela(st);};
+  /* 16/11/2026 · Apresentar a plataforma: abre a Plataforma FC 3D dentro da sala e transmite só essa área (um clique em Permitir) */
+  $('#bPlat').onclick=async()=>{if(S.plat){pararTela();return;}
+    if(!navigator.mediaDevices.getDisplayMedia){alert('Este aparelho não transmite a tela pelo navegador. Use o Chrome ou o Edge no computador.');return;}
+    const ifr=$('#ifr');if(!ifr.getAttribute('src'))ifr.src='/fc3d/clientes/';mostraPlat(true);
+    let st=null;try{st=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{ideal:15},displaySurface:'browser'},audio:false,preferCurrentTab:true,selfBrowserSurface:'include',surfaceSwitching:'exclude'});}
+    catch(_){mostraPlat(!!S.plat);return;}
+    const tr=st.getVideoTracks()[0];
+    try{if(window.CropTarget&&tr.cropTo){await tr.cropTo(await CropTarget.fromElement($('#pf')));}}catch(e){console.warn('recorte',e);}
+    if(S.tela){S.plat=false;await pararTela();}S.plat=true;mostraPlat(true);usarTela(st);};
   /* ---- Gravação (16/11/2026): tela compartilhada + áudio de todos, salva no computador da FC ---- */
   const G={rec:null,ctx:null,dst:null,lig:new Set(),parts:[],t0:0,tm:null,mime:''};
   const mmss=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
