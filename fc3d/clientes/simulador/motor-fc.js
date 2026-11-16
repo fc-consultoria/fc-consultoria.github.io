@@ -229,29 +229,44 @@
     return [(a(1, -1) + 2 * a(1, 0) + a(1, 1)) - (a(-1, -1) + 2 * a(-1, 0) + a(-1, 1)),
             (a(-1, 1) + 2 * a(0, 1) + a(1, 1)) - (a(-1, -1) + 2 * a(0, -1) + a(1, -1))];
   }
-  // Um lado está na borda quando, perto do canto, a linha marcada passa em cima do contraste mais forte da região
-  function ladoNaBorda(m, A, B) {
-    const L = Math.hypot(B[0] - A[0], B[1] - A[1]); if (L < 12) return 0;
+  // Para cada lado marcado: acha a borda real do vão ao longo do lado inteiro e mede
+  // quanto o começo e o fim do lado estão afastados dela (em pixels da foto)
+  function desvioDoLado(m, A, B) {
+    const L = Math.hypot(B[0] - A[0], B[1] - A[1]); if (L < 12) return null;
     const tx = (B[0] - A[0]) / L, ty = (B[1] - A[1]) / L, nx = -ty, ny = tx;
-    const tol = Math.max(2, Math.round(Math.hypot(m.w, m.h) * 0.003)); // folga para o dedo (≈5 px numa foto de 1600)
-    const R = Math.max(tol + 8, Math.min(34, L * 0.06)), N = 14; let bons = 0;
+    const R = Math.max(10, Math.min(40, L * 0.07)), N = 30, pts = [];
     for (let k = 0; k < N; k++) {
-      const t = (0.03 + 0.3 * k / (N - 1)) * L, cx = A[0] + tx * t, cy = A[1] + ty * t;
-      // perto: contraste em cima da linha (até tol) · lado: logo ao lado (tol a tol+5) · longe: o mais forte da região
-      let perto = 0, lado = 0, longe = 0;
-      for (let o = -R; o <= R; o++) { const g = gradiente(m, cx + nx * o, cy + ny * o), f = Math.abs(g[0] * nx + g[1] * ny), ao = Math.abs(o);
-        if (ao <= tol) perto = Math.max(perto, f); else if (ao <= tol + 5) lado = Math.max(lado, f); longe = Math.max(longe, f); }
-      if (perto > 60 && perto >= longe * 0.3 && perto >= lado * 1.15) bons++;
+      const t = (0.06 + 0.88 * k / (N - 1)) * L, cx = A[0] + tx * t, cy = A[1] + ty * t, f = [];
+      for (let o = -R; o <= R; o++) { const g = gradiente(m, cx + nx * o, cy + ny * o); f.push(Math.abs(g[0] * nx + g[1] * ny)); }
+      const top = Math.max(...f); if (top < 60) continue;
+      // entre os picos fortes, fica o mais perto da linha marcada (evita pegar a 2ª borda do vão)
+      let melhor = null;
+      for (let i = 1; i < f.length - 1; i++) if (f[i] >= f[i - 1] && f[i] >= f[i + 1] && f[i] >= top * 0.25 && f[i] >= 60) {
+        const o = i - R; if (melhor === null || Math.abs(o) < Math.abs(melhor)) melhor = o; }
+      if (melhor !== null) pts.push([t, melhor]);
     }
-    return bons / N;
+    if (pts.length < N * 0.45) return null; // borda pouco visível: não dá para conferir
+    // reta o = a + b·t: escolhe a reta que passa pelo maior número de pontos (ignora outras bordas e sujeira) e refina
+    const ajusta = P => { let st = 0, so = 0, stt = 0, sto = 0; P.forEach(([t, o]) => { st += t; so += o; stt += t * t; sto += t * o; });
+      const n = P.length, den = n * stt - st * st; const b = den ? (n * sto - st * so) / den : 0; return { a: (so - b * st) / n, b }; };
+    let melhorSet = [];
+    for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
+      const [t1, o1] = pts[i], [t2, o2] = pts[j]; if (t2 - t1 < L * 0.15) continue;
+      const b = (o2 - o1) / (t2 - t1), a = o1 - b * t1;
+      const set = pts.filter(([t, o]) => Math.abs(o - a - b * t) <= 1.5);
+      if (set.length > melhorSet.length) melhorSet = set;
+    }
+    if (melhorSet.length < N * 0.4) return null;
+    const r = ajusta(melhorSet);
+    return { ini: Math.abs(r.a), fim: Math.abs(r.a + r.b * L) };
   }
-  // Canto certo: os dois lados que saem dele estão em cima das bordas do vão
+  // Canto certo: está em cima das duas bordas reais que se encontram nele
   function cantosCertos(m, cantos) {
-    return cantos.map((p, i) => {
-      const a = ladoNaBorda(m, p, cantos[(i + 1) % 4]), b = ladoNaBorda(m, p, cantos[(i + 3) % 4]);
-      return a >= 0.6 && b >= 0.6;
-    });
+    const tol = Math.max(1.5, Math.hypot(m.w, m.h) * 0.0016); // ≈ 3 px numa foto de 1600
+    const lados = [0, 1, 2, 3].map(i => desvioDoLado(m, cantos[i], cantos[(i + 1) % 4]));
+    return cantos.map((p, i) => { const sai = lados[i], chega = lados[(i + 3) % 4];
+      return !!(sai && chega && sai.ini <= tol && chega.fim <= tol); });
   }
 
-  G.MotorFC = { projetiva, leva, cantosEmOrdem, dentro, malha, emPerspectiva, endireitar, retrato, quadroComMargem, proporcao, mapaBordas, cantosCertos, PAREDE };
+  G.MotorFC = { projetiva, leva, cantosEmOrdem, dentro, malha, emPerspectiva, endireitar, retrato, quadroComMargem, proporcao, mapaBordas, cantosCertos, desvioDoLado, PAREDE };
 })(window);
