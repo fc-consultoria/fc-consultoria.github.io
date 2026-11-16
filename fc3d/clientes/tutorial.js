@@ -254,7 +254,7 @@
     var d=document.createElement('div');d.id='tutBv';
     d.innerHTML='<div class="cx" role="dialog" aria-modal="true" aria-labelledby="tutBvT"><div class="ic" aria-hidden="true">▶</div>'+
       '<h2 id="tutBvT">Bem-vindo'+(nome&&pp!=='demo'?', '+nome:'')+'!</h2>'+
-      '<p>Quer ver agora como funciona a Plataforma FC 3D? '+(g.curto?'Em cerca de 1 minuto':'Em poucos minutos')+', uma narração mostra cada parte da tela.</p>'+
+      '<p>Quer ver agora como funciona a Plataforma FC 3D? '+(g.curto?'Em cerca de 1 minuto e meio':'Em poucos minutos')+', uma narração mostra cada parte da tela.</p>'+
       '<div class="bts"><button type="button" class="btn pri" id="tutBvSim">▶ Ver agora como funciona</button><button type="button" class="btn sec" id="tutBvNao">Depois</button></div>'+
       '<small>Você pode ver a qualquer hora no botão "Como funciona", no topo da tela.</small></div>';
     document.body.appendChild(d);

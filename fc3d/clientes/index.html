@@ -248,13 +248,13 @@ a.card:hover{border-color:var(--teal);transform:translateY(-1px)}
   <div class="ent-arte">
     <div class="marca"><div class="lg img" role="img" aria-label="FC Consultoria">FC</div>Plataforma FC 3D</div>
     <div>
-      <h1>Apresente esquadrias em <em>3D</em> para quem decide a obra.</h1>
-      <p class="sub">A ferramenta da sua equipe para mostrar tipologias, ambientes e projetos ao cliente final, ao arquiteto e ao engenheiro.</p>
+      <h1>Sua equipe com a ferramenta que faz a <em>diferença</em>.</h1>
+      <p class="sub">3 módulos que se completam, vendidos juntos numa licença anual.</p>
       <ul>
-        <li><b>▦</b>Tipologias de mercado em 3D</li>
-        <li id="liAmb"><b>⌂</b>Ambientes para montar a obra</li>
-        <li><b>▶</b>Modo apresentação para TV e telão</li>
-        <li><b>✓</b>Orientativo 3D para a equipe</li>
+        <li><b>📷</b>Visita de Obra · o antes e o depois na foto da obra</li>
+        <li><b>🏭</b>Fábrica 3D · desmontar, cortes e peça por peça</li>
+        <li><b>▤</b>Catálogo 3D · perfis e encaixes em 3D</li>
+        <li id="liAmb" hidden></li>
       </ul>
     </div>
     <div class="wm">© FC Consultoria em Esquadria · uso exclusivo</div>
@@ -554,7 +554,7 @@ function escolhaGuapore(){const box=$('#cadEsc');box.hidden=false;
   box.querySelectorAll('[data-ce]').forEach(b=>b.onclick=()=>fixarEmp(b.dataset.ce).then(ok=>{if(ok)$('#cNome').focus();}));}
 $('#cEmp').addEventListener('change',()=>{const k=empDoTexto($('#cEmp').value);if(k==='?guapore')escolhaGuapore();else if(k)fixarEmp(k);});
 const FIXO=EMP_ALIAS[(new URLSearchParams(location.search).get('e')||'').toLowerCase()]||null;
-function formCad(on){$('#liAmb').hidden=on;$('#entForm').hidden=on;$('#demoForm').hidden=true;$('#cadForm').hidden=!on;
+function formCad(on){$('#entForm').hidden=on;$('#demoForm').hidden=true;$('#cadForm').hidden=!on;
   if(on){if(FIXO&&!cadEmp)fixarEmp(FIXO);setTimeout(()=>(cadEmp?$('#cNome'):$('#cEmp')).focus(),50);}}
 $('#entCad').onclick=()=>formCad(true);
 $('#cadTroca').onclick=()=>formCad(false);
@@ -585,7 +585,7 @@ $('#cadForm').addEventListener('submit',async e=>{e.preventDefault();const msg=$
 const ZAPDEMO='https://wa.me/5566999867984?text='+encodeURIComponent('Olá, FC! Testei o demonstrativo da Plataforma FC 3D e quero conhecer os planos.');
 /* 16/11/2026 · demonstrativo por link reaberto: 24 horas, com Visita de Obra, Fábrica 3D e Catálogo 3D */
 let modoDemo=/[?&]demo=1/.test(location.search);
-function formDemo(on){modoDemo=on;$('#liAmb').hidden=on;$('#entForm').hidden=on;$('#demoForm').hidden=!on;const cf=$('#cadForm');if(cf)cf.hidden=true;}
+function formDemo(on){modoDemo=on;$('#entForm').hidden=on;$('#demoForm').hidden=!on;const cf=$('#cadForm');if(cf)cf.hidden=true;}
 $('#demoTroca').onclick=()=>formDemo(false);
 function demoFim(t){const f=$('#demoFim');f.hidden=false;f.innerHTML=h(t)+`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn pri" type="button" data-lic>Adquirir licença</button><a class="btn sec" href="${ZAPDEMO}" target="_blank" rel="noopener">Falar com a FC no WhatsApp</a></div>`;}
 /* compra da licença (licenca.js): botões data-lic na barra do demonstrativo e no aviso de fim */
@@ -618,6 +618,7 @@ $('#demoForm').addEventListener('submit',async e=>{
 /* pedido em espera continua mesmo se a pessoa recarregar a página */
 (async()=>{const pid=ls.get(PEDK);if(!pid||ls.get(TK))return;try{const q=await rpc('pfc_demo_aguardar',{p_pedido:pid});if(q.pendente){formDemo(true);esperaDemo(q);}else if(q.token){ls.del(PEDK);ls.set(TK,q.token);await abrir(q.token);}else ls.del(PEDK);}catch(_){}})();
 function faltaDemo(){if(!S||!S.demo)return '';const ms=new Date(S.expira)-Date.now();if(ms<=0)return 'termina agora';const hs=Math.floor(ms/36e5),d=Math.floor(hs/24),r=hs%24;
+  if(hs<48){const mi=Math.floor(ms/6e4)%60;return 'faltam '+(hs?hs+' h':'')+(hs&&mi?' e ':'')+(mi||!hs?mi+' min':'');}
   return 'termina em '+(d?d+(d>1?' dias':' dia')+(r?' e '+r+' h':''):Math.max(1,hs)+' h');}
 const barraDemo=()=>S&&S.demo?`<div class="demo-bar"><span><b>Demonstrativo</b> · ${faltaDemo()}</span><span class="sp"></span><span class="mute">Gostou? Licença de 1 ano para a sua empresa.</span><button class="btn pri" type="button" data-lic>Adquirir licença</button><a class="btn sec" href="${ZAPDEMO}" target="_blank" rel="noopener">Falar com a FC</a></div>`:'';
 const escH=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
