@@ -164,8 +164,9 @@ function compoe(ctx,comUI){
   E.vaos.forEach((v,i)=>{ if(v.c.length!==4)return;const at=i===E.ativo&&E.passo<6;
     ctx.lineWidth=at?L*1.4:L;ctx.strokeStyle=at?'#2ec4b6':'rgba(255,255,255,.55)';ctx.setLineDash(at?[]:[L*4,L*3]);
     ctx.beginPath();v.c.forEach((p,k)=>k?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();ctx.stroke();ctx.setLineDash([]);
-    if(at&&E.passo===2){const ok=E.mapa?M.cantosCertos(E.mapa,v.c):[];v._ok=ok;v.c.forEach((p,k)=>alca(ctx,p,L,ok[k]));}
+    if(at&&E.passo===2&&!E._novo&&!v.travado){const ok=E.mapa?M.cantosCertos(E.mapa,v.c):[];v._ok=ok;v.c.forEach((p,k)=>alca(ctx,p,L,ok[k]));}
     ctx.font=`800 ${L*7}px Inter,sans-serif`;const cx=v.c.reduce((s,p)=>s+p[0],0)/4,cy=v.c.reduce((s,p)=>s+p[1],0)/4;
+    if(v.travado&&E.passo===2){ctx.font=`${L*7}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🔒',cx,cy-L*12);ctx.font=`800 ${L*7}px Inter,sans-serif`;}
     if(E.passo===2||(E.passo<6&&E.vaos.length>1&&!at)){ctx.fillStyle='rgba(6,50,56,.85)';ctx.beginPath();ctx.arc(cx,cy,L*7,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(i+1,cx,cy+L*.3);}
   });
   if(E.marcando.length){ctx.strokeStyle='#2ec4b6';ctx.lineWidth=L*1.3;ctx.beginPath();E.marcando.forEach((p,k)=>k?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();E.marcando.forEach(p=>alca(ctx,p,L));}
@@ -188,8 +189,8 @@ tela.addEventListener('pointerdown',ev=>{
   if(!E.foto)return;const p=ponto(ev);tela.setPointerCapture(ev.pointerId);
   if(E.passo===2){
     const v=va();
-    if(v&&!E.marcando.length){const k=v.c.findIndex(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<raioToque());if(k>=0){E.arraste={k};mostraLupa(p);return;}}
-    if(!E.marcando.length){const i=E.vaos.findIndex(x=>M.dentro(p,x.c));if(i>=0&&i!==E.ativo){E.ativo=i;tela2();return;}if(v&&!E._novo)return;}
+    if(v&&!v.travado&&!E._novo&&!E.marcando.length){const k=v.c.findIndex(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<raioToque());if(k>=0){E.arraste={k};mostraLupa(p);return;}}
+    if(!E.marcando.length&&!E._novo){const i=E.vaos.findIndex(x=>M.dentro(p,x.c));if(i>=0&&i!==E.ativo){E.ativo=i;tela2();return;}if(v)return;}
     E.marcando.push(p);E.arraste={m:E.marcando.length-1};mostraLupa(p);
     if(E.marcando.length===4){const c=M.cantosEmOrdem(E.marcando);E.marcando=[];E._novo=false;
       const nv=novoVao(c);const ant=va();if(ant){nv.cor=ant.cor;nv.vidro=ant.vidro;nv.contramarco=Object.assign({},ant.contramarco);nv.reboco=Object.assign({},ant.reboco);}
@@ -229,14 +230,19 @@ function tela2(){
     if(E.vaos.length){const vs=document.createElement('div');vs.className='vaos';E.vaos.forEach((x,i)=>vs.appendChild(chip(`<b>Vão ${i+1}</b>`,i===E.ativo,()=>{E.ativo=i;E.marcando=[];tela2();})));C.appendChild(vs);}
     const ln=document.createElement('div');ln.className='linha';
     const b1=document.createElement('button');b1.className='bt';b1.textContent='↶ Desfazer ponto';b1.disabled=!E.marcando.length;b1.onclick=()=>{E.marcando.pop();tela2();};
-    const b2=document.createElement('button');b2.className='bt';b2.textContent='＋ Novo vão';b2.disabled=!E.vaos.length||!!E.marcando.length;b2.onclick=()=>{E._novo=true;E.marcando=[];tela2();dica('Toque nos 4 cantos do novo vão.');};
-    const b3=document.createElement('button');b3.className='bt';b3.textContent='🗑 Remover vão';b3.disabled=!v;b3.onclick=()=>{if(!confirm('Remover o vão '+(E.ativo+1)+'?'))return;E.vaos.splice(E.ativo,1);E.ativo=E.vaos.length-1;tela2();};
+    const b2=document.createElement('button');b2.className='bt';b2.textContent='＋ Novo vão';b2.disabled=!E.vaos.length||!!E.marcando.length;b2.onclick=()=>{E.vaos.forEach(x=>{if(x.tip)x.travado=true;});E._novo=true;E.marcando=[];tela2();dica('Toque nos 4 cantos do novo vão.');};
+    const b3=document.createElement('button');b3.className='bt';b3.textContent='🗑 Remover vão';b3.disabled=!v||E._novo||(v&&v.travado);b3.onclick=()=>{if(!confirm('Remover o vão '+(E.ativo+1)+'?'))return;E.vaos.splice(E.ativo,1);E.ativo=E.vaos.length-1;tela2();};
     ln.append(b1,b2,b3);C.appendChild(ln);
-    if(v){C.appendChild(H(`<div class="rot">Medidas do vão (opcional)</div><p class="sub" style="margin:0 0 6px">Sem medida, a esquadria segue a proporção da foto.</p>`));
+    if(E._novo&&E.vaos.length){const cn=document.createElement('button');cn.className='bt full';cn.style.marginTop='8px';cn.textContent='Cancelar o vão novo';cn.onclick=()=>{E._novo=false;E.marcando=[];tela2();};C.appendChild(cn);}
+    if(v&&v.travado&&!E._novo){const t=v.tip&&LISTA.find(x=>x.id===v.tip);
+      C.appendChild(H(`<div style="margin-top:10px;border:1px solid #cfd8da;background:#f5f7f8;border-radius:12px;padding:10px 12px"><b>🔒 Vão ${E.ativo+1} travado</b><div style="font-size:12.5px;color:var(--mu)">${t?'Esquadria: '+t.nome+'. ':''}Os cantos estão protegidos para não mudar sem querer.</div></div>`));
+      const dt=document.createElement('button');dt.className='bt full';dt.style.marginTop='8px';dt.textContent='🔓 Destravar e ajustar os cantos';
+      dt.onclick=()=>{if(!confirm(`Tem certeza que quer alterar o ângulo do vão ${E.ativo+1}?`+(t?`\n\nA esquadria "${t.nome}" vai acompanhar o novo ajuste.`:'')))return;v.travado=false;tela2();};C.appendChild(dt);}
+    if(v&&!E._novo){C.appendChild(H(`<div class="rot">Medidas do vão (opcional)</div><p class="sub" style="margin:0 0 6px">Sem medida, a esquadria segue a proporção da foto.</p>`));
       const md=H(`<div class="med"><div><label>Largura (mm)</label><input id="mW" type="number" inputmode="numeric" placeholder="ex.: 1500" value="${v.W||''}"></div><div><label>Altura (mm)</label><input id="mH" type="number" inputmode="numeric" placeholder="ex.: 1200" value="${v.H||''}"></div></div>`);C.appendChild(md);
       md.querySelector('#mW').oninput=e=>{v.W=+e.target.value>=200?+e.target.value:null;desenha();};md.querySelector('#mH').oninput=e=>{v.H=+e.target.value>=200?+e.target.value:null;desenha();};
       const ok=document.createElement('button');ok.className='bt pri full';ok.style.marginTop='12px';ok.textContent='Continuar → Contramarco';ok.onclick=()=>ir(3);C.appendChild(ok);}
-    dica(E.marcando.length?`Canto ${E.marcando.length} de 4 marcado.`:(!E.vaos.length||E._novo)?'Toque no 1º canto do vão.':textoCantos(v));}
+    dica(E.marcando.length?`Canto ${E.marcando.length} de 4 marcado.`:(!E.vaos.length||E._novo)?`Toque no 1º canto do vão ${E.vaos.length+1}.`:v&&v.travado?`Vão ${E.ativo+1} travado 🔒`:textoCantos(v));}
   if(E.passo===3&&v){C.appendChild(H(`<h3>Contramarco</h3><p class="sub">Requadro de alumínio instalado no vão antes da esquadria.</p>`));
     C.appendChild(sw('Aplicar contramarco',v.contramarco.on,x=>{v.contramarco.on=x;tela2();}));
     v.contramarco.cor='natural'; /* 16/11/2026: contramarco só existe na cor Natural */
@@ -265,7 +271,7 @@ function tela2(){
       sel.value=E.cat;sel.onchange=()=>{E.cat=sel.value;tela2();};C.appendChild(sel);
       const gr=document.createElement('div');gr.className='grade';gr.style.marginTop='8px';
       LISTA.filter(t=>t.cat===E.cat).forEach(t=>{const b=document.createElement('button');b.type='button';b.className='tp'+(v.tip===t.id?' on':'');b.innerHTML=`<img alt="" loading="lazy" src="${mini(t)}">${t.nome}`;
-        b.onclick=()=>{v.tip=t.id;v.abre=0;E._escolher=false;tela2();$('corpo').scrollTop=0;};gr.appendChild(b);});C.appendChild(gr);
+        b.onclick=()=>{v.tip=t.id;v.abre=0;v.travado=true;E._escolher=false;tela2();$('corpo').scrollTop=0;};gr.appendChild(b);});C.appendChild(gr);
       if(atual){const cc=document.createElement('button');cc.className='bt full';cc.style.marginTop='8px';cc.textContent='Cancelar · manter '+atual.nome;cc.onclick=()=>{E._escolher=false;tela2();};C.appendChild(cc);}
       dica(atual?'Escolha a nova esquadria na lista.':'Escolha a tipologia na lista.');
       desenha();return;
@@ -284,7 +290,7 @@ function tela2(){
       <b style="flex:none">Vão ${i+1}</b><span style="flex:1;min-width:0;font-size:12px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t?t.nome:'sem esquadria'}</span></div>`).firstElementChild;
       const bt=document.createElement('button');bt.className='bt';bt.style.minHeight='34px';bt.style.padding='6px 10px';bt.textContent=t?'🔄 Trocar':'＋ Escolher';
       bt.onclick=()=>{E.ativo=i;E._escolher=true;if(t)E.cat=t.cat;ir(5);};r2.appendChild(bt);C.appendChild(r2);});
-    const nv=document.createElement('button');nv.className='bt full';nv.style.marginTop='8px';nv.textContent='＋ Marcar outro vão nesta foto';nv.onclick=()=>{E._novo=true;ir(2);};C.appendChild(nv);
+    const nv=document.createElement('button');nv.className='bt full';nv.style.marginTop='8px';nv.textContent='＋ Marcar outro vão nesta foto';nv.onclick=()=>{E.vaos.forEach(x=>{if(x.tip)x.travado=true;});E._novo=true;ir(2);};C.appendChild(nv);
     dica('');}
   C.appendChild(H('<div class="aviso">Imagem demonstrativa. Reboco e cor da parede são efeito visual. Medidas apenas demonstrativas — não usar para produção.</div>'));
   desenha();
