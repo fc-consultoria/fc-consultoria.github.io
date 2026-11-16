@@ -39,6 +39,7 @@ footer{text-align:center;font-size:11px;color:var(--mut);padding:6px}
 .duo{flex:1;display:flex;min-height:0}.duo .palco{flex:1}.duo.on .palco{flex:0 0 280px}
 .pf{flex:1;position:relative;background:#fff;min-width:0}.pf iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 @media(max-width:820px){.duo.on{flex-direction:column}.duo.on .palco{flex:0 0 170px}}
+.somov{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:6;background:var(--teal);color:#fff;border:0;border-radius:14px;padding:16px 22px;font:700 17px Inter,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.35);cursor:pointer;max-width:90%}
 .gtag{position:absolute;left:12px;top:12px;z-index:3;background:#b42318;color:#fff;font:600 12px Inter,sans-serif;padding:6px 11px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 .gtag::first-letter{animation:pisca 1.2s infinite}@keyframes pisca{50%{opacity:.25}}
 </style>
@@ -68,6 +69,17 @@ async function midia(video){
   try{return await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:video?{width:{ideal:640},height:{ideal:480},facingMode:'user'}:false});}
   catch(e){if(video){try{return await navigator.mediaDevices.getUserMedia({audio:true,video:false});}catch(_){}}return null;}
 }
+/* 16/11/2026 · som: tocado num elemento de áudio desbloqueado no clique (celular bloqueia som sem toque) + medidor do microfone */
+const SIL='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+function audioEl(){const a=document.createElement('audio');a.autoplay=true;a.setAttribute('playsinline','');a.src=SIL;document.body.appendChild(a);try{const p=a.play();if(p&&p.catch)p.catch(()=>{});}catch(_){}return a;}
+function tocar(a,st,falhou){if(a.srcObject!==st){a.removeAttribute('src');a.srcObject=st;}a.muted=false;try{const p=a.play();if(p&&p.catch)p.catch(()=>falhou&&falhou());}catch(_){falhou&&falhou();}}
+function somOv(onde,txt,fn){if(!onde||onde.querySelector('.somov'))return;const b=document.createElement('button');b.className='somov';b.textContent=txt;b.onclick=()=>{b.remove();fn();};onde.appendChild(b);}
+function medidor(st,id,ligado){if(!st||!st.getAudioTracks().length)return;let C;try{C=new (window.AudioContext||window.webkitAudioContext)();}catch(_){return;}
+  const an=C.createAnalyser();an.fftSize=512;try{C.createMediaStreamSource(new MediaStream(st.getAudioTracks())).connect(an);}catch(_){return;}const d=new Uint8Array(an.fftSize);
+  const t=setInterval(()=>{const b=document.getElementById(id);if(!b){clearInterval(t);try{C.close();}catch(_){}return;}if(C.state==='suspended')C.resume().catch(()=>{});
+    an.getByteTimeDomainData(d);let m=0;for(let i=0;i<d.length;i++)m=Math.max(m,Math.abs(d[i]-128));const p=Math.min(100,Math.round(m/128*300));
+    b.style.background=ligado()?`linear-gradient(90deg,#bfe9d3 ${p}%,#fff ${p}%)`:'';},150);
+  addEventListener('pointerdown',()=>{if(C.state==='suspended')C.resume().catch(()=>{});},{passive:true});}
 function vid(muted){const v=document.createElement('video');v.autoplay=true;v.playsInline=true;v.muted=!!muted;v.setAttribute('playsinline','');return v;}
 
 /* ================= FC conduzindo ================= */
@@ -84,7 +96,7 @@ async function anfitriao(){
   if($('#hVolta'))$('#hVolta').onclick=()=>conduzir(cod,'');
 }
 async function conduzir(c,cli){
-  const S={cam:null,tela:null,pcs:{},rem:{},ps:[],camOn:true,micOn:true};
+  const S={cam:null,tela:null,pcs:{},rem:{},ps:[],camOn:true,micOn:true,aud:{}};
   S.cam=await midia(true);
   if(!S.cam){caixa('Câmera e microfone bloqueados','Permita a câmera e o microfone no navegador (cadeado ao lado do endereço) e tente de novo.','<button class="bt pri" onclick="location.reload()">Tentar de novo</button>');return;}
   const u=linkSala(c),msg=`Olá${cli?' '+cli:''}! Aqui é o Fernando, da FC Consultoria em Esquadria. Vou te apresentar a Plataforma FC 3D por vídeo. Na hora combinada, abra este link pelo celular ou computador e toque em Entrar: ${u}`;
@@ -101,8 +113,9 @@ async function conduzir(c,cli){
   function desenha(){
     const n=S.ps.length;(document.getElementById('st')||{}).textContent=n?('Na sala: '+S.ps.map(p=>p.n+(p.e?' · '+p.e:'')).join(', ')):'Sala aberta · ninguém na sala ainda';
     $('#av').style.display=Object.keys(S.rem).length?'none':'flex';
-    palco.querySelectorAll('.cli').forEach(x=>{if(!S.rem[x.dataset.k])x.remove();});
-    Object.entries(S.rem).forEach(([k,st],i)=>{let b=palco.querySelector(`.cli[data-k="${k}"]`);if(!b){b=document.createElement('div');b.className='cli';b.dataset.k=k;const v=vid(false);v.srcObject=st;b.appendChild(v);palco.appendChild(b);v.play().catch(()=>{});}
+    palco.querySelectorAll('.cli').forEach(x=>{if(!S.rem[x.dataset.k])x.remove();});Object.keys(S.aud).forEach(k=>{if(!S.rem[k]){S.aud[k].srcObject=null;S.aud[k].remove();delete S.aud[k];}});
+    Object.entries(S.rem).forEach(([k,st],i)=>{let b=palco.querySelector(`.cli[data-k="${k}"]`);if(!b){b=document.createElement('div');b.className='cli';b.dataset.k=k;const v=vid(true);v.srcObject=st;b.appendChild(v);palco.appendChild(b);v.play().catch(()=>{});}
+      if(!S.aud[k])S.aud[k]=audioEl();tocar(S.aud[k],st,()=>somOv(palco,'🔊 Clique aqui para ouvir o cliente',()=>Object.values(S.aud).forEach(a=>a.play().catch(()=>{}))));
       b.style.cssText=i===0?'position:absolute;inset:0':'';if(i>0){b.className='cli mini';b.style.bottom=(12+i*0)+'px';}});
   }
   function ligar(k){
@@ -121,6 +134,7 @@ async function conduzir(c,cli){
     .subscribe(async s=>{if(s==='SUBSCRIBED')await ch.track({n:'FC',fc:1});});
   const mark=()=>{$('#bMic').className='bt'+(S.micOn?'':' off');$('#bMic').textContent=S.micOn?'🎙 Microfone':'🔇 Microfone desligado';$('#bCam').className='bt'+(S.camOn?'':' off');$('#bCam').textContent=S.camOn?'📷 Câmera':'🚫 Câmera desligada';
     $('#bTela').textContent=S.tela&&!S.plat?'⏹ Parar de compartilhar':'🖥 Outra tela';$('#bPlat').textContent=S.plat?'⏹ Parar a apresentação':'▶ Apresentar a plataforma';$('#bPlat').className='bt '+(S.plat?'red':'pri');};mark();
+  medidor(S.cam,'bMic',()=>S.micOn);
   $('#bMic').onclick=()=>{S.micOn=!S.micOn;S.cam.getAudioTracks().forEach(t=>t.enabled=S.micOn);mark();};
   $('#bCam').onclick=()=>{S.camOn=!S.camOn;S.cam.getVideoTracks().forEach(t=>t.enabled=S.camOn);mark();};
   function mostraPlat(on){$('#pf').hidden=!on;$('#duo').classList.toggle('on',on);}
@@ -190,7 +204,7 @@ function convidado(){
   caixa('Apresentação da Plataforma FC 3D','O Fernando, da FC Consultoria em Esquadria, vai apresentar a plataforma por vídeo. Coloque seu nome e toque em Entrar. O navegador vai pedir a câmera e o microfone.<br><small>A FC pode gravar a apresentação (tela e áudio) para uso interno. Quando estiver gravando, aparece um aviso vermelho na tela.</small>',
    `<label>Seu nome<input id="cN" value="${esc(nome)}" autocomplete="name"></label><label>Empresa<input id="cE" value="${esc(emp)}" autocomplete="organization"></label><p id="cM" style="color:#b42318;margin:0 0 8px;font-size:13px"></p>
     <button class="bt pri" id="cGo" style="width:100%">Entrar com câmera</button><button class="bt" id="cGo2" style="width:100%;margin-top:8px">Entrar só com microfone</button>`);
-  const vai=video=>{nome=$('#cN').value.trim().slice(0,40);emp=$('#cE').value.trim().slice(0,40);if(nome.length<2){$('#cM').textContent='Coloque o seu nome.';return;}
+  let AU=null;const vai=video=>{if(!AU)AU=audioEl();nome=$('#cN').value.trim().slice(0,40);emp=$('#cE').value.trim().slice(0,40);if(nome.length<2){$('#cM').textContent='Coloque o seu nome.';return;}
     try{localStorage.setItem('fc_sala_conv',JSON.stringify({n:nome,e:emp}));}catch(_){}entrar(video);};
   $('#cGo').onclick=()=>vai(true);$('#cGo2').onclick=()=>vai(false);
   async function entrar(video){
@@ -198,7 +212,7 @@ function convidado(){
     const KEY='cv-'+Math.random().toString(36).slice(2,10),T0=Date.now();let pc=null,fc=false,telaId='',micOn=true;
     tela(`<div class="palco" id="palco"><video id="vGr"></video><div class="aviso" id="av">⏳ Aguardando o Fernando…</div><div class="gtag" id="gTag" hidden>● Esta apresentação está sendo gravada</div><div class="mini" id="mFc" hidden><video id="vFc"></video><span>Fernando · FC</span></div>${eu&&eu.getVideoTracks().length?'<div class="mini eu"><video id="vEu"></video><span>Você</span></div>':''}</div>
       <div class="st" id="st">Conectando…</div>
-      <div class="barra"><button class="bt" id="bMic">🎙 Microfone</button><button class="bt" id="bSom" hidden>🔊 Ativar o som</button><a class="bt" href="https://wa.me/${WA}" target="_blank" rel="noopener">WhatsApp da FC</a><button class="bt red" id="bSai">Sair</button></div>`);
+      <div class="barra"><button class="bt" id="bMic">🎙 Microfone</button><a class="bt" href="https://wa.me/${WA}" target="_blank" rel="noopener">WhatsApp da FC</a><button class="bt red" id="bSai">Sair</button></div>`);
     const vGr=$('#vGr'),vFc=$('#vFc');[vGr,vFc].forEach(v=>{v.autoplay=true;v.playsInline=true;v.setAttribute('playsinline','');});
     if($('#vEu')){const v=$('#vEu');v.muted=true;v.autoplay=true;v.playsInline=true;v.setAttribute('playsinline','');v.srcObject=eu;}
     if(!eu){$('#bMic').disabled=true;$('#bMic').textContent='🔇 Sem microfone';}
@@ -209,8 +223,8 @@ function convidado(){
       if(tel){vGr.srcObject=tel;vGr.style.objectFit='contain';$('#mFc').hidden=!cam;if(cam)vFc.srcObject=cam;}
       else if(cam){vGr.srcObject=cam;vGr.style.objectFit='contain';$('#mFc').hidden=true;}
       $('#av').style.display=(tel||cam)?'none':'flex';
-      const p=vGr.play();if(p&&p.catch)p.catch(()=>{vGr.muted=true;vGr.play().catch(()=>{});$('#bSom').hidden=false;});if(!$('#mFc').hidden)vFc.play().catch(()=>{});}
-    $('#bSom').onclick=()=>{vGr.muted=false;vGr.play().catch(()=>{});$('#bSom').hidden=true;};
+      vGr.muted=true;vFc.muted=true;vGr.play().catch(()=>{});if(!$('#mFc').hidden)vFc.play().catch(()=>{});
+      const sa=ids.map(i=>streams[i]).find(s=>s&&s.getAudioTracks().length);if(sa){if(!AU)AU=audioEl();tocar(AU,sa,()=>somOv($('#palco'),'🔊 Toque aqui para ouvir o Fernando',()=>AU.play().catch(()=>{})));}}
     function novoPc(){if(pc)pc.close();pc=new RTCPeerConnection(ICE);
       pc.ontrack=e=>{const s=e.streams[0];if(!s)return;streams[s.id]=s;s.onremovetrack=()=>{if(!s.getTracks().length){delete streams[s.id];monta();}};monta();};
       pc.onicecandidate=e=>{if(e.candidate)env('rtc',{to:'fc',from:KEY,ice:e.candidate.toJSON()});};
@@ -231,6 +245,7 @@ function convidado(){
         else if(!tem&&fc){fc=false;if(pc){pc.close();pc=null;}Object.keys(streams).forEach(k=>delete streams[k]);monta();(document.getElementById('av')||{}).textContent='⏸ O Fernando saiu por um instante. A chamada volta sozinha.';(document.getElementById('st')||{}).textContent='Aguardando o Fernando';}
         else if(!tem)(document.getElementById('st')||{}).textContent='Aguardando o Fernando abrir a sala';})
       .subscribe(async s=>{if(s==='SUBSCRIBED')await ch.track({n:nome,e:emp,t:T0});});
+    medidor(eu,'bMic',()=>micOn);
     $('#bMic').onclick=()=>{if(!eu)return;micOn=!micOn;eu.getAudioTracks().forEach(t=>t.enabled=micOn);$('#bMic').className='bt'+(micOn?'':' off');$('#bMic').textContent=micOn?'🎙 Microfone':'🔇 Microfone desligado';};
     $('#bSai').onclick=async()=>{if(pc)pc.close();if(eu)eu.getTracks().forEach(t=>t.stop());try{await ch.untrack();RT.removeChannel(ch);}catch(_){}
       caixa('Você saiu da apresentação','Para voltar, toque em Entrar de novo.','<button class="bt pri" onclick="location.reload()">Entrar de novo</button>');};
