@@ -54,7 +54,7 @@ a{display:inline-block;margin-top:6px;padding:10px 18px;border-radius:99px;backg
     var mp='window.__fc3d={SC,CAM,VAOS,corte,foca};';
     if(h.indexOf(mp)>=0&&h.indexOf('</body>')>=0){/* plantas das casas: instalação com guindaste + vídeo */
       h=h.replace(mp,'window.__fc3d={SC,CAM,VAOS,corte,foca,R:typeof R!=="undefined"?R:null,CT:typeof CT!=="undefined"?CT:null};');
-      var s2='<script src="'+new URL('raiox-fc.js?v=2',location.href).href+'"><\/script><script src="'+new URL('guindaste-fc.js?v=1',location.href).href+'"><\/script><script>('+String(ligaPlanta)+')();<\/script>';
+      var s2='<script src="'+new URL('raiox-fc.js?v=2',location.href).href+'"><\/script><script src="'+new URL('guindaste-fc.js?v=2',location.href).href+'"><\/script><script>('+String(ligaPlanta)+')();<\/script>';
       var j=h.lastIndexOf('</body>');return h.slice(0,j)+s2+h.slice(j);}
     var marca='window.__fc3d={SC,CAM,PCS,secao,passo};';
     if(h.indexOf(marca)<0||h.indexOf('</body>')<0)return h;
@@ -79,7 +79,7 @@ a{display:inline-block;margin-top:6px;padding:10px 18px;border-radius:99px;backg
         marca:{l1:'OTIMIZZA HS-32',l2:'Linha Otimizza · perfis reais do catálogo',l3:'Plataforma desenvolvida por FC Consultoria em Esquadria'},
         roteiro:function(a){var L=[];
           L.push({d:3,cap:tit,fn:function(a){a.clica('#vCasa');a.clica('#v3d');a.orbita(.6)}});
-          if(alvos().length)L.push({d:11,cap:'Instalação com guindaste',fn:function(a){a.orbita(0);G.instalaAtual()}});
+          if(alvos().length)L.push({d:13.2,cap:'Instalação pela equipe',fn:function(a){a.orbita(0);G.instalaAtual()}});
           if(a.existe('#vRx'))L.push({d:4,cap:'Estrutura raio-x: os perfis dentro da obra',fn:function(a){a.clica('#vRx');a.orbita(.7)}});
           if(a.existe('#iHr'))L.push({d:4,cap:'No fim de tarde',fn:function(a){a.clica('#vCasa');a.desliza('#iHr',17.5,19.25,3.5)}});
           L.push({d:3.6,cap:'Esquadrias Otimizza HS-32',fn:function(a){a.desliza('#iHr',19.25,17.5,2.5);a.orbita(.8)}});
