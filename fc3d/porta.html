@@ -76,7 +76,7 @@ a{display:inline-block;margin-top:6px;padding:10px 18px;border-radius:99px;backg
       var G=FCGuindaste.init({SC:F.SC,CAM:F.CAM,CT:F.CT,alvos:alvos,escolhe:escolhe,antesDe:em3d,barra:tools,cls:'bt',antes:pres,legendaEm:document.body,
         semAlvo:function(){alert('Coloque uma esquadria num vão para ver a instalação.')}});
       FCRaioX.init({R:F.R,SC:F.SC,CAM:F.CAM,CT:F.CT,semRaioX:true,barra:tools,cls:'bt',antes:pres,fundo:'#0f1012',arquivo:'otimizza-'+slug,
-        marca:{l1:'OTIMIZZA HS-32',l2:'FELD Perfis de Alumínio · perfis reais do catálogo',l3:'Plataforma desenvolvida por FC Consultoria em Esquadria'},
+        marca:{l1:'OTIMIZZA HS-32',l2:'Linha Otimizza · perfis reais do catálogo',l3:'Plataforma desenvolvida por FC Consultoria em Esquadria'},
         roteiro:function(a){var L=[];
           L.push({d:3,cap:tit,fn:function(a){a.clica('#vCasa');a.clica('#v3d');a.orbita(.6)}});
           if(alvos().length)L.push({d:11,cap:'Instalação com guindaste',fn:function(a){a.orbita(0);G.instalaAtual()}});
@@ -95,7 +95,7 @@ a{display:inline-block;margin-top:6px;padding:10px 18px;border-radius:99px;backg
       FCRaioX.init({R:F.R,SC:F.SC,CAM:F.CAM,CT:F.CT,alvo:function(){return F.ROOT||F.SC},
         barra:document.querySelector('.tb'),cls:'bt',antes:document.getElementById('bFs'),
         fundo:'#0f1012',arquivo:'otimizza-'+slug,
-        marca:{l1:'OTIMIZZA HS-32',l2:'FELD Perfis de Alumínio · seção real do catálogo',l3:'Plataforma desenvolvida por FC Consultoria em Esquadria'},
+        marca:{l1:'OTIMIZZA HS-32',l2:'Perfis desenhados da seção real do catálogo',l3:'Plataforma desenvolvida por FC Consultoria em Esquadria'},
         roteiro:function(a){var c=document.querySelectorAll('.tb [data-c]'),n=c.length,L=[];
           L.push({d:3.2,cap:tit,fn:function(a){a.clica('.tb [data-v="ext"]');a.orbita(1)}});
           if(a.existe('#bExp'))L.push({d:3.6,cap:'Desmontada: cada perfil no seu lugar',fn:function(a){a.orbita(.6);a.clica('#bExp')}},{d:2.4,cap:'E montada de novo',fn:function(a){a.clica('#bExp')}});
