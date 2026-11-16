@@ -117,7 +117,24 @@ async function conduzir(c,cli){
     Object.entries(S.rem).forEach(([k,st],i)=>{let b=palco.querySelector(`.cli[data-k="${k}"]`);if(!b){b=document.createElement('div');b.className='cli';b.dataset.k=k;const v=vid(true);v.srcObject=st;b.appendChild(v);palco.appendChild(b);v.play().catch(()=>{});}
       if(!S.aud[k])S.aud[k]=audioEl();tocar(S.aud[k],st,()=>somOv(palco,'🔊 Clique aqui para ouvir o cliente',()=>Object.values(S.aud).forEach(a=>a.play().catch(()=>{}))));
       b.style.cssText=i===0?'position:absolute;inset:0':'';if(i>0){b.className='cli mini';b.style.bottom=(12+i*0)+'px';}});
+    setTimeout(mixar,300);
   }
+  /* 16/11/2026 · todos ouvem todos: o computador da FC mistura o áudio e manda para cada pessoa (FC + os outros, sem a própria voz) */
+  const MX={ctx:null,src:{},dst:{}};
+  function mixar(){try{const ks=Object.keys(S.rem).filter(k=>S.pcs[k]);
+    const sndA=k=>S.pcs[k]&&S.pcs[k].getSenders().find(s=>s.track&&s.track.kind==='audio');
+    if(ks.length<2){ks.forEach(k=>{const s=sndA(k),t=S.cam.getAudioTracks()[0];if(s&&t&&s.track!==t)s.replaceTrack(t).catch(()=>{});});return;}
+    if(!MX.ctx){MX.ctx=new (window.AudioContext||window.webkitAudioContext)();addEventListener('pointerdown',()=>{if(MX.ctx.state==='suspended')MX.ctx.resume().catch(()=>{});},{passive:true});}
+    if(MX.ctx.state==='suspended')MX.ctx.resume().catch(()=>{});
+    const fonte=(id,st)=>{const o=MX.src[id];if(o&&o.st===st)return o.n;if(o)try{o.n.disconnect();}catch(_){}if(!st||!st.getAudioTracks().length){delete MX.src[id];return null;}
+      const n=MX.ctx.createMediaStreamSource(new MediaStream(st.getAudioTracks()));MX.src[id]={st,n};return n;};
+    Object.keys(MX.src).forEach(id=>{if(id!=='fc'&&!S.rem[id]){try{MX.src[id].n.disconnect();}catch(_){}delete MX.src[id];}});
+    const nf=fonte('fc',S.cam),nr={};ks.forEach(k=>nr[k]=fonte(k,S.rem[k]));
+    Object.values(MX.src).forEach(o=>{try{o.n.disconnect();}catch(_){}});
+    ks.forEach(k=>{if(!MX.dst[k])MX.dst[k]=MX.ctx.createMediaStreamDestination();const d=MX.dst[k];if(nf)nf.connect(d);ks.forEach(j=>{if(j!==k&&nr[j])nr[j].connect(d);});
+      const s=sndA(k),t=d.stream.getAudioTracks()[0];if(s&&t&&s.track!==t)s.replaceTrack(t).catch(()=>{});});
+    Object.keys(MX.dst).forEach(k=>{if(!S.rem[k])delete MX.dst[k];});
+  }catch(e){console.warn('mix',e);}}
   function ligar(k){
     if(S.pcs[k])S.pcs[k].close();const pc=new RTCPeerConnection(ICE);S.pcs[k]=pc;
     S.cam.getTracks().forEach(t=>pc.addTrack(t,S.cam));if(S.tela)S.tela.getTracks().forEach(t=>pc.addTrack(t,S.tela));
