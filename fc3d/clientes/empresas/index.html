@@ -106,7 +106,7 @@ async function carregarDemos(){
   const st=d=>d.status==='pendente'?['Aguardando · libera sozinho às '+new Date(d.libera_auto).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),'t']:d.status==='recusado'?['Recusado','r']:!d.ativo?['Pausado','r']:new Date(d.expira)<agora?['Terminou','a']:['Ativo até '+new Date(d.expira).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}),'o'];
   const por=d=>d.status!=='liberado'||!d.liberado_por?'':d.liberado_por==='auto'?' · liberado automático':d.liberado_por==='fc'?' · liberado pela FC':'';
   const acoes=d=>d.status==='pendente'?`<button class="btn sm pri" data-dlib="${d.id}" data-v="1">Liberar agora</button> <button class="btn sm red" data-dlib="${d.id}" data-v="0">Recusar</button>`
-    :`<button class="btn sm" data-dmais="${d.id}">+3 dias</button> <button class="btn sm ${d.ativo?'red':''}" data-datv="${d.id}" data-v="${d.ativo?0:1}">${d.ativo?'Pausar':'Reativar'}</button>`;
+    :`<button class="btn sm" data-dmais="${d.id}">+24 h</button> <button class="btn sm ${d.ativo?'red':''}" data-datv="${d.id}" data-v="${d.ativo?0:1}">${d.ativo?'Pausar':'Reativar'}</button>`;
   $('#demos').innerHTML=`<div class="eh"><div class="sig">▶</div><div><h2>Demonstrativos</h2><span class="mute" style="font-size:13px">${D.length} cadastro${D.length===1?'':'s'} · ${ativos} ativo${ativos===1?'':'s'} · ${pend.length} aguardando · 3 dias por pessoa · libera sozinho em 3 min</span></div><span class="sp"></span>
     <button class="btn sm" id="cpDemo">Copiar link</button> <button class="btn sm pri" id="cvDemo">💬 Convite para o WhatsApp</button>${'Notification' in window&&Notification.permission==='default'?' <button class="btn sm" id="ntDemo">🔔 Avisar no computador</button>':''}</div>
     ${D.length?`<div style="overflow-x:auto"><table><thead><tr><th>Nome</th><th>Pedido</th><th>Entrou</th><th>Situação</th><th></th></tr></thead><tbody>${D.map(d=>{const [t,c]=st(d);return `<tr${d.status==='pendente'?' style="background:var(--tealSoft)"':''}>
@@ -123,7 +123,7 @@ async function carregarDemos(){
       $('#cvCp').onclick=async()=>{try{await navigator.clipboard.writeText($('#cvTx').value);$('#cvCp').textContent='Copiado ✓';}catch(_){$('#cvTx').select();}};}};
   if($('#ntDemo'))$('#ntDemo').onclick=async()=>{try{await Notification.requestPermission();}catch(_){}carregarDemos();};
   $('#demos').querySelectorAll('[data-dlib]').forEach(b=>b.onclick=async()=>{if(b.dataset.v==='0'&&!confirm('Recusar este pedido? A pessoa não vai conseguir entrar.'))return;try{await rpc('pfc_adm_demo_liberar',{p_id:b.dataset.dlib,p_liberar:b.dataset.v==='1'});carregarDemos();}catch(e){alert(e.message);}});
-  $('#demos').querySelectorAll('[data-dmais]').forEach(b=>b.onclick=async()=>{try{await rpc('pfc_adm_demo',{p_id:b.dataset.dmais,p_ativo:true,p_mais_dias:3});carregarDemos();}catch(e){alert(e.message);}});
+  $('#demos').querySelectorAll('[data-dmais]').forEach(b=>b.onclick=async()=>{try{await rpc('pfc_adm_demo',{p_id:b.dataset.dmais,p_ativo:true,p_mais_dias:1});carregarDemos();}catch(e){alert(e.message);}});
   $('#demos').querySelectorAll('[data-datv]').forEach(b=>b.onclick=async()=>{try{await rpc('pfc_adm_demo',{p_id:b.dataset.datv,p_ativo:b.dataset.v==='1',p_mais_dias:0});carregarDemos();}catch(e){alert(e.message);}});
 }
 async function iniciar(){
