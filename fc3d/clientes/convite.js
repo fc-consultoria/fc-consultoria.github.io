@@ -1,5 +1,5 @@
 /* ===== Plataforma FC 3D · Convite automático do demonstrativo (01/11/2026) =====
-   Só roda para quem entrou pelo link de 3 dias. Não muda nada da plataforma: só acrescenta o card no canto.
+   Só roda para quem entrou pelo link do demonstrativo (24 h). Não muda nada da plataforma: só acrescenta o card no canto.
    - avisa o Painel da Matriz que a pessoa está on-line (a cada 30 s, com a tela aberta)
    - mostra 1 card por vez, cada etapa uma vez só, e nunca enquanto a pessoa mexe no 3D
    Para mudar os textos, edite TXT abaixo. */

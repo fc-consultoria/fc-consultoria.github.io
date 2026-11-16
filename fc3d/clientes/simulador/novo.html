@@ -102,7 +102,7 @@
   if(!tk){nega('Entre com o seu login');return;}
   fetch('https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_sessao',{method:'POST',headers:{apikey:'sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs','Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
    .then(function(r){return r.ok?r.json():null;}).then(function(d){
-     if(!d||!(d.matriz||d.papel==='gestor'||d.papel==='vendedor')){nega('Acesso não liberado');return;}ov.remove();
+     if(!d||!(d.matriz||d.demo||d.papel==='gestor'||d.papel==='vendedor')){nega('Acesso não liberado');return;}ov.remove();
    }).catch(function(){nega('Sem conexão');});
 })();
 </script>

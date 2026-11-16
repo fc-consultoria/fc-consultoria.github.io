@@ -1,7 +1,7 @@
 /* Plataforma FC 3D · Como usar (tutorial guiado por painel)
    © FC Consultoria em Esquadria — criação da FC, uso exclusivo de empresas licenciadas.
    Cada painel tem o seu passo a passo, separado: cada pessoa vê só o guia do próprio painel.
-   Hoje: Colaborador (chave interna "vendedor"), Gestor e Demonstrativo (curto, ~1 min). 04/11/2026: passos do Simulador de Obra 3D (pulados nas empresas onde ele não aparece). Portal do Cliente entra depois em GUIAS.
+   Hoje: Colaborador (chave interna "vendedor"), Gestor e Demonstrativo (curto, ~90 s, 3 módulos). 04/11/2026: passos do Simulador de Obra 3D (pulados nas empresas onde ele não aparece). Portal do Cliente entra depois em GUIAS.
    1ª entrada: tela de boas-vindas (Ver agora / Depois); "Ver agora" passa sozinho com voz feminina (modo automático).
    Ao mudar a tela, revise os passos do painel aqui. Passo cujo alvo não existe na tela é pulado sozinho. */
 (function(){
@@ -94,25 +94,23 @@
     pc('Sair'),
     mais(pc('Pronto!'),{x:'Sempre que precisar, toque em "?" para ver este guia de novo. Dúvidas sobre a plataforma ou sobre a licença: fale com a FC (segunda a sexta, 8h às 11h e 13h às 17h).'})
   ]};
-  /* ---------- DEMONSTRATIVO (teste de 3 dias) ----------
-     Curto (cerca de 1 minuto): o melhor da plataforma e o convite para falar com a FC. */
+  /* ---------- DEMONSTRATIVO (24 horas) · 16/11/2026 ----------
+     Curto (cerca de 90 segundos): os 3 módulos que vêm juntos na licença anual e o convite para falar com a FC. */
   GUIAS.demo={nome:'Demonstrativo',curto:true,passos:[
     {tab:'inicio',t:'Bem-vindo à Plataforma FC 3D',
-     x:'Em um minuto eu mostro como funciona. Aqui a equipe da vidraçaria apresenta janelas e portas de alumínio em 3D para o cliente, no celular, no notebook ou na TV.'},
-    {tab:'inicio',alvo:'.demo-bar',t:'O seu teste de 3 dias',
-     x:'Aqui aparece quanto tempo falta do seu teste. Gostou? Por este botão você fala direto com a FC pelo WhatsApp.'},
+     x:'Em um minuto e meio eu mostro como funciona. São 3 módulos que se completam: Visita de Obra, Fábrica 3D e Catálogo 3D. Eles vêm juntos, numa licença anual para a sua equipe.'},
+    {tab:'inicio',alvo:'.demo-bar',t:'O seu demonstrativo de 24 horas',
+     x:'Aqui aparece quanto tempo falta. Gostou? Por aqui você fala direto com a FC pelo WhatsApp.'},
+    {tab:'inicio',alvo:function(){return porTexto('main .card','Visita de Obra');},t:'1 · Visita de Obra',
+     x:'O vendedor vai à obra, tira a foto do vão, limpa o que atrapalha, marca os cantos e coloca o contramarco, o reboco e a esquadria. O cliente vê o antes e o depois na hora. Funciona no celular e, melhor ainda, no tablet.'},
+    {tab:'inicio',alvo:function(){return porTexto('main .card','Fábrica 3D');},t:'2 · Fábrica 3D',
+     x:'A esquadria Suprema em 3D, como sai da fábrica: desmontar, ver os cortes 01 a 05 com a seção real dos perfis, montar peça por peça e ver de perto cada componente.'},
+    {tab:'inicio',alvo:function(){return porTexto('main .card','Catálogo 3D');},t:'3 · Catálogo 3D',
+     x:'Os perfis em 3D, com o encaixe de cada peça e o código. A equipe aprende o que vende e explica ao cliente com segurança.'},
     {tab:'inicio',alvo:'#menu',t:'Menu',
-     x:'Por aqui você navega: Início, Tipologias e Apresentação.'},
-    {tab:'tip',alvo:'#vit',t:'Linhas Suprema e Gold',
-     x:'Escolha a linha e veja as janelas e portas de mercado, cada uma com o desenho e o código da montagem no catálogo.'},
-    {tab:'tip',alvo:'#det .cx',antes:function(){if($('#det').hidden){var b=$('[data-tip]');if(b)b.click();}},depois:fechaFicha,t:'Ficha da tipologia',
-     x:'Toque em uma tipologia para abrir a ficha: como ela abre, onde usar e o botão para ver em 3D, girando a janela e abrindo as folhas.'},
-    {tab:'inicio',alvo:function(){return porTexto('main .card','Simulador de Obra 3D');},t:'Simulador de Obra 3D',
-     x:'Novidade: o orçamento da obra vira uma apresentação em 3D com a marca da sua empresa, com link sem preço para o cliente. A FC confere, você aprova e encaminha. Toque em Quero conhecer para falar com a FC.'},
-    {tab:'apr',alvo:heroApr,t:'Apresentação na TV',/* no demonstrativo a aba mostra só o Simulador: este passo é pulado */
-     x:'No modo apresentação a tela fica limpa, sem menus, para mostrar na TV ou no telão durante a reunião com o cliente.'},
+     x:'Pelo menu você abre os mesmos módulos a qualquer momento.'},
     {tab:'inicio',alvo:'#btAjuda',t:'Pronto! Agora é com você',
-     x:'Explore à vontade durante os 3 dias. Para ver este passo a passo de novo, toque em Como funciona. Quer a plataforma para a sua equipe? Fale com a FC pelo WhatsApp.'}
+     x:'Explore à vontade durante as 24 horas. Para ver este guia de novo, toque em Como funciona. Quer a plataforma para a sua equipe? Fale com a FC pelo WhatsApp.'}
   ]};
   /* arquiteto (Portal do Cliente): próximo */
 

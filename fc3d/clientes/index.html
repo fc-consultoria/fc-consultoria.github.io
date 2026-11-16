@@ -297,14 +297,14 @@ a.card:hover{border-color:var(--teal);transform:translateY(-1px)}
       <div class="ent-alt"><span class="mute">Já tem cadastro?</span><button type="button" id="cadTroca">Entrar com login</button></div>
     </form>
     <form class="ent-card" id="demoForm" autocomplete="on" hidden>
-      <h2>Demonstrativo grátis</h2>
-      <p class="sub mute">Conheça a Plataforma FC 3D por <b id="demoDias">3 dias</b>, no celular, no notebook ou na TV.</p>
+      <h2>Demonstrativo de 24 horas</h2>
+      <p class="sub mute">Conheça por <b id="demoDias">24 horas</b> a Visita de Obra, a Fábrica 3D e o Catálogo 3D. Funciona no celular e no tablet (no tablet fica mais prático).</p>
       <label class="f" for="dNome">Seu nome</label><input class="in" id="dNome" name="name" autocomplete="name" maxlength="80">
       <label class="f" for="dZap">WhatsApp com DDD</label><input class="in" id="dZap" name="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="(66) 9 9999-9999" maxlength="20">
       <div id="demoMsg" role="alert" style="min-height:22px;font-size:13.5px;color:#b3401a;margin:-4px 0 10px"></div>
       <button class="btn pri" style="width:100%" id="demoBt">Enviar cadastro</button>
       <div class="demo-fim" id="demoEsp" hidden></div>
-      <p class="mute" style="font-size:12.5px;margin-top:10px">Só nome e WhatsApp. O acesso é liberado em até 1 minuto e vale por 3 dias. Já entrou antes? Use o mesmo WhatsApp para continuar. Funciona em um aparelho por vez. Os dados servem só para a FC Consultoria falar com você.</p>
+      <p class="mute" style="font-size:12.5px;margin-top:10px">Só nome e WhatsApp. O acesso é liberado em até 1 minuto e vale por 24 horas. Já entrou antes? Use o mesmo WhatsApp para continuar. Funciona em um aparelho por vez. Os dados servem só para a FC Consultoria falar com você.</p>
       <div class="demo-fim" id="demoFim" hidden></div>
       <div class="ent-alt"><span class="mute">Já é cliente?</span><button type="button" id="demoTroca">Entrar com login</button></div>
     </form>
@@ -583,9 +583,8 @@ $('#cadForm').addEventListener('submit',async e=>{e.preventDefault();const msg=$
 
 /* ---------- demonstrativo (link único: ?demo=1 ou /demo/) ---------- */
 const ZAPDEMO='https://wa.me/5566999867984?text='+encodeURIComponent('Olá, FC! Testei o demonstrativo da Plataforma FC 3D e quero conhecer os planos.');
-/* 09/11/2026 · demonstrativo por link encerrado: interessados agendam apresentação com a FC */
-if(/[?&]demo=1/.test(location.search)){location.replace('demo/');}
-let modoDemo=false;
+/* 16/11/2026 · demonstrativo por link reaberto: 24 horas, com Visita de Obra, Fábrica 3D e Catálogo 3D */
+let modoDemo=/[?&]demo=1/.test(location.search);
 function formDemo(on){modoDemo=on;$('#liAmb').hidden=on;$('#entForm').hidden=on;$('#demoForm').hidden=!on;const cf=$('#cadForm');if(cf)cf.hidden=true;}
 $('#demoTroca').onclick=()=>formDemo(false);
 function demoFim(t){const f=$('#demoFim');f.hidden=false;f.innerHTML=h(t)+`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn pri" type="button" data-lic>Adquirir licença</button><a class="btn sec" href="${ZAPDEMO}" target="_blank" rel="noopener">Falar com a FC no WhatsApp</a></div>`;}
@@ -623,7 +622,7 @@ function faltaDemo(){if(!S||!S.demo)return '';const ms=new Date(S.expira)-Date.n
 const barraDemo=()=>S&&S.demo?`<div class="demo-bar"><span><b>Demonstrativo</b> · ${faltaDemo()}</span><span class="sp"></span><span class="mute">Gostou? Licença de 1 ano para a sua empresa.</span><button class="btn pri" type="button" data-lic>Adquirir licença</button><a class="btn sec" href="${ZAPDEMO}" target="_blank" rel="noopener">Falar com a FC</a></div>`:'';
 const escH=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function abrir(token){
-  try{S=await rpc('pfc_sessao',{p_token:token});S.token=token;if(S&&S.demo){ls.del(TK);ls.del('pfc-papel');S=null;location.replace('demo/');return;}}
+  try{S=await rpc('pfc_sessao',{p_token:token});S.token=token;}
   catch(err){const eraDemo=ls.get('pfc-papel')==='demo';ls.del(TK);ls.del('pfc-papel');S=null;const m=err.message||'';if(/demonstrativo/i.test(m)){formDemo(true);mostrarEntrada('');demoFim(m);return;}if(eraDemo){formDemo(true);mostrarEntrada('');$('#demoMsg').textContent='O demonstrativo foi aberto em outro aparelho. Para usar aqui, entre de novo com o mesmo WhatsApp.';return;}mostrarEntrada(/pausad/i.test(m)?m:'');return;}
   if(S.demo)ls.set('pfc-papel','demo');else ls.del('pfc-papel');
   /* 14/11/2026 · app Visita de Obra: abre direto no Simulador de obra; "Ver a esquadria em 3D" abre só o Simulador Fábrica 3D com volta ao Medidor */
@@ -755,7 +754,7 @@ const LIC_MODS={'brito-esquadrias':['tip','ges'],'parceiro-obras':['tip'],'teste
 const SIM_NOVO_EMP=['brito-esquadrias','parceiro-obras','teste-medidor-obras'];
 const simNovo=()=>!!(S&&SIM_NOVO_EMP.includes(S.empresa)&&['gestor','vendedor'].includes(papel())&&!soCat());
 /* 14/11/2026 · teste só na Visita de Obra (antes Parceiro de obras) e no espelho de teste dele: Tipologias aparece como Simulador Fábrica 3D (modelo de fábrica em 3D, não base de tipologia) */
-function FAB(){return !!(typeof S!=='undefined'&&S&&(S.empresa==='parceiro-obras'||S.empresa==='teste-medidor-obras'));}
+function FAB(){return !!(typeof S!=='undefined'&&S&&(S.demo||S.empresa==='parceiro-obras'||S.empresa==='teste-medidor-obras'));}
 function NTIP(){return FAB()?'Simulador Fábrica 3D':'Tipologias';}
 const licOk=k=>!(S&&LIC_MODS[S.empresa])||k==='inicio'||LIC_MODS[S.empresa].includes(k);
 const soCat=()=>!!(S&&SO_CAT_EMP.includes(S.empresa)&&papel()==='vendedor'&&(S.matriz?papelVer==='vendedor':S.setor==='vendas'));
@@ -765,9 +764,11 @@ function render(){
   $('#euPapel').textContent=S.matriz?'vendo como '+PAPEIS[papel()]:(S.setor&&S.setor!=='gestor'?(SETORES[S.setor]||S.setor):(PAPEIS[S.papel]||S.papel));
   $('#menu').innerHTML=itens().map(m=>`<button type="button" data-tab="${m.k}" ${m.k===tab?'aria-current="page"':''}><span aria-hidden="true">${m.i}</span>${m.n}</button>`).join('')+(['demo','gestor','vendedor'].includes(papel())?`<button type="button" data-cat3d><span aria-hidden="true">▤</span>Catálogo 3D</button>`:'');/* 03/11: gestor e colaborador também, com o catálogo da própria empresa */
   {const c3=$('#menu').querySelector('[data-cat3d]');if(c3)c3.onclick=()=>{location.href='orientativo/?foco=1#cat';};}
+  /* 16/11/2026 · demonstrativo: Visita de Obra (motor novo) no menu, ao lado da Fábrica 3D e do Catálogo 3D */
+  if(papel()==='demo'){$('#menu').insertAdjacentHTML('beforeend',`<button type="button" data-visita><span aria-hidden="true">📷</span>Visita de Obra</button>`);$('#menu').querySelector('[data-visita]').onclick=()=>{location.href='simulador/novo.html';};}
   if(simNovo()){$('#menu').insertAdjacentHTML('beforeend',`<button type="button" data-simnovo><span aria-hidden="true">📷</span>Simulador de obra</button>`);$('#menu').querySelector('[data-simnovo]').onclick=()=>{location.href='simulador/';};}
   /* 04/11/2026 · Simulador de Obra 3D no menu, ao lado do Catálogo 3D (só onde ele está ligado) */
-  if(window.PFCo3d&&!soCat()&&['gestor','vendedor','demo'].includes(papel())&&licOk('o3d')&&(papel()==='demo'||(S.matriz&&!S.empresa)||PFCo3d.pode(S,papel()))){$('#menu').insertAdjacentHTML('beforeend',`<button type="button" data-o3dm ${tab==='o3d'?'aria-current="page"':''}><span aria-hidden="true">${S.obra3d_bloq?'🔒':'⬆'}</span>Simulador de Obra 3D</button>`);
+  if(window.PFCo3d&&!soCat()&&['gestor','vendedor'].includes(papel())&&licOk('o3d')&&((S.matriz&&!S.empresa)||PFCo3d.pode(S,papel()))){$('#menu').insertAdjacentHTML('beforeend',`<button type="button" data-o3dm ${tab==='o3d'?'aria-current="page"':''}><span aria-hidden="true">${S.obra3d_bloq?'🔒':'⬆'}</span>Simulador de Obra 3D</button>`);
    $('#menu').querySelector('[data-o3dm]').onclick=()=>{tab='o3d';render();scrollTo(0,0);};/* 05/11 · aba própria: o Simulador não aparece mais na Apresentação */}
   /* 16/11/2026 · Sala de apresentação (vídeo com o cliente + gravação) no menu · só o acesso FC vê; abre em outra aba */
   if(S&&S.matriz&&window.top===window){$('#menu').insertAdjacentHTML('beforeend',`<button type="button" data-salafc title="Vídeo chamada com o cliente, compartilhar tela e gravar"><span aria-hidden="true">🎥</span>Sala de apresentação</button>`);
@@ -775,7 +776,7 @@ function render(){
   $('#menu').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;try{if(sessionStorage.getItem('pfc-aba-ab'))sessionStorage.setItem('pfc-aba-tab',tab);}catch(_){}render();scrollTo(0,0);});
   if(S&&S.matriz)setTimeout(async()=>{const el=document.getElementById('demoPend');if(!el)return;try{const D=await rpc('pfc_adm_demo_lista',{p_token:S.token});const n=D.filter(d=>d.status==='pendente').length;if(n){el.hidden=false;el.textContent=n+' demonstrativo'+(n>1?'s':'')+' aguardando';}}catch(_){}},50);
   $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaInicio,apr:telaApr,o3d:telaO3d,ges:telaGes,mtg:telaMtg,vnd:telaVnd,cen:telaCen,prc:telaPrc,catc:()=>PFCcat.tela(S,papel())}[tab]||telaInicio)();
-  ligar();if(tab==='tip'&&(!TIP_MANUT||S.matriz)&&window.PFCapr)PFCapr.ligar();
+  ligar();if(tab==='tip'&&!manut()&&window.PFCapr)PFCapr.ligar();
   if(tab==='vnd')setTimeout(abrirVendas,0);if(tab==='cen')setTimeout(abrirCen,0);
   if(tab==='inicio'&&!soCat())dicasPl();
   if(window.PFCcat&&(tab==='inicio'||tab==='catc'))PFCcat.carregar(S,rpc,papel(),tab==='catc'?'tela':'card');
@@ -847,14 +848,19 @@ function famCard(p){/* 11/11/2026 · CDE (e a CDE de teste do "Ver como cliente"
 function telaInicio(){
   if(soCat())return telaSoCat();
   const p=papel(),nome=S.matriz?'FC':(S.nome||'').split(' ')[0];
-  const txt={gestor:'Acompanhe a equipe e use a plataforma para apresentar as esquadrias aos seus clientes.',vendedor:FAB()?'Mostre ao seu cliente como a esquadria é fabricada no Simulador Fábrica 3D e simule a obra com a foto do vão.':'Escolha a tipologia, monte o ambiente e apresente ao seu cliente em 3D.',arquiteto:'Veja os projetos, as plantas e as esquadrias preparadas para a sua obra.',demo:'Conheça a plataforma: abra as tipologias em 3D e veja o desenho técnico de cada montagem.'}[p];
-  const mods=itens().filter(m=>m.k!=='inicio'&&m.k!=='apr');
+  const txt={gestor:'Acompanhe a equipe e use a plataforma para apresentar as esquadrias aos seus clientes.',vendedor:FAB()?'Mostre ao seu cliente como a esquadria é fabricada no Simulador Fábrica 3D e simule a obra com a foto do vão.':'Escolha a tipologia, monte o ambiente e apresente ao seu cliente em 3D.',arquiteto:'Veja os projetos, as plantas e as esquadrias preparadas para a sua obra.',demo:'Conheça os 3 módulos que vêm juntos na licença anual: Visita de Obra, Fábrica 3D e Catálogo 3D. Comece pelo vídeo de 90 segundos no botão ❔.'}[p];
+  const mods=itens().filter(m=>m.k!=='inicio'&&m.k!=='apr'&&p!=='demo');
   /* 09/11/2026 · Montagem Tipologia: o cliente vê o card com cadeado (Aguardando liberação da FC); só a FC abre */
   const MTG_LOCK=!S.matriz||!!papelVer;if(!S.matriz&&licOk('mtg')&&['gestor','vendedor'].includes(p)&&!mods.some(m=>m.k==='mtg')){const mm=MENU.find(m=>m.k==='mtg');if(mm)mods.push(mm);}
   const desc={tip:'Janelas, portas e fachadas em 3D, com desenho técnico e o Orientativo da equipe.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ges:'O que cada setor está fazendo: quem entrou, quem está on-line, quanto tempo e o que cada pessoa abriu.',mtg:'A tipologia 3D segue a sequência de montagem, passo a passo. Em conferência pela FC.',catc:'Quem abriu o catálogo, os clientes cadastrados e as cotações que chegaram para cada vendedor.',prc:'Custo e venda por tamanho de kit, ligados ao catálogo TEXA. Só da CDE.',cen:setorAt()==='compras'?'Onde comprar (direto da extrusora), Compras com distribuidora e Pesquisa de código e conversor.':'As ferramentas do seu setor que ficavam na Central do Cliente: planilhas, estoque, solicitações, agenda da FC e o que mais estiver liberado para você.',vnd:papel()==='gestor'||(S&&S.setor==='gerente')?'Acompanhe os orçamentos e pedidos da equipe de vendas, os resultados e o que está aguardando aprovação.':'Monte o orçamento do cliente com os preços e o estoque da empresa e acompanhe os seus pedidos.'};
   return `<div class="hero"><div><h2>Olá, ${h(nome)}!</h2><p>${txt}</p></div><div class="bts"><button class="btn cl" data-ir="tip">Ver tipologias</button></div></div>
   ${window.PFCcat?PFCcat.card(S,p):''}
-  <div class="grid">${mods.map(m=>`<button class="card" ${m.k==='mtg'&&!S.matriz?'disabled aria-disabled="true" style="cursor:default;opacity:.8"':`data-ir="${m.k}"`}><span class="ic" aria-hidden="true">${m.i}</span><h3>${m.n}</h3><span class="d">${desc[m.k]}</span><span class="pe">${m.k==='mtg'&&MTG_LOCK?'<span class="chip a">🔒 Aguardando liberação da FC</span>':m.k==='tip'&&TIP_MANUT&&!S.matriz?'<span class="chip a">🔧 Em manutenção</span>':m.k==='tip'||m.k==='apr'||m.k==='amb'||m.k==='ges'||m.k==='mtg'||m.k==='vnd'||m.k==='cen'||m.k==='prc'||m.k==='catc'?'<span class="chip o">Disponível</span>':'<span class="chip a">Em construção</span>'}</span></button>`+(m.k==='tip'&&p!=='arquiteto'?`<a class="card" href="orientativo/?foco=1#cat" style="text-decoration:none;color:inherit"><span class="ic" aria-hidden="true">▤</span><h3>Catálogo 3D</h3><span class="d">${p==='demo'?'Os perfis das linhas Suprema e Gold com código, desenho e peso, para girar em 3D.':S.catalogo?'O catálogo de perfis da '+h(S.empresa_nome||'empresa')+', com os códigos da empresa. Toque no perfil para ver em 3D.':'Todos os perfis da linha com código e desenho, para consultar na hora do atendimento.'}</span><span class="pe"><span class="chip o">Disponível</span></span></a>`:'')).join('')}${simNovo()?`<a class="card prem" href="simulador/" style="text-decoration:none"><span class="ic" aria-hidden="true">📷</span><h3>Simulador de obra</h3><span class="d">Foto do vão na obra: contramarco, reboco e a esquadria aplicada. O cliente vê como fica e a obra vai para o escritório orçar.</span><span class="pe"><span class="chip prem">★ Premium</span></span></a>`:''}${['gestor','vendedor','demo'].includes(p)&&window.PFCo3d&&licOk('o3d')&&(p==='demo'||(S.matriz&&!S.empresa)||PFCo3d.pode(S,p))?`<button class="card" data-ir="o3d"><span class="ic" aria-hidden="true">${S.obra3d_bloq?'🔒':'⬆'}</span><h3>Simulador de Obra 3D</h3><span class="d">Anexe a Proposta comercial e o Orientativo de Montagem. O projeto passa pelo filtro da FC, volta para a sua avaliação e, aprovado, vira proposta on-line com código de acesso para cada pessoa.</span><span class="pe">${S.obra3d_bloq?'<span class="chip" style="background:#e9eef0;color:#36474c">🔒 Aguardando liberação da FC</span>':'<span class="chip" style="background:#F2C14E;color:#4A3300">Novo</span>'}</span></button>`:''}${famCard(p)}</div>
+  ${p==='demo'?`<div class="grid" style="margin-bottom:6px">
+   <a class="card" href="simulador/novo.html" style="text-decoration:none"><span class="ic" aria-hidden="true">📷</span><h3>1 · Visita de Obra</h3><span class="d">Na obra: foto do vão, limpar a foto, contramarco, reboco e a esquadria. O cliente vê o antes e o depois na hora.</span><span class="pe"><span class="chip">Abrir</span></span></a>
+   <button class="card" data-ir="tip"><span class="ic" aria-hidden="true">🏭</span><h3>2 · Fábrica 3D</h3><span class="d">A esquadria Suprema em 3D: desmontar, cortes 01 a 05, peça por peça e ver de perto.</span><span class="pe"><span class="chip">Abrir</span></span></button>
+   <a class="card" href="orientativo/?foco=1#cat" style="text-decoration:none"><span class="ic" aria-hidden="true">▤</span><h3>3 · Catálogo 3D</h3><span class="d">Os perfis em 3D, com o encaixe de cada peça e o código para o orçamento.</span><span class="pe"><span class="chip">Abrir</span></span></a>
+  </div><p class="mute" style="margin:0 0 14px">Os 3 módulos se completam e são vendidos juntos, numa licença anual.</p>`:''}
+  <div class="grid">${mods.map(m=>`<button class="card" ${m.k==='mtg'&&!S.matriz?'disabled aria-disabled="true" style="cursor:default;opacity:.8"':`data-ir="${m.k}"`}><span class="ic" aria-hidden="true">${m.i}</span><h3>${m.n}</h3><span class="d">${desc[m.k]}</span><span class="pe">${m.k==='mtg'&&MTG_LOCK?'<span class="chip a">🔒 Aguardando liberação da FC</span>':m.k==='tip'&&manut()?'<span class="chip a">🔧 Em manutenção</span>':m.k==='tip'||m.k==='apr'||m.k==='amb'||m.k==='ges'||m.k==='mtg'||m.k==='vnd'||m.k==='cen'||m.k==='prc'||m.k==='catc'?'<span class="chip o">Disponível</span>':'<span class="chip a">Em construção</span>'}</span></button>`+(m.k==='tip'&&p!=='arquiteto'?`<a class="card" href="orientativo/?foco=1#cat" style="text-decoration:none;color:inherit"><span class="ic" aria-hidden="true">▤</span><h3>Catálogo 3D</h3><span class="d">${p==='demo'?'Os perfis das linhas Suprema e Gold com código, desenho e peso, para girar em 3D.':S.catalogo?'O catálogo de perfis da '+h(S.empresa_nome||'empresa')+', com os códigos da empresa. Toque no perfil para ver em 3D.':'Todos os perfis da linha com código e desenho, para consultar na hora do atendimento.'}</span><span class="pe"><span class="chip o">Disponível</span></span></a>`:'')).join('')}${simNovo()?`<a class="card prem" href="simulador/" style="text-decoration:none"><span class="ic" aria-hidden="true">📷</span><h3>Simulador de obra</h3><span class="d">Foto do vão na obra: contramarco, reboco e a esquadria aplicada. O cliente vê como fica e a obra vai para o escritório orçar.</span><span class="pe"><span class="chip prem">★ Premium</span></span></a>`:''}${['gestor','vendedor','demo'].includes(p)&&window.PFCo3d&&licOk('o3d')&&(p==='demo'||(S.matriz&&!S.empresa)||PFCo3d.pode(S,p))?`<button class="card" data-ir="o3d"><span class="ic" aria-hidden="true">${S.obra3d_bloq?'🔒':'⬆'}</span><h3>Simulador de Obra 3D</h3><span class="d">Anexe a Proposta comercial e o Orientativo de Montagem. O projeto passa pelo filtro da FC, volta para a sua avaliação e, aprovado, vira proposta on-line com código de acesso para cada pessoa.</span><span class="pe">${S.obra3d_bloq?'<span class="chip" style="background:#e9eef0;color:#36474c">🔒 Aguardando liberação da FC</span>':'<span class="chip" style="background:#F2C14E;color:#4A3300">Novo</span>'}</span></button>`:''}${famCard(p)}</div>
   <div id="dicasPl"></div>
   ${S.matriz?verCliQuadro():''}
   ${S.matriz&&papel()==='gestor'?`<div style="margin:18px 0 6px"><a class="btn pri" href="empresas/">👥 Empresas e acessos <span id="demoPend" class="chip a" hidden></span></a> <span class="mute" style="margin-left:8px">cadastro das empresas, pessoas, licença e mensagem para o WhatsApp · só a FC vê</span></div>`:''}${S.matriz&&papel()==='gestor'?`<div class="linha-tit"><h3>Etapas da plataforma</h3><span class="chip t">só a FC vê</span></div><div class="etapas">${ETAPAS.map(([n,t,d])=>`<div class="etp ${n==='1'?'on':''}"><span class="chip ${n==='1'?'o':''}">${n==='1'?'Pronta':'Etapa '+n}</span><b>${t}</b><span class="mute">${d}</span></div>`).join('')}</div>`:''}`;
@@ -889,6 +895,8 @@ function vaiLinha(k){let el=document.getElementById('ln-'+k);
 /* 12/11/2026 · Tipologias EM MANUTENÇÃO para os clientes. 14/11/2026: o Acesso FC (Matriz) volta a entrar para fazer os ajustes.
    Para liberar de novo para os clientes: TIP_MANUT=false (e no mostruario/index.html.enc, TIP_MANUT=false). */
 var TIP_MANUT=true;
+/* 16/11/2026 · o demonstrativo de 24 h abre a Fábrica 3D (Suprema) mesmo com as tipologias em manutenção para os clientes */
+function manut(){return TIP_MANUT&&!(S&&(S.matriz||S.demo));}
 /* 14/11/2026 · Linha Gold EM MANUTENÇÃO: os cards aparecem com o aviso e ficam bloqueados para todos os acessos;
    só o Acesso FC (Matriz) abre, para ajustar. Para liberar a Gold: GOLD_MANUT=false aqui, no mostruario/index.html.enc,
    no tecnico/index.html.enc e no montagens/index.html.enc. */
@@ -896,7 +904,7 @@ var GOLD_MANUT=true;window.GOLD_MANUT=GOLD_MANUT;
 const goldTrava=t=>GOLD_MANUT&&t&&t.l==='gld'&&!(S&&S.matriz);
 function telaTipManut(){return `<div class="cab"><div><h2>${NTIP()}</h2><p class="mute">${FAB()?'Modelo de fábrica em 3D: veja como cada esquadria é fabricada e montada, peça por peça, para explicar ao cliente.':'Janelas, portas e fachadas em 3D.'}</p></div></div>
   <div class="hero" style="margin-top:8px"><div><span class="chip" style="background:#F2C14E;color:#4A3300">🔧 Em manutenção</span><h2 style="margin-top:8px">${NTIP()} em manutenção</h2><p>Estamos atualizando ${FAB()?'os modelos de fábrica':'as tipologias'} em 3D. Em breve elas voltam a ficar disponíveis para a sua equipe.</p><p style="margin-top:6px;opacity:.85">Enquanto isso, o Catálogo 3D continua disponível.</p></div></div>`;}
-function telaTip(){if(TIP_MANUT&&!S.matriz)return telaTipManut();
+function telaTip(){if(manut())return telaTipManut();
   const L=TIPS.filter(t=>(!t.aj||S.matriz)&&t.l==='res'&&(filtro==='todas'||t.g===filtro)),G=TIPS.filter(t=>(!t.aj||S.matriz||GOLD_MANUT)&&t.l==='gld'&&(filtro==='todas'||t.g===filtro)),F=TIPS.filter(t=>t.l==='fac'&&(filtro==='todas'||filtro==='fac'));
   /* tipologias com Simular pressão de vento no Mostruário (mesma lista do mostruario/vento.js: DIAG + VTX) */
   const eqV=papel()!=='arquiteto'&&papel()!=='demo';
@@ -987,7 +995,7 @@ function detalhe(id){
   d.innerHTML=`<div class="cx" role="dialog" aria-modal="true" aria-label="${h(t.n)}"><div class="des">${desenho(t.id)}</div><div class="tx">
    <span class="chip t" style="align-self:flex-start">${LINHAS[t.l].n}${t.cd?' · '+h(t.cd):''}</span><h2 style="font-size:21px">${h(t.n)}</h2><p>${h(t.d)}</p>
    <dl><dt>Abertura</dt><dd>${t.ab}</dd><dt>Folhas</dt><dd>${t.f}</dd><dt>Indicada para</dt><dd>${h(t.uso)}</dd></dl>
-   ${(()=>{/* abre direto a tipologia do card, sem escolher linha/tipologia de novo */const eq=papel()!=='arquiteto'&&papel()!=='demo';return eq&&t.mo?`<a class="btn pri" href="mostruario/?t=${t.mo}">🧊 Orientativo 3D · conhecer e montar</a>${VENTO.includes(t.mo)?`<a class="btn sec" href="mostruario/?t=${t.mo}&vento=1">🌬 Simular pressão de vento</a>`:''}`:t.m3d?`<a class="btn pri" href="montagens/?m=${t.m3d}&fixo=1#cor">🧊 Ver em 3D</a>`:'';})()}
+   ${(()=>{/* abre direto a tipologia do card, sem escolher linha/tipologia de novo */const eq=papel()!=='arquiteto';return eq&&t.mo?`<a class="btn pri" href="mostruario/?t=${t.mo}">🧊 Orientativo 3D · conhecer e montar</a>${VENTO.includes(t.mo)?`<a class="btn sec" href="mostruario/?t=${t.mo}&vento=1">🌬 Simular pressão de vento</a>`:''}`:t.m3d?`<a class="btn pri" href="montagens/?m=${t.m3d}&fixo=1#cor">🧊 Ver em 3D</a>`:'';})()}
    <!-- Versão 1 (11/11/2026): botão Desenho técnico interativo saiu -->
    ${t.obra?`<a class="btn pri" href="${OBRA(t.obra)}" target="_blank" rel="noopener">Abrir em 3D com as medidas da obra</a>`:''}
    ${!t.m3d&&!t.obra&&!t.mo?'<button class="btn sec" disabled title="Chega nas próximas etapas">Ver em 3D · em breve</button>':''}   <p class="aviso">Desenho esquemático, sem escala. Medidas, pesos e acabamentos devem ser confirmados com o fornecedor da empresa.</p>
@@ -1051,7 +1059,7 @@ window.PFCaprCtx={TIPS,LINHAS,h,papel:()=>papel(),sessao:()=>S,render:()=>render
 </script>
 <script src="toque.js?v=1"></script>
 <script src="apresentacao.js?v=19"></script>
-<script src="tutorial.js?v=13"></script>
+<script src="tutorial.js?v=14"></script>
 <script src="convite.js?v=4" defer></script>
 <script src="licenca.js?v=7" defer></script>
 <script src="leve.js?v=1"></script>
