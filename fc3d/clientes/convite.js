@@ -9,14 +9,15 @@
   const ZAP='https://wa.me/5566999867984?text='+encodeURIComponent('Oi, Fernando! Estou testando a Plataforma FC 3D e quero saber mais.');
   const TXT={
     dica:{t:'Dica',p:'Clique nas peças para ver o código de cada perfil e os cortes das junções.',zap:false},
-    convite:{t:'Sua equipe de vendas com a fábrica na mão',p:'Quer ver como a Plataforma FC 3D fica para a sua empresa?',zap:true},
+    convite:{t:'Sua equipe com a ferramenta que faz a diferença',p:'Quer ver como a Plataforma FC 3D fica para a sua empresa?',zap:true},
     ultimo:{t:'Seu demonstrativo termina {ate}',p:'Fale com a FC para continuar usando com a sua equipe.',zap:true}};
   const MIN_DICA=180,MIN_CONVITE=600,TIP_CONVITE=3,PARADO=4000; /* segundos de uso · tipologias abertas · ms sem mexer */
   const lg=k=>{try{return localStorage.getItem(k);}catch(_){return null;}},ls=(k,v)=>{try{localStorage.setItem(k,v);}catch(_){}};
   const tk=lg('pfc-token');if(!tk)return;
   const q=new URLSearchParams(location.search),pg=location.pathname;
-  const eh3d=/\/(mostruario|orientativo|montagens)\//.test(pg),tip=/\/mostruario\//.test(pg)?(q.get('t')||'jcr200'):'';
-  const tela=()=>{if(tip)return 'Orientativo 3D · '+tip.toUpperCase();if(/\/orientativo\//.test(pg))return 'Tipologias'+(location.hash.length>1?' · '+location.hash.slice(1).toUpperCase():'');
+  const eh3d=/\/(mostruario|montagens)\//.test(pg),tip=/\/mostruario\//.test(pg)?(q.get('t')||'jcr200'):'';
+  /* 16/11/2026 · nomes dos 3 módulos para o relatório de uso do demonstrativo */
+  const tela=()=>{if(tip)return 'Fábrica 3D · '+tip.toUpperCase();if(/\/orientativo\//.test(pg))return 'Catálogo 3D';if(/\/simulador\//.test(pg))return 'Visita de Obra';
     if(/\/montagens\//.test(pg))return 'Montagens';if(/\/tecnico\//.test(pg))return 'Desenho técnico';
     const m=document.querySelector('#menu [aria-current]');return m?(m.textContent||'').replace(/^[^A-Za-zÀ-ú]+/,'').trim()||'Início':'Início';};
   let tips=[];try{tips=JSON.parse(lg('pfc-cv-tips'))||[];}catch(_){}
@@ -27,7 +28,7 @@
       body:JSON.stringify({p_token:tk,p_tela:tela(),p_evento:evento||null}),keepalive:true});return r.ok?await r.json():null;}catch(_){return null;}}
   const viu=(k)=>{const c=(ST&&ST.convites)||{};return !!(c[k]&&c[k].visto)||lg('pfc-cv-'+k)==='1';};
   function etapa(){if(!ST||!ST.demo||ST.fim)return null;const falta=new Date(ST.expira)-Date.now(),uso=ST.uso_seg||0;
-    if(falta>0&&falta<24*36e5&&!viu('ultimo'))return 'ultimo';
+    if(falta>0&&falta<3*36e5&&!viu('ultimo'))return 'ultimo';
     if((uso>=MIN_CONVITE||tips.length>=TIP_CONVITE)&&!viu('convite'))return 'convite';
     if(eh3d&&(uso>=MIN_DICA||tip)&&!viu('dica'))return 'dica';return null;}
   const ate=()=>{const t=new Date(ST.expira),am=new Date();am.setDate(am.getDate()+1);
@@ -46,7 +47,7 @@
   function fecha(k,ev){if(!aberto)return;aberto.remove();aberto=null;ls('pfc-cv-'+k,'1');if(ev)ping(ev+':'+k);}
   function mostra(k){const x=TXT[k];if(!x||aberto)return;css();mostrou=true;ls('pfc-cv-'+k,'1');
     const d=document.createElement('div');d.id='fcCv';d.setAttribute('role','dialog');d.setAttribute('aria-label',x.t.replace('{ate}',''));
-    d.innerHTML=`<div class="cvH"><span>FC Consultoria e Representação</span><button class="cvX" type="button" aria-label="Fechar">×</button></div>
+    d.innerHTML=`<div class="cvH"><span>FC Consultoria em Esquadria</span><button class="cvX" type="button" aria-label="Fechar">×</button></div>
       <p class="cvT">${x.t.replace('{ate}',ate())}</p><p class="cvP">${x.p}</p>
       ${x.zap?`<a class="cvZ" href="${ZAP}" target="_blank" rel="noopener">💬 Falar com a FC no WhatsApp</a>`:'<button class="cvOk" type="button">Entendi</button>'}`;
     if(tip)d.style.bottom='66px'; /* acima do botão Voltar às tipologias */
