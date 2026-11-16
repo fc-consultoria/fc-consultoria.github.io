@@ -769,6 +769,9 @@ function render(){
   /* 04/11/2026 · Simulador de Obra 3D no menu, ao lado do Catálogo 3D (só onde ele está ligado) */
   if(window.PFCo3d&&!soCat()&&['gestor','vendedor','demo'].includes(papel())&&licOk('o3d')&&(papel()==='demo'||(S.matriz&&!S.empresa)||PFCo3d.pode(S,papel()))){$('#menu').insertAdjacentHTML('beforeend',`<button type="button" data-o3dm ${tab==='o3d'?'aria-current="page"':''}><span aria-hidden="true">${S.obra3d_bloq?'🔒':'⬆'}</span>Simulador de Obra 3D</button>`);
    $('#menu').querySelector('[data-o3dm]').onclick=()=>{tab='o3d';render();scrollTo(0,0);};/* 05/11 · aba própria: o Simulador não aparece mais na Apresentação */}
+  /* 16/11/2026 · Sala de apresentação (vídeo com o cliente + gravação) no menu · só o acesso FC vê; abre em outra aba */
+  if(S&&S.matriz){$('#menu').insertAdjacentHTML('beforeend',`<button type="button" data-salafc title="Vídeo chamada com o cliente, compartilhar tela e gravar"><span aria-hidden="true">🎥</span>Sala de apresentação</button>`);
+   $('#menu').querySelector('[data-salafc]').onclick=()=>{window.open('sala/'+(S.empresa_nome&&S.empresa?'?cli='+encodeURIComponent(S.empresa_nome):''),'_blank','noopener');};}
   $('#menu').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;try{if(sessionStorage.getItem('pfc-aba-ab'))sessionStorage.setItem('pfc-aba-tab',tab);}catch(_){}render();scrollTo(0,0);});
   if(S&&S.matriz)setTimeout(async()=>{const el=document.getElementById('demoPend');if(!el)return;try{const D=await rpc('pfc_adm_demo_lista',{p_token:S.token});const n=D.filter(d=>d.status==='pendente').length;if(n){el.hidden=false;el.textContent=n+' demonstrativo'+(n>1?'s':'')+' aguardando';}}catch(_){}},50);
   $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaInicio,apr:telaApr,o3d:telaO3d,ges:telaGes,mtg:telaMtg,vnd:telaVnd,cen:telaCen,prc:telaPrc,catc:()=>PFCcat.tela(S,papel())}[tab]||telaInicio)();

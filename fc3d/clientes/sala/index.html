@@ -76,7 +76,7 @@ async function anfitriao(){
   $('#volta').hidden=false;
   let cod='';try{cod=localStorage.getItem('fc_sala_cod')||'';}catch(_){}
   caixa('Nova apresentação','Crie a sala e mande o link para o cliente. Ele entra pelo navegador, sem instalar nada e sem acesso à plataforma. Depois é só compartilhar a tela da Sua Fábrica em 3D ou do Simulador.',
-   `<label>Nome do cliente (opcional)<input id="hCli" placeholder="Ex.: João · Vidraçaria Central"></label><button class="bt pri" id="hNova" style="width:100%">Criar sala e ligar a câmera</button>${cod?`<button class="bt" id="hVolta" style="width:100%;margin-top:8px">Voltar para a última sala</button>`:''}`);
+   `<label>Nome do cliente (opcional)<input id="hCli" placeholder="Ex.: João · Vidraçaria Central" value="${esc((q.get('cli')||'').slice(0,60))}"></label><button class="bt pri" id="hNova" style="width:100%">Criar sala e ligar a câmera</button>${cod?`<button class="bt" id="hVolta" style="width:100%;margin-top:8px">Voltar para a última sala</button>`:''}`);
   $('#hNova').onclick=()=>{const c=(crypto.randomUUID?crypto.randomUUID().replace(/-/g,''):Math.random().toString(36).slice(2)+Date.now().toString(36)).slice(0,12);try{localStorage.setItem('fc_sala_cod',c);}catch(_){}conduzir(c,$('#hCli').value.trim());};
   if($('#hVolta'))$('#hVolta').onclick=()=>conduzir(cod,'');
 }
