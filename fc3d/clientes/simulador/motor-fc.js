@@ -211,68 +211,47 @@
     return h > 1 ? w / h : 1;
   }
 
-  /* ---------------- 4. Ajuste automático dos cantos ---------------- */
-  // Procura a borda real de cada lado do vão (maior contraste perto da linha marcada),
-  // ajusta uma reta em cada lado e cruza as retas para achar os 4 cantos.
-  function ajustarCantos(foto, cantos, opt) {
-    opt = opt || {};
-    const W = foto.width, H = foto.height;
-    const diag = Math.hypot(W, H), R = Math.max(6, Math.round(opt.raio || diag * 0.022));
-    const xs = cantos.map(p => p[0]), ys = cantos.map(p => p[1]);
-    const x0 = Math.max(0, Math.floor(Math.min(...xs) - R - 2)), y0 = Math.max(0, Math.floor(Math.min(...ys) - R - 2));
-    const x1 = Math.min(W, Math.ceil(Math.max(...xs) + R + 2)), y1 = Math.min(H, Math.ceil(Math.max(...ys) + R + 2));
-    const w = x1 - x0, h = y1 - y0; if (w < 8 || h < 8) return cantos;
-    const d = foto.getContext('2d', { willReadFrequently: true }).getImageData(x0, y0, w, h).data;
-    // tons de cinza suavizados
+  /* ---------------- 4. Conferência dos cantos (ponto verde quando está no lugar) ---------------- */
+  // Mapa de bordas da foto (feito uma vez por foto)
+  function mapaBordas(foto) {
+    const w = foto.width, h = foto.height;
+    const d = foto.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, w, h).data;
     const cz = new Float32Array(w * h);
     for (let i = 0, k = 0; i < cz.length; i++, k += 4) cz[i] = d[k] * 0.299 + d[k + 1] * 0.587 + d[k + 2] * 0.114;
     const sv = new Float32Array(w * h);
-    for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) { const i = y * w + x;
-      sv[i] = (cz[i] * 4 + cz[i - 1] + cz[i + 1] + cz[i - w] + cz[i + w]) / 8; }
-    const grad = (x, y) => { // gradiente (Sobel) no ponto
-      x = Math.round(x - x0); y = Math.round(y - y0);
-      if (x < 2 || y < 2 || x > w - 3 || y > h - 3) return [0, 0];
-      const a = (dx, dy) => sv[(y + dy) * w + x + dx];
-      return [(a(1, -1) + 2 * a(1, 0) + a(1, 1)) - (a(-1, -1) + 2 * a(-1, 0) + a(-1, 1)),
-              (a(-1, 1) + 2 * a(0, 1) + a(1, 1)) - (a(-1, -1) + 2 * a(0, -1) + a(1, -1))];
-    };
-    const retas = [];
-    for (let s = 0; s < 4; s++) {
-      const A = cantos[s], B = cantos[(s + 1) % 4];
-      const L = Math.hypot(B[0] - A[0], B[1] - A[1]); if (L < 10) { retas.push(null); continue; }
-      const tx = (B[0] - A[0]) / L, ty = (B[1] - A[1]) / L, nx = -ty, ny = tx;
-      const pts = [], N = Math.max(12, Math.min(60, Math.round(L / 6)));
-      for (let k = 0; k <= N; k++) {
-        const t = 0.12 + 0.76 * k / N, cx = A[0] + (B[0] - A[0]) * t, cy = A[1] + (B[1] - A[1]) * t;
-        let melhor = 0, bo = 0;
-        for (let o = -R; o <= R; o++) { const gg = grad(cx + nx * o, cy + ny * o), f = Math.abs(gg[0] * nx + gg[1] * ny) * (1 - 0.25 * Math.abs(o) / R);
-          if (f > melhor) { melhor = f; bo = o; } }
-        if (melhor > 40) pts.push([cx + nx * bo, cy + ny * bo, melhor]);
-      }
-      retas.push(pts.length >= 5 ? reta(pts) : null);
+    for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) { const i = y * w + x; sv[i] = (cz[i] * 4 + cz[i - 1] + cz[i + 1] + cz[i - w] + cz[i + w]) / 8; }
+    return { w, h, sv };
+  }
+  function gradiente(m, x, y) {
+    x = Math.round(x); y = Math.round(y);
+    if (x < 2 || y < 2 || x > m.w - 3 || y > m.h - 3) return [0, 0];
+    const a = (dx, dy) => m.sv[(y + dy) * m.w + x + dx];
+    return [(a(1, -1) + 2 * a(1, 0) + a(1, 1)) - (a(-1, -1) + 2 * a(-1, 0) + a(-1, 1)),
+            (a(-1, 1) + 2 * a(0, 1) + a(1, 1)) - (a(-1, -1) + 2 * a(0, -1) + a(1, -1))];
+  }
+  // Um lado está na borda quando, perto do canto, a linha marcada passa em cima do contraste mais forte da região
+  function ladoNaBorda(m, A, B) {
+    const L = Math.hypot(B[0] - A[0], B[1] - A[1]); if (L < 12) return 0;
+    const tx = (B[0] - A[0]) / L, ty = (B[1] - A[1]) / L, nx = -ty, ny = tx;
+    const tol = Math.max(2, Math.round(Math.hypot(m.w, m.h) * 0.003)); // folga para o dedo (≈5 px numa foto de 1600)
+    const R = Math.max(tol + 8, Math.min(34, L * 0.06)), N = 14; let bons = 0;
+    for (let k = 0; k < N; k++) {
+      const t = (0.03 + 0.3 * k / (N - 1)) * L, cx = A[0] + tx * t, cy = A[1] + ty * t;
+      // perto: contraste em cima da linha (até tol) · lado: logo ao lado (tol a tol+5) · longe: o mais forte da região
+      let perto = 0, lado = 0, longe = 0;
+      for (let o = -R; o <= R; o++) { const g = gradiente(m, cx + nx * o, cy + ny * o), f = Math.abs(g[0] * nx + g[1] * ny), ao = Math.abs(o);
+        if (ao <= tol) perto = Math.max(perto, f); else if (ao <= tol + 5) lado = Math.max(lado, f); longe = Math.max(longe, f); }
+      if (perto > 60 && perto >= longe * 0.3 && perto >= lado * 1.15) bons++;
     }
-    const novo = cantos.map((p, i) => {
-      const r1 = retas[(i + 3) % 4], r2 = retas[i]; // lado que chega e lado que sai do canto
-      const q = r1 && r2 ? cruza(r1, r2) : null;
-      return q && Math.hypot(q[0] - p[0], q[1] - p[1]) <= R * 1.6 ? q : p;
+    return bons / N;
+  }
+  // Canto certo: os dois lados que saem dele estão em cima das bordas do vão
+  function cantosCertos(m, cantos) {
+    return cantos.map((p, i) => {
+      const a = ladoNaBorda(m, p, cantos[(i + 1) % 4]), b = ladoNaBorda(m, p, cantos[(i + 3) % 4]);
+      return a >= 0.6 && b >= 0.6;
     });
-    return cantosEmOrdem(novo);
-  }
-  // Reta por mínimos quadrados (descarta os 30% mais distantes e refaz)
-  function reta(pts) {
-    const fit = P => { let sx = 0, sy = 0; P.forEach(p => { sx += p[0]; sy += p[1]; }); const mx = sx / P.length, my = sy / P.length;
-      let a = 0, b = 0, c = 0; P.forEach(p => { const dx = p[0] - mx, dy = p[1] - my; a += dx * dx; b += dx * dy; c += dy * dy; });
-      const ang = 0.5 * Math.atan2(2 * b, a - c); return { p: [mx, my], d: [Math.cos(ang), Math.sin(ang)] }; };
-    let r = fit(pts);
-    const dist = p => Math.abs((p[0] - r.p[0]) * -r.d[1] + (p[1] - r.p[1]) * r.d[0]);
-    const bons = pts.slice().sort((a, b) => dist(a) - dist(b)).slice(0, Math.max(5, Math.round(pts.length * 0.7)));
-    return fit(bons);
-  }
-  function cruza(r, s) {
-    const den = r.d[0] * s.d[1] - r.d[1] * s.d[0]; if (Math.abs(den) < 1e-6) return null;
-    const t = ((s.p[0] - r.p[0]) * s.d[1] - (s.p[1] - r.p[1]) * s.d[0]) / den;
-    return [r.p[0] + r.d[0] * t, r.p[1] + r.d[1] * t];
   }
 
-  G.MotorFC = { projetiva, leva, cantosEmOrdem, dentro, malha, emPerspectiva, endireitar, retrato, quadroComMargem, proporcao, ajustarCantos, PAREDE };
+  G.MotorFC = { projetiva, leva, cantosEmOrdem, dentro, malha, emPerspectiva, endireitar, retrato, quadroComMargem, proporcao, mapaBordas, cantosCertos, PAREDE };
 })(window);
