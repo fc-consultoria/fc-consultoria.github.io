@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#063238">
+<title>Medidor de Obras · motor FC (teste)</title>
+<link rel="icon" href="/img/logo-fc-160.jpg">
+<!-- 16/11/2026 · Página de TESTE do motor novo do Medidor de Obras (motor-fc.js), escrito do zero pela FC.
+     Fica lado a lado com o Simulador atual até a aprovação. © FC Consultoria em Esquadria · uso exclusivo -->
+<style>
+  :root{--pet:#063238;--ac:#02717d;--ac2:#2ec4b6;--pr:#c9d4d6;--bg:#eef3f3;--ln:#d3e3e5;--tx:#13232e;--mu:#5d7078}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);font:14px/1.45 Inter,system-ui,-apple-system,Segoe UI,sans-serif;-webkit-tap-highlight-color:transparent}
+  body{display:flex;flex-direction:column;height:100vh;height:100dvh}
+  header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--pet);color:#e8f3f4}
+  header .lg{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#d6dfe1,#8fa3a7);color:var(--pet);font:800 13px Inter,sans-serif}
+  header b{font-size:15px}header small{display:block;color:#9fc4c8;font-size:11px}
+  header .tag{margin-left:auto;font:700 10px Inter,sans-serif;letter-spacing:.08em;background:#f3c969;color:#3b2a00;border-radius:999px;padding:4px 8px}
+  main{flex:1;min-height:0;display:flex}
+  #palco{flex:1;min-width:0;position:relative;display:flex;align-items:center;justify-content:center;background:#1a2a2e;overflow:hidden;touch-action:none}
+  #tela{max-width:100%;max-height:100%;display:none;touch-action:none;cursor:crosshair}
+  #vazio{color:#cfe3e5;text-align:center;padding:24px;max-width:360px}
+  #vazio .ic{font-size:42px}
+  #lupa{position:absolute;width:132px;height:132px;border-radius:50%;border:3px solid #fff;box-shadow:0 6px 20px rgba(0,0,0,.45);pointer-events:none;display:none;left:12px;top:12px;background:#000}
+  #dica{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;background:rgba(6,50,56,.92);color:#fff;font-size:13px;padding:8px 12px;border-radius:12px;max-width:92%;text-align:center;pointer-events:none}
+  #lado{width:340px;flex:none;background:#fff;border-left:1px solid var(--ln);display:flex;flex-direction:column;min-height:0}
+  #passos{display:flex;gap:4px;padding:8px;border-bottom:1px solid var(--ln);overflow-x:auto}
+  #passos button{flex:1 0 auto;border:1px solid var(--ln);background:#f6fafa;color:var(--mu);border-radius:10px;padding:7px 8px;font:700 11px Inter,sans-serif;cursor:pointer;white-space:nowrap}
+  #passos button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+  #passos button.ok:not(.on){border-color:#9fd8cf;color:#0b6b5e}
+  #corpo{flex:1;overflow:auto;padding:14px}
+  h3{margin:0 0 4px;font-size:15px}
+  p.sub{margin:0 0 12px;color:var(--mu);font-size:12.5px}
+  .rot{font:700 10.5px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin:14px 0 6px}
+  .bt{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--ln);background:#fff;color:var(--tx);border-radius:11px;padding:10px 12px;font:600 13px Inter,sans-serif;cursor:pointer;min-height:42px}
+  .bt.pri{background:var(--ac);border-color:var(--ac);color:#fff}
+  .bt.full{width:100%}
+  .bt:disabled{opacity:.45;cursor:default}
+  .linha{display:flex;gap:8px;flex-wrap:wrap}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{border:1px solid var(--ln);background:#fff;border-radius:999px;padding:6px 10px;font:600 12px Inter,sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .chip i{width:14px;height:14px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.2)}
+  .chip.on{border-color:var(--ac);box-shadow:0 0 0 2px rgba(2,113,125,.25);color:var(--ac)}
+  .sw{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--ln);border-radius:12px;padding:10px 12px;font-weight:600}
+  .sw input{width:20px;height:20px;accent-color:var(--ac)}
+  select,input[type=number]{width:100%;border:1px solid var(--ln);border-radius:10px;padding:9px 10px;font:14px Inter,sans-serif;background:#fff;color:var(--tx)}
+  input[type=range]{width:100%;accent-color:var(--ac)}
+  .grade{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .tp{border:1px solid var(--ln);border-radius:10px;background:#f7fafa;padding:4px;cursor:pointer;text-align:center;font-size:10.5px;line-height:1.2;color:var(--mu)}
+  .tp img{width:100%;aspect-ratio:1/1;object-fit:contain;display:block;margin-bottom:3px}
+  .tp.on{border-color:var(--ac);background:#e8f6f6;color:var(--ac);font-weight:700}
+  .med{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .med label{font-size:11px;color:var(--mu)}
+  .aviso{margin-top:14px;font-size:11px;color:var(--mu);background:#f4f7f7;border-radius:10px;padding:8px 10px}
+  .vaos{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+  .vaos .chip b{font-weight:800}
+  footer{font-size:10px;color:var(--mu);text-align:center;padding:6px;border-top:1px solid var(--ln);background:#fff}
+  @media (max-width:820px){
+    main{flex-direction:column}
+    #palco{flex:1 1 52%}
+    #lado{width:auto;flex:1 1 48%;border-left:0;border-top:1px solid var(--ln)}
+    #lupa{width:110px;height:110px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="lg">FC</div>
+  <div><b>Medidor de Obras</b><small>Foto do vão, medidas e esquadria na obra</small></div>
+  <span class="tag">MOTOR NOVO · TESTE</span>
+</header>
+<main>
+  <div id="palco">
+    <div id="vazio"><div class="ic">📷</div><p><b>Comece pela foto do vão</b><br>Tire uma foto da obra ou escolha uma da galeria.</p>
+      <label class="bt pri">Tirar / escolher foto<input id="arq" type="file" accept="image/*" hidden></label></div>
+    <canvas id="tela"></canvas>
+    <canvas id="lupa" width="132" height="132"></canvas>
+    <div id="dica" hidden></div>
+  </div>
+  <aside id="lado">
+    <nav id="passos"></nav>
+    <div id="corpo"></div>
+    <footer>Imagem demonstrativa · Desenvolvido por FC Consultoria em Esquadria · CNPJ 52.985.682/0001-32</footer>
+  </aside>
+</main>
+
+<script src="tipologias.js?v=4"></script>
+<script src="motor-fc.js?v=1"></script>
+<script>
+/* Acesso: mesmo login da Plataforma FC 3D (FC, Gestor ou Colaborador). No computador da FC (localhost) abre direto para teste. */
+(function(){
+  if(/^(localhost|127\.0\.0\.1)$/.test(location.hostname))return;
+  var tk=null;try{tk=localStorage.getItem('pfc-token');}catch(_){}
+  var ov=document.createElement('div');ov.style.cssText='position:fixed;inset:0;z-index:99;background:#eef3f3;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;font:15px Inter,sans-serif';
+  ov.innerHTML='<b>Conferindo o seu acesso…</b>';document.documentElement.appendChild(ov);
+  function nega(t){ov.innerHTML='<div><div style="font-size:32px">🔒</div><b>'+t+'</b><p><a href="/fc3d/clientes/" style="color:#02717d">Entrar na Plataforma FC 3D</a></p></div>';}
+  if(!tk){nega('Entre com o seu login');return;}
+  fetch('https://pawwncmfadzxfahfvhry.supabase.co/rest/v1/rpc/pfc_sessao',{method:'POST',headers:{apikey:'sb_publishable_b0kGoqo85joo3Vb8Xllxhw_VemwaLMs','Content-Type':'application/json'},body:JSON.stringify({p_token:tk})})
+   .then(function(r){return r.ok?r.json():null;}).then(function(d){
+     if(!d||!(d.matriz||d.papel==='gestor'||d.papel==='vendedor')){nega('Acesso não liberado');return;}ov.remove();
+   }).catch(function(){nega('Sem conexão');});
+})();
+</script>
+<script>
+(function(){
+'use strict';
+const M=window.MotorFC, T=window.FCTipo;
+const $=id=>document.getElementById(id);
+const tela=$('tela'), g=tela.getContext('2d'), lupa=$('lupa'), lg=lupa.getContext('2d');
+
+/* ---------- estado ---------- */
+const E={foto:null,vaos:[],ativo:-1,passo:1,marcando:[],arraste:null,antes:1,cat:T.CATS[0]};
+const PASSOS=[[1,'Foto'],[2,'Vão'],[3,'Contramarco'],[4,'Reboco'],[5,'Esquadria'],[6,'Finalizar']];
+const LISTA=T.LISTA.map(t=>({id:t.id,cat:t.cat,nome:t.nome,desc:t.desc,move:!!T.move(t.desc),dim:(()=>{try{return T.dims(t.desc);}catch(_){return{W:1500,H:1200};}})()}));
+const novoVao=c=>({c,W:null,H:null,tip:null,cor:'branco',vidro:'incolor',abre:0,contramarco:{on:true,cor:'branco'},reboco:{on:false,cor:'cimento'}});
+const va=()=>E.vaos[E.ativo]||null;
+
+/* ---------- foto ---------- */
+$('arq').onchange=e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();
+  im.onload=()=>{const k=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+    c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);E.foto=c;E.vaos=[];E.ativo=-1;E.marcando=[];
+    tela.width=c.width;tela.height=c.height;tela.style.display='block';$('vazio').style.display='none';ir(2);};im.src=u;e.target.value='';};
+
+/* ---------- medidas e esquadria ---------- */
+function medidas(v){ // mm usados no desenho: digitadas ou pela proporção da foto
+  const p=M.proporcao(v.c), base=v.tip?LISTA.find(t=>t.id===v.tip).dim:{W:1500,H:1200};
+  let W=+v.W||0,H=+v.H||0;
+  if(W&&!H)H=Math.round(W/p/10)*10; else if(H&&!W)W=Math.round(H*p/10)*10;
+  else if(!W&&!H){H=base.H;W=Math.round(H*p/10)*10;}
+  return{W:Math.max(200,W),H:Math.max(200,H)};
+}
+const cacheTip=new Map();
+function imagemTip(v,W,H){
+  if(!v.tip)return null;const t=LISTA.find(x=>x.id===v.tip);if(!t)return null;
+  const ab=t.move?Math.round(v.abre*12)/12:0, k=[t.id,v.cor,v.vidro,W,H,ab].join('|');
+  let e=cacheTip.get(k);if(e)return e.ok?e.img:(e.ult||null);
+  e={ok:false,img:new Image(),ult:v._ult||null};cacheTip.set(k,e);if(cacheTip.size>80)cacheTip.delete(cacheTip.keys().next().value);
+  let svg='';try{svg=T.svg(t.desc,{cor:v.cor,vidro:v.vidro,sentido:false,contexto:false,foto:true,W,H,abre:ab,px:900});}catch(er){console.warn(er);return null;}
+  e.img.onload=()=>{e.ok=true;v._ult=e.img;desenha();};e.img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+  return e.ult;
+}
+
+/* ---------- desenho ---------- */
+// fundo de cada vão = foto com os vãos anteriores já aplicados (vãos vizinhos não se apagam)
+let _fundo=null;function fundoDe(i){return i===0?E.foto:_fundo;}
+function compoe(ctx,comUI){
+  ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,tela.width,tela.height);
+  if(!E.foto)return;ctx.drawImage(E.foto,0,0);
+  E.vaos.forEach((v,i)=>{
+    if(v.c.length!==4)return;
+    const m=medidas(v), lado=Math.max(...v.c.map(p=>p[0]))-Math.min(...v.c.map(p=>p[0]));
+    const r=M.retrato({W:m.W,H:m.H,contramarco:v.contramarco,reboco:v.reboco,img:imagemTip(v,m.W,m.H),foto:fundoDe(i),cantos:v.c,ladoPx:lado},T.COR);
+    M.emPerspectiva(ctx,r.canvas,M.quadroComMargem(v.c,m.W,m.H,r.margemMM),18);
+    if(i<E.vaos.length-1){if(!_fundo||_fundo.width!==tela.width){_fundo=document.createElement('canvas');_fundo.width=tela.width;_fundo.height=tela.height;}
+      const fg=_fundo.getContext('2d');fg.clearRect(0,0,_fundo.width,_fundo.height);fg.drawImage(ctx.canvas,0,0);}
+  });
+  if(!comUI||E.passo===6)return;
+  const L=Math.max(2,tela.width/500);
+  E.vaos.forEach((v,i)=>{ if(v.c.length!==4)return;const at=i===E.ativo&&E.passo<6;
+    ctx.lineWidth=at?L*1.4:L;ctx.strokeStyle=at?'#2ec4b6':'rgba(255,255,255,.55)';ctx.setLineDash(at?[]:[L*4,L*3]);
+    ctx.beginPath();v.c.forEach((p,k)=>k?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();ctx.stroke();ctx.setLineDash([]);
+    if(at&&E.passo===2)v.c.forEach(p=>alca(ctx,p,L));
+    ctx.font=`800 ${L*7}px Inter,sans-serif`;const cx=v.c.reduce((s,p)=>s+p[0],0)/4,cy=v.c.reduce((s,p)=>s+p[1],0)/4;
+    if(E.passo===2||(E.passo<6&&E.vaos.length>1&&!at)){ctx.fillStyle='rgba(6,50,56,.85)';ctx.beginPath();ctx.arc(cx,cy,L*7,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(i+1,cx,cy+L*.3);}
+  });
+  if(E.marcando.length){ctx.strokeStyle='#2ec4b6';ctx.lineWidth=L*1.3;ctx.beginPath();E.marcando.forEach((p,k)=>k?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();E.marcando.forEach(p=>alca(ctx,p,L));}
+}
+function alca(ctx,p,L){ctx.fillStyle='#fff';ctx.strokeStyle='#02717d';ctx.lineWidth=L;ctx.beginPath();ctx.arc(p[0],p[1],L*5,0,7);ctx.fill();ctx.stroke();ctx.fillStyle='#02717d';ctx.beginPath();ctx.arc(p[0],p[1],L*1.6,0,7);ctx.fill();}
+let pend=0;
+function desenha(){if(pend)return;pend=requestAnimationFrame(()=>{pend=0;compoe(g,true);
+  if(E.passo===6&&E.antes<1&&E.foto){const x=tela.width*E.antes;g.save();g.beginPath();g.rect(0,0,x,tela.height);g.clip();g.drawImage(E.foto,0,0);g.restore();
+    const L=Math.max(2,tela.width/400);g.fillStyle='#fff';g.fillRect(x-L/2,0,L,tela.height);g.font=`800 ${L*7}px Inter,sans-serif`;g.textBaseline='top';
+    g.fillStyle='rgba(6,50,56,.85)';g.fillRect(x-L*40,L*4,L*38,L*11);g.fillRect(x+L*2,L*4,L*38,L*11);g.fillStyle='#fff';g.textAlign='center';g.fillText('ANTES',x-L*21,L*6.5);g.fillText('DEPOIS',x+L*21,L*6.5);}
+});}
+
+/* ---------- toque / mouse ---------- */
+function ponto(ev){const r=tela.getBoundingClientRect();return[(ev.clientX-r.left)*tela.width/r.width,(ev.clientY-r.top)*tela.height/r.height];}
+function raioToque(){const r=tela.getBoundingClientRect();return 26*tela.width/r.width;}
+tela.addEventListener('pointerdown',ev=>{
+  if(!E.foto)return;const p=ponto(ev);tela.setPointerCapture(ev.pointerId);
+  if(E.passo===2){
+    const v=va();
+    if(v&&!E.marcando.length){const k=v.c.findIndex(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<raioToque());if(k>=0){E.arraste={k};mostraLupa(p);return;}}
+    if(!E.marcando.length){const i=E.vaos.findIndex(x=>M.dentro(p,x.c));if(i>=0&&i!==E.ativo){E.ativo=i;tela2();return;}if(v&&!E._novo)return;}
+    E.marcando.push(p);E.arraste={m:E.marcando.length-1};mostraLupa(p);
+    if(E.marcando.length===4){const c=M.cantosEmOrdem(E.marcando);E.marcando=[];E._novo=false;
+      const nv=novoVao(c);const ant=va();if(ant){nv.cor=ant.cor;nv.vidro=ant.vidro;nv.contramarco=Object.assign({},ant.contramarco);nv.reboco=Object.assign({},ant.reboco);}
+      E.vaos.push(nv);E.ativo=E.vaos.length-1;E.arraste=null;escondeLupa();tela2();return;}
+    tela2();return;}
+  const i=E.vaos.findIndex(x=>M.dentro(p,x.c));if(i>=0&&i!==E.ativo){E.ativo=i;tela2();}
+});
+tela.addEventListener('pointermove',ev=>{if(!E.arraste)return;const p=ponto(ev);p[0]=Math.max(0,Math.min(tela.width,p[0]));p[1]=Math.max(0,Math.min(tela.height,p[1]));
+  if(E.arraste.k!=null){va().c[E.arraste.k]=p;}else E.marcando[E.arraste.m]=p;mostraLupa(p);desenha();});
+const solta=()=>{if(!E.arraste)return;if(E.arraste.k!=null){const v=va();v.c=M.cantosEmOrdem(v.c);}E.arraste=null;escondeLupa();desenha();};
+tela.addEventListener('pointerup',solta);tela.addEventListener('pointercancel',solta);
+
+function mostraLupa(p){const z=2.6,S=lupa.width;lg.save();lg.clearRect(0,0,S,S);lg.beginPath();lg.arc(S/2,S/2,S/2,0,7);lg.clip();
+  lg.drawImage(E.foto,p[0]-S/2/z,p[1]-S/2/z,S/z,S/z,0,0,S,S);lg.strokeStyle='#2ec4b6';lg.lineWidth=1.5;lg.beginPath();lg.moveTo(S/2,S/2-14);lg.lineTo(S/2,S/2+14);lg.moveTo(S/2-14,S/2);lg.lineTo(S/2+14,S/2);lg.stroke();lg.restore();
+  const r=tela.getBoundingClientRect(),pr=$('palco').getBoundingClientRect(),sx=(p[0]*r.width/tela.width)+r.left-pr.left;
+  lupa.style.left=(sx<pr.width/2?pr.width-S-12:12)+'px';lupa.style.display='block';}
+function escondeLupa(){lupa.style.display='none';}
+
+/* ---------- painel lateral ---------- */
+function ir(n){E.passo=n;if(n===6)E.antes=1;tela2();}
+function dica(t){const d=$('dica');if(t){d.textContent=t;d.hidden=false;}else d.hidden=true;}
+function chip(txt,on,fn,cor){const b=document.createElement('button');b.type='button';b.className='chip'+(on?' on':'');b.innerHTML=(cor?`<i style="background:${cor}"></i>`:'')+txt;b.onclick=fn;return b;}
+function H(html){const d=document.createElement('div');d.innerHTML=html;return d;}
+
+function tela2(){
+  const nav=$('passos');nav.innerHTML='';
+  PASSOS.forEach(([n,t])=>{const b=document.createElement('button');b.textContent=n+' · '+t;b.className=(E.passo===n?'on ':'')+(feito(n)?'ok':'');
+    b.disabled=n>1&&!E.foto||n>2&&!va();b.onclick=()=>ir(n);nav.appendChild(b);});
+  const C=$('corpo');C.innerHTML='';const v=va();
+  if(E.passo===1){C.appendChild(H(`<h3>Foto da obra</h3><p class="sub">Tire a foto de frente para o vão, com o vão inteiro aparecendo.</p>`));
+    const l=document.createElement('label');l.className='bt pri full';l.textContent=E.foto?'Trocar a foto':'Tirar / escolher foto';l.onclick=()=>$('arq').click();C.appendChild(l);dica('');}
+  if(E.passo===2){C.appendChild(H(`<h3>Marque o vão</h3><p class="sub">Toque nos 4 cantos do vão, em qualquer ordem. Depois arraste os cantos para acertar — a lupa ajuda.</p>`));
+    if(E.vaos.length){const vs=document.createElement('div');vs.className='vaos';E.vaos.forEach((x,i)=>vs.appendChild(chip(`<b>Vão ${i+1}</b>`,i===E.ativo,()=>{E.ativo=i;E.marcando=[];tela2();})));C.appendChild(vs);}
+    const ln=document.createElement('div');ln.className='linha';
+    const b1=document.createElement('button');b1.className='bt';b1.textContent='↶ Desfazer ponto';b1.disabled=!E.marcando.length;b1.onclick=()=>{E.marcando.pop();tela2();};
+    const b2=document.createElement('button');b2.className='bt';b2.textContent='＋ Novo vão';b2.disabled=!E.vaos.length||!!E.marcando.length;b2.onclick=()=>{E._novo=true;E.marcando=[];tela2();dica('Toque nos 4 cantos do novo vão.');};
+    const b3=document.createElement('button');b3.className='bt';b3.textContent='🗑 Remover vão';b3.disabled=!v;b3.onclick=()=>{if(!confirm('Remover o vão '+(E.ativo+1)+'?'))return;E.vaos.splice(E.ativo,1);E.ativo=E.vaos.length-1;tela2();};
+    ln.append(b1,b2,b3);C.appendChild(ln);
+    if(v){C.appendChild(H(`<div class="rot">Medidas do vão (opcional)</div><p class="sub" style="margin:0 0 6px">Sem medida, a esquadria segue a proporção da foto.</p>`));
+      const md=H(`<div class="med"><div><label>Largura (mm)</label><input id="mW" type="number" inputmode="numeric" placeholder="ex.: 1500" value="${v.W||''}"></div><div><label>Altura (mm)</label><input id="mH" type="number" inputmode="numeric" placeholder="ex.: 1200" value="${v.H||''}"></div></div>`);C.appendChild(md);
+      md.querySelector('#mW').oninput=e=>{v.W=+e.target.value>=200?+e.target.value:null;desenha();};md.querySelector('#mH').oninput=e=>{v.H=+e.target.value>=200?+e.target.value:null;desenha();};
+      const ok=document.createElement('button');ok.className='bt pri full';ok.style.marginTop='12px';ok.textContent='Continuar → Contramarco';ok.onclick=()=>ir(3);C.appendChild(ok);}
+    dica(E.marcando.length?`Canto ${E.marcando.length} de 4 marcado.`:(!E.vaos.length||E._novo)?'Toque no 1º canto do vão.':'Arraste os cantos para acertar o vão.');}
+  if(E.passo===3&&v){C.appendChild(H(`<h3>Contramarco</h3><p class="sub">Requadro de alumínio instalado no vão antes da esquadria.</p>`));
+    C.appendChild(sw('Aplicar contramarco',v.contramarco.on,x=>{v.contramarco.on=x;tela2();}));
+    if(v.contramarco.on){C.appendChild(H('<div class="rot">Cor do contramarco</div>'));C.appendChild(cores(v.contramarco.cor,id=>{v.contramarco.cor=id;tela2();}));}
+    seguir(C,'Continuar → Reboco',4);dica('');}
+  if(E.passo===4&&v){C.appendChild(H(`<h3>Reboco</h3><p class="sub">Opcional — para obras ainda sem acabamento. Só efeito visual.</p>`));
+    C.appendChild(sw('Aplicar reboco em volta',v.reboco.on,x=>{v.reboco.on=x;tela2();}));
+    if(v.reboco.on){C.appendChild(H('<div class="rot">Cor da parede</div>'));const ch=document.createElement('div');ch.className='chips';
+      M.PAREDE.forEach(p=>ch.appendChild(chip(p.n,v.reboco.cor===p.id,()=>{v.reboco.cor=p.id;tela2();},p.c)));C.appendChild(ch);}
+    seguir(C,'Continuar → Esquadria',5);dica('');}
+  if(E.passo===5&&v){C.appendChild(H(`<h3>Esquadria</h3><p class="sub">Escolha a tipologia do Banco FC, a cor do perfil e o vidro.</p>`));
+    const sel=document.createElement('select');T.CATS.forEach(c=>{const o=document.createElement('option');o.value=o.textContent=c;sel.appendChild(o);});
+    const atual=v.tip&&LISTA.find(t=>t.id===v.tip);E.cat=atual&&!E._catMan?atual.cat:E.cat;sel.value=E.cat;sel.onchange=()=>{E.cat=sel.value;E._catMan=true;tela2();};C.appendChild(sel);
+    const gr=document.createElement('div');gr.className='grade';gr.style.marginTop='8px';
+    LISTA.filter(t=>t.cat===E.cat).forEach(t=>{const b=document.createElement('button');b.type='button';b.className='tp'+(v.tip===t.id?' on':'');b.innerHTML=`<img alt="" loading="lazy" src="${mini(t)}">${t.nome}`;
+      b.onclick=()=>{v.tip=t.id;v.abre=0;E._catMan=false;tela2();};gr.appendChild(b);});C.appendChild(gr);
+    C.appendChild(H('<div class="rot">Cor do perfil</div>'));C.appendChild(cores(v.cor,id=>{v.cor=id;tela2();}));
+    C.appendChild(H('<div class="rot">Vidro</div>'));const vd=document.createElement('div');vd.className='chips';
+    Object.entries(T.VID).forEach(([id,x])=>vd.appendChild(chip(x.n,v.vidro===id,()=>{v.vidro=id;tela2();},x.b)));C.appendChild(vd);
+    if(atual&&atual.move){C.appendChild(H('<div class="rot">Abrir e fechar</div>'));const r=document.createElement('input');r.type='range';r.min=0;r.max=1;r.step=1/12;r.value=v.abre;
+      r.oninput=()=>{v.abre=+r.value;desenha();};C.appendChild(r);}
+    seguir(C,'Continuar → Finalizar',6);dica(v.tip?'':'Escolha a tipologia na lista.');}
+  if(E.passo===6){C.appendChild(H(`<h3>Finalizar</h3><p class="sub">Arraste para comparar antes e depois. Salve a imagem para enviar ao cliente.</p>`));
+    const r=document.createElement('input');r.type='range';r.min=0;r.max=1;r.step=.01;r.value=E.antes;r.oninput=()=>{E.antes=+r.value;desenha();};C.appendChild(H('<div class="rot">Antes ⇄ Depois</div>'));C.appendChild(r);
+    const sv=document.createElement('button');sv.className='bt pri full';sv.style.marginTop='12px';sv.textContent='⬇ Salvar imagem';sv.onclick=salvar;C.appendChild(sv);
+    const nv=document.createElement('button');nv.className='bt full';nv.style.marginTop='8px';nv.textContent='＋ Marcar outro vão nesta foto';nv.onclick=()=>{E._novo=true;ir(2);};C.appendChild(nv);
+    dica('');}
+  C.appendChild(H('<div class="aviso">Imagem demonstrativa. Reboco e cor da parede são efeito visual. Medidas apenas demonstrativas — não usar para produção.</div>'));
+  desenha();
+}
+function feito(n){const v=va();return n===1?!!E.foto:n===2?E.vaos.length>0:n===3?!!v:n===4?!!v:n===5?!!(v&&v.tip):false;}
+function sw(t,on,fn){const l=document.createElement('label');l.className='sw';l.innerHTML=`<span>${t}</span>`;const i=document.createElement('input');i.type='checkbox';i.checked=on;i.onchange=()=>fn(i.checked);l.appendChild(i);return l;}
+function cores(at,fn){const d=document.createElement('div');d.className='chips';Object.entries(T.COR).forEach(([id,x])=>d.appendChild(chip(x.n,at===id,()=>fn(id),x.b)));return d;}
+function seguir(C,t,n){const b=document.createElement('button');b.className='bt pri full';b.style.marginTop='14px';b.textContent=t;b.onclick=()=>ir(n);C.appendChild(b);}
+const miniCache={};
+function mini(t){if(miniCache[t.id])return miniCache[t.id];let s='';try{s=T.svg(t.desc,{sentido:false,contexto:false,px:160});}catch(_){}return miniCache[t.id]='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s);}
+
+function salvar(){const c=document.createElement('canvas');c.width=tela.width;c.height=tela.height;const x=c.getContext('2d');compoe(x,false);
+  const L=Math.max(12,c.width/70);x.font=`600 ${L}px Inter,sans-serif`;const tx='Imagem demonstrativa · Desenvolvido por FC Consultoria em Esquadria';
+  const w=x.measureText(tx).width+L*1.4;x.fillStyle='rgba(6,50,56,.78)';x.fillRect(c.width-w-L*.6,c.height-L*2.1,w,L*1.6);x.fillStyle='#fff';x.textBaseline='middle';x.fillText(tx,c.width-w-L*.6+L*.7,c.height-L*1.3);
+  c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='obra-fc-'+new Date().toISOString().slice(0,10)+'.jpg';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);},'image/jpeg',.9);}
+
+window.addEventListener('resize',desenha);
+tela2();
+})();
+</script>
+</body>
+</html>
