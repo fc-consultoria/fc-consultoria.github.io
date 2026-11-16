@@ -259,15 +259,46 @@
     }
     if (melhorSet.length < N * 0.4) return null;
     const r = ajusta(melhorSet);
-    return { ini: Math.abs(r.a), fim: Math.abs(r.a + r.b * L) };
+    // linha da borda real em coordenadas da foto (do começo ao fim do lado)
+    const em = t => { const o = r.a + r.b * t; return [A[0] + tx * t + nx * o, A[1] + ty * t + ny * o]; };
+    return { ini: Math.abs(r.a), fim: Math.abs(r.a + r.b * L), linha: { p: em(0), d: [tx + nx * r.b, ty + ny * r.b] } };
   }
-  // Canto certo: está em cima das duas bordas reais que se encontram nele
-  function cantosCertos(m, cantos) {
-    const tol = Math.max(1.5, Math.hypot(m.w, m.h) * 0.0016); // ≈ 3 px numa foto de 1600
+  // Situação de cada canto:
+  //   'borda' → em cima das duas bordas reais do vão
+  //   'regra' → um lado não tem borda visível (ex.: porta sem soleira, pessoa na frente):
+  //             o canto está na continuação da borda que aparece e o lado sem borda
+  //             está paralelo ao lado oposto (regra de encaixe)
+  //   false   → fora do lugar
+  // alvo: onde o canto deveria ficar (para "grudar" quando o ponto é solto perto)
+  // Cruzamento de duas retas (ponto p, direção d)
+  function cruza(r, s) {
+    const den = r.d[0] * s.d[1] - r.d[1] * s.d[0]; if (Math.abs(den) < 1e-9) return null;
+    const t = ((s.p[0] - r.p[0]) * s.d[1] - (s.p[1] - r.p[1]) * s.d[0]) / den;
+    return [r.p[0] + r.d[0] * t, r.p[1] + r.d[1] * t];
+  }
+  function situacaoCantos(m, cantos) {
+    const tol = Math.max(1.5, Math.hypot(m.w, m.h) * 0.0016);
     const lados = [0, 1, 2, 3].map(i => desvioDoLado(m, cantos[i], cantos[(i + 1) % 4]));
-    return cantos.map((p, i) => { const sai = lados[i], chega = lados[(i + 3) % 4];
-      return !!(sai && chega && sai.ini <= tol && chega.fim <= tol); });
+    const dir = i => { const A = cantos[i], B = cantos[(i + 1) % 4], L = Math.hypot(B[0] - A[0], B[1] - A[1]) || 1; return [(B[0] - A[0]) / L, (B[1] - A[1]) / L]; };
+    const dirReal = i => { const l = lados[i]; if (!l) return dir(i); const L = Math.hypot(l.linha.d[0], l.linha.d[1]) || 1; return [l.linha.d[0] / L, l.linha.d[1] / L]; };
+    const angulo = (u, v) => Math.acos(Math.min(1, Math.abs(u[0] * v[0] + u[1] * v[1]))) * 180 / Math.PI;
+    return cantos.map((p, i) => {
+      const s = (i + 3) % 4, iSai = i, sai = lados[iSai], chega = lados[s];
+      if (sai && chega) {
+        const alvo = cruza({ p: chega.linha.p, d: chega.linha.d }, { p: sai.linha.p, d: sai.linha.d });
+        return { estado: sai.ini <= tol && chega.fim <= tol ? 'borda' : false, alvo, tol };
+      }
+      if (!sai && !chega) return { estado: false, alvo: null, tol };
+      // um lado visível (V) e um sem borda (S)
+      const vis = sai || chega, offV = sai ? sai.ini : chega.fim;
+      const iS = sai ? s : iSai, viz = sai ? cantos[s] : cantos[(i + 1) % 4];
+      const oposto = dirReal((iS + 2) % 4);
+      const alvo = cruza({ p: vis.linha.p, d: vis.linha.d }, { p: viz, d: oposto });
+      const paralelo = angulo(dir(iS), oposto) <= 1.2;
+      return { estado: offV <= tol && paralelo ? 'regra' : false, alvo, tol };
+    });
   }
+  function cantosCertos(m, cantos) { return situacaoCantos(m, cantos).map(x => x.estado); }
 
-  G.MotorFC = { projetiva, leva, cantosEmOrdem, dentro, malha, emPerspectiva, endireitar, retrato, quadroComMargem, proporcao, mapaBordas, cantosCertos, desvioDoLado, PAREDE };
+  G.MotorFC = { projetiva, leva, cantosEmOrdem, dentro, malha, emPerspectiva, endireitar, retrato, quadroComMargem, proporcao, mapaBordas, cantosCertos, situacaoCantos, desvioDoLado, PAREDE };
 })(window);
