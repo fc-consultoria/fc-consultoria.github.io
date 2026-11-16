@@ -90,7 +90,7 @@
 </main>
 
 <script src="tipologias.js?v=4"></script>
-<script src="motor-fc.js?v=8"></script>
+<script src="motor-fc.js?v=10"></script>
 <script>
 /* Acesso: mesmo login da Plataforma FC 3D (FC, Gestor ou Colaborador). No computador da FC (localhost) abre direto para teste. */
 (function(){
@@ -115,7 +115,7 @@ const tela=$('tela'), g=tela.getContext('2d'), lupa=$('lupa'), lg=lupa.getContex
 
 /* ---------- estado ---------- */
 const E={foto:null,vaos:[],ativo:-1,passo:1,marcando:[],arraste:null,antes:1,cat:T.CATS[0]};
-const PASSOS=[[1,'Foto'],[2,'Vão'],[3,'Contramarco'],[4,'Reboco'],[5,'Esquadria'],[6,'Finalizar']];
+const PASSOS=[[1,'Foto'],[6,'Limpar'],[2,'Vão'],[3,'Contramarco'],[4,'Reboco'],[5,'Esquadria'],[7,'Finalizar']]; // ordem na tela (o número interno não muda)
 const LISTA=T.LISTA.map(t=>({id:t.id,cat:t.cat,nome:t.nome,desc:t.desc,move:!!T.move(t.desc),dim:(()=>{try{return T.dims(t.desc);}catch(_){return{W:1500,H:1200};}})()}));
 const novoVao=c=>({c,W:null,H:null,tip:null,cor:'branco',vidro:'incolor',abre:0,contramarco:{on:true,cor:'natural'},reboco:{on:false,cor:'cimento'}});
 const va=()=>E.vaos[E.ativo]||null;
@@ -123,8 +123,8 @@ const va=()=>E.vaos[E.ativo]||null;
 /* ---------- foto ---------- */
 $('arq').onchange=e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();
   im.onload=()=>{const k=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
-    c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);E.foto=c;E.mapa=M.mapaBordas(c);E.vaos=[];E.ativo=-1;E.marcando=[];
-    tela.width=c.width;tela.height=c.height;tela.style.display='block';$('vazio').style.display='none';ir(2);};im.src=u;e.target.value='';};
+    c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);E.foto=c;E.fotoOrig=null;E.historico=[];E.mascara=null;E.mapa=M.mapaBordas(c);E.vaos=[];E.ativo=-1;E.marcando=[];
+    tela.width=c.width;tela.height=c.height;tela.style.display='block';$('vazio').style.display='none';ir(6);};im.src=u;e.target.value='';};
 
 /* ---------- medidas e esquadria ---------- */
 function medidas(v){ // mm usados no desenho: digitadas ou pela proporção da foto
@@ -151,7 +151,7 @@ let _fundo=null;function fundoDe(i){return i===0?E.foto:_fundo;}
 function compoe(ctx,comUI){
   ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,tela.width,tela.height);
   if(!E.foto)return;ctx.drawImage(E.foto,0,0);
-  E.vaos.forEach((v,i)=>{
+  if(!(comUI&&E.passo===6))E.vaos.forEach((v,i)=>{
     if(v.c.length!==4)return;
     const m=medidas(v), lado=Math.max(...v.c.map(p=>p[0]))-Math.min(...v.c.map(p=>p[0]));
     const r=M.retrato({W:m.W,H:m.H,contramarco:v.contramarco,reboco:v.reboco,img:imagemTip(v,m.W,m.H),foto:fundoDe(i),cantos:v.c,ladoPx:lado},T.COR);
@@ -159,7 +159,8 @@ function compoe(ctx,comUI){
     if(i<E.vaos.length-1){if(!_fundo||_fundo.width!==tela.width){_fundo=document.createElement('canvas');_fundo.width=tela.width;_fundo.height=tela.height;}
       const fg=_fundo.getContext('2d');fg.clearRect(0,0,_fundo.width,_fundo.height);fg.drawImage(ctx.canvas,0,0);}
   });
-  if(!comUI||E.passo===6)return;
+  if(E.passo===6&&comUI&&E.mascara){ctx.globalAlpha=.5;ctx.drawImage(E.mascara,0,0);ctx.globalAlpha=1;}
+  if(!comUI||E.passo>=6)return;
   const L=Math.max(2,tela.width/500);
   E.vaos.forEach((v,i)=>{ if(v.c.length!==4)return;const at=i===E.ativo&&E.passo<6;
     ctx.lineWidth=at?L*1.4:L;ctx.strokeStyle=at?'#2ec4b6':'rgba(255,255,255,.55)';ctx.setLineDash(at?[]:[L*4,L*3]);
@@ -177,7 +178,7 @@ function alca(ctx,p,L,ok){const c=ok==='borda'?'#16a34a':ok==='regra'?'#2563eb':
   else{ctx.fillStyle=c;ctx.beginPath();ctx.arc(p[0],p[1],L*1.7,0,7);ctx.fill();}}
 let pend=0;
 function desenha(){if(pend)return;pend=requestAnimationFrame(()=>{pend=0;compoe(g,true);
-  if(E.passo===6&&E.antes<1&&E.foto){const x=tela.width*E.antes;g.save();g.beginPath();g.rect(0,0,x,tela.height);g.clip();g.drawImage(E.foto,0,0);g.restore();
+  if(E.passo===7&&E.antes<1&&E.foto){const x=tela.width*E.antes;g.save();g.beginPath();g.rect(0,0,x,tela.height);g.clip();g.drawImage(E.fotoOrig||E.foto,0,0);g.restore();
     const L=Math.max(2,tela.width/400);g.fillStyle='#fff';g.fillRect(x-L/2,0,L,tela.height);g.font=`800 ${L*7}px Inter,sans-serif`;g.textBaseline='top';
     g.fillStyle='rgba(6,50,56,.85)';g.fillRect(x-L*40,L*4,L*38,L*11);g.fillRect(x+L*2,L*4,L*38,L*11);g.fillStyle='#fff';g.textAlign='center';g.fillText('ANTES',x-L*21,L*6.5);g.fillText('DEPOIS',x+L*21,L*6.5);}
 });}
@@ -185,8 +186,12 @@ function desenha(){if(pend)return;pend=requestAnimationFrame(()=>{pend=0;compoe(
 /* ---------- toque / mouse ---------- */
 function ponto(ev){const r=tela.getBoundingClientRect();return[(ev.clientX-r.left)*tela.width/r.width,(ev.clientY-r.top)*tela.height/r.height];}
 function raioToque(){const r=tela.getBoundingClientRect();return 26*tela.width/r.width;}
+function pinta(p){const g2=E.mascara.getContext('2d');g2.globalCompositeOperation=E.pincel.borracha?'destination-out':'source-over';g2.fillStyle='#ff2a2a';
+  g2.lineCap='round';g2.lineWidth=E.pincel.r*2;g2.strokeStyle='#ff2a2a';const a=E._ultP||p;g2.beginPath();g2.moveTo(a[0],a[1]);g2.lineTo(p[0],p[1]);g2.stroke();
+  g2.beginPath();g2.arc(p[0],p[1],E.pincel.r,0,7);g2.fill();g2.globalCompositeOperation='source-over';E._ultP=p;desenha();}
 tela.addEventListener('pointerdown',ev=>{
   if(!E.foto)return;const p=ponto(ev);tela.setPointerCapture(ev.pointerId);
+  if(E.passo===6&&E.mascara){E._pint=true;E._ultP=null;pinta(p);return;}
   if(E.passo===2){
     const v=va();
     if(v&&!v.travado&&!E._novo&&!E.marcando.length){const k=v.c.findIndex(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<raioToque());if(k>=0){E.arraste={k};mostraLupa(p);return;}}
@@ -198,9 +203,9 @@ tela.addEventListener('pointerdown',ev=>{
     tela2();return;}
   const i=E.vaos.findIndex(x=>M.dentro(p,x.c));if(i>=0&&i!==E.ativo){E.ativo=i;tela2();}
 });
-tela.addEventListener('pointermove',ev=>{if(!E.arraste)return;const p=ponto(ev);p[0]=Math.max(0,Math.min(tela.width,p[0]));p[1]=Math.max(0,Math.min(tela.height,p[1]));
+tela.addEventListener('pointermove',ev=>{if(E._pint){pinta(ponto(ev));return;}if(!E.arraste)return;const p=ponto(ev);p[0]=Math.max(0,Math.min(tela.width,p[0]));p[1]=Math.max(0,Math.min(tela.height,p[1]));
   if(E.arraste.k!=null){va().c[E.arraste.k]=p;}else E.marcando[E.arraste.m]=p;mostraLupa(p);desenha();});
-const solta=()=>{if(!E.arraste)return;const k=E.arraste.k;if(k!=null){const v=va();
+const solta=()=>{if(E._pint){E._pint=false;E._ultP=null;return;}if(!E.arraste)return;const k=E.arraste.k;if(k!=null){const v=va();
     /* solto perto do lugar certo (borda ou regra): o ponto gruda */
     if(E.mapa){const st=M.situacaoCantos(E.mapa,v.c)[k];if(st&&!st.estado&&st.alvo){const d=Math.hypot(st.alvo[0]-v.c[k][0],st.alvo[1]-v.c[k][1]);
       if(d<=st.tol*4){const ant=v.c[k];v.c[k]=st.alvo;const nv=M.situacaoCantos(E.mapa,v.c)[k];if(!nv.estado)v.c[k]=ant;}}}
@@ -214,15 +219,15 @@ function mostraLupa(p){const z=2.6,S=lupa.width;lg.save();lg.clearRect(0,0,S,S);
 function escondeLupa(){lupa.style.display='none';}
 
 /* ---------- painel lateral ---------- */
-function ir(n){E.passo=n;if(n===6)E.antes=1;tela2();}
+function ir(n){E.passo=n;if(n===7)E.antes=1;tela2();}
 function dica(t){const d=$('dica');if(t){d.textContent=t;d.hidden=false;}else d.hidden=true;}
 function chip(txt,on,fn,cor){const b=document.createElement('button');b.type='button';b.className='chip'+(on?' on':'');b.innerHTML=(cor?`<i style="background:${cor}"></i>`:'')+txt;b.onclick=fn;return b;}
 function H(html){const d=document.createElement('div');d.innerHTML=html;return d;}
 
 function tela2(){
   const nav=$('passos');nav.innerHTML='';
-  PASSOS.forEach(([n,t])=>{const b=document.createElement('button');b.textContent=n+' · '+t;b.className=(E.passo===n?'on ':'')+(feito(n)?'ok':'');
-    b.disabled=n>1&&!E.foto||n>2&&!va();b.onclick=()=>ir(n);nav.appendChild(b);});
+  PASSOS.forEach(([n,t],ix)=>{const b=document.createElement('button');b.textContent=(ix+1)+' · '+t;b.className=(E.passo===n?'on ':'')+(feito(n)?'ok':'');
+    b.disabled=n>1&&!E.foto||(n!==6&&n>2&&!va());b.onclick=()=>ir(n);nav.appendChild(b);});
   const C=$('corpo');C.innerHTML='';const v=va();
   if(E.passo===1){C.appendChild(H(`<h3>Foto da obra</h3><p class="sub">Tire a foto de frente para o vão, com o vão inteiro aparecendo.</p>`));
     const l=document.createElement('label');l.className='bt pri full';l.textContent=E.foto?'Trocar a foto':'Tirar / escolher foto';l.onclick=()=>$('arq').click();C.appendChild(l);dica('');}
@@ -281,8 +286,23 @@ function tela2(){
     Object.entries(T.VID).forEach(([id,x])=>vd.appendChild(chip(x.n,v.vidro===id,()=>{v.vidro=id;tela2();},x.b)));C.appendChild(vd);
     if(atual&&atual.move){C.appendChild(H('<div class="rot">Abrir e fechar</div>'));const r=document.createElement('input');r.type='range';r.min=0;r.max=1;r.step=1/12;r.value=v.abre;
       r.oninput=()=>{v.abre=+r.value;desenha();};C.appendChild(r);}
-    seguir(C,'Continuar → Finalizar',6);dica('');}
-  if(E.passo===6){C.appendChild(H(`<h3>Finalizar</h3><p class="sub">Arraste para comparar antes e depois. Salve a imagem para enviar ao cliente.</p>`));
+    seguir(C,'Continuar → Finalizar',7);dica('');}
+  if(E.passo===6){C.appendChild(H(`<h3>Limpar a foto</h3><p class="sub">Opcional. Tire da foto o que está na frente ou em volta do vão. Pinte de vermelho a pessoa, o andaime ou o entulho e toque em <b>✨ Apagar agora</b>. O lugar é preenchido com a parede e o piso em volta.</p>`));
+    if(!E.mascara){E.mascara=document.createElement('canvas');E.mascara.width=tela.width;E.mascara.height=tela.height;}
+    E.pincel=E.pincel||{r:Math.round(tela.width/45),borracha:false};
+    const ln=document.createElement('div');ln.className='chips';
+    ln.append(chip('🖌 Pincel',!E.pincel.borracha,()=>{E.pincel.borracha=false;tela2();}),chip('🧽 Borracha',E.pincel.borracha,()=>{E.pincel.borracha=true;tela2();}));C.appendChild(ln);
+    C.appendChild(H('<div class="rot">Tamanho do pincel</div>'));const tm=document.createElement('input');tm.type='range';tm.min=Math.round(tela.width/150);tm.max=Math.round(tela.width/12);tm.value=E.pincel.r;tm.oninput=()=>{E.pincel.r=+tm.value;};C.appendChild(tm);
+    const l2=document.createElement('div');l2.className='linha';l2.style.marginTop='10px';
+    const lp=document.createElement('button');lp.className='bt';lp.textContent='Limpar pintura';lp.onclick=()=>{E.mascara.getContext('2d').clearRect(0,0,E.mascara.width,E.mascara.height);desenha();};
+    const ap=document.createElement('button');ap.className='bt pri';ap.style.flex='1';ap.textContent='✨ Apagar agora';
+    ap.onclick=()=>{ap.disabled=true;ap.textContent='Apagando…';setTimeout(()=>{if(!E.fotoOrig)E.fotoOrig=E.foto;E.historico=E.historico||[];E.historico.push(E.foto);
+      E.foto=M.apagar(E.foto,E.mascara);E.mapa=M.mapaBordas(E.foto);E.mascara.getContext('2d').clearRect(0,0,E.mascara.width,E.mascara.height);tela2();dica('Apagado. Confira; se não ficou bom, toque em ↶ Voltar.');},30);};
+    l2.append(lp,ap);C.appendChild(l2);
+    if(E.historico&&E.historico.length){const vt=document.createElement('button');vt.className='bt full';vt.style.marginTop='8px';vt.textContent='↶ Voltar (desfaz o último apagar)';
+      vt.onclick=()=>{E.foto=E.historico.pop();if(!E.historico.length)E.fotoOrig=null;E.mapa=M.mapaBordas(E.foto);tela2();};C.appendChild(vt);}
+    seguir(C,E.historico&&E.historico.length?'Continuar → Vão':'Pular · nada para limpar → Vão',2);dica(E._dicaL||'Pinte por cima do que quer tirar da foto.');E._dicaL='';}
+  if(E.passo===7){C.appendChild(H(`<h3>Finalizar</h3><p class="sub">Arraste para comparar antes e depois. Salve a imagem para enviar ao cliente.</p>`));
     const r=document.createElement('input');r.type='range';r.min=0;r.max=1;r.step=.01;r.value=E.antes;r.oninput=()=>{E.antes=+r.value;desenha();};C.appendChild(H('<div class="rot">Antes ⇄ Depois</div>'));C.appendChild(r);
     const sv=document.createElement('button');sv.className='bt pri full';sv.style.marginTop='12px';sv.textContent='⬇ Salvar imagem';sv.onclick=salvar;C.appendChild(sv);
     C.appendChild(H('<div class="rot">Esquadrias</div>'));
@@ -297,7 +317,7 @@ function tela2(){
 }
 function textoCantos(v){const ok=E.mapa&&v?M.cantosCertos(E.mapa,v.c):[];const n=ok.filter(Boolean).length,r=ok.filter(x=>x==='regra').length;
   return n===4?(r?`✓ Os 4 cantos estão no lugar (${r} pela regra: sem borda visível, seguem a linha do vão).`:'✓ Os 4 cantos estão no lugar.'):`${n} de 4 cantos no lugar · arraste os pontos laranja até ficarem verdes ou azuis.`;}
-function feito(n){const v=va();return n===1?!!E.foto:n===2?E.vaos.length>0:n===3?!!v:n===4?!!v:n===5?!!(v&&v.tip):false;}
+function feito(n){const v=va();return n===1?!!E.foto:n===2?E.vaos.length>0:n===3?!!v:n===4?!!v:n===5?!!(v&&v.tip):n===6?!!(E.historico&&E.historico.length):false;}
 function sw(t,on,fn){const l=document.createElement('label');l.className='sw';l.innerHTML=`<span>${t}</span>`;const i=document.createElement('input');i.type='checkbox';i.checked=on;i.onchange=()=>fn(i.checked);l.appendChild(i);return l;}
 function cores(at,fn){const d=document.createElement('div');d.className='chips';Object.entries(T.COR).forEach(([id,x])=>d.appendChild(chip(x.n,at===id,()=>fn(id),x.b)));return d;}
 function seguir(C,t,n){const b=document.createElement('button');b.className='bt pri full';b.style.marginTop='14px';b.textContent=t;b.onclick=()=>ir(n);C.appendChild(b);}

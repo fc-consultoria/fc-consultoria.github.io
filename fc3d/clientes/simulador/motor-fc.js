@@ -300,5 +300,64 @@
   }
   function cantosCertos(m, cantos) { return situacaoCantos(m, cantos).map(x => x.estado); }
 
-  G.MotorFC = { projetiva, leva, cantosEmOrdem, dentro, malha, emPerspectiva, endireitar, retrato, quadroComMargem, proporcao, mapaBordas, cantosCertos, situacaoCantos, desvioDoLado, PAREDE };
+  /* ---------------- 5. Limpar a foto (apagar pessoa, andaime, entulho) ---------------- */
+  // mascara: canvas do mesmo tamanho da foto, pintado onde deve apagar.
+  // 1) preenche de fora para dentro com a média das cores vizinhas (base lisa)
+  // 2) devolve a textura (blocos, reboco, piso) trazida de uma faixa ao lado, na mesma altura
+  function apagar(foto, mascara) {
+    const W = foto.width, H = foto.height;
+    const mk = mascara.getContext('2d').getImageData(0, 0, W, H).data;
+    let x0 = W, y0 = H, x1 = -1, y1 = -1;
+    const M0 = new Uint8Array(W * H);
+    for (let i = 0; i < W * H; i++) if (mk[i * 4 + 3] > 20) { M0[i] = 1; const x = i % W, y = (i / W) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    const out = document.createElement('canvas'); out.width = W; out.height = H; const og = out.getContext('2d'); og.drawImage(foto, 0, 0);
+    if (x1 < 0) return out;
+    // folga de 2 px em volta do que foi pintado (pega a sombra/borda do objeto)
+    const M = new Uint8Array(W * H);
+    for (let y = Math.max(0, y0 - 2); y <= Math.min(H - 1, y1 + 2); y++) for (let x = Math.max(0, x0 - 2); x <= Math.min(W - 1, x1 + 2); x++) {
+      let on = 0; for (let dy = -2; dy <= 2 && !on; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H && M0[yy * W + xx]) { on = 1; break; } }
+      M[y * W + x] = on; }
+    x0 = Math.max(0, x0 - 3); y0 = Math.max(0, y0 - 3); x1 = Math.min(W - 1, x1 + 3); y1 = Math.min(H - 1, y1 + 3);
+    const img = og.getImageData(0, 0, W, H), d = img.data;
+    // base lisa: camadas de fora para dentro
+    const base = new Float32Array(W * H * 3), feito = new Uint8Array(W * H);
+    for (let i = 0; i < W * H; i++) if (!M[i]) { feito[i] = 1; base[i * 3] = d[i * 4]; base[i * 3 + 1] = d[i * 4 + 1]; base[i * 3 + 2] = d[i * 4 + 2]; }
+    let falta = true, volta = 0;
+    while (falta && volta++ < 4000) {
+      falta = false; const novos = [];
+      for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const i = y * W + x; if (feito[i]) continue;
+        let r = 0, g = 0, b = 0, n = 0;
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue; const j = yy * W + xx; if (feito[j]) { r += base[j * 3]; g += base[j * 3 + 1]; b += base[j * 3 + 2]; n++; } }
+        if (n >= 2) novos.push(i, r / n, g / n, b / n); else falta = true; }
+      for (let k = 0; k < novos.length; k += 4) { const i = novos[k]; base[i * 3] = novos[k + 1]; base[i * 3 + 1] = novos[k + 2]; base[i * 3 + 2] = novos[k + 3]; feito[i] = 1; }
+      if (!novos.length) break;
+    }
+    // textura: detalhe fino (pixel − média local) de uma faixa ao lado, sem objeto
+    const larg = x1 - x0 + 1, borr = (x, y, c) => { let s = 0, n = 0; for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue; s += d[(yy * W + xx) * 4 + c]; n++; } return s / n; };
+    const livre = dx => { let ok = 0, tot = 0; for (let y = y0; y <= y1; y += 3) for (let x = x0; x <= x1; x += 3) { if (!M[y * W + x]) continue; tot++; const xx = x + dx; if (xx >= 0 && xx < W && !M[y * W + xx]) ok++; } return tot ? ok / tot : 0; };
+    const opc = [larg + 6, -(larg + 6), 2 * larg + 12, -(2 * larg + 12)].map(dx => [dx, livre(dx)]).sort((a, b) => b[1] - a[1]);
+    const dxT = opc[0][1] > 0.6 ? opc[0][0] : 0;
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const i = y * W + x; if (!M[i]) continue;
+      const xs = x + dxT, temFonte = dxT && xs >= 0 && xs < W && !M[y * W + xs];
+      // só traz a textura se a cor de lá combina com a cor que vai aqui (não leva bloco para dentro do vão escuro)
+      let combina = false; if (temFonte) { let dif = 0; for (let c = 0; c < 3; c++) dif += Math.abs(borr(xs, y, c) - base[i * 3 + c]); combina = dif < 60; }
+      for (let c = 0; c < 3; c++) {
+        let v = base[i * 3 + c];
+        if (combina) v += d[(y * W + xs) * 4 + c] - borr(xs, y, c);
+        d[i * 4 + c] = Math.max(0, Math.min(255, v)); } }
+    og.putImageData(img, 0, 0);
+    // costura suave na borda do que foi apagado
+    const fina = document.createElement('canvas'); fina.width = W; fina.height = H; const fg = fina.getContext('2d');
+    fg.drawImage(out, 0, 0);
+    const borda = document.createElement('canvas'); borda.width = W; borda.height = H; const bg = borda.getContext('2d');
+    const bi = bg.createImageData(W, H); for (let i = 0; i < W * H; i++) if (M[i]) bi.data[i * 4 + 3] = 255; bg.putImageData(bi, 0, 0);
+    const res = document.createElement('canvas'); res.width = W; res.height = H; const rg = res.getContext('2d');
+    rg.drawImage(foto, 0, 0);
+    const lim = document.createElement('canvas'); lim.width = W; lim.height = H; const lg = lim.getContext('2d');
+    lg.filter = 'blur(1.5px)'; lg.drawImage(borda, 0, 0); lg.filter = 'none'; lg.globalCompositeOperation = 'source-in'; lg.drawImage(fina, 0, 0);
+    rg.drawImage(lim, 0, 0); rg.drawImage(lim, 0, 0);
+    return res;
+  }
+
+  G.MotorFC = { projetiva, leva, cantosEmOrdem, dentro, malha, emPerspectiva, endireitar, retrato, quadroComMargem, proporcao, mapaBordas, cantosCertos, situacaoCantos, desvioDoLado, apagar, PAREDE };
 })(window);
