@@ -244,20 +244,42 @@ function tela2(){
       M.PAREDE.forEach(p=>ch.appendChild(chip(p.n,v.reboco.cor===p.id,()=>{v.reboco.cor=p.id;tela2();},p.c)));C.appendChild(ch);}
     seguir(C,'Continuar → Esquadria',5);dica('');}
   if(E.passo===5&&v){C.appendChild(H(`<h3>Esquadria</h3><p class="sub">Escolha a tipologia do Banco FC, a cor do perfil e o vidro.</p>`));
-    const sel=document.createElement('select');T.CATS.forEach(c=>{const o=document.createElement('option');o.value=o.textContent=c;sel.appendChild(o);});
-    const atual=v.tip&&LISTA.find(t=>t.id===v.tip);E.cat=atual&&!E._catMan?atual.cat:E.cat;sel.value=E.cat;sel.onchange=()=>{E.cat=sel.value;E._catMan=true;tela2();};C.appendChild(sel);
-    const gr=document.createElement('div');gr.className='grade';gr.style.marginTop='8px';
-    LISTA.filter(t=>t.cat===E.cat).forEach(t=>{const b=document.createElement('button');b.type='button';b.className='tp'+(v.tip===t.id?' on':'');b.innerHTML=`<img alt="" loading="lazy" src="${mini(t)}">${t.nome}`;
-      b.onclick=()=>{v.tip=t.id;v.abre=0;E._catMan=false;tela2();};gr.appendChild(b);});C.appendChild(gr);
+    if(E.vaos.length>1){const vs=document.createElement('div');vs.className='vaos';E.vaos.forEach((x,i)=>vs.appendChild(chip(`<b>Vão ${i+1}</b>`,i===E.ativo,()=>{E.ativo=i;E._escolher=false;tela2();})));C.appendChild(vs);}
+    const atual=v.tip&&LISTA.find(t=>t.id===v.tip);
+    if(atual&&!E._escolher){
+      /* esquadria escolhida: cartão com Trocar e Tirar */
+      const cd=H(`<div style="display:flex;gap:10px;align-items:center;border:1px solid #9fd8cf;background:#f2fbfa;border-radius:12px;padding:8px">
+        <img src="${mini(atual)}" alt="" style="width:64px;height:64px;object-fit:contain;background:#fff;border-radius:8px;flex:none">
+        <div style="min-width:0"><div style="font:700 10.5px Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#0b6b5e">Esquadria do vão ${E.ativo+1}</div><b style="font-size:13.5px">${atual.nome}</b></div></div>`);C.appendChild(cd);
+      const ln=document.createElement('div');ln.className='linha';ln.style.marginTop='8px';
+      const tr=document.createElement('button');tr.className='bt pri';tr.style.flex='1';tr.textContent='🔄 Trocar esquadria';tr.onclick=()=>{E._escolher=true;E.cat=atual.cat;tela2();};
+      const ti=document.createElement('button');ti.className='bt';ti.textContent='✕ Tirar esquadria';ti.onclick=()=>{if(!confirm('Tirar a esquadria do vão '+(E.ativo+1)+'?'))return;v.tip=null;v.abre=0;tela2();};
+      ln.append(tr,ti);C.appendChild(ln);
+    }else{
+      if(atual){C.appendChild(H(`<div class="rot">Trocar · atual: ${atual.nome}</div>`));}
+      const sel=document.createElement('select');T.CATS.forEach(c=>{const o=document.createElement('option');o.value=o.textContent=c;sel.appendChild(o);});
+      sel.value=E.cat;sel.onchange=()=>{E.cat=sel.value;tela2();};C.appendChild(sel);
+      const gr=document.createElement('div');gr.className='grade';gr.style.marginTop='8px';
+      LISTA.filter(t=>t.cat===E.cat).forEach(t=>{const b=document.createElement('button');b.type='button';b.className='tp'+(v.tip===t.id?' on':'');b.innerHTML=`<img alt="" loading="lazy" src="${mini(t)}">${t.nome}`;
+        b.onclick=()=>{v.tip=t.id;v.abre=0;E._escolher=false;tela2();$('corpo').scrollTop=0;};gr.appendChild(b);});C.appendChild(gr);
+      if(atual){const cc=document.createElement('button');cc.className='bt full';cc.style.marginTop='8px';cc.textContent='Cancelar · manter '+atual.nome;cc.onclick=()=>{E._escolher=false;tela2();};C.appendChild(cc);}
+      dica(atual?'Escolha a nova esquadria na lista.':'Escolha a tipologia na lista.');
+      desenha();return;
+    }
     C.appendChild(H('<div class="rot">Cor do perfil</div>'));C.appendChild(cores(v.cor,id=>{v.cor=id;tela2();}));
     C.appendChild(H('<div class="rot">Vidro</div>'));const vd=document.createElement('div');vd.className='chips';
     Object.entries(T.VID).forEach(([id,x])=>vd.appendChild(chip(x.n,v.vidro===id,()=>{v.vidro=id;tela2();},x.b)));C.appendChild(vd);
     if(atual&&atual.move){C.appendChild(H('<div class="rot">Abrir e fechar</div>'));const r=document.createElement('input');r.type='range';r.min=0;r.max=1;r.step=1/12;r.value=v.abre;
       r.oninput=()=>{v.abre=+r.value;desenha();};C.appendChild(r);}
-    seguir(C,'Continuar → Finalizar',6);dica(v.tip?'':'Escolha a tipologia na lista.');}
+    seguir(C,'Continuar → Finalizar',6);dica('');}
   if(E.passo===6){C.appendChild(H(`<h3>Finalizar</h3><p class="sub">Arraste para comparar antes e depois. Salve a imagem para enviar ao cliente.</p>`));
     const r=document.createElement('input');r.type='range';r.min=0;r.max=1;r.step=.01;r.value=E.antes;r.oninput=()=>{E.antes=+r.value;desenha();};C.appendChild(H('<div class="rot">Antes ⇄ Depois</div>'));C.appendChild(r);
     const sv=document.createElement('button');sv.className='bt pri full';sv.style.marginTop='12px';sv.textContent='⬇ Salvar imagem';sv.onclick=salvar;C.appendChild(sv);
+    C.appendChild(H('<div class="rot">Esquadrias</div>'));
+    E.vaos.forEach((x,i)=>{const t=x.tip&&LISTA.find(y=>y.id===x.tip);const r2=H(`<div style="display:flex;align-items:center;gap:8px;border:1px solid var(--ln);border-radius:11px;padding:6px 8px;margin-bottom:6px">
+      <b style="flex:none">Vão ${i+1}</b><span style="flex:1;min-width:0;font-size:12px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t?t.nome:'sem esquadria'}</span></div>`).firstElementChild;
+      const bt=document.createElement('button');bt.className='bt';bt.style.minHeight='34px';bt.style.padding='6px 10px';bt.textContent=t?'🔄 Trocar':'＋ Escolher';
+      bt.onclick=()=>{E.ativo=i;E._escolher=true;if(t)E.cat=t.cat;ir(5);};r2.appendChild(bt);C.appendChild(r2);});
     const nv=document.createElement('button');nv.className='bt full';nv.style.marginTop='8px';nv.textContent='＋ Marcar outro vão nesta foto';nv.onclick=()=>{E._novo=true;ir(2);};C.appendChild(nv);
     dica('');}
   C.appendChild(H('<div class="aviso">Imagem demonstrativa. Reboco e cor da parede são efeito visual. Medidas apenas demonstrativas — não usar para produção.</div>'));
