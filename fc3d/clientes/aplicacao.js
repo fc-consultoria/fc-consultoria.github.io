@@ -27,7 +27,9 @@ const livre=(D,k)=>FULL||(D.amostra||[]).includes(k);
 const encx=()=>ENC||(ENC=fetch(BASE+'aplicacao-encaixe.json?v=1').then(r=>r.json()).then(j=>{Object.assign(AM.m,j.m||{});Object.assign(AM.sec,j.sec||{});}).catch(e=>{ENC=null;throw e;}));
 /* código do card pode vir composto ("LG-024 / LG-115") */
 const partes=c=>String(c||'').toUpperCase().split('/').map(x=>x.trim()).filter(Boolean);
-const usos=(D,c)=>{const v=[],k={};partes(c).forEach(p=>((D.perfis||{})[p]||[]).forEach(a=>{if(!k[a.m]){k[a.m]=1;v.push(a);}}));return v;};
+/* 17/11/2026: Aplicação da linha Gold bloqueada para todos (encaixes em conferência); só a Matriz vê */
+const GOLDOFF=m=>!window.FCAPL_FULL&&(/^g_/.test(m)||/gold/i.test(((DADOS_M||{})[m]||{}).linha||''));let DADOS_M=null;
+const usos=(D,c)=>{DADOS_M=D.modelos;const v=[],k={};partes(c).forEach(p=>((D.perfis||{})[p]||[]).forEach(a=>{if(!k[a.m]&&!GOLDOFF(a.m)){k[a.m]=1;v.push(a);}}));return v;};
 
 let css=false;
 function estilo(){if(css)return;css=true;const s=document.createElement('style');s.textContent=`
