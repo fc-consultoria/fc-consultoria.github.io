@@ -15,12 +15,12 @@ let FULL=(()=>{if(CLIENTE)return false;if(window.FCAPL_FULL)return true;try{retu
 const cofre=()=>window.FCCofre?Promise.resolve():new Promise((ok,er)=>{const s=document.createElement('script');s.src=BASE+'cofre.js?v=1';s.onload=ok;s.onerror=er;document.head.appendChild(s);});
 const ZAP='5566999867984';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const pubD=()=>fetch(BASE+'aplicacao.json?v=5',{cache:'no-cache'}).then(r=>r.json());
+const pubD=()=>fetch(BASE+'aplicacao.json?v=6',{cache:'no-cache'}).then(r=>r.json());
 const dados=()=>DADOS||(DADOS=(FULL?cofre().then(()=>FCCofre.json(BASE+'aplicacao-completa.json')).catch(()=>{FULL=false;return pubD();}):pubD()).catch(()=>({modelos:{},perfis:{}})));
 const sc=u=>new Promise((ok,er)=>{const s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=er;document.head.appendChild(s);});
 const libs=()=>LIBS||(LIBS=(window.THREE&&THREE.REVISION==='128'?Promise.resolve():sc(L3[0])).then(()=>THREE.OrbitControls?null:sc(L3[1]))
  .then(()=>dados()).then(()=>FULL?cofre().then(()=>window.FCM?null:FCCofre.script(BASE+'tecnico/montagens.js')).then(()=>Promise.all([FCCofre.json(BASE+'tecnico/secoes.json').then(j=>{SEC=j;}),FCM.carregarAjustes()])):null)
-  .catch(()=>{FULL=false;}).then(()=>FULL?null:fetch(BASE+'aplicacao-amostra.json?v=1').then(r=>r.json()).then(j=>{AM=j;})).catch(e=>{LIBS=null;throw e;}));
+  .catch(()=>{FULL=false;}).then(()=>FULL?null:fetch(BASE+'aplicacao-amostra.json?v=2').then(r=>r.json()).then(j=>{AM=j;})).catch(e=>{LIBS=null;throw e;}));
 const livre=(D,k)=>FULL||(D.amostra||[]).includes(k);
 /* 06/11/2026: no público, as tipologias fora da amostra abrem só no "Ver o encaixe" */
 /* 09/11/2026: aplicacao-encaixe.json saiu do site aberto */
@@ -146,7 +146,7 @@ function cena(pn,codes,key,onDone,so){const st=pn.querySelector('.ast'),cv=pn.qu
  requestAnimationFrame(loop);onDone&&onDone();return fim;}
 
 /* ---------- liga o botão na janela do perfil ---------- */
-async function liga(o,code){if(CLIENTE||!o||!code)return;let D;try{D=await dados();}catch(_){return;}const L=usos(D,code),CODES=partes(code);if(!L.length)return;
+async function liga(o,code){if(!o||!code)return;/* 17/11/2026: Aplicação liberada também no link do cliente */let D;try{D=await dados();}catch(_){return;}const L=usos(D,code),CODES=partes(code);if(!L.length)return;
  const vb=o.querySelector('.vb'),wr=o.querySelector('.wr');if(!vb||!wr)return;estilo();
  const bt=document.createElement('button');bt.type='button';bt.className='apb';bt.textContent='🧩 Aplicação';bt.title='Onde este perfil é aplicado na tipologia';bt.setAttribute('aria-pressed','false');vb.appendChild(bt);
  const pn=document.createElement('div');pn.className='apl';pn.hidden=true;
@@ -189,13 +189,13 @@ function cssCard(){if(document.getElementById('aplUsaCss'))return;const s=docume
 .cd .usa small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#a0661a;margin-bottom:1px}
 @media(max-width:560px){.cd .usa{font-size:11.5px;padding:3px 7px}}
 @media print{.cd .usa{border:0;background:none;padding:0;color:#55636c}}`;document.head.appendChild(s);}
-function usaEm(){if(CLIENTE)return;const lst=document.getElementById('lst');if(!lst)return;
+function usaEm(){const lst=document.getElementById('lst');if(!lst)return;
  dados().then(D=>{const P=D.perfis||{},M=D.modelos||{};if(!Object.keys(P).length)return;cssCard();
   const nomes=c=>{const v=[];usos(D,c).forEach(a=>{const m=M[a.m]||{},n=m.n||a.m;if(!v.includes(n))v.push(n);});return v;};
   const marca=()=>lst.querySelectorAll('.cd[data-c]:not([data-usa])').forEach(cd=>{cd.dataset.usa='1';const c=String(cd.dataset.c).toUpperCase(),v=nomes(c);if(!v.length)return;
    const tx=v.length>2?v.slice(0,2).join(' · ')+' +'+(v.length-2):v.join(' · ');
    const b=document.createElement('button');b.type='button';b.className='usa nov3';b.title='Ver onde este perfil é aplicado';b.setAttribute('aria-label','Aplicação: '+v.join(', ')+'. Ver a aplicação');
-   b.innerHTML='<small>🧩 Aplicação</small>'+esc(tx)+(FULL?'':'<span class="lk">🔒 3D completo na Plataforma FC 3D</span>');
+   b.innerHTML='<small>🧩 Aplicação</small>'+esc(tx)+(FULL||usos(D,c).every(a=>livre(D,a.m))?'':'<span class="lk">🔒 3D completo na Plataforma FC 3D</span>');
    b.addEventListener('click',e=>{e.stopPropagation();PEND={c,t:Date.now()};try{window.hit&&hit('perfis_usaem',c);}catch(_){}cd.click();});
    cd.appendChild(b);});
   marca();let q=0;new MutationObserver(()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;marca();});}).observe(lst,{childList:true,subtree:true});});}
