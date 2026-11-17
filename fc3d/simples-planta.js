@@ -36,7 +36,7 @@
     '#fcObraB em{font-style:normal;color:#c9a66b;font-size:13px;font-weight:600}',
     '#fcObraX{background:none;border:1px solid #34353a;color:#d8d6d0;border-radius:99px;width:30px;height:30px;cursor:pointer;flex:none}',
     '@media (min-width:761px){#fcObraB{display:flex}body:not(.fcObra) #pr{display:none!important}body.fcObra #fcObraB{display:none}}',
-    '@media (max-width:760px){#fcObraX{display:none}}',
+    '@media (max-width:760px){#fcObraX{display:none}#fcMaisM{position:fixed;left:10px;right:10px;top:64px;min-width:0;max-height:calc(100vh - 90px);overflow:auto;z-index:80}}',
     'body.pres #fcMaisW,body.pres #fcObraB{display:none!important}'
   ].join('\n');
   document.head.appendChild(css);
