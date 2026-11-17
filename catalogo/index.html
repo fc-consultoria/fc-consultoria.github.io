@@ -182,7 +182,7 @@ async function carregaCli(){const M=document.getElementById('lst');
  for(let k=LN.length-1;k>=0;k--)if(!(CLI.linhas||[]).includes(LN[k].id))LN.splice(k,1);
  aplicaIT(it);
  const R=document.documentElement.style;R.setProperty('--tl',CLI.cor||'#17606b');R.setProperty('--cc',CLI.cor||'#17606b');
- const ACX=LN.some(l=>l.p.some(q=>q.ac));document.title=(ACX?'Catálogo de perfis e acessórios · ':'Catálogo de perfis · ')+CLI.nome;
+ const ACX=LN.some(l=>l.p.some(q=>q.ac));document.title='Catálogo '+CLI.nome;
  if(ACX){const S=(i,v)=>{const e=document.getElementById(i);if(e)e.innerHTML=v;};S('cSub','Catálogo de perfis de alumínio e acessórios');S('cEb','Catálogo de perfis e acessórios');S('cH1','Perfis e <em>acessórios</em>');}
  document.getElementById('cName').textContent=CLI.nome;document.getElementById('cSig').textContent=CLI.sigla||CLI.nome.slice(0,2).toUpperCase();
  document.getElementById('cText').textContent=CLI.texto||'';document.querySelectorAll('.cFoot').forEach(e=>e.textContent=CLI.nome+(CLI.cidade?' · '+CLI.cidade:'')+(CLI.zap?' · WhatsApp '+CLI.zap:''));
