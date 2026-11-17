@@ -189,7 +189,7 @@ function cssCard(){if(document.getElementById('aplUsaCss'))return;const s=docume
 .cd .usa small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#a0661a;margin-bottom:1px}
 @media(max-width:560px){.cd .usa{font-size:11.5px;padding:3px 7px}}
 @media print{.cd .usa{border:0;background:none;padding:0;color:#55636c}}`;document.head.appendChild(s);}
-function usaEm(){const lst=document.getElementById('lst');if(!lst)return;
+let usaT=0;function usaEm(){const lst=document.getElementById('lst');if(!lst){if(usaT++<40)setTimeout(usaEm,500);return;}
  dados().then(D=>{const P=D.perfis||{},M=D.modelos||{};if(!Object.keys(P).length)return;cssCard();
   const nomes=c=>{const v=[];usos(D,c).forEach(a=>{const m=M[a.m]||{},n=m.n||a.m;if(!v.includes(n))v.push(n);});return v;};
   const marca=()=>lst.querySelectorAll('.cd[data-c]:not([data-usa])').forEach(cd=>{cd.dataset.usa='1';const c=String(cd.dataset.c).toUpperCase(),v=nomes(c);if(!v.length)return;
