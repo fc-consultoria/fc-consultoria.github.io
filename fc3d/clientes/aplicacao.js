@@ -194,13 +194,13 @@ function cssCard(){if(document.getElementById('aplUsaCss'))return;const s=docume
 let usaT=0;function usaEm(){const lst=document.getElementById('lst');if(!lst){if(usaT++<40)setTimeout(usaEm,500);return;}
  dados().then(D=>{const P=D.perfis||{},M=D.modelos||{};if(!Object.keys(P).length)return;cssCard();
   const nomes=c=>{const v=[];usos(D,c).forEach(a=>{const m=M[a.m]||{},n=m.n||a.m;if(!v.includes(n))v.push(n);});return v;};
-  const marca=()=>lst.querySelectorAll('.cd[data-c]:not([data-usa])').forEach(cd=>{cd.dataset.usa='1';const c=String(cd.dataset.c).toUpperCase(),v=nomes(c);if(!v.length)return;
+  const marca=()=>document.querySelectorAll('#lst .cd[data-c]:not([data-usa])').forEach(cd=>{cd.dataset.usa='1';const c=String(cd.dataset.c).toUpperCase(),v=nomes(c);if(!v.length)return;
    const tx=v.length>2?v.slice(0,2).join(' · ')+' +'+(v.length-2):v.join(' · ');
    const b=document.createElement('button');b.type='button';b.className='usa nov3';b.title='Ver onde este perfil é aplicado';b.setAttribute('aria-label','Aplicação: '+v.join(', ')+'. Ver a aplicação');
    b.innerHTML='<small>🧩 Aplicação</small>'+esc(tx)+(FULL||usos(D,c).every(a=>livre(D,a.m))?'':'<span class="lk">🔒 3D completo na Plataforma FC 3D</span>');
    b.addEventListener('click',e=>{e.stopPropagation();PEND={c,t:Date.now()};try{window.hit&&hit('perfis_usaem',c);}catch(_){}cd.click();});
    cd.appendChild(b);});
-  marca();let q=0;new MutationObserver(()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;marca();});}).observe(lst,{childList:true,subtree:true});});}
+  marca();let q=0;new MutationObserver(()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;marca();});}).observe(document.body,{childList:true,subtree:true});setTimeout(marca,1500);setTimeout(marca,4000);});}
 /* 17/11/2026: a página curta do cliente escreve o catálogo com document.write; o DOMContentLoaded pode não vir */
 let usaFoi=false;const usaUma=()=>{if(usaFoi)return;usaFoi=true;usaEm();};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',usaUma);else usaUma();setTimeout(usaUma,1500);addEventListener('load',usaUma);
