@@ -37,10 +37,9 @@
 
   function pode(S,p){return !!(S&&!S.demo&&cfg(S)&&(p==='gestor'||p==='vendedor'));}
   function linkDe(S,d){const c=cfg(S);const u=(d&&d.link)||('https://fc-consultoria.github.io/catalogo/'+c.slug);return d&&d.vcode?u+'?v='+d.vcode:u;}
-  function msgDe(S,d,p){const loja=(d&&d.loja)||S.empresa_nome||'loja';
-    return p==='vendedor'&&d&&d.vcode
-      ?`Olá! Este é o catálogo de perfis da ${loja}. Você vê os perfis em 3D, monta a sua cotação e me envia direto pelo WhatsApp: ${linkDe(S,d)}`
-      :`Olá! Este é o catálogo de perfis da ${loja}. Você vê os perfis em 3D, monta a sua cotação e envia para um dos nossos vendedores pelo WhatsApp: ${linkDe(S,d)}`;}
+  /* 16/11/2026: o "Copiar link" e o "Enviar no WhatsApp" levam o convite pronto (acessar o catálogo e, se achar interessante, fazer o cadastro) */
+  function msgDe(S,d,p){const loja=(d&&d.loja)||S.empresa_nome||'loja',ven=p==='vendedor'&&d&&d.vcode;
+    return `Olá! Tudo bem? 😊\n\nConvido você a conhecer o catálogo de perfis da ${loja}. Nele você vê os perfis em 3D, as cores e monta a sua cotação, sem compromisso.\n\nSe achar interessante, faça o seu cadastro (é rápido, só com o seu WhatsApp) e ${ven?'me envie a cotação direto pelo WhatsApp':'envie a cotação para um dos nossos vendedores pelo WhatsApp'}.\n\nAcesse aqui: ${linkDe(S,d)}`;}
 
   async function post(fn,args,jwt){const r=await fetch(CEN+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json',Authorization:'Bearer '+(jwt||KEY)},body:JSON.stringify(args)});
     const t=await r.text();if(!r.ok)throw new Error('Não foi possível carregar agora. Tente de novo em instantes.');return t?JSON.parse(t):null;}
@@ -69,11 +68,11 @@
       <div class="catl-t"><span class="catl-ic" aria-hidden="true">🔗</span><div><b>Link do catálogo para enviar aos seus clientes</b>
       <small>${p==='vendedor'?'Este link é seu: o cliente vê os perfis em 3D, monta a cotação e ela chega no seu WhatsApp. Os acessos e as cotações aparecem em Clientes do Catálogo.':'O cliente vê os perfis em 3D, monta a cotação e escolhe o vendedor da '+h(S.empresa_nome||'loja')+' para receber no WhatsApp. Cada colaborador tem o próprio link no Início dele.'}</small></div></div>
       <div class="catl-u"><code id="catUrl">${h(u)}</code></div>
-      <div class="catl-b"><button type="button" class="btn cat-pr" data-catcp>📋 Copiar link</button><a class="btn cat-zap" id="catZap" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msgDe(S,D,p))}">💬 Enviar no WhatsApp</a><a class="btn cat-cl" id="catAbre" href="${h(u)}" target="_blank" rel="noopener">Abrir o catálogo</a>${naTela?'':'<button type="button" class="btn cat-cl" data-ir="catc">📊 Clientes do Catálogo</button>'}</div>
+      <div class="catl-b"><button type="button" class="btn cat-pr" data-catcp>📋 Copiar convite com link</button><a class="btn cat-zap" id="catZap" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msgDe(S,D,p))}">💬 Enviar no WhatsApp</a><a class="btn cat-cl" id="catAbre" href="${h(u)}" target="_blank" rel="noopener">Abrir o catálogo</a>${naTela?'':'<button type="button" class="btn cat-cl" data-ir="catc">📊 Clientes do Catálogo</button>'}</div>
       <div class="catl-m" id="catMsg" role="status"></div></section>`;}
   function ligarCard(S,p){const b=document.querySelector('[data-catcp]');if(!b)return;
     b.onclick=async()=>{const u=document.getElementById('catUrl').textContent,m=document.getElementById('catMsg');
-      try{await navigator.clipboard.writeText(u);m.textContent='Link copiado. É só colar na conversa com o cliente.';}
+      try{await navigator.clipboard.writeText(msgDe(S,D,p));m.textContent='Convite com o link copiado. É só colar na conversa com o cliente.';}
       catch(_){const r=document.createRange();r.selectNodeContents(document.getElementById('catUrl'));const sl=getSelection();sl.removeAllRanges();sl.addRange(r);m.textContent='Link selecionado: segure e toque em Copiar.';}};}
   function atualizaCard(S,p){const u=linkDe(S,D);const c=document.getElementById('catUrl');if(!c)return;c.textContent=u;
     const a=document.getElementById('catAbre');if(a)a.href=u;const z=document.getElementById('catZap');if(z)z.href='https://wa.me/?text='+encodeURIComponent(msgDe(S,D,p));}
