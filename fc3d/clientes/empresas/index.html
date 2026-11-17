@@ -77,7 +77,7 @@ async function rpc(fn,a){const r=await sb.rpc(fn,Object.assign({p_token:TOK},a||
 const LINK='https://fc-consultoria.github.io/fc3d/clientes/';
 const PAP={gestor:'Gestor',vendedor:'Colaborador',arquiteto:'Portal do Cliente'};
 const SET={gestor:'Gestor',compras:'Compras',vendas:'Vendas (Comercial)',estoque:'Estoque',fabrica:'Fábrica',gerente:'Gerente comercial',marketing:'Marketing'};
-const SUG=[['casa-bandeirante','Casa Bandeirante','CB'],['guapore-vidros','Guaporé Vidros','GV'],['guapore-sinop','Guaporé Sinop','GS'],['cde','CDE Vidros & Esquadrias','CDE']];
+const SUG=[['casa-bandeirante','Casas Bandeirantes','CB'],['guapore-vidros','Guaporé Vidros','GV'],['guapore-sinop','Guaporé Sinop','GS'],['cde','CDE Vidros & Esquadrias','CDE']];
 let L=[];
 const dataBR=d=>d?d.split('-').reverse().join('/'):'';
 const umAno=()=>{const d=new Date();d.setFullYear(d.getFullYear()+1);return d.toISOString().slice(0,10);};

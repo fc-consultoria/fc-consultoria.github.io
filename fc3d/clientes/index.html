@@ -355,7 +355,7 @@ $('#btTema').onclick=()=>{const atual=document.documentElement.getAttribute('dat
 /* nomes na tela (as chaves internas continuam gestor, vendedor e arquiteto) */
 const PAPEIS={compras:'Compras',fabrica:'Fábrica & CEM',gestor:'Gestor',vendedor:'Colaborador',arquiteto:'Portal do Cliente',fc:'FC Consultoria',demo:'Demonstrativo'};
 const SETORES={gestor:'Gestor',compras:'Compras',vendas:'Vendas (Comercial)',estoque:'Estoque',fabrica:'Fábrica',gerente:'Gerente comercial',marketing:'Marketing'};
-/* 16/11/2026 · Casa Bandeirante · setor Fábrica & CEM (setor 'fabrica' da Central do Cliente): só Tipologias e Catálogo 3D (Início sempre).
+/* 16/11/2026 · Casas Bandeirantes · setor Fábrica & CEM (setor 'fabrica' da Central do Cliente): só Tipologias e Catálogo 3D (Início sempre).
    Para liberar mais um módulo ao setor, acrescente a chave na lista (ex.: 'apr'). */
 const SET_MODS={'casa-bandeirante':{fabrica:['tip']},'teste-casa-bandeirante':{fabrica:['tip']}};
 const SET_NOME={'casa-bandeirante':{fabrica:'Fábrica & CEM'},'teste-casa-bandeirante':{fabrica:'Fábrica & CEM'}};
@@ -712,7 +712,7 @@ function vndTela(url){const box=document.getElementById('vndBox');if(!box)return
   alt();addEventListener('resize',alt);}
 document.addEventListener('click',ev=>{if(ev.target&&ev.target.id==='vndAbrir')abrirVendas();});
 /* ---------- 08/11/2026 · Ver como cliente (só a FC): abre aba nova como usuário da empresa, sem senha; o login fica só naquela aba ---------- */
-const VERCLI=[['teste-casa-bandeirante','Casa Bandeirante','Catálogo da CB',[['🧾 Painel de Vendas · como o vendedor vê','/treinamento/orcamento/?e=cb&ver=vend'],['🏢 Central do Cliente · por setor','/treinamento/consultorias.html?ver=cb&como=gestor']]],
+const VERCLI=[['teste-casa-bandeirante','Casas Bandeirantes','Catálogo da CB',[['🧾 Painel de Vendas · como o vendedor vê','/treinamento/orcamento/?e=cb&ver=vend'],['🏢 Central do Cliente · por setor','/treinamento/consultorias.html?ver=cb&como=gestor']]],
  ['teste-guapore-vidros','Guaporé Vidros / Sinop','Catálogo da Guaporé',[['🧾 Portal Comercial · como o vendedor vê','/treinamento/guapore/portal-comercial.html?papel=vendedor'],['🏢 Central do Cliente · por setor','/treinamento/consultorias.html?ver=gb&como=gestor']]],
  ['teste-cde','CDE','Catálogo Suprema e Gold',[['🏢 Central do Cliente · por setor','/treinamento/consultorias.html?ver=cde&como=gestor']]],
  ['teste-medidor-obras','Visita de Obra','Versão que o cliente compra: Visita de Obra, Fábrica 3D e Catálogo 3D',[]],
@@ -1034,7 +1034,7 @@ if(ABK){
 /* capa da empresa antes da tela de entrada (10/11/2026) — mesmo visual da capa do Portal Comercial */
   const CAPAS={'teste-cde':{sg:'CDE',fs:38,n:'CDE Vidros & Esquadrias',bg:'radial-gradient(circle at 30% 20%,#e5484d 0%,#a3161c 45%,#2b0406 100%)',c:'#b3141b'},
     'teste-guapore-vidros':{sg:'G',fs:64,n:'Guaporé Vidros',bg:'radial-gradient(circle at 30% 20%,#2a7fd4 0%,#123f7a 45%,#06172e 100%)',c:'#1d5fa8'},
-    'teste-casa-bandeirante':{sg:'CB',fs:46,n:'Casa Bandeirante',bg:'radial-gradient(circle at 30% 20%,#8a6ff0 0%,#3c2a8a 45%,#140c33 100%)',c:'#5b3fc4'},
+    'teste-casa-bandeirante':{sg:'CB',fs:46,n:'Casas Bandeirantes',img:'/catalogo/casas-bandeirantes/marca.png',bg:'radial-gradient(circle at 30% 20%,#2bc0b4 0%,#01969c 45%,#03383b 100%)',c:'#01969c'},
     'cliente-teste-fc':{sg:'FC',fs:46,n:'Plataforma FC 3D',bg:'radial-gradient(circle at 30% 20%,#1d8a8c 0%,#0f5c61 45%,#0b2a2f 100%)',c:'#0e6b62'}};
   const capa=()=>{let k=null;try{k=sessionStorage.getItem('pfc-aba-capa')}catch(_){}const C=CAPAS[k]||CAPAS['cliente-teste-fc'];
     let d=document.getElementById('pfcCapa');if(d)d.remove();d=document.createElement('div');d.id='pfcCapa';d.setAttribute('role','dialog');d.setAttribute('aria-label','Abertura');
@@ -1047,7 +1047,7 @@ if(ABK){
 #pfcCapa .cb{margin-top:22px;border:0;background:#f2b75a;color:#06172e;font:700 18px var(--f-display,system-ui);padding:14px 34px;border-radius:14px;cursor:pointer;animation:pfcIn .9s .6s ease both}#pfcCapa .cb:hover{background:#ffd08a}
 #pfcCapa .cf{margin-top:36px;display:flex;align-items:center;gap:10px;opacity:.85;font-size:12.5px;animation:pfcIn .9s .75s ease both}#pfcCapa .cf img{height:38px;width:auto;background:#fff;border-radius:8px;padding:4px 8px}
 @keyframes pfcIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){#pfcCapa *{animation:none!important}}</style>
-<div class="ci"><div class="cg">${h(C.sg)}</div><h1>${h(C.n)}</h1><p class="ct">Plataforma FC 3D · Catálogo 3D</p><p class="cs">Tipologias · Catálogo 3D · Apresentação ao cliente</p>
+<div class="ci"><div class="cg"${C.img?' style="overflow:hidden;background:#01969c"':''}>${C.img?`<img src="${C.img}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`:h(C.sg)}</div><h1>${h(C.n)}</h1><p class="ct">Plataforma FC 3D · Catálogo 3D</p><p class="cs">Tipologias · Catálogo 3D · Apresentação ao cliente</p>
 <button type="button" class="cb">Entrar ▶</button><div class="cf"><img src="/img/logo-fc-160.jpg" alt="FC Consultoria" onerror="this.remove()"><span>Desenvolvido por FC Consultoria em Esquadria</span></div></div>`;
     document.body.appendChild(d);const sai=()=>{d.classList.add('sai');setTimeout(()=>d.remove(),650);const l=$('#inLogin');if(l)l.focus();};
     d.querySelector('.cb').onclick=sai;d.querySelector('.cb').focus();};
