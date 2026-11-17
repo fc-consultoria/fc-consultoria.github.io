@@ -146,7 +146,7 @@ dialog{border:0;border-radius:18px;padding:0;max-width:min(560px,calc(100% - 32p
 dialog::backdrop{background:rgba(10,10,12,.5)}
 dialog form{padding:22px;display:flex;flex-direction:column;gap:12px}
 .loading{padding:60px 0;text-align:center;color:var(--mute);font:600 12px var(--f-m);letter-spacing:.1em}
-@media (max-width:700px){.roles,.etapas,.kv,.grid2{grid-template-columns:1fr}.lg-l{padding:32px 20px}.lg-r{padding:32px 20px}.art{display:none}.top{gap:10px}.who span{display:none}}
+@media (max-width:700px){.vgr{grid-template-columns:1fr!important}.roles,.etapas,.kv,.grid2{grid-template-columns:1fr}.lg-l{padding:32px 20px}.lg-r{padding:32px 20px}.art{display:none}.top{gap:10px}.who span{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -397,12 +397,25 @@ async function baixar(a,btn){
 function vPorta(m){
   const L=(D.entregas||[]).filter(x=>x.link&&/^porta\.html/.test(x.link));
   if(!L.length){m.innerHTML=`<div class="hd"><div><p class="eb">Visualização 3D</p><h1 style="margin-top:6px">Nenhuma entrega em 3D ainda</h1></div></div><p class="mute" style="font-size:13.5px">Quando a FC publicar uma entrega em 3D, ela aparece aqui.</p>`;return}
-  const at=L.find(x=>x.id===+(sessionStorage.getItem('fc3d.ent')||0))||L[0];
-  m.innerHTML=`<div class="hd"><div><p class="eb">${esc(ST[at.status]||'Entrega')}</p><h1 style="margin-top:6px">${esc(at.titulo)}</h1></div><a class="btn ghost" href="${esc(at.link)}" target="_blank" rel="noopener">Abrir em tela cheia</a></div>
-  ${L.length>1?`<div class="row" style="gap:6px;flex-wrap:wrap">${L.map(x=>`<button type="button" class="btn sm ${x.id===at.id?'pri':''}" data-pt="${x.id}">${esc(x.titulo)}</button>`).join('')}</div>`:''}
+  /* 17/11/2026: entregas agrupadas em 3 cartões (Catálogo, Casas, Tipologias) no lugar da fila de botões */
+  const grupo=x=>/pontos|confirmar/i.test(x.titulo)?'pontos':/planta/i.test(x.titulo)?'casas':/cat[aá]logo/i.test(x.titulo)?'cat':'tip';
+  const curto=t=>String(t||'').replace(/^.*?Otimizza HS-32\s*·\s*/i,'').replace(/\s*·\s*planta baixa.*$/i,'').replace(/\s*3D\s*·\s*/,' · ').trim();
+  const G=[['cat','Catálogo','Catálogo técnico em 3D'],['casas','Casas','Plantas com as esquadrias'],['tip','Tipologias','Cada esquadria em 3D']]
+    .map(g=>({k:g[0],t:g[1],d:g[2],L:L.filter(x=>grupo(x)===g[0])})).filter(g=>g.L.length);
+  const PT=L.filter(x=>grupo(x)==='pontos');
+  const salvo=+(sessionStorage.getItem('fc3d.ent')||0);
+  let at=L.find(x=>x.id===salvo)||(G[0]&&G[0].L[0])||L[0];
+  const gAt=grupo(at)==='pontos'?'pontos':grupo(at);
+  const GA=G.find(g=>g.k===gAt);
+  const ic={cat:'<path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/>',casas:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',tip:'<rect x="3" y="3" width="18" height="18" rx="1"/><path d="M12 3v18"/><path d="M15 12h2"/>'};
+  m.innerHTML=`<div class="hd"><div><p class="eb">${esc(ST[at.status]||'Entrega')}</p><h1 style="margin-top:6px">${esc(at.titulo)}</h1></div><div class="row" style="gap:8px">${PT.map(x=>`<button type="button" class="btn sm ${x.id===at.id?'pri':'ghost'}" data-pt="${x.id}">${esc(x.titulo)}</button>`).join('')}<a class="btn ghost" href="${esc(at.link)}" target="_blank" rel="noopener">Abrir em tela cheia</a></div></div>
+  <div class="vgr" style="display:grid;grid-template-columns:repeat(${G.length},minmax(0,1fr));gap:12px">${G.map(g=>`<button type="button" data-g="${g.k}" style="all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:16px;background:${g.k===gAt?'var(--ink)':'var(--panel)'};color:${g.k===gAt?'var(--bg)':'var(--ink)'};border:${g.k===gAt?'2px solid #c9a66b':'1px solid var(--line)'}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c9a66b" stroke-width="1.7" aria-hidden="true">${ic[g.k]}</svg><span><b style="display:block;font-size:17px;font-weight:600">${g.t}</b><span style="font-size:12.5px;opacity:.7">${g.d} · ${g.L.length}</span></span></button>`).join('')}</div>
+  ${GA&&GA.L.length>1?`<div class="row" style="gap:6px;flex-wrap:wrap">${GA.L.map(x=>`<button type="button" class="btn sm ${x.id===at.id?'pri':''}" data-pt="${x.id}">${esc(curto(x.titulo))}</button>`).join('')}</div>`:''}
   <div class="porta"><iframe src="${esc(at.link)}" title="${esc(at.titulo)}" allow="fullscreen"></iframe></div>
   <p class="mute" style="font-size:13.5px">Gire com o dedo ou o mouse. Use os modos no topo da visualização para apresentar, montar, ver o desenho técnico e trocar acabamentos.</p>`;
-  $$('[data-pt]').forEach(b=>b.onclick=()=>{try{sessionStorage.setItem('fc3d.ent',b.dataset.pt)}catch(_){}vPorta(m)});
+  const vai=id=>{try{sessionStorage.setItem('fc3d.ent',id)}catch(_){}vPorta(m)};
+  $$('[data-pt]').forEach(b=>b.onclick=()=>vai(b.dataset.pt));
+  $$('[data-g]').forEach(b=>b.onclick=()=>{const g=G.find(x=>x.k===b.dataset.g);if(g&&g.k!==gAt)vai(g.L[0].id)});
 }
 
 /* ---------- Equipe ---------- */
