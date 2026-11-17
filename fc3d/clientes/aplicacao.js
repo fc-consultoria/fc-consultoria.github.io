@@ -199,7 +199,9 @@ let usaT=0;function usaEm(){const lst=document.getElementById('lst');if(!lst){if
    b.addEventListener('click',e=>{e.stopPropagation();PEND={c,t:Date.now()};try{window.hit&&hit('perfis_usaem',c);}catch(_){}cd.click();});
    cd.appendChild(b);});
   marca();let q=0;new MutationObserver(()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;marca();});}).observe(lst,{childList:true,subtree:true});});}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',usaEm);else usaEm();
+/* 17/11/2026: a página curta do cliente escreve o catálogo com document.write; o DOMContentLoaded pode não vir */
+let usaFoi=false;const usaUma=()=>{if(usaFoi)return;usaFoi=true;usaEm();};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',usaUma);else usaUma();setTimeout(usaUma,1500);addEventListener('load',usaUma);
 
 window.FCAPL={liga};
 })();
