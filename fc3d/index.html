@@ -399,7 +399,7 @@ function vPorta(m){
   if(!L.length){m.innerHTML=`<div class="hd"><div><p class="eb">Visualização 3D</p><h1 style="margin-top:6px">Nenhuma entrega em 3D ainda</h1></div></div><p class="mute" style="font-size:13.5px">Quando a FC publicar uma entrega em 3D, ela aparece aqui.</p>`;return}
   /* 17/11/2026: entregas agrupadas em 3 cartões (Catálogo, Casas, Tipologias) no lugar da fila de botões */
   const grupo=x=>/pontos|confirmar/i.test(x.titulo)?'pontos':/planta/i.test(x.titulo)?'casas':/cat[aá]logo/i.test(x.titulo)?'cat':'tip';
-  const curto=t=>String(t||'').replace(/^.*?Otimizza HS-32\s*·\s*/i,'').replace(/\s*·\s*planta baixa.*$/i,'').replace(/\s*3D\s*·\s*/,' · ').trim();
+  const curto=t=>String(t||'').replace(/^.*?Otimizza HS-32\s*·\s*/i,'').replace(/\s*·\s*planta baixa.*$/i,'').replace(/\s*3D\s*·\s*/,' · ').replace(/\s*·\s*\d+\s*montage.*$/i,'').replace(/\s*·\s*montante/i,' · montante').trim();
   const G=[['cat','Catálogo','Catálogo técnico em 3D'],['casas','Casas','Plantas com as esquadrias'],['tip','Tipologias','Cada esquadria em 3D']]
     .map(g=>({k:g[0],t:g[1],d:g[2],L:L.filter(x=>grupo(x)===g[0])})).filter(g=>g.L.length);
   const PT=L.filter(x=>grupo(x)==='pontos');
