@@ -369,6 +369,7 @@ const MENU=[
   {k:'tip',get n(){return NTIP();},i:'▦',p:['gestor','vendedor','arquiteto','demo']},
   /* 09/11/2026 · Ambientes (Monte sua Casa) inativo em toda a plataforma */
   {k:'apr',n:'Apresentação',i:'▶',p:['gestor','vendedor','arquiteto']/* fora do demonstrativo: lá ficam só Tipologias e Catálogo 3D */},
+  {k:'ctr',n:'Contrato da plataforma',i:'📄',p:['gestor']/* 19/11/2026: termo de uso/licença da plataforma · só o gestor (e a FC dentro da empresa) */},
   {k:'ges',n:'Equipe',i:'👥',p:['gestor']/* 03/11/2026: andamento da equipe por setor (só o gestor e a FC dentro da empresa) */},
   {k:'mtg',n:'Montagem Tipologia',i:'🎬',p:['gestor','vendedor','arquiteto','demo'],fc:1/* 08/11/2026: sequência de montagem passo a passo (vídeos de professor) · só a FC vê */}];
 /* Etapas de construção da plataforma (a etapa 1 está pronta) */
@@ -754,7 +755,7 @@ function telaMtg(){
 const SO_CAT_EMP=['guapore-vidros'];
 /* 11/11/2026 · Brito Esquadrias (Bruno) · licença do Orientativo 3D: Gestor = Tipologias, Catálogo 3D e Equipe; Colaborador = Tipologias e Catálogo 3D.
    Empresa nesta lista só vê os módulos listados (Início e Catálogo 3D sempre). Para liberar mais um módulo, acrescente a chave (ex.: 'apr'). */
-const LIC_MODS={'brito-esquadrias':['tip','ges'],'parceiro-obras':['tip'],'teste-medidor-obras':['tip']/* 12/11/2026 · serralheiro parceiro: Tipologias, Catálogo 3D e Simulador de obra */};
+const LIC_MODS={'brito-esquadrias':['tip','ges','ctr'],'parceiro-obras':['tip'],'teste-medidor-obras':['tip']/* 12/11/2026 · serralheiro parceiro: Tipologias, Catálogo 3D e Simulador de obra */};
 /* 11/11/2026 · Simulador de obra novo (foto do vão → contramarco → reboco → tipologia): primeiro cliente pagante a usar é a Brito Esquadrias.
    Contrato dele não muda (só ganha a ferramenta). Para liberar a outra empresa, acrescente o código dela aqui. */
 const SIM_NOVO_EMP=['brito-esquadrias','parceiro-obras','teste-medidor-obras'];
@@ -782,7 +783,7 @@ function render(){
    $('#menu').querySelector('[data-salafc]').onclick=()=>{window.open('sala/'+(S.empresa_nome&&S.empresa?'?cli='+encodeURIComponent(S.empresa_nome):''),'_blank','noopener');};}
   $('#menu').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;try{if(sessionStorage.getItem('pfc-aba-ab'))sessionStorage.setItem('pfc-aba-tab',tab);}catch(_){}render();scrollTo(0,0);});
   if(S&&S.matriz)setTimeout(async()=>{const el=document.getElementById('demoPend');if(!el)return;try{const D=await rpc('pfc_adm_demo_lista',{p_token:S.token});const n=D.filter(d=>d.status==='pendente').length;if(n){el.hidden=false;el.textContent=n+' demonstrativo'+(n>1?'s':'')+' aguardando';}}catch(_){}},50);
-  $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaInicio,apr:telaApr,o3d:telaO3d,ges:telaGes,mtg:telaMtg,vnd:telaVnd,cen:telaCen,prc:telaPrc,catc:()=>PFCcat.tela(S,papel())}[tab]||telaInicio)();
+  $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaInicio,apr:telaApr,o3d:telaO3d,ges:telaGes,ctr:telaCtr,mtg:telaMtg,vnd:telaVnd,cen:telaCen,prc:telaPrc,catc:()=>PFCcat.tela(S,papel())}[tab]||telaInicio)();
   ligar();if(tab==='tip'&&!manut()&&window.PFCapr)PFCapr.ligar();
   if(tab==='vnd')setTimeout(abrirVendas,0);if(tab==='cen')setTimeout(abrirCen,0);
   if(tab==='inicio'&&!soCat())dicasPl();
@@ -859,7 +860,7 @@ function telaInicio(){
   const mods=itens().filter(m=>m.k!=='inicio'&&m.k!=='apr'&&p!=='demo');const SM=!!setMods();/* 16/11/2026 · Fábrica & CEM: só Tipologias e Catálogo 3D */
   /* 09/11/2026 · Montagem Tipologia: o cliente vê o card com cadeado (Aguardando liberação da FC); só a FC abre */
   const MTG_LOCK=!S.matriz||!!papelVer;if(!S.matriz&&licOk('mtg')&&['gestor','vendedor'].includes(p)&&!mods.some(m=>m.k==='mtg')){const mm=MENU.find(m=>m.k==='mtg');if(mm)mods.push(mm);}
-  const desc={tip:'Janelas, portas e fachadas em 3D, com desenho técnico e o Orientativo da equipe.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ges:'O que cada setor está fazendo: quem entrou, quem está on-line, quanto tempo e o que cada pessoa abriu.',mtg:'A tipologia 3D segue a sequência de montagem, passo a passo. Em conferência pela FC.',catc:'Quem abriu o catálogo, os clientes cadastrados e as cotações que chegaram para cada vendedor.',prc:'Custo e venda por tamanho de kit, ligados ao catálogo TEXA. Só da CDE.',cen:setorAt()==='compras'?'Onde comprar (direto da extrusora), Compras com distribuidora e Pesquisa de código e conversor.':'As ferramentas do seu setor que ficavam na Central do Cliente: planilhas, estoque, solicitações, agenda da FC e o que mais estiver liberado para você.',vnd:papel()==='gestor'||(S&&S.setor==='gerente')?'Acompanhe os orçamentos e pedidos da equipe de vendas, os resultados e o que está aguardando aprovação.':'Monte o orçamento do cliente com os preços e o estoque da empresa e acompanhe os seus pedidos.'};
+  const desc={tip:'Janelas, portas e fachadas em 3D, com desenho técnico e o Orientativo da equipe.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ctr:'O termo de uso e licença da plataforma assinado pela empresa: direitos, regras de uso e responsabilidades.',ges:'O que cada setor está fazendo: quem entrou, quem está on-line, quanto tempo e o que cada pessoa abriu.',mtg:'A tipologia 3D segue a sequência de montagem, passo a passo. Em conferência pela FC.',catc:'Quem abriu o catálogo, os clientes cadastrados e as cotações que chegaram para cada vendedor.',prc:'Custo e venda por tamanho de kit, ligados ao catálogo TEXA. Só da CDE.',cen:setorAt()==='compras'?'Onde comprar (direto da extrusora), Compras com distribuidora e Pesquisa de código e conversor.':'As ferramentas do seu setor que ficavam na Central do Cliente: planilhas, estoque, solicitações, agenda da FC e o que mais estiver liberado para você.',vnd:papel()==='gestor'||(S&&S.setor==='gerente')?'Acompanhe os orçamentos e pedidos da equipe de vendas, os resultados e o que está aguardando aprovação.':'Monte o orçamento do cliente com os preços e o estoque da empresa e acompanhe os seus pedidos.'};
   return `<div class="hero"><div><h2>Olá, ${h(nome)}!</h2><p>${SM?'Consulte as tipologias em 3D e o catálogo de perfis da '+h(S.empresa_nome||'empresa')+'.':txt}</p></div><div class="bts"><button class="btn cl" data-ir="tip">Ver tipologias</button></div></div>
   ${window.PFCcat&&!SM?PFCcat.card(S,p):''}
   ${p==='demo'?`<div class="grid" style="margin-bottom:6px">
@@ -948,6 +949,13 @@ const eqUlt=x=>x.ultimo&&new Date(x.ultimo)>=EQ_INICIO?x.ultimo:null;
 const eqT=s=>{s=Math.round(s||0);if(s<60)return s?'menos de 1 min':'—';const m=Math.round(s/60);return m<60?m+' min':Math.floor(m/60)+' h'+(m%60?' '+String(m%60).padStart(2,'0'):'');};
 const eqHa=d=>{if(!d)return '';const m=(Date.now()-new Date(d))/6e4;if(m<60)return 'há '+Math.max(1,Math.round(m))+' min';const hr=m/60;if(hr<24)return 'há '+Math.round(hr)+' h';const dd=Math.round(hr/24);return dd===1?'ontem':'há '+dd+' dias';};
 const EQ_ORD=['gestor','gerente','vendas','compras','marketing','estoque','fabrica'];
+/* 19/11/2026 · Contrato da plataforma: só o gestor da empresa (e a FC dentro dela) vê */
+function telaCtr(){const emp=h(S.empresa_nome||'sua empresa');
+  return `<div class="cab"><div><h2>Contrato da plataforma</h2><p class="mute">Termo de uso e licença da Plataforma FC 3D da ${emp}. Só o gestor vê esta tela.</p></div></div>
+  <div class="hero" style="margin-top:8px"><div><span class="chip" style="background:#fff;color:#02717d">Versão 2026-11 rev. 2 · vigente desde 19/11/2026</span><h2 style="margin-top:8px">Licenciado para: ${emp}</h2><p>A licença dá à ${emp} o direito de <b>usar</b> a plataforma com a sua equipe. O conteúdo, os modelos 3D e o código continuam sendo da FC Consultoria em Esquadria.</p><p style="margin-top:6px;opacity:.9">Como gestor, você responde pelos acessos da sua equipe: cada login é pessoal e, quando um colaborador sair da empresa, avise a FC para bloquear o acesso.</p></div>
+  <div class="bts"><a class="btn cl" href="termos/" target="_blank" rel="noopener">Abrir / imprimir</a></div></div>
+  <iframe src="termos/" title="Termo de uso da Plataforma FC 3D" loading="lazy" style="width:100%;height:72vh;border:1px solid #d9e2e0;border-radius:14px;background:#fff;margin-top:14px"></iframe>
+  <p class="mute" style="margin-top:10px;font-size:13px">Dúvidas sobre o contrato: fale com a FC pelo WhatsApp (66) 9 9986-7984.</p>`;}
 function telaGes(){return `<div class="cab"><div><h2>Equipe</h2><p class="mute">O que cada setor está fazendo na plataforma: quem entrou, quem está on-line, quanto tempo e o que cada pessoa abriu.</p></div>
  <div class="filtros" role="group" aria-label="Período">${[[1,'Hoje'],[7,'7 dias'],[30,'30 dias']].map(([d,n])=>`<button type="button" data-eqd="${d}" aria-pressed="${eqDias===d}">${n}</button>`).join('')}<button type="button" data-eqr title="Atualizar">⟳</button></div></div>
  <div id="eqBox"><p class="mute">Carregando a equipe…</p></div>`;}
