@@ -357,7 +357,7 @@ const PAPEIS={compras:'Compras',fabrica:'Fábrica & CEM',gestor:'Gestor',vendedo
 const SETORES={gestor:'Gestor',compras:'Compras',vendas:'Vendas (Comercial)',estoque:'Estoque',fabrica:'Fábrica',gerente:'Gerente comercial',marketing:'Marketing'};
 /* 16/11/2026 · Casas Bandeirantes · setor Fábrica & CEM (setor 'fabrica' da Central do Cliente): só Tipologias e Catálogo 3D (Início sempre).
    Para liberar mais um módulo ao setor, acrescente a chave na lista (ex.: 'apr'). */
-const SET_MODS={'casa-bandeirante':{fabrica:['tip']},'teste-casa-bandeirante':{fabrica:['tip']}};
+const SET_MODS={'casa-bandeirante':{fabrica:['tip','reg']},'teste-casa-bandeirante':{fabrica:['tip','reg']}};
 const SET_NOME={'casa-bandeirante':{fabrica:'Fábrica & CEM'},'teste-casa-bandeirante':{fabrica:'Fábrica & CEM'}};
 const nomeSet=k=>((S&&SET_NOME[S.empresa])||{})[k]||SETORES[k]||k;
 const MENU=[
@@ -369,6 +369,7 @@ const MENU=[
   {k:'tip',get n(){return NTIP();},i:'▦',p:['gestor','vendedor','arquiteto','demo']},
   /* 09/11/2026 · Ambientes (Monte sua Casa) inativo em toda a plataforma */
   {k:'apr',n:'Apresentação',i:'▶',p:['gestor','vendedor','arquiteto']/* fora do demonstrativo: lá ficam só Tipologias e Catálogo 3D */},
+  {k:'reg',n:'Regras de uso',i:'✅',p:['gestor','vendedor']/* 19/11/2026: regras simples para cada pessoa da equipe, com ciência registrada */},
   {k:'ctr',n:'Contrato da plataforma',i:'📄',p:['gestor']/* 19/11/2026: termo de uso/licença da plataforma · só o gestor (e a FC dentro da empresa) */},
   {k:'ges',n:'Equipe',i:'👥',p:['gestor']/* 03/11/2026: andamento da equipe por setor (só o gestor e a FC dentro da empresa) */},
   {k:'mtg',n:'Montagem Tipologia',i:'🎬',p:['gestor','vendedor','arquiteto','demo'],fc:1/* 08/11/2026: sequência de montagem passo a passo (vídeos de professor) · só a FC vê */}];
@@ -663,6 +664,7 @@ async function abrir(token){
     vc.querySelectorAll('[data-ver]').forEach(b=>b.onclick=()=>{papelVer=b.dataset.ver;if(papelVer==='compras'||papelVer==='fabrica')tab='inicio';/* abre no Início de Compras, com os cards do setor */vc.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));if(!itens().some(m=>m.k===tab))tab='inicio';render();});}
   render();
   setTimeout(divPl,1500);
+  regrasChecar();
 }
 function mostrarEntrada(m){$('#app').hidden=true;$('#entrada').hidden=false;$('#entMsg').textContent=m||'';formDemo(modoDemo);}
 $('#btSair').onclick=async()=>{if(ls.get('pfc-apres')==='1'&&window.FCSessaoEncerrar){window.FCSessaoEncerrar();return;}ls.del('pfc-apres');ls.del('pfc-apres-ativo');const t=S&&S.token;S=null;ls.del(TK);ls.del('pfc-papel');try{if(t)await rpc('pfc_sair',{p_token:t});}catch(_){}mostrarEntrada('');};
@@ -755,7 +757,7 @@ function telaMtg(){
 const SO_CAT_EMP=['guapore-vidros'];
 /* 11/11/2026 · Brito Esquadrias (Bruno) · licença do Orientativo 3D: Gestor = Tipologias, Catálogo 3D e Equipe; Colaborador = Tipologias e Catálogo 3D.
    Empresa nesta lista só vê os módulos listados (Início e Catálogo 3D sempre). Para liberar mais um módulo, acrescente a chave (ex.: 'apr'). */
-const LIC_MODS={'brito-esquadrias':['tip','ges','ctr'],'parceiro-obras':['tip'],'teste-medidor-obras':['tip']/* 12/11/2026 · serralheiro parceiro: Tipologias, Catálogo 3D e Simulador de obra */};
+const LIC_MODS={'brito-esquadrias':['tip','ges','ctr','reg'],'parceiro-obras':['tip'],'teste-medidor-obras':['tip']/* 12/11/2026 · serralheiro parceiro: Tipologias, Catálogo 3D e Simulador de obra */};
 /* 11/11/2026 · Simulador de obra novo (foto do vão → contramarco → reboco → tipologia): primeiro cliente pagante a usar é a Brito Esquadrias.
    Contrato dele não muda (só ganha a ferramenta). Para liberar a outra empresa, acrescente o código dela aqui. */
 const SIM_NOVO_EMP=['brito-esquadrias','parceiro-obras','teste-medidor-obras'];
@@ -783,12 +785,13 @@ function render(){
    $('#menu').querySelector('[data-salafc]').onclick=()=>{window.open('sala/'+(S.empresa_nome&&S.empresa?'?cli='+encodeURIComponent(S.empresa_nome):''),'_blank','noopener');};}
   $('#menu').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;try{if(sessionStorage.getItem('pfc-aba-ab'))sessionStorage.setItem('pfc-aba-tab',tab);}catch(_){}render();scrollTo(0,0);});
   if(S&&S.matriz)setTimeout(async()=>{const el=document.getElementById('demoPend');if(!el)return;try{const D=await rpc('pfc_adm_demo_lista',{p_token:S.token});const n=D.filter(d=>d.status==='pendente').length;if(n){el.hidden=false;el.textContent=n+' demonstrativo'+(n>1?'s':'')+' aguardando';}}catch(_){}},50);
-  $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaInicio,apr:telaApr,o3d:telaO3d,ges:telaGes,ctr:telaCtr,mtg:telaMtg,vnd:telaVnd,cen:telaCen,prc:telaPrc,catc:()=>PFCcat.tela(S,papel())}[tab]||telaInicio)();
+  $('#tela').innerHTML=barraDemo()+({inicio:telaInicio,tip:telaTip,amb:telaInicio,apr:telaApr,o3d:telaO3d,ges:telaGes,ctr:telaCtr,reg:telaReg,mtg:telaMtg,vnd:telaVnd,cen:telaCen,prc:telaPrc,catc:()=>PFCcat.tela(S,papel())}[tab]||telaInicio)();
   ligar();if(tab==='tip'&&!manut()&&window.PFCapr)PFCapr.ligar();
   if(tab==='vnd')setTimeout(abrirVendas,0);if(tab==='cen')setTimeout(abrirCen,0);
   if(tab==='inicio'&&!soCat())dicasPl();
   if(window.PFCcat&&!setMods()&&(tab==='inicio'||tab==='catc'))PFCcat.carregar(S,rpc,papel(),tab==='catc'?'tela':'card');
   if(tab==='ges')equipeCarregar();
+  if(tab==='ctr')regrasLista();
   if(window.PFCo3d){PFCo3d._re=tab==='o3d'?()=>PFCo3d.carregar(S,cen,rpc,render,papel()):null;if(PFCo3d._re)PFCo3d._re();}/* 04/11/2026 · Obra em 3D (teste) */
   if(window.PFCtut)PFCtut.atualiza();
 }
@@ -860,7 +863,7 @@ function telaInicio(){
   const mods=itens().filter(m=>m.k!=='inicio'&&m.k!=='apr'&&p!=='demo');const SM=!!setMods();/* 16/11/2026 · Fábrica & CEM: só Tipologias e Catálogo 3D */
   /* 09/11/2026 · Montagem Tipologia: o cliente vê o card com cadeado (Aguardando liberação da FC); só a FC abre */
   const MTG_LOCK=!S.matriz||!!papelVer;if(!S.matriz&&licOk('mtg')&&['gestor','vendedor'].includes(p)&&!mods.some(m=>m.k==='mtg')){const mm=MENU.find(m=>m.k==='mtg');if(mm)mods.push(mm);}
-  const desc={tip:'Janelas, portas e fachadas em 3D, com desenho técnico e o Orientativo da equipe.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',ctr:'O termo de uso e licença da plataforma assinado pela empresa: direitos, regras de uso e responsabilidades.',ges:'O que cada setor está fazendo: quem entrou, quem está on-line, quanto tempo e o que cada pessoa abriu.',mtg:'A tipologia 3D segue a sequência de montagem, passo a passo. Em conferência pela FC.',catc:'Quem abriu o catálogo, os clientes cadastrados e as cotações que chegaram para cada vendedor.',prc:'Custo e venda por tamanho de kit, ligados ao catálogo TEXA. Só da CDE.',cen:setorAt()==='compras'?'Onde comprar (direto da extrusora), Compras com distribuidora e Pesquisa de código e conversor.':'As ferramentas do seu setor que ficavam na Central do Cliente: planilhas, estoque, solicitações, agenda da FC e o que mais estiver liberado para você.',vnd:papel()==='gestor'||(S&&S.setor==='gerente')?'Acompanhe os orçamentos e pedidos da equipe de vendas, os resultados e o que está aguardando aprovação.':'Monte o orçamento do cliente com os preços e o estoque da empresa e acompanhe os seus pedidos.'};
+  const desc={tip:'Janelas, portas e fachadas em 3D, com desenho técnico e o Orientativo da equipe.',amb:'Coloque as esquadrias na casa, no apartamento ou na obra.',apr:'Tela cheia para TV e telão, pronta para a reunião.',eq:'O Orientativo 3D para a equipe aprender cada tipologia.',reg:'As regras de uso da plataforma para cada pessoa da equipe, em poucas linhas.',ctr:'O termo de uso e licença da plataforma assinado pela empresa: direitos, regras de uso e responsabilidades.',ges:'O que cada setor está fazendo: quem entrou, quem está on-line, quanto tempo e o que cada pessoa abriu.',mtg:'A tipologia 3D segue a sequência de montagem, passo a passo. Em conferência pela FC.',catc:'Quem abriu o catálogo, os clientes cadastrados e as cotações que chegaram para cada vendedor.',prc:'Custo e venda por tamanho de kit, ligados ao catálogo TEXA. Só da CDE.',cen:setorAt()==='compras'?'Onde comprar (direto da extrusora), Compras com distribuidora e Pesquisa de código e conversor.':'As ferramentas do seu setor que ficavam na Central do Cliente: planilhas, estoque, solicitações, agenda da FC e o que mais estiver liberado para você.',vnd:papel()==='gestor'||(S&&S.setor==='gerente')?'Acompanhe os orçamentos e pedidos da equipe de vendas, os resultados e o que está aguardando aprovação.':'Monte o orçamento do cliente com os preços e o estoque da empresa e acompanhe os seus pedidos.'};
   return `<div class="hero"><div><h2>Olá, ${h(nome)}!</h2><p>${SM?'Consulte as tipologias em 3D e o catálogo de perfis da '+h(S.empresa_nome||'empresa')+'.':txt}</p></div><div class="bts"><button class="btn cl" data-ir="tip">Ver tipologias</button></div></div>
   ${window.PFCcat&&!SM?PFCcat.card(S,p):''}
   ${p==='demo'?`<div class="grid" style="margin-bottom:6px">
@@ -949,13 +952,50 @@ const eqUlt=x=>x.ultimo&&new Date(x.ultimo)>=EQ_INICIO?x.ultimo:null;
 const eqT=s=>{s=Math.round(s||0);if(s<60)return s?'menos de 1 min':'—';const m=Math.round(s/60);return m<60?m+' min':Math.floor(m/60)+' h'+(m%60?' '+String(m%60).padStart(2,'0'):'');};
 const eqHa=d=>{if(!d)return '';const m=(Date.now()-new Date(d))/6e4;if(m<60)return 'há '+Math.max(1,Math.round(m))+' min';const hr=m/60;if(hr<24)return 'há '+Math.round(hr)+' h';const dd=Math.round(hr/24);return dd===1?'ontem':'há '+dd+' dias';};
 const EQ_ORD=['gestor','gerente','vendas','compras','marketing','estoque','fabrica'];
+/* 19/11/2026 · Regras de uso para a equipe: no primeiro acesso cada pessoa lê e clica "Li e entendi";
+   a data e o nome ficam registrados (pfc_regras_ciencia). Ao mudar o texto, troque REGRAS_V para pedir a ciência de novo. */
+const REGRAS_V='2026-11-19';
+const REGRAS=[['Seu login é só seu.','Não empreste a senha e não deixe a plataforma aberta no computador do cliente.'],
+ ['Use para atender.','Pode mostrar as telas ao cliente, ao arquiteto e ao engenheiro, no balcão, na reunião ou na TV.'],
+ ['Não copie.','Não grave, não tire prints em quantidade e não repasse o conteúdo para fora da empresa.'],
+ ['Sigilo.','Não mostre a outras empresas como a plataforma funciona por dentro.'],
+ ['Confira antes de produzir.','Medidas e perfis devem ser conferidos no catálogo do fabricante e no sistema de cálculo.']];
+const regrasHtml=()=>`<ol style="margin:10px 0 0;padding-left:22px;line-height:1.55">${REGRAS.map(([a,b])=>`<li style="margin-bottom:8px"><b>${a}</b> ${b}</li>`).join('')}</ol>
+  <p style="margin-top:10px;font-size:14px;opacity:.85">O uso indevido pode bloquear o seu acesso e gerar responsabilidade para a empresa.</p>`;
+let regrasOk=false;
+async function regrasChecar(){
+  if(!S||S.matriz||S.demo||!['gestor','vendedor'].includes(S.papel)||regrasOk||document.getElementById('regrasOv'))return;
+  let ok=true;try{ok=await rpc('pfc_regras_status',{p_token:S.token,p_versao:REGRAS_V});}catch(_){return;}
+  if(ok){regrasOk=true;return;}
+  const o=document.createElement('div');o.id='regrasOv';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Regras de uso da plataforma');
+  o.style.cssText='position:fixed;inset:0;z-index:9600;background:rgba(5,12,17,.78);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto';
+  o.innerHTML=`<div style="background:#fff;color:#0f1e27;border-radius:16px;max-width:560px;width:100%;padding:22px 22px 18px;font-family:system-ui,sans-serif">
+    <h2 style="margin:0 0 4px;font-size:21px">Regras de uso da plataforma</h2>
+    <p style="margin:0;color:#4a5b63;font-size:14px">Olá, ${escH((S.nome||'').split(' ')[0])}! Antes de começar, leia as regras da ${escH(S.empresa_nome||'sua empresa')}.</p>
+    ${regrasHtml()}
+    <button type="button" id="regrasOk" style="margin-top:14px;width:100%;background:#02717d;color:#fff;border:0;border-radius:11px;padding:13px 18px;font:700 16px system-ui;cursor:pointer;min-height:48px">Li e entendi</button>
+    <p style="margin:8px 0 0;font-size:12px;color:#6b7b82;text-align:center">Ao clicar, a data e o seu nome ficam registrados.</p></div>`;
+  document.body.appendChild(o);
+  o.querySelector('#regrasOk').onclick=async e=>{const b=e.currentTarget;b.disabled=true;b.textContent='Registrando…';
+    try{await rpc('pfc_regras_aceitar',{p_token:S.token,p_versao:REGRAS_V});regrasOk=true;o.remove();}
+    catch(err){b.disabled=false;b.textContent='Li e entendi';alert(err.message||'Não foi possível registrar. Tente de novo.');}};
+}
+function telaReg(){return `<div class="cab"><div><h2>Regras de uso</h2><p class="mute">O que cada pessoa da equipe precisa saber para usar a plataforma.</p></div></div>
+  <div class="card" style="cursor:default;max-width:720px">${regrasHtml()}<p class="mute" style="margin-top:8px;font-size:13px">${regrasOk?'✔ Você já registrou que leu estas regras.':''} Dúvidas: fale com o gestor da sua empresa.</p></div>`;}
+async function regrasLista(){const el=document.getElementById('regrasLista');if(!el)return;
+  try{const L=await rpc('pfc_regras_lista',{p_token:S.token})||[];
+    el.innerHTML=L.length?`<table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="text-align:left"><th style="padding:6px 8px">Pessoa</th><th style="padding:6px 8px">Setor</th><th style="padding:6px 8px">Leu em</th></tr></thead><tbody>${L.map(x=>`<tr style="border-top:1px solid #e3e9e8"><td style="padding:6px 8px">${escH(x.nome)}</td><td style="padding:6px 8px">${escH(x.setor?nomeSet(x.setor):(PAPEIS[x.papel]||x.papel||''))}</td><td style="padding:6px 8px">${new Date(x.em).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}</td></tr>`).join('')}</tbody></table>`:'<p class="mute">Ninguém da equipe registrou a leitura ainda. O aviso aparece no próximo acesso de cada pessoa.</p>';}
+  catch(err){el.innerHTML='<p class="mute">Não foi possível carregar a lista agora.</p>';}}
+
 /* 19/11/2026 · Contrato da plataforma: só o gestor da empresa (e a FC dentro dela) vê */
 function telaCtr(){const emp=h(S.empresa_nome||'sua empresa');
   return `<div class="cab"><div><h2>Contrato da plataforma</h2><p class="mute">Termo de uso e licença da Plataforma FC 3D da ${emp}. Só o gestor vê esta tela.</p></div></div>
   <div class="hero" style="margin-top:8px"><div><span class="chip" style="background:#fff;color:#02717d">Versão 2026-11 rev. 2 · vigente desde 19/11/2026</span><h2 style="margin-top:8px">Licenciado para: ${emp}</h2><p>A licença dá à ${emp} o direito de <b>usar</b> a plataforma com a sua equipe. O conteúdo, os modelos 3D e o código continuam sendo da FC Consultoria em Esquadria.</p><p style="margin-top:6px;opacity:.9">Como gestor, você responde pelos acessos da sua equipe: cada login é pessoal e, quando um colaborador sair da empresa, avise a FC para bloquear o acesso.</p></div>
   <div class="bts"><a class="btn cl" href="termos/" target="_blank" rel="noopener">Abrir / imprimir</a></div></div>
   <iframe src="termos/" title="Termo de uso da Plataforma FC 3D" loading="lazy" style="width:100%;height:72vh;border:1px solid #d9e2e0;border-radius:14px;background:#fff;margin-top:14px"></iframe>
-  <p class="mute" style="margin-top:10px;font-size:13px">Dúvidas sobre o contrato: fale com a FC pelo WhatsApp (66) 9 9986-7984.</p>`;}
+  <p class="mute" style="margin-top:10px;font-size:13px">Dúvidas sobre o contrato: fale com a FC pelo WhatsApp (66) 9 9986-7984.</p>
+  <div class="linha-tit" style="margin-top:24px"><h3 style="font-size:15px">Quem da equipe leu as Regras de uso</h3></div>
+  <div class="card" style="cursor:default" id="regrasLista"><p class="mute">Carregando…</p></div>`;}
 function telaGes(){return `<div class="cab"><div><h2>Equipe</h2><p class="mute">O que cada setor está fazendo na plataforma: quem entrou, quem está on-line, quanto tempo e o que cada pessoa abriu.</p></div>
  <div class="filtros" role="group" aria-label="Período">${[[1,'Hoje'],[7,'7 dias'],[30,'30 dias']].map(([d,n])=>`<button type="button" data-eqd="${d}" aria-pressed="${eqDias===d}">${n}</button>`).join('')}<button type="button" data-eqr title="Atualizar">⟳</button></div></div>
  <div id="eqBox"><p class="mute">Carregando a equipe…</p></div>`;}
