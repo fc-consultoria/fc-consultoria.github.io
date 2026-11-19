@@ -900,8 +900,9 @@ function vaiLinha(k){let el=document.getElementById('ln-'+k);
   if(!el)return;el.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
   el.classList.remove('chegou');void el.offsetWidth;el.classList.add('chegou');}
 /* 12/11/2026 · Tipologias EM MANUTENÇÃO para os clientes. 14/11/2026: o Acesso FC (Matriz) volta a entrar para fazer os ajustes.
-   Para liberar de novo para os clientes: TIP_MANUT=false (e no mostruario/index.html.enc, TIP_MANUT=false). */
-var TIP_MANUT=true;
+   Para liberar de novo para os clientes: TIP_MANUT=false (e no mostruario/index.html.enc, TIP_MANUT=false).
+   19/11/2026: TIP_MANUT=false (liberadas para os clientes; só a Gold segue em manutenção). */
+var TIP_MANUT=false;
 /* 16/11/2026 · o demonstrativo de 24 h abre a Fábrica 3D (Suprema) mesmo com as tipologias em manutenção para os clientes */
 function manut(){return TIP_MANUT&&!(S&&(S.matriz||S.demo));}
 /* 14/11/2026 · Linha Gold EM MANUTENÇÃO: os cards aparecem com o aviso e ficam bloqueados para todos os acessos;
